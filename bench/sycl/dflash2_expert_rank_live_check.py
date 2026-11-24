@@ -11,7 +11,9 @@ import dflash2_expert_rank_forecast as forecast
 capture, bank, basis, require = forecast.capture, forecast.bank, forecast.basis, forecast.require
 confidence, leaves, model = capture.confidence, capture.leaves, capture.model
 census = capture.census
-KEY = 'dflash2_expert_rank_live_check_v1'
+KEY = 'dflash2_expert_rank_live_check_v2'
+V1_KEY = 'dflash2_expert_rank_live_check_v1'
+V1_RESULT = '71ec683837c747947e87eaf50403054799e04631'
 ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 ORDER = ('stock', 'trained')
@@ -23,7 +25,28 @@ ROUTES = (('cache-window', 8192, 1256), ('chunked', 256, 1141),
 OUTPUT = 32
 
 
+def fresh_workload(tokenizer):
+    short = model.request_ids(Path(tokenizer))['ids']
+    require(len(short) == PROMPTS[0], 'original short body changed')
+    requests = []
+    for index, length in enumerate(PROMPTS):
+        prefix = [i % 4096 for i in range(length - len(short))]
+        if prefix:
+            # Disjoint starts keep prompt reuse at zero when live state is kept.
+            prefix[0] = 4096 + index
+        requests.append((prefix + short, OUTPUT))
+    require(len({ids[0] for ids, _ in requests}) == len(PROMPTS) - 1,
+            'independent fresh prefixes are required between the reset controls')
+    return requests
+
+
 def inputs(revision):
+    stopped = bank.previous.historic(V1_RESULT, V1_KEY)
+    stock = stopped['outcomes']['stock']
+    require(stopped['stage'] == 'failed' and not stopped['passed'] and stopped['ownership_closed']
+            and stock['native_exit_code'] == 0 and not stock['fresh_faults']
+            and '^strata serve: STATE_HASH' in stock['error'],
+            'require the preserved original state-observer outcome')
     scored = basis.validation.committed(bank.RESULT, (forecast.KEY,))
     closed = basis.validation.committed(bank.RESULT, (capture.experiment('holdout').KEY,))
     require(scored['stage'] == 'scored' and scored['eligible_for_live_comparison']
@@ -36,8 +59,9 @@ def inputs(revision):
             and scored['holdout']['request_sha256'] == closed['routing_workload']['request_sha256'],
             'held-out request or owner evidence differs')
     base = capture.baseline('train')
-    require(all(base[k] == closed[k] for k in ('binary', 'native_source_commit', 'native_build_sha256',
-                                              'boot', 'driver', 'runtime_manifest', 'routing_metadata')),
+    require(all(base[k] == closed[k] == stopped['plan'][k] for k in (
+                'binary', 'native_source_commit', 'native_build_sha256', 'boot', 'driver', 'runtime_manifest'))
+            and base['routing_metadata'] == closed['routing_metadata'],
             'require the original qualified executable, runtime and stock profile')
     stock_path = Path(base['routing_metadata']['profile'])
     trained_path = forecast.PROFILE
@@ -68,20 +92,27 @@ def inputs(revision):
         require(args.count(FLAG) == 1 and args[args.index(FLAG) + 1] == str(stock_path),
                 'expected the measured stock profile argument')
         args[args.index(FLAG) + 1] = str(path)
-        config = dict(baseline, args=args)
+        overrides = list(baseline['user_args'])
+        # Native STATE_HASH requires live_ok, which is set by a nonzero cache.
+        # A zero checkpoint interval keeps synthetic requests independent.
+        for settings in (args, overrides):
+            require(settings.count('--prompt-cache') == settings.count('--prompt-cache-every') == 1
+                    and settings[settings.index('--prompt-cache') + 1] == '0'
+                    and settings[settings.index('--prompt-cache-every') + 1] == '0',
+                    'unexpected live-state or checkpoint policy')
+            settings[settings.index('--prompt-cache') + 1] = '1'
+        config = dict(baseline, args=args, user_args=overrides)
         require(model.server.engine_args(config, exe=config['exe'], announce=False) == args,
-                'production resolver changed more than the profile path')
+                'production resolver changed more than the diagnostic settings')
         env = capture.environment(base, choice)
         require(env['EnableDirectSubmission'] == '0' and env['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1',
                 'qualified runtime safety settings required')
         env = model.native_environment(base, dict(env, STRATA_STATE_HASH='1', STRATA_SYCL_CACHE_LOAN_AUDIT='1'))
-        short = model.request_ids(Path(config['tokenizer']))['ids']
-        require(len(short) == PROMPTS[0], 'original short body changed')
-        workload = [([i % 4096 for i in range(n - len(short))] + short, OUTPUT) for n in PROMPTS]
+        workload = fresh_workload(config['tokenizer'])
         if requests is None:
             requests = workload
         require(requests == workload, 'wire requests differ by profile')
-        cases[arm] = dict(command=[base['binary']['path'], '--serve', *args],
+        cases[arm] = dict(command=[base['binary']['path'], '--serve', *args], reused=[0] * len(requests),
                           environment_sha256=bank.signature(env), profile=str(path), profile_sha256=bank.sha(path))
         configurations[arm], environments[arm] = config, env
     expected_args = [str(paths['stock']) if value == str(paths['trained']) else value
@@ -97,13 +128,15 @@ def inputs(revision):
                 runtime_manifest=base['runtime_manifest'], validation=base['native_validation_probe'],
                 drafter_assets=base['dflash2_assets'], cases=cases, order=list(ORDER), limits=model.LIMITS,
                 profile_forecast_sha256=bank.signature(scored), heldout_sha256=bank.signature(closed),
+                previous_failure=dict(commit=V1_RESULT, result_sha256=bank.signature(stopped)),
                 manifest=base['routing_metadata']['manifest'],
                 manifest_sha256=base['routing_metadata']['manifest_sha256'],
                 routes=[list(route) for route in ROUTES], wires=[
                     dict(prompt=len(ids), output=budget, sha256=model.restore.signature_bytes(model.wire(ids, budget)))
                     for ids, budget in requests],
-                purpose='Trace native cache-window, short chunk and long return with each fixed profile. '
-                        'Require exact cache membership, payload and request-reset evidence before clean timing.')
+                purpose='Trace cache-window, short chunk and long return with each fixed profile. '
+                        'Enable live-state readback with checkpoint creation disabled. Prove exact zero reuse, '
+                        'committed state extents, short reset fingerprints and the full cache return.')
     return plan, base, configurations, environments, requests, membership
 
 
@@ -155,21 +188,23 @@ def inspect(text, plan, arm, pid, requests, membership):
     require(tuple(int(m[1]) for m in markers) == PROMPTS, 'missing native request boundaries')
     ends = [m.start() for m in markers[1:]] + [len(text)]
     frames = [text[m.start():end] for m, end in zip(markers, ends, strict=True)]
-    stores, fingerprints = [], []
-    for frame, request, route in zip(frames, requests, ROUTES, strict=True):
-        stores.append(check_route(frame, request, *route))
-        state = dict(re.findall(r'(\w+)=([0-9a-f,-]+)', one(frame, r'^strata serve: STATE_HASH L=.*$')[0]))
-        fields = model.restore.ACTIVE_STATE
-        require(set(fields) <= state.keys() and int(state['L']) == request['prompt'],
-                'target state marker differs')
-        fingerprints.append(bank.signature({k: state[k] for k in fields}))
-    require(fingerprints[0] == fingerprints[-1] and requests[0] == requests[-1],
-            'repeated short reset differs within the same profile')
     samples = [dict(prompt_tokens=a['prompt'], read_tokens=a['prompt'], reused_tokens=0,
                     generated_tokens=a['generated'], drafts_accepted=a['accepted'], drafts_offered=a['offered'])
                for a in requests]
     native, _ = leaves.leaf_reader.evidence(text, samples, 4, False)
     bindings, _ = capture.census_inputs(text, samples, native)
+    stores, states = [], []
+    for frame, request, route, binding in zip(frames, requests, ROUTES, bindings, strict=True):
+        stores.append(check_route(frame, request, *route))
+        state = dict(re.findall(r'(\w+)=([0-9a-f,-]+)', one(frame, r'^strata serve: STATE_HASH L=.*$')[0]))
+        fields = model.restore.ACTIVE_STATE
+        # Native commits the first row and each accepted draft in every window.
+        committed = request['prompt'] - 1 + binding['windows'] + request['accepted']
+        require(set(fields) <= state.keys() and int(state['L']) == committed,
+                'published target-state extent differs from verified commits')
+        states.append(dict(tokens=committed, sha256=bank.signature({k: state[k] for k in fields})))
+    require(states[0] == states[-1] and requests[0] == requests[-1],
+            'repeated short reset differs within the same profile')
     require(bank.sha(plan['manifest']) == plan['manifest_sha256']
             and bank.sha(plan['cases'][arm]['profile']) == plan['cases'][arm]['profile_sha256'],
             'live expert formats or profile changed')
@@ -177,7 +212,7 @@ def inspect(text, plan, arm, pid, requests, membership):
     require(stores[-2]['gpu_rows'] == PROMPTS[-2] - 1 and stores[-2]['host_rows'] == 0,
             'near long prefill did not take the all-device BF16 route')
     keys = ('windows', 'rows', 'cpu_jobs', 'cpu_entries', 'logical_job_blob_bytes', 'membership_sha256')
-    return dict(validation=proof, fingerprints=fingerprints, stores=stores,
+    return dict(validation=proof, states=states, stores=stores,
                 work=[{k: result[k] for k in keys} for result in observed])
 
 
@@ -232,6 +267,7 @@ def main(action):
         save(row)
         print({k: outcome.get(k) for k in ('passed', 'native_exit_code', 'fresh_faults', 'error')}, flush=True)
         require(outcome['passed'], 'close and preserve the original diagnostic before clean timing')
+
 
 if __name__ == '__main__':
     action, = sys.argv[1:]

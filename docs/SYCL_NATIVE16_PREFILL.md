@@ -10859,8 +10859,19 @@ The training rank forecasts 4,666,104 CPU jobs and 0.057% fewer logical
 blob bytes on this trace. The reduction in CPU jobs is 0.046%, compared
 with 19.98% on the training trace. A rank fitted to the held-out trace
 itself would remove 27.81% of jobs at these same quotas and prefix.
-The bound uses routing observations gathered after the request. The training rank earns a small live layout check.
-Clean model throughput and performance across tasks need separate results.
+The bound uses routing observations gathered after the request. The training
+rank earns a small live layout check. Clean model throughput and performance
+across tasks need separate results.
+
+The first stock-profile diagnostic at `71ec68383` completes all six requests
+and checks the 1,256-slot cache payload at four loan returns. Native exit is
+zero with no fresh Xe fault. Its reader refuses the missing state fingerprints.
+The diagnostic supplied `STRATA_STATE_HASH` with `--prompt-cache 0`, which
+clears the native live-state condition. Keep the original failed result.
+The revised controller keeps one live prompt with checkpoint creation
+disabled and gives each intervening request a different first token.
+It verifies zero reuse and relates each state length to committed verifier
+rows before comparing the first and last short fingerprints in each arm.
 
 An offline capacity check on the training trace preserves the stock rank
 and adds 12 slots per layer. The total grows from 1,256 to 1,832 slots.
