@@ -8,7 +8,7 @@ sys.dont_write_bytecode = True
 import prefill_kv_upload_build as base
 
 bank, builder, require = base.bank, base.builder, base.require
-KEY = 'dflash2_target_snapshot_native_v1'
+KEY = 'dflash2_target_snapshot_native_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 BEFORE = '0795b5ada220f49afc4e7b456340b9bc019c9462'
@@ -71,7 +71,9 @@ def context():
                      'before the new generation. Retire the extra generation at qualification closure.')
 
     def check(row, committed=True):
-        if not committed:
+        # Only the initial preparation adds a source pin. Build stages check
+        # this unchanged pin even after committing an earlier stage's result.
+        if not committed and row['stage'] == 'prepared':
             pin = bank.stage.source.pin(bank.P, [THIS])
             require(pin['revision'] == row['source_commit'], 'commit the snapshot build controller first')
             row['controller_sources'].update(pin['source_sha256'])

@@ -10751,6 +10751,16 @@ passes 1,656 checks, including target-only capture, incremental reuse and
 restored bytes, the existing MTP cases and incompatible snapshot rejection.
 The next native gate is a live conversation switch on Arc with actual
 prompt reuse and byte verification of all 12 target attention layers.
+The V1 build controller at `0eb947780` records a closed refusal after
+successful CMake configuration. Its post-configure check mistook the
+committed preparation receipt for a source revision change. V2 binds
+the controller when preparing and uses the existing committed file
+checks for later stages. The target-only engine projection is the same.
+The closed `dflash2-target-snapshot-native-v1` output set is disposable
+after that Git receipt. It has 1,203 files and 18,258,134 bytes, with
+path/size/content inventory SHA-256
+`89cd9466b0884bda5953526c3f7d5aa965d6b221f06a27278bbf930be6c31789`.
+The independent research inputs already hold their pinned source views.
 
 The first corrected suite process `bdd9ff4ce` passes the route, ownership
 and output gates. It exits 0 with no fresh Xe fault. The sustained code
