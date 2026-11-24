@@ -560840,7 +560840,7 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "cpu_iq3_pair_reduction_v1": {
-    "stage": "built",
+    "stage": "checked",
     "source_commit": "4a119c2462bc9ce267a2cac6435cde77bf6a6c80",
     "selected_direct_component_evidence": {
       "commit": "ee5a8e41307a97bdb7155004e4bc9c2a33af5e33",
@@ -561301,6 +561301,121 @@
     "same_build_library": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3-pair-reduction-v1/build/libexpert_cpu.a",
       "sha256": "c26e9198e8a8b45060b4bac94d8966243c86ac197505b28c4e1b604e1c037fdc"
+    },
+    "correctness": {
+      "passed": true,
+      "single_cases_per_arm": 384,
+      "paired_cases_per_arm": 80,
+      "audited_entry_calls_per_arm": 80,
+      "pool_cases_per_arm": 28,
+      "pool_checksum": "e5d7a50a8e7d5ac5",
+      "prefill_pair_rows": 0,
+      "checks": [
+        {
+          "kind": "exact",
+          "arm": 0,
+          "passed": true,
+          "receipt": {
+            "pid": 3041650,
+            "direct_identity": {
+              "pid": 3041650,
+              "state": "D",
+              "ppid": 3041497,
+              "pgid": 3041650,
+              "sid": 3041650,
+              "start_ticks": 383913868,
+              "rss_bytes": 135168
+            },
+            "exit_code": 0,
+            "elapsed_seconds": 0.15741583285853267,
+            "observation_complete": true,
+            "direct_child_reaped": true,
+            "session_empty": true,
+            "session_anchored": true,
+            "errors": [],
+            "cleanup": [],
+            "peak_session_rss_bytes": 5353472
+          }
+        },
+        {
+          "kind": "pool",
+          "arm": 0,
+          "passed": true,
+          "receipt": {
+            "pid": 3041655,
+            "direct_identity": {
+              "pid": 3041655,
+              "state": "D",
+              "ppid": 3041497,
+              "pgid": 3041655,
+              "sid": 3041655,
+              "start_ticks": 383913884,
+              "rss_bytes": 143360
+            },
+            "exit_code": 0,
+            "elapsed_seconds": 0.49582615308463573,
+            "observation_complete": true,
+            "direct_child_reaped": true,
+            "session_empty": true,
+            "session_anchored": true,
+            "errors": [],
+            "cleanup": [],
+            "peak_session_rss_bytes": 18223104
+          }
+        },
+        {
+          "kind": "exact",
+          "arm": 1,
+          "passed": true,
+          "receipt": {
+            "pid": 3041675,
+            "direct_identity": {
+              "pid": 3041675,
+              "state": "R",
+              "ppid": 3041497,
+              "pgid": 3041675,
+              "sid": 3041675,
+              "start_ticks": 383913933,
+              "rss_bytes": 311296
+            },
+            "exit_code": 0,
+            "elapsed_seconds": 0.14359995909035206,
+            "observation_complete": true,
+            "direct_child_reaped": true,
+            "session_empty": true,
+            "session_anchored": true,
+            "errors": [],
+            "cleanup": [],
+            "peak_session_rss_bytes": 5857280
+          }
+        },
+        {
+          "kind": "pool",
+          "arm": 1,
+          "passed": true,
+          "receipt": {
+            "pid": 3041681,
+            "direct_identity": {
+              "pid": 3041681,
+              "state": "R",
+              "ppid": 3041497,
+              "pgid": 3041681,
+              "sid": 3041681,
+              "start_ticks": 383913948,
+              "rss_bytes": 311296
+            },
+            "exit_code": 0,
+            "elapsed_seconds": 0.4324839636683464,
+            "observation_complete": true,
+            "direct_child_reaped": true,
+            "session_empty": true,
+            "session_anchored": true,
+            "errors": [],
+            "cleanup": [],
+            "peak_session_rss_bytes": 17096704
+          }
+        }
+      ]
     },
     "project_inputs": {
       "files": 206,
