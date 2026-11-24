@@ -10772,10 +10772,17 @@ The corrected reader at `5af5140cf` matches the emitted word `tokens`.
 Its replay of that same capture checks 465,624,576 target KV bytes across
 12 layers, 118,069,304 running-state bytes and the exact resumed extent.
 The DFlash2 tail covers 2,046 rows. The unaligned continuation reloads
-its KV stage and requests 934,382,592 prefix H2D bytes. Keep the first
-failure intact and repeat 32K with the corrected reader before the
-near-capacity continuation. Review the first raw capture after that
-fresh 32K outcome.
+its KV stage and requests 934,382,592 prefix H2D bytes. The fresh 32K
+case with the corrected reader passes at `8db58b418`, with the same
+snapshot hashes and normal owner closure without a fresh Xe fault.
+The next V2 case parks 253,919 tokens and continues to a 262,128-token
+prompt. Its target runtime limits and exact wire inputs are already pinned.
+
+Retire the first raw restore capture at `dflash2-target-snapshot-restore-v1`.
+The original failure, offline replay and independent passing replacement
+carry its useful evidence. The retired scope covers 63 files and
+12,397,987 bytes. Its SHA-256 over sorted path/size/content triples is
+`896eff827a958570db58ecbf77f7c7d17ec1bb28cd1377dd2151963131512e3e`.
 
 The first corrected suite process `bdd9ff4ce` passes the route, ownership
 and output gates. It exits 0 with no fresh Xe fault. The sustained code
