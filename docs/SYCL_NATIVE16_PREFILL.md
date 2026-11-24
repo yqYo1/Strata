@@ -10876,6 +10876,12 @@ fixed. The expected change at 84,721 inputs is 528 direct stores and removal
 of 83,283,148,800 requested D2D bytes. The traced model admission precedes
 clean speed measurements. The older MTP split store comparison motivates the
 test with three warm gains.
+
+The retained DFlash2 build's traced attention-store fixture completes four
+cases and checks 168,417,280 BF16 values. It rejects overlapping, empty and
+out-of-range spans and exits normally with no fresh Xe fault. The next gate
+compares actual long-input copy and direct paths with the same weights,
+cache refill and DFlash2 decode work.
 Retired 59 files and 12606542 bytes from the closed trace's `long`
 directory after `3c156ee10`. The inventory SHA-256 is
 `57ea8657f9544df7e442461a2a2f85952d0e6d6bc8b063eb10f92ec60db29767`.
