@@ -41088,5 +41088,38 @@
     "schedulable_now": false,
     "finding": "Search summary: Intel Xe SYCL tiled-gather SLM bank conflicts vs spills/occupancy. It is a transferable method guide; supplied evidence does not diagnose a pinned workload.",
     "consumer": "Retrieve when a measured Xe tile/gather kernel stages through SLM and bank serialization, spills or occupancy are competing bottleneck explanations; use the report to frame a controlled measurement."
+  },
+  "dflash2-target-only-primary-port-admission-20261125": {
+    "stage": "reviewed",
+    "classification": "decision_support",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "source_commit": "2c8258f25f3d2f5591862c899ae8b8b6ec8ccadf",
+    "native_source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-target-only-primary-port-admission-20261125/report.md",
+    "report_sha256": "c5ed02e5ca5d7de5709218de00d91a027058eda408aad3da38ee92a6ca4d06b2",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-port-and-unaligned-kv-20261125.h7ebvq8e/review.json",
+    "review_sha256": "95b5a425586a964519b9a2dfb373e08a3dcf4f85ae3e6bc642e2a5c72ed02f9b",
+    "schedulable_now": false,
+    "finding": "The primary-to-native delta is source-port evidence. Separately, the 32,769-token V1 capture replay supports reuse and integrity, not GPU performance. Direct-route, TTFT and sustained-decode proof remain absent; max-length, tap-content, MTP and output-size gates are distinct.",
+    "consumer": "Pin the current feature/sycl parent and target-only fixture/closure, then capture same-settings old/new direct-prefill and sustained-decode pairs. Obtain separate direct-route and TTFT receipts before performance admission."
+  },
+  "dflash2-resumed-qsa-unaligned-prefix-retention-20261125": {
+    "stage": "reviewed",
+    "classification": "decision_support",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "source_commit": "2c8258f25f3d2f5591862c899ae8b8b6ec8ccadf",
+    "native_source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-resumed-qsa-unaligned-prefix-retention-20261125/report.md",
+    "report_sha256": "d7b618ac9d042f906c1d6225aa35dc2560d1a5b0fdebb689c39416d5a4c354b5",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-port-and-unaligned-kv-20261125.h7ebvq8e/review.json",
+    "review_sha256": "95b5a425586a964519b9a2dfb373e08a3dcf4f85ae3e6bc642e2a5c72ed02f9b",
+    "schedulable_now": false,
+    "finding": "The pinned trace supports 934,382,592 requested prefix H2D bytes and a source-level unaligned-edge explanation, not physical traffic. The later host near-case (253,919 reused, 8,209 new, 6,539,157,504 requested bytes) was outside worker input and does not validate this trace.",
+    "consumer": "Pin the later near-case receipt separately and identify a candidate variant. Compare it with baseline on a matched restored prefix/continuation; verify Q8 K/V/scales, IDs, taps and output, and report requested bytes separately from measured traffic and elapsed time.",
+    "subsequent_main_evidence": "962acee66 near-copy: 253919 reused, 8209 read, 6539157504 requested H2D bytes. This result postdates the worker input."
   }
 }
