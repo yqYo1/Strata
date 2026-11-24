@@ -10968,13 +10968,13 @@ has 431 files and 74900417 bytes, inventory SHA-256
 `6408e13aa10949e7f2b3750861f819d9ccd0d1db9732ae2c61656edb3bd8155a`. All unique useful samples, route decisions,
 case identities and pinned sources are in the exact result above.
 Its closed logs, duplicate process state, per-process caches and routine
-frontend output have no further consumer. The 120,001-input plan
-uses the separate split admission and native build, which remain available.
+frontend output were removed after verifying that inventory and the
+committed evidence. The prepared 120,001-input plan uses the separate
+split admission and native build, which remain available.
 The 120,001-input controller at `0711ba6c0` verifies the committed
 120,000-row budget, inherited launch, generated short/long/short inputs
-and same native binary in a host-only preflight. The writer cohort
-retains all 841 original source inputs. No 120,001-input native run has
-started.
+and same native binary in a host-only preflight. The writer cohort retains all 841 original source inputs.
+The capacity plan is prepared for its first native reference process.
 
 After the closed timing bracket, split admission and host reader checks
 were committed, the five local capture directories below were removed.
