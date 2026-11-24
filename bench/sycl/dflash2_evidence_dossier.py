@@ -36,7 +36,20 @@ def wire_sha(workload):
     return hashlib.sha256(json.dumps(body).encode()).hexdigest()
 
 
+def host_evidence():
+    host = basis.validation.committed(bank.RESULT, ("dflash2_evidence_dossier_host_v1",))
+    require(host["stage"] == "closed" and host["passed"] and host["tests"] == 54 and host["skipped"] == 0
+            and not host["native_engine_executed"] and host["python"] == sys.executable
+            and bank.sha(sys.executable) == host["python_sha256"]
+            and all(bank.sha(bank.P / name) == sha for name, sha in host["sources"].items())
+            and host["body_sha256"] == wire_sha(WORKLOAD_ID) and host["output_cap"] == CAP
+            and lg.MIN_INPUT_TOKENS <= host["actual_count"] <= lg.DOSSIER_MAX_INPUT_TOKENS,
+            "require the checked exact frontend and real-tokenizer dossier body")
+    return host
+
+
 def baseline():
+    host = host_evidence()
     row = parent.baseline()
     prior = bank.previous.historic(INCUMBENT_REFERENCE, parent.KEY)
     case = prior["processes"][4]
@@ -46,7 +59,8 @@ def baseline():
             and case["binary"] == row["binary"] and case["boot_unchanged"],
             "recover the exact closed incumbent regular-code control")
     return dict(row, incumbent_reference=INCUMBENT_REFERENCE,
-                incumbent_case_sha256=bank.signature(case), dossier_body_sha256=wire_sha(WORKLOAD_ID))
+                incumbent_case_sha256=bank.signature(case), dossier_body_sha256=host["body_sha256"],
+                dossier_counted_input=host["actual_count"], dossier_host_sha256=bank.signature(host))
 
 
 def command(plan):
@@ -95,7 +109,7 @@ def read_suite(root, workload_id):
             (lg.DOSSIER_WORKLOAD, 0, 0) and all(sample[k] == last[k] for k in tracked)
             and last["phase"] == PHASE and last["request_sha256"] == last["count_preflight_body_sha256"] == sha
             and last["read_tokens"] == last["prompt_tokens"] == last["counted_input_tokens"] ==
-                proof["counted_input_tokens"] and last["reused_tokens"] == 0
+                proof["counted_input_tokens"] == host_evidence()["actual_count"] and last["reused_tokens"] == 0
             and lg.MIN_INPUT_TOKENS <= last["read_tokens"] <= lg.DOSSIER_MAX_INPUT_TOKENS,
             "dossier journal, body or actual consumed input differs")
     require(last["drafts_offered"] >= lg.MIN_DRAFTS and last["weak_draft_observed"] is
