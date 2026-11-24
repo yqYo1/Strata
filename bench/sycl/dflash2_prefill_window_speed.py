@@ -52,9 +52,9 @@ def environment(row, plan):
     return env
 
 
-def request_route(text, plan):
+def request_route(text, plan, *, direct=False):
     mode = window.ARMS[plan['arm']]
-    route = window.window_result(text, mode)
+    route = window.window_result(text, mode, direct=direct)
     layout = window.workspace.one(text, 'strata prefill: layer-major candidate, ')
     expected = dict(tokens=window.ROWS, chunk=window.store.CHUNK, residual_dtype='bf16',
                     residual_element_bytes=2, residual_gpu_rows=window.ROWS,

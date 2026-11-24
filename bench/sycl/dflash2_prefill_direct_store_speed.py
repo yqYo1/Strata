@@ -89,14 +89,14 @@ def after_execution(outcome, row, plan):
     outcome['arm'] = plan['arm']
 
 
-def decision(processes):
+def decision(processes, *, read=READ, copy_bytes=COPY_BYTES):
     require(tuple(p['arm'] for p in processes) == ORDER, 'expected all three counterbalanced pairs')
     records, ratios = [], []
     for process in processes:
         first, *warm = process['samples']
         warm_ms = statistics.median(s['prompt_ms'] for s in warm)
         records.append(dict(arm=process['arm'], first_ms=first['prompt_ms'], first_ttft_s=first['ttft_s'],
-                            warm_ms=warm_ms, warm_pp=READ * 1000 / warm_ms,
+                            warm_ms=warm_ms, warm_pp=read * 1000 / warm_ms,
                             warm_ttft_s=statistics.median(s['ttft_s'] for s in warm)))
     for left, right in zip(records[::2], records[1::2], strict=True):
         copy, direct = (left, right) if left['arm'] == 'copy' else (right, left)
@@ -107,7 +107,7 @@ def decision(processes):
                 median_warmed_PP={arm: statistics.median(values) for arm, values in rates.items()},
                 repeated_warm_gain=all(r['warm_ms'] < 1 for r in ratios),
                 repeated_1000={arm: all(rate >= 1000 for rate in values) for arm, values in rates.items()},
-                requested_D2D_bytes_removed=COPY_BYTES, full_context_qualified=False,
+                requested_D2D_bytes_removed=copy_bytes, full_context_qualified=False,
                 sustained_decode_qualified=False, adopted=False)
 
 

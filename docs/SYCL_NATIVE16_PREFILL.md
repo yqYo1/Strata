@@ -11055,8 +11055,19 @@ Retained KV, active target state, cache refill, DFlash2 tap coverage
 and all three outputs agree with the copied reference. The native
 process exits normally, all 15 model asset hashes pass and Xe reports
 no new fault. The trace measures tap coverage and final state.
-A separate quiet comparison will measure throughput. Tap contents,
-live RESTORE and sustained decode have their own qualification.
+Tap contents, live RESTORE and sustained decode have their own
+qualification.
+
+The quiet writer comparison uses
+[dflash2_prefill_window_writer_speed.py](../bench/sycl/dflash2_prefill_window_writer_speed.py).
+Keep the original three counted bodies, 118,785 input tokens, 48 windows,
+128 slots, demand expert uploads and KV retention. Change only the writer
+in three counterbalanced fresh-process pairs, with one first-use and two
+subsequent requests per process. Match the native expert and verifier work
+from the original mode16 reference and check actual store counts. Advance
+the throughput candidate only on a warmed prompt-time improvement in
+all three pairs. Retain first-use, TTFT and the repeated 1,000 tok/s decision
+separately.
 
 The six-process quiet capture under
 `dflash2-prefill-window-speed-v1` was retired after recording the 18 original
