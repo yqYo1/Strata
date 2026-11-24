@@ -159,6 +159,7 @@ def experiment():
 
 FAILED_PILOT = "a51a083d5c841307fbb8b658c481de1efc9accb4"
 REPLAY_KEY = "dflash2_dossier_continuation_replay_v1"
+PILOT_RECORD_SHA256 = "56e11a3a4d17ccd08de1884c465c232e1c38b4aea72c3f2c45e02ac35200d00f"
 REPLAY_INPUTS = {
     "execution.json": "648b2f843bed0d01c44a853c89c3b09ea478646bdb29f970b03278ea6a64e96f",
     "engine-start.json": "087c0f2b522e039577b7b33b80eeeb4889e76ce0210a6596e83ce83d0a86b86d",
@@ -179,10 +180,14 @@ def replay_continuation():
     from decode_kv_bench import insertion_recipe, native_windows
 
     root = ROOT / "0"
-    attempt = bank.previous.historic(FAILED_PILOT, KEY)
+    compact = bank.previous.historic(FAILED_PILOT, KEY)
+    record_path = ROOT / "record.json"
+    require(bank.sha(record_path) == PILOT_RECORD_SHA256, "original full pilot receipt changed")
+    attempt = bank.previous.read(record_path)
     original, = attempt["processes"]
     committed = basis.validation.committed(bank.RESULT)
-    require(committed[KEY] == attempt and REPLAY_KEY not in committed and attempt["stage"] == "failed"
+    require(committed[KEY] == compact == basis.compact(attempt) and REPLAY_KEY not in committed
+            and attempt["stage"] == "failed"
             and not attempt["active"] and attempt["ownership_closed"] and not original["fresh_faults"]
             and original["error"] == "RuntimeError('complete native CPU footers')",
             "recover the exact closed request-footer rejection")
@@ -240,6 +245,7 @@ def replay_continuation():
         source_commit=revision, failed_pilot=FAILED_PILOT, original_gate_passed=False,
         native_source_commit=attempt["native_source_commit"], binary_sha256=attempt["binary"]["sha256"],
         native_exit_code=end["exit_code"], fresh_faults=original["fresh_faults"], replay_only=True,
+        original_pilot_record_sha256=PILOT_RECORD_SHA256,
         inputs=dict(**REPLAY_INPUTS, **REPLAY_JOURNAL), wrap=wrap, **joined,
         total_native_prompt_read=sum(row["read_tokens"] for row in joined["segments"]),
         total_native_prefill_ms=sample["prompt_ms"], client_ttft_s=sample["ttft_s"],
