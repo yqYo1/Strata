@@ -40975,5 +40975,37 @@
     "schedulable_now": false,
     "finding": "FLUTE, Ginkgo and HYB provide examples of how decoding work, representation size and reuse compete under a fixed device-memory budget. The tradeoff on the Battlemage verifier remains unmeasured.",
     "consumer": "Retrieve for a fixed-byte comparison once the verifier supplies post-refill reuse, hits and misses, miss cost and resource-pressure observations."
+  },
+  "dflash2-causal-expert-profile-selection-20261125": {
+    "source_commit": "51a8b2f3c727b09dd466395f4e77f619a75fb34a",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-causal-expert-profile-selection-20261125/report.md",
+    "report_sha256": "efc3312b1bb5fd03b6ccf6ff12f5442645852edf6eeb9620170509b24c9d1a57",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-causal-and-zen3-lookup-20261125.s5ghh0/review.json",
+    "review_sha256": "0b5ef58aabbe5cf5d90e96d369f113bf7092b07766b84aeb55357510302e9af1",
+    "stage": "native_reviewed",
+    "classification": "decision_support",
+    "worker": "Orca gpt-6-luna medium, task_99d3d0a0296a, ctx_b44a7e13302c",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": false,
+    "finding": "The review identifies the earliest available signals and distinct costs for choosing and publishing a decode profile. The 27.81% bound uses hindsight. The active profile size does not determine changed-slot transfer volume.",
+    "consumer": "On an independent trace, score each policy only after its input becomes available. Require exact refill identities and include feature, transfer, publication and remaining decode costs."
+  },
+  "zen3-packed-dot-small-codebook-lookup-methods-20261125": {
+    "source_commit": "51a8b2f3c727b09dd466395f4e77f619a75fb34a",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zen3-packed-dot-small-codebook-lookup-methods-20261125/report.md",
+    "report_sha256": "ee48da4b2493a41d390e16b9a5bf17215d5be61a23fcd15ef9e7821ad445ed92",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-causal-and-zen3-lookup-20261125.s5ghh0/review.json",
+    "review_sha256": "0b5ef58aabbe5cf5d90e96d369f113bf7092b07766b84aeb55357510302e9af1",
+    "stage": "native_reviewed",
+    "classification": "knowledge_collection",
+    "worker": "Orca gpt-6-luna medium, task_06e4d34d52f3, ctx_4528368363b2",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": false,
+    "finding": "The review covers scalar indexed loads, AVX2 gathers, byte shuffles and cross-row scheduling for nonuniform codebooks, with lane, saturation and rounding constraints.",
+    "consumer": "Retrieve for the fixed-format Zen 3 IQ3_XXS lookup comparison. Verify arithmetic and rounding and observe timing under varied indices and row ranges before considering the model route."
   }
 }
