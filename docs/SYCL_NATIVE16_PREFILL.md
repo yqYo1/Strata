@@ -10706,18 +10706,24 @@ for the corrected performance campaign. The code case sends 1449976 expert
 jobs to the CPU. Measure the CPU service and verifier waits separately
 before attributing that decode time to a hardware resource.
 
-The weak-acceptance screen has a draft synthetic evidence dossier at
-`/tmp/strata-dflash2-weak-evidence-dossier.6bv652qn/dossier-workload.patch`
-with SHA-256 `a358827857ab699bd9ac5918bf0ea7eec747144518a6c87d41c4d7521cbd5f6b`.
-It adds a single optional workload to the same client and keeps the two v5
-defaults. The client counts the actual body before timing and checks
-the timed body hash, 32K or more fresh inputs and room for the 16K
-output budget. It records observed weak acceptance per eligible request.
-When the serialized comparison permits, host-check the patched client
-and pin one thinking-on request on the retained DFlash2 route. The screen
-needs 1,024 generated tokens, visible output, at least 256 offered drafts
-and acceptance at or below 0.40. Confirm with independent process samples.
-The revised draft passes the application and syntax checks and has no model result.
+The weak-acceptance screen's synthetic dossier and native controller are
+prepared in `/tmp/strata-dflash2-weak-evidence-dossier.6bv652qn/dossier-workload-and-screen.patch`.
+Its SHA-256 is `e7d5c09fb0ccf07416150c335db34c2485aa7afba5c69b4f07a88f6e8a65cfb4`.
+The patch passes static syntax and application checks. It keeps the two
+v5 defaults and adds a diagnostic through `bench.sh`. The journal and
+final reader both check the counted wire body, 32768–65536 actual fresh
+inputs, zero reuse, and context for 16384 output tokens. The existing
+long-generation eligibility checks cover at least 1024 output tokens,
+thinking and a visible answer. A request is weak only with at least 256
+offered drafts and observed acceptance at most 0.40.
+
+The code remains outside the frozen regular-code cohort. When its last
+owner closes, commit the exact dossier frontend and controller, run the
+host tests including the real-pack count-only control, and then prepare
+the one-process incumbent pilot. The screen pins the completed incumbent
+at `ea197d7a0` and records actual acceptance even when it exceeds 0.40.
+A successful screen leaves independent repeats and the agent session
+as separate measurements. No dossier native result exists yet.
 
 The standalone DFlash2 physical-context check
 `dflash2_prefill_physical_context_v1` passes on native source `96832af6f`.
