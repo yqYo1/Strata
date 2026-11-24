@@ -646673,12 +646673,247 @@
       },
       "scope": "Trace the first split row and the original 117489-input geometry in fresh processes. Keep 8192-token chunks, the canonical head, DFlash2 spec4, synchronized commit, batched expert uploads and copied attention. Check actual GPU rows, tail guards, expert-cache refill, the DFlash2 tap and the short reset. Stop at the first failure. The direct wire inputs provide route and handoff evidence."
     },
-    "stage": "prepared",
-    "complete": false,
-    "passed": false,
+    "stage": "closed",
+    "complete": true,
+    "passed": true,
     "active": false,
     "ownership_closed": true,
-    "outcomes": {}
+    "outcomes": {
+      "boundary": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "requests": [
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          },
+          {
+            "prompt": 90114,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 25,
+            "finish": "length"
+          },
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          }
+        ],
+        "native_exit_code": 0,
+        "native_identity": {
+          "pid": 2589200,
+          "start_ticks": 382869149
+        },
+        "validation": {
+          "pid": 2589200,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "split": {
+          "store": {
+            "pieces": 576,
+            "direct": 0,
+            "copy_bytes": 88584683520,
+            "gpu_rows": 90113,
+            "host_rows": 0,
+            "window_mode": 10,
+            "maximum_rows": 90113
+          },
+          "tail_bytes": 251668480,
+          "extra_bytes": 251668736,
+          "prefill_slots": 128,
+          "split_guard_checked": true,
+          "uploads": 23737
+        },
+        "states": [
+          {
+            "L": "114",
+            "gdn": "4f5ea7ff8b50a528",
+            "ple": "658c6b4cf144dfa8",
+            "tail": "60845c54dfa17711",
+            "pooled": "cd5a74ed9881eb7e",
+            "kv": "928417f78152ab15",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          },
+          {
+            "L": "90146",
+            "gdn": "844077d3ad380e75",
+            "ple": "8a355030946322a3",
+            "tail": "0753a45c46001cb3",
+            "pooled": "9fa16f338835f201",
+            "kv": "ac031a66523270a6",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          },
+          {
+            "L": "114",
+            "gdn": "4f5ea7ff8b50a528",
+            "ple": "658c6b4cf144dfa8",
+            "tail": "60845c54dfa17711",
+            "pooled": "cd5a74ed9881eb7e",
+            "kv": "928417f78152ab15",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          }
+        ],
+        "loan": [
+          1,
+          132,
+          1124
+        ],
+        "tap_rows": [
+          81,
+          2046,
+          81
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      },
+      "long": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "requests": [
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          },
+          {
+            "prompt": 117489,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 25,
+            "finish": "length"
+          },
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          }
+        ],
+        "native_exit_code": 0,
+        "native_identity": {
+          "pid": 2601553,
+          "start_ticks": 382901916
+        },
+        "validation": {
+          "pid": 2601553,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "split": {
+          "store": {
+            "pieces": 720,
+            "direct": 0,
+            "copy_bytes": 115495403520,
+            "gpu_rows": 117488,
+            "host_rows": 0,
+            "window_mode": 10,
+            "maximum_rows": 117488
+          },
+          "tail_bytes": 531988480,
+          "extra_bytes": 531988736,
+          "prefill_slots": 128,
+          "split_guard_checked": true,
+          "uploads": 23802
+        },
+        "states": [
+          {
+            "L": "114",
+            "gdn": "4f5ea7ff8b50a528",
+            "ple": "658c6b4cf144dfa8",
+            "tail": "60845c54dfa17711",
+            "pooled": "cd5a74ed9881eb7e",
+            "kv": "928417f78152ab15",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          },
+          {
+            "L": "117521",
+            "gdn": "f886bd202156939c",
+            "ple": "07c2f20941718b71",
+            "tail": "fd5f2fab91f45d3c",
+            "pooled": "1f33e9a66f9747a5",
+            "kv": "9d33226898b2d90f",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          },
+          {
+            "L": "114",
+            "gdn": "4f5ea7ff8b50a528",
+            "ple": "658c6b4cf144dfa8",
+            "tail": "60845c54dfa17711",
+            "pooled": "cd5a74ed9881eb7e",
+            "kv": "928417f78152ab15",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          }
+        ],
+        "loan": [
+          1,
+          132,
+          1124
+        ],
+        "tap_rows": [
+          81,
+          2046,
+          81
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    }
   },
   "dflash2_prefill_kv_stage_native_v1": {
     "stage": "built",
