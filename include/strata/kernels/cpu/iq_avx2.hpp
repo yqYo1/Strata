@@ -25,6 +25,10 @@ bool iq256_single_gu_rows(int ggml_type, const uint8_t* blob, size_t gu_row, siz
 bool iq3xxs_pair_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* act,
                         float* ff, int r0, int r1);
 
+// Decode NT1 component trial for the same layout, with an AVX2 codebook gather.
+bool decode_iq3xxs_pair_gather_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* act,
+                                      float* ff, int r0, int r1);
+
 // Experimental IQ3_S counterpart with the same H2560/FF640 and nonaliasing
 // contract. Direct component only; no production dispatcher selects it yet.
 bool iq3s_pair_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* act,
