@@ -10704,8 +10704,15 @@ including 245760 reloaded pages and zero reused pages per sustained case.
 This replay checks the controller. Fresh independent samples are required
 for the corrected performance campaign. The code case sends 1449976 expert
 jobs to the CPU. Measure the CPU service and verifier waits separately
-before attributing that decode time to a hardware resource. Physical
-262144-context and RESTORE checks remain open for DFlash2.
+before attributing that decode time to a hardware resource.
+
+The standalone DFlash2 physical-context check
+`dflash2_prefill_physical_context_v1` passes on native source `96832af6f`.
+The 16,385-token check generates four tokens. The full check consumes
+262,144 tokens through the final slot with zero output tokens. It processes
+122,880 batched BF16 residual rows in VRAM and 139,263 in host memory,
+captures a 2,046-row DFlash2 tail, completes the commit and refill drain,
+and exits 0. Xe reports zero fresh faults. Server RESTORE remains pending.
 
 The first corrected suite process `bdd9ff4ce` passes the route, ownership
 and output gates. It exits 0 with no fresh Xe fault. The sustained code
