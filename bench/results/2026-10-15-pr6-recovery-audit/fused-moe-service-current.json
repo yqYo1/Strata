@@ -678813,5 +678813,588 @@
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "cpu_iq3xxs_split_accum_dual_layout_v1": {
+    "stage": "prepared",
+    "source_commit": "2911c952db940b7a9f71bfe8929feb73545ef166",
+    "route_evidence": {
+      "leaves_commit": "6bbd3e3e1cab1415a4bba7df675c729bf4213d59",
+      "routing_commit": "a52280ef7362ef9fca23861501a8c4aa23fe6816",
+      "binary_sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
+      "cpu_jobs": 1449976,
+      "nt1_cpu_jobs": 1154781
+    },
+    "protocol": {
+      "question": "Does splitting the integer dependency chain reduce direct paired IQ3_XXS Gate/Up time?",
+      "change": "Accumulate even and odd groups separately within each weight block. Scalar codebook and sign lookups, per-block FP32 FMA order and horizontal reduction are identical in both arms.",
+      "shapes": "Real IQ3_XXS weights from layers 0 and 30, including both observed expert-blob layouts. The timing includes Gate/Up and the selected activation packing. Down is loaded as layout data. Reuse six and stream 252 experts at 640/128 rows to bracket cache reuse.",
+      "order": "Run both arms consecutively for each layout in a pair. Reverse the layout order in the middle pair. Use separate processes and the same source, flags, input, core and environment in both arms.",
+      "timing": "Require five distinct samples per cell, four warm passes, at least 0.25 s per sample and timer overhead below 0.1 percent of the fastest warm pass.",
+      "correctness": "Require the same-archive bitwise exact fixture and existing pool control. Each native timing process must pass all 2016 real-model cases twice, preserve inputs and match its timed outputs.",
+      "decision": "Require all three paired process-median ratios below 1 per cell. Advance only winning cells that cover the observed production geometry to a separate decode-dispatch comparison.",
+      "stop": "Stop after the first source, compiler input, route, numerical, timing or ownership mismatch. Keep terminal outcomes with all eligible samples.",
+      "limits": "This is direct single-core Gate/Up time. Model throughput, actual DRAM traffic and hardware saturation require their own measurements."
+    },
+    "fixtures": {
+      "20": {
+        "layer": 0,
+        "gu_type": 18,
+        "down_type": 20,
+        "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "gate": 1386491904,
+        "up": 1711166464,
+        "down": 913711104,
+        "blob_bytes": 2176000,
+        "file_identity": {
+          "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "dev": 40,
+          "ino": 2640848,
+          "bytes": 54817524224,
+          "mtime_ns": 1791009083688077826,
+          "ctime_ns": 1791009083692077878
+        },
+        "sha256": "4e09195c6c1760378dc8a44256726a2b372ae4a57699c2036d87c3eeca696164"
+      },
+      "42": {
+        "layer": 30,
+        "gu_type": 18,
+        "down_type": 42,
+        "shard": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "gate": 34012167296,
+        "up": 34336790656,
+        "down": 33775316096,
+        "blob_bytes": 1715200,
+        "file_identity": {
+          "path": "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "dev": 40,
+          "ino": 2640848,
+          "bytes": 54817524224,
+          "mtime_ns": 1791009083688077826,
+          "ctime_ns": 1791009083692077878
+        },
+        "sha256": "5bfb87a4ee18be5387d790a0fdb02ae5ec87c06c98b0406b479ff82173549356"
+      }
+    },
+    "metadata_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
+    "host_link_inputs": {
+      "files": {
+        "/usr/bin/x86_64-linux-gnu-ld.bfd": "e9ceb054c12207970f2726dfc07e9a66b411602748628baf27399f02a9bbb31b",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o": "667ff5f1edc931d44d1f2bb44d313907aa274bcc207c0beff71a398335f0d29f",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o": "9c8b2caad195193301ef072895dc89bea1d23371d4c19accd821debe27773063",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a": "d9376c55f97863a4e5fbb6c6beca2591b319bf786f3a7ca56da8964c5662171f",
+        "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so": "69a56a9993b7729b29b274e65016031c81f2397f176ed5ad44d59bd50425e0bd",
+        "/usr/lib/x86_64-linux-gnu/Scrt1.o": "9438d15c4bac893a0e3aad2c2c86ccbceb59d5872bd07101949f237ee1c92a8b",
+        "/usr/lib/x86_64-linux-gnu/crti.o": "077ccb6c68db1794da3ee262c4a16a3c6f8e902845dd0829110ad4b7065e5aa3",
+        "/usr/lib/x86_64-linux-gnu/crtn.o": "a2266079f95b84ccc2162ebbf279bcd78858a748aa1882e0bdb912316c76a58f",
+        "/usr/lib/x86_64-linux-gnu/libc.so": "fe2a4ce2930fc6b3966aa987fae808375446c8d3823b8c21792e991aad9c75df",
+        "/usr/lib/x86_64-linux-gnu/libc_nonshared.a": "3341391290ddd596521a61152b4e2612f4625cc85f737d875b918f6cfb2b2786",
+        "/usr/lib/x86_64-linux-gnu/libdl.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+        "/usr/lib/x86_64-linux-gnu/libm.so": "55de4a3e12e17c3e2b18eb95ee21b3f46a8893ea6cab68c0a1c3a5caaf32e6cf",
+        "/usr/lib/x86_64-linux-gnu/libmvec.so.1": "57329ee0018b8fd8f8e51af5f87c723b6ecdf04679f4493134beab0f45d58ec5",
+        "/usr/lib/x86_64-linux-gnu/libpthread.a": "f0a17a43c74d2fe5474fa2fd29c8f14799e777d7d75a2cc4d11c20a6e7b161c5",
+        "/usr/lib/x86_64-linux-gnu/libm.so.6": "fce00b6f25f459cf4ae0b7fae4257909a1a8a86f9149e7c029a5d617baf1ccd0",
+        "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33": "1fd75fe70354a416d75aef22bcae68c47bd25d20e2d0568c30b1a9838cf62f11",
+        "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "d93224d2b0dab4247598be683adca02f5cf00586f99c187579cd7e92058fb7cb",
+        "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
+        "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
+      },
+      "compiler_queries": [
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-prog-name=ld"
+          ],
+          "reported": "/usr/bin/ld",
+          "resolved": "/usr/bin/x86_64-linux-gnu-ld.bfd"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crtbeginS.o"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/crtbeginS.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crtendS.o"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/crtendS.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libgcc.a"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libgcc_s.so"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so",
+          "resolved": "/usr/lib/gcc/x86_64-linux-gnu/13/libgcc_s.so"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=Scrt1.o"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/Scrt1.o",
+          "resolved": "/usr/lib/x86_64-linux-gnu/Scrt1.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crti.o"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/crti.o",
+          "resolved": "/usr/lib/x86_64-linux-gnu/crti.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=crtn.o"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/crtn.o",
+          "resolved": "/usr/lib/x86_64-linux-gnu/crtn.o"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libc.so"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libc.so",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libc.so"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libc_nonshared.a"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libc_nonshared.a",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libc_nonshared.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libdl.a"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libdl.a",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libdl.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libm.so"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libm.so",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libm.so"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libmvec.so.1"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libmvec.so.1",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libmvec.so.1"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-fsycl",
+            "-print-file-name=libpthread.a"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libpthread.a",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libpthread.a"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-print-file-name=libm.so.6"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libm.so.6",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libm.so.6"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-print-file-name=libstdc++.so.6"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libstdc++.so.6",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.33"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-print-file-name=libgcc_s.so.1"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libgcc_s.so.1",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-print-file-name=libc.so.6"
+          ],
+          "reported": "/lib/x86_64-linux-gnu/libc.so.6",
+          "resolved": "/usr/lib/x86_64-linux-gnu/libc.so.6"
+        },
+        {
+          "argv": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-print-file-name=ld-linux-x86-64.so.2"
+          ],
+          "reported": "/usr/lib/gcc/x86_64-linux-gnu/13/../../../../lib64/ld-linux-x86-64.so.2",
+          "resolved": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2"
+        }
+      ],
+      "packages": [
+        "binutils-x86-64-linux-gnu 2.42-4ubuntu2.10",
+        "libc6-dev:amd64 2.39-0ubuntu8.9",
+        "libc6:amd64 2.39-0ubuntu8.9",
+        "libgcc-13-dev:amd64 13.3.0-6ubuntu2~24.04.1",
+        "libgcc-s1:amd64 14.2.0-4ubuntu2~24.04.1",
+        "libstdc++6:amd64 14.2.0-4ubuntu2~24.04.1"
+      ],
+      "scope": "Exact host linker,CRT,archive/linker-script and math-library bytes from official driver queries. No GPU runtime,safety key or old failure status is changed. CPU V2 also freezes all five shared-object/loader targets exposed by V1; V1 remains failed."
+    },
+    "tools": {
+      "/opt/intel/oneapi/compiler/2026.2/bin/icx": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
+      "/opt/intel/oneapi/compiler/2026.2/bin/icpx": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
+      "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
+      "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
+      "/usr/bin/git": "eb54b535467e0975c1284d4c4d08eea779aeb248a5d34b02e2ee171382e22201",
+      "/usr/bin/python3.12": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+    },
+    "machine": {
+      "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+      "kernel": "7.0.0-38-generic",
+      "affinity": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "cpuinfo_sha256": "b76b714d9c601674e41e94536b65107b50ec8428fcf179057a3bb14a8b17cb87"
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib",
+      "OMP_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONNOUSERSITE": "1",
+      "STRATA_IQ_SINGLE_EXACT": "0",
+      "STRATA_IQ3_PAIR": "0",
+      "STRATA_IQ3_PAIR_AUDIT": "0",
+      "STRATA_CPU_SERVICE": "0",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/cache"
+    },
+    "external_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/external-inputs.json",
+      "sha256": "c4b0738d8fc2fd92db075493973edfa05a3bae6de63d2ca0983b1d3138f395ca",
+      "files": 12176
+    },
+    "generated_expected": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/build/ggml/src/ggml-version.h": "9e45eee8391971371922f51b66925184609125d467c444744599f680b78edc92"
+    },
+    "configure": [
+      "/usr/bin/cmake",
+      "-S",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-dflash2-prefill-kv-stage/bench/sycl/cpu_roofline",
+      "-B",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/build",
+      "-G",
+      "Ninja",
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+      "-DCMAKE_C_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icx",
+      "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t",
+      "-DGGML_CCACHE=OFF",
+      "-DSTRATA_GGML_DIR=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011"
+    ],
+    "compile": [
+      "/usr/bin/cmake",
+      "--build",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/build",
+      "--target",
+      "cpu_iq_single_exact_test",
+      "cpu_iq3xxs_split_accum",
+      "cpu_service_pool_test",
+      "--parallel",
+      "4"
+    ],
+    "check_plan": [
+      [
+        "exact",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/build/cpu_iq_single_exact_test",
+        "--iq3xxs-split-accum"
+      ],
+      [
+        "pool",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/build/cpu_service_pool_test",
+        "0"
+      ]
+    ],
+    "order": [
+      {
+        "layout": 20,
+        "position": 0,
+        "arm": 0,
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/build/cpu_iq3xxs_split_accum",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "1386491904",
+          "1711166464",
+          "913711104",
+          "2176000",
+          "512",
+          "0",
+          "0",
+          "20"
+        ]
+      },
+      {
+        "layout": 20,
+        "position": 1,
+        "arm": 1,
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/build/cpu_iq3xxs_split_accum",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "1386491904",
+          "1711166464",
+          "913711104",
+          "2176000",
+          "512",
+          "1",
+          "1",
+          "20"
+        ]
+      },
+      {
+        "layout": 42,
+        "position": 0,
+        "arm": 0,
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/build/cpu_iq3xxs_split_accum",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "34012167296",
+          "34336790656",
+          "33775316096",
+          "1715200",
+          "512",
+          "0",
+          "0",
+          "42"
+        ]
+      },
+      {
+        "layout": 42,
+        "position": 1,
+        "arm": 1,
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/build/cpu_iq3xxs_split_accum",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "34012167296",
+          "34336790656",
+          "33775316096",
+          "1715200",
+          "512",
+          "1",
+          "1",
+          "42"
+        ]
+      },
+      {
+        "layout": 42,
+        "position": 2,
+        "arm": 1,
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/build/cpu_iq3xxs_split_accum",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "34012167296",
+          "34336790656",
+          "33775316096",
+          "1715200",
+          "512",
+          "1",
+          "2",
+          "42"
+        ]
+      },
+      {
+        "layout": 42,
+        "position": 3,
+        "arm": 0,
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/build/cpu_iq3xxs_split_accum",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "34012167296",
+          "34336790656",
+          "33775316096",
+          "1715200",
+          "512",
+          "0",
+          "3",
+          "42"
+        ]
+      },
+      {
+        "layout": 20,
+        "position": 2,
+        "arm": 1,
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/build/cpu_iq3xxs_split_accum",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "1386491904",
+          "1711166464",
+          "913711104",
+          "2176000",
+          "512",
+          "1",
+          "2",
+          "20"
+        ]
+      },
+      {
+        "layout": 20,
+        "position": 3,
+        "arm": 0,
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/build/cpu_iq3xxs_split_accum",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "1386491904",
+          "1711166464",
+          "913711104",
+          "2176000",
+          "512",
+          "0",
+          "3",
+          "20"
+        ]
+      },
+      {
+        "layout": 20,
+        "position": 4,
+        "arm": 0,
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/build/cpu_iq3xxs_split_accum",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "1386491904",
+          "1711166464",
+          "913711104",
+          "2176000",
+          "512",
+          "0",
+          "4",
+          "20"
+        ]
+      },
+      {
+        "layout": 20,
+        "position": 5,
+        "arm": 1,
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/build/cpu_iq3xxs_split_accum",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "1386491904",
+          "1711166464",
+          "913711104",
+          "2176000",
+          "512",
+          "1",
+          "5",
+          "20"
+        ]
+      },
+      {
+        "layout": 42,
+        "position": 4,
+        "arm": 0,
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/build/cpu_iq3xxs_split_accum",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "34012167296",
+          "34336790656",
+          "33775316096",
+          "1715200",
+          "512",
+          "0",
+          "4",
+          "42"
+        ]
+      },
+      {
+        "layout": 42,
+        "position": 5,
+        "arm": 1,
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/cpu-iq3xxs-split-accum-dual-layout-v1/build/cpu_iq3xxs_split_accum",
+          "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+          "34012167296",
+          "34336790656",
+          "33775316096",
+          "1715200",
+          "512",
+          "1",
+          "5",
+          "42"
+        ]
+      }
+    ],
+    "processes": [],
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false,
+    "budgets": {
+      "build_wall": 300,
+      "case_wall": 240,
+      "build_cpu": 1200,
+      "check_cpu": 60,
+      "bench_cpu": 180,
+      "text_cap": 1048576,
+      "file_cap": 16777216,
+      "total_cap": 402653184
+    },
+    "retention": "Temporary CPU-only build. Keep its three executables and archive through the named comparison. After selecting a terminal outcome, recover the committed source and recipe and retire its build.",
+    "project_inputs": {
+      "files": 209,
+      "aggregate_sha256": "050f1da631834dc5c6789806fef582d0c4ea112709277c1be9ffcfdfc53a3721"
+    },
+    "ggml_inputs": {
+      "files": 1376,
+      "aggregate_sha256": "42a9bbef65afb765d411387d418035051e24e5379daa12034fa116981b671a43"
+    }
   }
 }
