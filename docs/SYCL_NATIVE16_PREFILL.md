@@ -10929,6 +10929,15 @@ restore, target and DFlash2 handoff, and both short reset requests.
 Record long-state fingerprints and changes in expert work. Use clean
 timing and numerical/task evidence separately after this gate.
 
+The two closed writer pairs at `811d1c752` reduce warmed prompt time by
+1.066% and 0.148%. Their direct-store process rates are 978.160 and
+983.682 tok/s. The third pair and the final speed decision remain open.
+The 120,001-input controller at `0711ba6c0` verifies the committed
+120,000-row budget, inherited launch, generated short/long/short inputs
+and same native binary in a host-only preflight. The writer cohort
+retains all 841 original source inputs. No 120,001-input native run has
+started.
+
 After the closed timing bracket, split admission and host reader checks
 were committed, the five local capture directories below were removed.
 The benchmark consumes the committed plans and results. The exact native
