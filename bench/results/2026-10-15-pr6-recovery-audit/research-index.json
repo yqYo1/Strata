@@ -41185,5 +41185,38 @@
     "consumer": "Conditional: before a cohort study, set the practical threshold, fixed block count, interval method, and observer protocol; otherwise retain as reference.",
     "schedulable_now": false,
     "owners_closed": true
+  },
+  "dflash2-spec5-cache-phase-admission-20261125": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "source_commit": "b1b4fd85c6ead5e8fbd372146ca4ee01d5b03fb1",
+    "view_commit": "7b3326d4a9d9621bb24eb0d693233923fdeac471",
+    "native_source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-spec5-cache-phase-admission-20261125/report.md",
+    "report_sha256": "15a2aba56455ee33e3f163ab38fbf435306bcf9de58408498b66eafd0cb23b2d",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-spec5-and-low-accept-20261125.RWBXyv/review.json",
+    "review_sha256": "f31ec18e542b4da7e9b195fd958e0420ba872e73222800c68231a0402fa881cd",
+    "reviewer": "native Codex gpt-6-luna max",
+    "finding": "The report distinguishes seven available draft slots from verifier eligibility and the spec4 cache-loan gate. Width-specific timings, exact padded row spans and terminal accounting remain open.",
+    "consumer": "Enumerate exact T4/T5 verifier, head, padded-row, DFlash and rollback bounds from source, including terminal accounting. Dynamic rejection/commit and lease-lifetime proofs remain conditional on an authorized build boundary.",
+    "schedulable_now": true,
+    "owners_closed": true,
+    "eligible_next_scope": "Source-only T4/T5 bounds enumeration on the pinned projection. GPU and timing gates remain conditional."
+  },
+  "dflash2-low-acceptance-thinking-workload-methods-20261125": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "source_commit": "b1b4fd85c6ead5e8fbd372146ca4ee01d5b03fb1",
+    "view_commit": "7b3326d4a9d9621bb24eb0d693233923fdeac471",
+    "native_source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-low-acceptance-thinking-workload-methods-20261125/report.md",
+    "report_sha256": "2e0c38c118a7105eb108afe315a7427b675d240cfc42e877c5601298c168ae10",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-spec5-and-low-accept-20261125.RWBXyv/review.json",
+    "review_sha256": "f31ec18e542b4da7e9b195fd958e0420ba872e73222800c68231a0402fa881cd",
+    "reviewer": "native Codex gpt-6-luna max",
+    "finding": "The report identifies realistic untested workloads and preserves visible output. Classify each eligible request separately with at least 256 offered drafts and at most 0.40 acceptance. Apply the same rule to held-out requests.",
+    "consumer": "Correct the gate to require each eligible request to have ≥256 offers and ≤0.40 acceptance; then freeze a named deployment corpus and validate it in the native benchmark, with held-out requests checked per request.",
+    "schedulable_now": false,
+    "owners_closed": true
   }
 }
