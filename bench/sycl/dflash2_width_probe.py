@@ -13,7 +13,8 @@ import dflash2_width_admission as audit
 
 bank, basis, require = snapshot.bank, snapshot.basis, snapshot.require
 model = native.model
-KEY = "dflash2_width_admission_v1"
+KEY = "dflash2_width_admission_v2"
+STARTUP_REFUSAL = "7a79943bd195373c777548142db055b071c5b3e6"
 ROOT = bank.B / KEY.replace("_", "-")
 TEST = bank.P / "bench/sycl/test_dflash2_width_admission.py"
 ORDER = ("host", "4", "5")
@@ -21,7 +22,7 @@ OUTPUT = 32
 SLOTS = "1024"
 CHUNK = "1024"
 NATIVE_PATHS = (
-    "src/program/generate.cpp", "src/core/verify.cpp", "src/core/expert_source.cpp",
+    "src/program/generate.cpp", "src/core/verify.cpp", "src/core/expert_source.cpp", "src/core/native_head.cpp",
     "include/strata/core/cache_scratch_lease.hpp", "include/strata/core/verify_window_policy.hpp",
     "include/strata/kernels/verify_kernels.hpp", "include/strata/kernels/cpu/expert.hpp",
     "src/kernels/sycl/native_mmvq.cpp",
@@ -32,7 +33,7 @@ CONTROLLERS = (
 )
 OBSERVER = dict(
     STRATA_TRACE="1", STRATA_SYCL_Q6_ROUTE_AUDIT="1", STRATA_SYCL_CACHE_LOAN_AUDIT="1",
-    STRATA_SYCL_CACHE_SCRATCH_LEASE="0", STRATA_PREFILL_RELEASE_HEADS="0",
+    STRATA_SYCL_CACHE_SCRATCH_LEASE="0", STRATA_PREFILL_RELEASE_HEADS="1",
     STRATA_PREFILL_RELEASE_MTP_EXPERTS="0", STRATA_SYCL_DECODE_Q6_DPAS_HEAD="1",
 )
 HOST_LIMITS = dict(wall=60, cpu=30, rss_cap=512 << 20, text_cap=64 << 10,
@@ -40,6 +41,11 @@ HOST_LIMITS = dict(wall=60, cpu=30, rss_cap=512 << 20, text_cap=64 << 10,
 
 
 def inputs(revision):
+    refused = bank.previous.historic(STARTUP_REFUSAL, "dflash2_width_admission_v1_startup_refusal")
+    require(refused["direct_child_reaped"] and refused["session_empty"] and not refused["fresh_faults"]
+            and refused["head_release"] == refused["cache_scratch_lease"] == "0"
+            and not refused["initial_gate_passed"] and not refused["native_generation_executed"],
+            "preserve the failed initialization and verify physical process closure")
     base = snapshot.baseline()
     selected = base["snapshot_arm"]
     image = selected["binary"]
@@ -81,6 +87,8 @@ def inputs(revision):
         case_env = snapshot.confidence.environment(base, dict(root=str(root), arm="full"))
         env = model.native_environment(base, dict(case_env, **OBSERVER))
         require(env.get("STRATA_COMMIT_SYNC") == "1" and env.get("STRATA_WATCHDOG_S") == "240"
+                and env.get("STRATA_SYCL_DECODE_Q6_DPAS_HEAD") == env.get("STRATA_PREFILL_RELEASE_HEADS") == "1"
+                and env.get("STRATA_SYCL_CACHE_SCRATCH_LEASE") == "0"
                 and env.get("STRATA_SYCL_DECODE_Q6_COLUMNS") == "1"
                 and env.get("STRATA_SYCL_DECODE_Q6_CENTERING", "0") == "0"
                 and env.get("STRATA_SYCL_DECODE_Q6_NATIVE_HALF", "0") == "0",
@@ -99,14 +107,16 @@ def inputs(revision):
     require(normalized[0] == normalized[1], "another native setting differs between widths")
     plan = dict(
         source_commit=revision, inputs=dict(files=len(pins), sha256=bank.signature(pins)),
-        native_sources=native_sources, **selected, boot=base["boot"], driver=base["driver"],
+        native_sources=native_sources, previous_startup_refusal=STARTUP_REFUSAL,
+        **selected, boot=base["boot"], driver=base["driver"],
         runtime_manifest=base["runtime_manifest"], model_assets_sha256=bank.signature(base["model_assets"]),
         validation=base["native_validation_probe"], drafter_assets=base["dflash2_assets"],
         request=dict(ids=ids, output=OUTPUT, wire_sha256=model.restore.signature_bytes(model.wire(ids, OUTPUT))),
         order=list(ORDER), host=dict(command=host_argv, environment_sha256=bank.signature(host_env), limits=HOST_LIMITS),
         cases=cases, native_limits=model.LIMITS,
         scope="Run host accounting checks, then one fresh 82-input/32-output native request per width. "
-              "Use spare VRAM via the same smaller prefill chunk and expert cache in both arms. No loans. "
+              "Use the same smaller prefill chunk and expert cache in both arms. "
+              "Keep cache scratch borrowing off and enable the canonical head initialization prerequisite. "
               "Require true full-width replays after the first anchor, complete commits, validated head "
               "dispatch, normal child exit and no new Xe fault. Stop on first failure. Diagnostic only.",
     )
