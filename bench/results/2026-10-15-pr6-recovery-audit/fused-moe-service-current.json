@@ -659444,13 +659444,13 @@
       ],
       "work_sha256": "e391f1896d58e72ca3e747e5f458d728e61c6be3a88e033544c09d199d39ead0"
     },
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "04e2e4538bdd9936125a1db3524d1de488e6cea7",
     "host_passed": true,
     "ownership_closed": true,
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "plans": [
       {
         "index": 0,
@@ -660517,6 +660517,172 @@
         },
         "passed": true,
         "arm": "copy"
+      },
+      {
+        "index": 5,
+        "read": 118785,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "native_identity": {
+          "pid": 4070310,
+          "start_ticks": 386305752,
+          "sid": 4070243
+        },
+        "request_routes_checked_before_continue": 3,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 4070310,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "free_bytes": 4320702464,
+            "arena_bytes": 1180698624,
+            "allocation_limit": 10132807680,
+            "logical_copy_bytes": 0,
+            "fixed_with_headroom": 4158555136,
+            "free_bytes_beyond_reserve": 162147328,
+            "requested_bank_H2D_bytes": 38726553600,
+            "uploads": 18974,
+            "jobs": 23978,
+            "dequants": 18974,
+            "windows": 48,
+            "maximum_rows": 118784,
+            "kv": {
+              "reloaded_pages": 645120,
+              "reused_pages": 1935360
+            },
+            "tap_vram_bytes": 845776220,
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              13,
+              15
+            ]
+          },
+          {
+            "free_bytes": 4239466496,
+            "arena_bytes": 1180698624,
+            "allocation_limit": 10132807680,
+            "logical_copy_bytes": 0,
+            "fixed_with_headroom": 4158555136,
+            "free_bytes_beyond_reserve": 80911360,
+            "requested_bank_H2D_bytes": 38591923200,
+            "uploads": 18902,
+            "jobs": 23912,
+            "dequants": 18902,
+            "windows": 48,
+            "maximum_rows": 118784,
+            "kv": {
+              "reloaded_pages": 645120,
+              "reused_pages": 1935360
+            },
+            "tap_vram_bytes": 845776220,
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              13,
+              15
+            ]
+          },
+          {
+            "free_bytes": 4239458304,
+            "arena_bytes": 1180698624,
+            "allocation_limit": 10132807680,
+            "logical_copy_bytes": 0,
+            "fixed_with_headroom": 4158555136,
+            "free_bytes_beyond_reserve": 80903168,
+            "requested_bank_H2D_bytes": 38600499200,
+            "uploads": 18907,
+            "jobs": 23923,
+            "dequants": 18907,
+            "windows": 48,
+            "maximum_rows": 118784,
+            "kv": {
+              "reloaded_pages": 645120,
+              "reused_pages": 1935360
+            },
+            "tap_vram_bytes": 845776220,
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              13,
+              16
+            ]
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 129903.2,
+            "prompt_tps": 914.4,
+            "ttft_s": 130.117,
+            "total_s": 132.314,
+            "generated_tokens": 24,
+            "request_sha256": "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 119035.0,
+            "prompt_tps": 997.9,
+            "ttft_s": 119.253,
+            "total_s": 121.192,
+            "generated_tokens": 24,
+            "request_sha256": "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 119103.8,
+            "prompt_tps": 997.3,
+            "ttft_s": 119.332,
+            "total_s": 121.388,
+            "generated_tokens": 24,
+            "request_sha256": "f952766eccc6720b841e5091c55231ae6d505e82bd53259c17062b9a19a2515f",
+            "drafts_offered": 16,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 119069.4,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "arm": "direct"
       }
     ],
     "budgets": {
@@ -660559,6 +660725,103 @@
         "passed": true
       }
     ],
+    "decision": {
+      "process_times": [
+        {
+          "arm": "copy",
+          "first_ms": 134985.7,
+          "first_ttft_s": 135.258,
+          "warm_ms": 125296.55,
+          "warm_pp": 948.0308915129746,
+          "warm_ttft_s": 125.583
+        },
+        {
+          "arm": "direct",
+          "first_ms": 136157.0,
+          "first_ttft_s": 136.463,
+          "warm_ms": 124674.35,
+          "warm_pp": 952.7621359164896,
+          "warm_ttft_s": 124.934
+        },
+        {
+          "arm": "direct",
+          "first_ms": 129392.3,
+          "first_ttft_s": 129.687,
+          "warm_ms": 119119.45000000001,
+          "warm_pp": 997.1923141015174,
+          "warm_ttft_s": 119.375
+        },
+        {
+          "arm": "copy",
+          "first_ms": 130589.9,
+          "first_ttft_s": 130.812,
+          "warm_ms": 119641.25,
+          "warm_pp": 992.8431874458015,
+          "warm_ttft_s": 119.87049999999999
+        },
+        {
+          "arm": "copy",
+          "first_ms": 130603.9,
+          "first_ttft_s": 130.827,
+          "warm_ms": 122488.9,
+          "warm_pp": 969.7613416399364,
+          "warm_ttft_s": 122.71350000000001
+        },
+        {
+          "arm": "direct",
+          "first_ms": 129903.2,
+          "first_ttft_s": 130.117,
+          "warm_ms": 119069.4,
+          "warm_pp": 997.6114770041673,
+          "warm_ttft_s": 119.29249999999999
+        }
+      ],
+      "direct_over_copy": [
+        {
+          "first_ms": 1.008677215438376,
+          "first_ttft_s": 1.0089089000280944,
+          "warm_ms": 0.995034180909211,
+          "warm_ttft_s": 0.9948321030712756
+        },
+        {
+          "first_ms": 0.9908293060948818,
+          "first_ttft_s": 0.9913998715714155,
+          "warm_ms": 0.99563862798157,
+          "warm_ttft_s": 0.9958663724602801
+        },
+        {
+          "first_ms": 0.9946349228468675,
+          "first_ttft_s": 0.9945729856986707,
+          "warm_ms": 0.9720831846804078,
+          "warm_ttft_s": 0.9721220566604325
+        }
+      ],
+      "warmed_PP": {
+        "copy": [
+          948.0308915129746,
+          992.8431874458015,
+          969.7613416399364
+        ],
+        "direct": [
+          952.7621359164896,
+          997.1923141015174,
+          997.6114770041673
+        ]
+      },
+      "median_warmed_PP": {
+        "copy": 969.7613416399364,
+        "direct": 997.1923141015174
+      },
+      "repeated_warm_gain": true,
+      "repeated_1000": {
+        "copy": false,
+        "direct": false
+      },
+      "requested_D2D_bytes_removed": 116769423360,
+      "full_context_qualified": false,
+      "sustained_decode_qualified": false,
+      "adopted": false
+    },
     "source_inputs": {
       "files": 845,
       "sha256": "1eb73432ad991ebe7f871a06a941b36fa68475ab6b4f27827da98f6a6463eb58"
