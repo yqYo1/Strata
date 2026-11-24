@@ -5148,6 +5148,7 @@ class ModelAliases(unittest.TestCase):
         cls.svc = Service(MockEngine(tok, "</think>\n\nok", max_context=CTX), tok,
                           ChatTemplate(ROOT / "serve/chat_template.jinja"), model_name="qwen3.8-flash-next-iq3_xxs")
         cls.svc.set_aliases(["qwen", "local-model", "qwen", " ", "qwen3.8-flash-next-iq3_xxs"])
+        cls.svc.strict_model = False
         cls.httpd = serve(cls.svc, port=0)
         cls.base = f"http://127.0.0.1:{cls.httpd.server_address[1]}"
 
@@ -5199,6 +5200,7 @@ class ModelAliases(unittest.TestCase):
     def test_requests_are_answered_under_the_alias(self):
         msgs = [{"role": "user", "content": "hi"}]
         for asked, want in (("qwen", "qwen"), ("local-model", "local-model"),
+                            ("qwen3.8-flash-next", "qwen3.8-flash-next-iq3_xxs"),
                             ("qwen3.8-flash-next-iq3_xxs", "qwen3.8-flash-next-iq3_xxs"),
                             ("something-else", "qwen3.8-flash-next-iq3_xxs")):    # still served, as before
             with self.subTest(asked=asked):
@@ -5210,6 +5212,31 @@ class ModelAliases(unittest.TestCase):
                 self.assertEqual(first["model"], want)
                 out = json.loads(self.post("/v1/messages", {"model": asked, "messages": msgs, "max_tokens": 8}))
                 self.assertEqual(out["model"], want)
+
+    def test_wrong_model_requests(self):
+        paths = ("/v1/chat/completions", "/v1/messages", "/v1/responses")
+        for strict, asked in ((False, "qwen3.8-flash-next-coder"), (True, "some-placeholder"),
+                              (True, "qwen3.8-flash-next")):
+            with mock.patch.object(self.svc, "strict_model", strict):
+                for path in paths:
+                    with self.subTest(strict=strict, asked=asked, path=path):
+                        with self.assertRaises(urllib.error.HTTPError) as raised:
+                            self.post(path, {"model": asked})
+                        with raised.exception as response:
+                            self.assertEqual(response.code, 404)
+                            error = json.load(response)["error"]
+                            self.assertEqual(error["code"], "model_not_found")
+                            self.assertEqual(error["param"], "model")
+
+    def test_strict_model_accepts_alias_and_loaded_id(self):
+        with mock.patch.object(self.svc, "strict_model", True):
+            for name in (" QWEN3.8-FLASH-NEXT-IQ3_XXS ", "LOCAL-MODEL"):
+                self.assertIsNone(self.svc.check_model({"model": name}))
+            self.assertIsNone(self.svc.check_model({}))
+            out = json.loads(self.post("/v1/chat/completions", {
+                "model": "local-model", "messages": [{"role": "user", "content": "hi"}], "max_tokens": 8,
+            }))
+            self.assertEqual(out["model"], "local-model")
 
     def test_without_aliases_nothing_changes(self):
         tok = ByteTokenizer()
