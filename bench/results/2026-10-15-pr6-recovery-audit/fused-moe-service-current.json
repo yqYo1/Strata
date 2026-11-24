@@ -656562,7 +656562,7 @@
       ],
       "scope": "Check actual 120001-input DFlash2 window admission in independent traced processes. Hold expert bank128, H2D demand policy, copied attention, core placement, canonical released target head and KV retention fixed. Require all-GPU BF16 rows, 96/48 windows, checked retirement and unaltered short reset; record long fingerprints. This is capacity and state-handoff evidence. Use separate clean process repetitions and appropriate numerical/task checks before making speed or adoption decisions."
     },
-    "stage": "partial",
+    "stage": "failed",
     "complete": false,
     "passed": false,
     "active": false,
@@ -656700,6 +656700,61 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "window16": {
+        "complete": false,
+        "host_probe_accepted": false,
+        "requests": [
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          },
+          {
+            "prompt": 120001,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 24,
+            "finish": "length"
+          },
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          }
+        ],
+        "info": {
+          "context": "262144",
+          "spec": "4",
+          "kv": "int8",
+          "kv_resident": "20480",
+          "expert_slots": "1256"
+        },
+        "native_exit_code": 0,
+        "native_identity": {
+          "pid": 3591403,
+          "start_ticks": 385197794
+        },
+        "error": "RuntimeError('window request did not admit the expected bank, memory bounds, or complete GPU windows')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
       }
     }
   }
