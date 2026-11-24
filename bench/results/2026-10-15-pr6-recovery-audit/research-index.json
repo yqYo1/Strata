@@ -40486,5 +40486,43 @@
     "classification": "knowledge_collection",
     "finding": "Hashes match. The cited papers and Vulkan specification support the method analogies. The 122880-row and 587 MB figures are planning inputs, not measured bottlenecks. On this Arc hybrid, retrieval is practical only after owner-level peak allocation shows the FP32 tail is limiting and row-group last writers are known.",
     "consumer": "Retrieve only if the measured per-owner footprint identifies the FP32 tail as limiting admission and the final writer per row group is observable. Capture row/expert census, drain lifetime, cache and copy counts before selecting a bounded alternative."
+  },
+  "dflash2-mode16-attention-input-bank-20261124": {
+    "source_commit": "9145bd2c69806570a8dd77e38d6c4feedbdb2802",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-mode16-attention-input-bank-20261124/report.md",
+    "report_sha256": "c4f37d0285e05c11eb8554d83e77735e5c21df96c47c743687896d14176bc34c",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-input-bank-and-xe2-counters-20261124-native-review/review.json",
+    "review_sha256": "333d2e4e9e8e43a50fee2a755e9917faf508a0439735f63d5136612238870f39",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_44b42cc98a5d, ctx_90957300ece6",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_message_report_hash_matches": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "classification": "decision_support",
+    "finding": "Report and relevant source-view hashes match. At 122881 inputs, the 122880 residual rows form 15 full chunks. Layers 2–47 can borrow each chunk (up to 690 spans) if the BF16/device, exact bank-owner and pointer, in-order queue, bounds, and scratch non-overlap checks pass; layer 0 and PLE layer 1 are excluded. Route evidence has no reader counters, so it proves neither borrowing nor reduced input copies. Reject on guard or drain failure, state/output/numerical mismatch, or stale tap/verifier evidence. The model has a read-on,",
+    "consumer": "After the writer comparison, hold copied output fixed and check 122881 input, bank32, mode16. Require actual eligibility and borrowed counts by layer, unchanged expert work, short/long/short state, taps, verifier and checked retirement. The current copy arm requests 115762790400 GPU-local input bytes per prompt. Compare combined selectors only after the independent arms have eligible results."
+  },
+  "xe2-dpas-memory-counter-attribution-20261124": {
+    "source_commit": "9145bd2c69806570a8dd77e38d6c4feedbdb2802",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/xe2-dpas-memory-counter-attribution-20261124/report.md",
+    "report_sha256": "e5267590ed9e9f7758c72ee6ebad06e2b3496350f384f4ad3f8090806fc38699",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/dflash2-input-bank-and-xe2-counters-20261124-native-review/review.json",
+    "review_sha256": "333d2e4e9e8e43a50fee2a755e9917faf508a0439735f63d5136612238870f39",
+    "stage": "native_reviewed",
+    "worker": "Orca gpt-6-luna medium, task_dc79f4eb2980, ctx_e0d2353cbd27",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_message_report_hash_matches": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "classification": "knowledge_collection",
+    "finding": "The references are primary vendor documentation and repositories; NVIDIA's guide is used for method analogy, not Xe2 metric names or ceilings. Current requested H2D and logical-copy totals are not measured PCIe or DRAM traffic. Xe2 tool/metric availability and permissions remain unknown, as do per-kernel versus global scope, XMX normalization and denominator, and whether L3/GTI values are bytes or rates with which interval.",
+    "consumer": "Retrieve when the confirmed fast route still has reproducible per-stage device time after host and queue gaps are accounted for. Check actual Xe2 metric availability, units, XMX normalization and per-kernel scope before planning a hardware limit comparison."
   }
 }
