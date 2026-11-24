@@ -40012,5 +40012,59 @@
     "worker_read_only": true,
     "owners_closed": true,
     "next_scope": "Reuse the original local split evidence in the controller. Fresh worker Tasks use the explicit Run ID for a read-only inbox peek when needed."
+  },
+  "niko-0220-b570-component-boundaries-20261124": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "schedulable_now": false,
+    "task": "task_225c4ded8489",
+    "dispatch": "ctx_f07d3af1946c",
+    "source_commit": "49cc607ff7a41c3a3ebe7800c8ab63d8e8a9c8a1",
+    "upstream_commit": "6a6db7ff58c283cf28d2b913404b5fa31a767eaa",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/niko-0220-b570-component-boundaries-20261124/report.md",
+    "report_sha256": "e312ffa2a4cda03b4e232f0d9213a2724248c78db1c2ef3e84f2408fc16a309a",
+    "report_bytes": 10861,
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/niko-0220-b570-component-boundaries-20261124-native-review/review.json",
+    "review_sha256": "a10a04e3a3d2405759109ab0b9d5ad8e72f9275e3f6ee38a1f80858036d686e8",
+    "protected_inputs_sha256": "3d82dfff488fe9d18f1620b0bd5e7699ec982c3603979d7b8e97dbc6a9d9d697",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_ipc_verified": true,
+    "finding": "BMG grouped prefill, GDN and CPU SIMD are separate candidate routes. The first pasted source view lacked local native reachability evidence.",
+    "consumer": "Use the measured prefill cost and actual grouped expert rows to choose one component. Direct BMG is limited to 5 compatible format pairs out of 48 layers before applying the row and layout guards.",
+    "retirement": {
+      "files": 32,
+      "bytes": 1055305,
+      "inventory_sha256": "3d62c198f2a6004a8986860df874466848a5cfd7115764e9e3a053129daab549"
+    }
+  },
+  "niko-0220-shared-function-boundaries-20261124": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "schedulable_now": false,
+    "task": "task_3c2d097ca2df",
+    "dispatch": "ctx_a17f8e8cb2c3",
+    "source_commit": "49cc607ff7a41c3a3ebe7800c8ab63d8e8a9c8a1",
+    "upstream_commit": "6a6db7ff58c283cf28d2b913404b5fa31a767eaa",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/niko-0220-shared-function-boundaries-20261124/report.md",
+    "report_sha256": "fc717b9102a460454be34ea388ad2c0201d10b2417f43a626022e50944235b96",
+    "report_bytes": 10988,
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/review/niko-0220-shared-function-boundaries-20261124-native-review/review.json",
+    "review_sha256": "f904b3c05fa9a7979f4267ddcaa3fe0cf5db4be9f8b375dca003c2dba558f1f0",
+    "protected_inputs_sha256": "f0677b3b379318ac13546e492582715c73b1a340986976ae2108cd0180c245c0",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_ipc_verified": true,
+    "finding": "6bd3485da adds created and owned_by. Existing retrieval, context and alias boundaries need coverage beyond those two fields.",
+    "consumer": "Port shared list and single-model retrieval with the three context fields as one host API unit. Test loaded and unloaded entries, aliases, image entries, unknown IDs, auth and stable created. Treat model-rejection policy and recovery as separate work.",
+    "retirement": {
+      "files": 33,
+      "bytes": 1342688,
+      "inventory_sha256": "145cace2793f422af5d7ac2fa6c3af0cf29f6ce861ec034430e28f08af05414e"
+    }
   }
 }
