@@ -10747,13 +10747,18 @@ establish worker utilization or a hardware throughput ceiling.
 
 Both retained V2 and DFlash2 KV-stage recipes compile
 `STRATA_CPU_SERVICE_PROFILE`. The measured bracket kept per-worker and
-job-census observers disabled. Check the bindings for adaptive widths
-one through four, unique CPU jobs, actual fixed cache membership and
-overhead before selecting a CPU leaf change. Reuse the existing versioned
-worker records to distinguish GU, hidden quantization and Down service.
-Keep overlapping worker CPU totals separate from caller-wall intervals.
-The long code result holds the benchmark body and acceptance class fixed;
-qualify the strong and weak workloads and current decoder on later engines.
+job-census observers disabled. The retained V2 and KV-stage builds have
+identical pool and version-two leaf producer inputs. Their relevant snapshot and footer call sites match
+in the actual build projections. The next attribution draft is
+`/tmp/strata-dflash2-code-worker-leaves.54vtdsua/cpu-leaf-observer.patch`
+with SHA-256 `230858925d1ea0c4c0044164956fb6fafca4056de138c049781dd6cc04895d67`.
+It reuses the exact regular-code body and four warmups, the fixed 1,256
+expert slots, five workers and width at most four. The two pairs reverse
+the clean and observer order. Verify the actual current-build code route
+and match the request, expert and format/width counters before attributing
+GU, hidden quantization or Down service. Keep summed concurrent worker CPU
+time separate from caller-wall latency. This draft awaits execution.
+Sustained strong and weak acceptance measurements remain separate.
 
 #### DFlash2 KV stage retention outside the tap layers
 
@@ -11080,6 +11085,14 @@ differences produce adjacent slopes for this route; use additional
 lengths and held-out samples before fitting a time model. The capacity
 traces cover the short state handoff with 32 outputs. Adopt a faster
 route only after clean timing and the existing model gates.
+
+The 122,881-input direct-writer follow-up is prepared at
+`/tmp/strata-dflash2-122881-direct.smuq2b_5/long-direct-admission.patch`
+with SHA-256 `06668777c404cea4073ffd76bad4f46e310d2419734d3efed16b42d19d5a02f8`.
+It shares the long-request reader and reuses the copy control at
+`bb974ff52`. It changes the writer only and checks all 720 stores,
+expert work, target fingerprints, KV, taps, refill and the first verifier
+window. The draft applies to the benchmark source and awaits execution.
 
 The same-build admission in
 [dflash2_prefill_window_direct.py](../bench/sycl/dflash2_prefill_window_direct.py)
