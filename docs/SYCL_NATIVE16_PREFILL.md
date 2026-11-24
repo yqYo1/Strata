@@ -10885,9 +10885,17 @@ store comparison motivates this test with three warm gains.
 
 The retained DFlash2 build's traced attention-store fixture completes four
 cases and checks 168,417,280 BF16 values. It rejects overlapping, empty and
-out-of-range spans and exits normally with no fresh Xe fault. The next gate
-compares actual long-input copy and direct paths with the same weights,
-cache refill and DFlash2 decode work.
+out-of-range spans and exits normally with no fresh Xe fault.
+`dflash2_prefill_direct_store_admission_v2` closes both 90,114-input arms
+in independent processes on this build. All 90,113 batched rows stay in
+VRAM. Both arms restore 1,124 expert slots, reuse 1,216,512 KV prefix pages
+and match active state, generated output and draft counters across the
+short/long/short sequence. The direct arm executes all 576 stores with
+zero requested attention-output copies. The copy arm requests
+88,584,683,520 GPU-local bytes. Both exit normally with no fresh Xe fault.
+The single traced batch in each arm takes 109.716 s with copying and
+107.873 s with direct stores. These clocks are for admission. Use three
+counterbalanced clean process pairs at 117,489 inputs to measure speed.
 Retired 59 files and 12606542 bytes from the closed trace's `long`
 directory after `3c156ee10`. The inventory SHA-256 is
 `57ea8657f9544df7e442461a2a2f85952d0e6d6bc8b063eb10f92ec60db29767`.

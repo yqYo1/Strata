@@ -654161,9 +654161,9 @@
       "split_boundary_reference": "77ce8ac63ea6039fd3c9195582eaeaca14b9ed0a",
       "scope": "Copy then direct in independent traced processes. Require matching all-GPU split geometry, per-layer retained KV, cache refill, active state and short/long/short DFlash2 outputs. Stop on any changed input, ownership, route, runtime error, or fault. This is admission; the subsequent clean benchmark measures prompt speed."
     },
-    "stage": "partial",
-    "complete": false,
-    "passed": false,
+    "stage": "closed",
+    "complete": true,
+    "passed": true,
     "active": false,
     "ownership_closed": true,
     "outcomes": {
@@ -654298,7 +654298,143 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "direct": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "requests": [
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          },
+          {
+            "prompt": 90114,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 25,
+            "finish": "length"
+          },
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          }
+        ],
+        "info": {
+          "context": "262144",
+          "spec": "4",
+          "kv": "int8",
+          "kv_resident": "20480",
+          "expert_slots": "1256"
+        },
+        "native_exit_code": 0,
+        "native_identity": {
+          "pid": 3327947,
+          "start_ticks": 384588510
+        },
+        "validation": {
+          "pid": 3327947,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "split": {
+          "store": {
+            "pieces": 576,
+            "direct": 576,
+            "copy_bytes": 0,
+            "gpu_rows": 90113,
+            "host_rows": 0,
+            "window_mode": 10,
+            "maximum_rows": 90113
+          },
+          "tail_bytes": 251668480,
+          "extra_bytes": 251668736,
+          "prefill_slots": 128,
+          "split_guard_checked": true,
+          "uploads": 23737
+        },
+        "states": [
+          {
+            "L": "114",
+            "gdn": "4f5ea7ff8b50a528",
+            "ple": "658c6b4cf144dfa8",
+            "tail": "60845c54dfa17711",
+            "pooled": "cd5a74ed9881eb7e",
+            "kv": "928417f78152ab15",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          },
+          {
+            "L": "90146",
+            "gdn": "844077d3ad380e75",
+            "ple": "8a355030946322a3",
+            "tail": "0753a45c46001cb3",
+            "pooled": "9fa16f338835f201",
+            "kv": "ac031a66523270a6",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          },
+          {
+            "L": "114",
+            "gdn": "4f5ea7ff8b50a528",
+            "ple": "658c6b4cf144dfa8",
+            "tail": "60845c54dfa17711",
+            "pooled": "cd5a74ed9881eb7e",
+            "kv": "928417f78152ab15",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          }
+        ],
+        "loan": [
+          1,
+          132,
+          1124
+        ],
+        "tap_rows": [
+          81,
+          2046,
+          81
+        ],
+        "kv_stage": {
+          "reloaded_pages": 405504,
+          "reused_pages": 1216512,
+          "prefix_H2D_calls": 132,
+          "mirror_D2H_calls": 624,
+          "mirror_D2H_bytes": 1141911936,
+          "requested_prefix_H2D_bytes": 1712848896
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
+    },
+    "comparison": {
+      "matched": true,
+      "requested_D2D_bytes_removed": 88584683520
     }
   }
 }
