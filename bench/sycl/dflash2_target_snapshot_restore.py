@@ -12,7 +12,7 @@ import dflash2_target_snapshot_build as build
 from engine_once import native_environment
 
 bank, basis, require = build.bank, physical.basis, build.require
-KEY = 'dflash2_target_snapshot_restore_v1'
+KEY = 'dflash2_target_snapshot_restore_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 ORDER = ('host', 'short-copy', 'near-copy')
@@ -108,7 +108,7 @@ def experiment():
                                   r'^strata mtp: .*loaded', log, re.M), 'runtime or snapshot error')
         parked = requests[0]['prompt']
         extent, source = ctx.capacity.one(log, r'^strata serve: conversation cache: restored '
-            r'(\d+) \((live|checkpoint)\)', 'the exact live snapshot')
+            r'(\d+) tokens \((live|checkpoint)\)', 'the exact live snapshot')
         require(int(extent) == parked and source == 'live' and requests[2]['reused'] == parked
                 and requests[2]['read'] == 8209, 'prompt fell through to a fresh read')
         line = ctx.capacity.one(log, r'^strata serve: SNAPSHOT_VERIFY (.*)$', 'target snapshot readback')
