@@ -659227,5 +659227,502 @@
       },
       "passed": true
     }
+  },
+  "dflash2_prefill_window_writer_speed_v1": {
+    "configuration": {
+      "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+      "args": [
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-context",
+        "262144",
+        "--kv",
+        "int8",
+        "--kv-resident",
+        "20480",
+        "--expert-cache",
+        "1256",
+        "--expert-profile",
+        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--pcie-frac",
+        "0",
+        "--adapt-swaps",
+        "0",
+        "--conversation-cache-mib",
+        "0",
+        "--prompt-cache",
+        "0",
+        "--turn-token",
+        "-1",
+        "--suffix-draft",
+        "0",
+        "--greedy",
+        "--no-spec-split",
+        "--short-read",
+        "128",
+        "--spec",
+        "4",
+        "--prefill",
+        "8192",
+        "--vram-reserve-mib",
+        "1500",
+        "--no-coupled-draft",
+        "--no-token-graph",
+        "--prefill-strategy",
+        "throughput",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt"
+      ],
+      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq3_s-primary",
+      "aliases": [
+        "strata"
+      ],
+      "host": "127.0.0.1",
+      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-model-entry-arm1-v1/engine.stderr",
+      "engine_silence_s": 480,
+      "parallel": 1,
+      "open_browser": false,
+      "env": {},
+      "family": "qwen",
+      "backend": "sycl"
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-speed-v2/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "template": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "python_contract": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v4/runtime.json",
+      "sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
+      "files": 3597,
+      "bytes": 270975442
+    },
+    "python_selected": {
+      "workspace_venv": false,
+      "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+      "file": {
+        "realpath": "/usr/bin/python3.12",
+        "dev": 29,
+        "ino": 774532,
+        "bytes": 8020928,
+        "mtime_ns": 1788171506000000000,
+        "ctime_ns": 1790581701420197973,
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      }
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
+      "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
+      "bytes": 26546256
+    },
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "native_build_sha256": "927e584bfaa1701d751fc28b3c2781521b8cf1992cfc701bdfc1da25be586162",
+    "ordinary_control": {
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-ordinary-bank-comparison-v1/1",
+      "environment_sha256": "5990eab9654303568db3c00994aafcc93671f5e549f6420fdaa10aae86d3999b"
+    },
+    "correctness_references": [
+      "1697efe2f16cd35927c3ab320304633fa395f5b4",
+      "d5d60596f40225727797ab9d18e630a1883ce1de"
+    ],
+    "speed_reference": "297adab4dfbd5da2d3a433962174238badd255f8",
+    "dflash2_gate": "6aa1c2b52f16c194d6869df56ed31a0ad99fefbe",
+    "dflash2_assets": {
+      "/home/yayoi/.local/share/strata-sycl/dflash2/qwen3.8-flash-next-dflash2.q4_0.pack": "cda40d62d0eb8f37ed6e272142641a1d2f0de4a32f9e14d0416e7a71534849f1",
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin": "b1e1d3a7a9e4bf862dcd5923ce661fb59bbd07907e594df5cf86a62ac235cb91"
+    },
+    "validated_dflash2_args": [
+      "--pack",
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+      "--native",
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "--max-context",
+      "262144",
+      "--kv",
+      "int8",
+      "--kv-resident",
+      "20480",
+      "--expert-cache",
+      "1256",
+      "--expert-profile",
+      "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+      "--expert-cache-per-layer",
+      "--pool-workers",
+      "5",
+      "--pcie-frac",
+      "0",
+      "--adapt-swaps",
+      "0",
+      "--conversation-cache-mib",
+      "0",
+      "--turn-token",
+      "-1",
+      "--suffix-draft",
+      "0",
+      "--greedy",
+      "--no-spec-split",
+      "--short-read",
+      "128",
+      "--prefill",
+      "8192",
+      "--vram-reserve-mib",
+      "1500",
+      "--no-coupled-draft",
+      "--no-token-graph",
+      "--prefill-strategy",
+      "throughput",
+      "--spec",
+      "4",
+      "--prompt-cache",
+      "1",
+      "--prompt-cache-every",
+      "0",
+      "--draft",
+      "dflash2",
+      "--draft-model",
+      "/home/yayoi/.local/share/strata-sycl/dflash2/qwen3.8-flash-next-dflash2.q4_0.pack",
+      "--draft-fallback",
+      "none",
+      "--mtp-draft-vocab",
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin",
+      "--draft-conf",
+      "0.6"
+    ],
+    "commit_order_gate": "423e0a58127444997f1c2581a6f74729e4132cb3",
+    "stage_model_evidence": "91186794c8624121f245067433c387785dffd757",
+    "preceding_attempts": [
+      "16755c8184acb52fc6b7aba7a8d86113628de70d",
+      "fe958812755d6dce0faded3dd41073edf7371196",
+      "2da6d6261ff7328136a63ef055151b954563e3a8"
+    ],
+    "ranking_profile": {
+      "path": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-dflash2-prefill-kv-stage/data/expert-profile.bin",
+      "sha256": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+      "old_path": "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin"
+    },
+    "split_model_sha256": "49a3f850631a135f90a706739787e2f081c29092db763b540d91f70a248083c4",
+    "previous_speed": "6e5bb20067e0d3f8abc45f547d226f2f16e1f4f3",
+    "window_admission_sha256": "9946ffeb470feaf806341f42a838551e3e5e907266780953c4008cd27875420b",
+    "writer_reference": {
+      "admission_sha256": "e9c591fcf4411e568739c0041f627c44758485be8358ae7ffd4127a4f60c26a6",
+      "trace_commit": "3b8cdaf515ac7d8ad3ffafefabae754847a917dd",
+      "timing_commit": "6fb701c7fdf5d55c6b9503e8d3b43e719f2c4cc5",
+      "hashes": [
+        "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
+        "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d",
+        "f952766eccc6720b841e5091c55231ae6d505e82bd53259c17062b9a19a2515f"
+      ],
+      "work_sha256": "e391f1896d58e72ca3e747e5f458d728e61c6be3a88e033544c09d199d39ead0"
+    },
+    "stage": "prepared",
+    "source_commit": "04e2e4538bdd9936125a1db3524d1de488e6cea7",
+    "host_passed": false,
+    "ownership_closed": true,
+    "active": false,
+    "passed": false,
+    "complete": false,
+    "plans": [
+      {
+        "index": 0,
+        "arm": "copy",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1/0",
+        "port": 34689,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
+          "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
+          "bytes": 26546256
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-dflash2-prefill-kv-stage/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1/0/config.json",
+          "--port",
+          "34689",
+          "--prefill-exact-tokens",
+          "118785",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1/0/bench"
+        ],
+        "generated": {
+          "config.json": "f992f58748274b13caf670c1cd456d49761cb25ee786b27e517b59a841885a56",
+          "plan.json": "0acb77b9bc48852308e720a01d95ab065dd394f849ff05baabe63ef07c9df878"
+        },
+        "environment_sha256": "6142095617410e17a8a824556d6ca6cb4e7244711525f4fe648be9de3f9420cc",
+        "read": 118785,
+        "heads": 1
+      },
+      {
+        "index": 1,
+        "arm": "direct",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1/1",
+        "port": 41283,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
+          "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
+          "bytes": 26546256
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-dflash2-prefill-kv-stage/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1/1/config.json",
+          "--port",
+          "41283",
+          "--prefill-exact-tokens",
+          "118785",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1/1/bench"
+        ],
+        "generated": {
+          "config.json": "ccb45abff206032d798cfb3ffe9ff7aacd7a4c52bb810e64ceecb38cc36a6edd",
+          "plan.json": "0acb77b9bc48852308e720a01d95ab065dd394f849ff05baabe63ef07c9df878"
+        },
+        "environment_sha256": "24cea69274b58caaf65d862036c73dc9b06b91a07393834e5057414ee2cfbca8",
+        "read": 118785,
+        "heads": 1
+      },
+      {
+        "index": 2,
+        "arm": "direct",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1/2",
+        "port": 57455,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
+          "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
+          "bytes": 26546256
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-dflash2-prefill-kv-stage/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1/2/config.json",
+          "--port",
+          "57455",
+          "--prefill-exact-tokens",
+          "118785",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1/2/bench"
+        ],
+        "generated": {
+          "config.json": "84662a7e85e4054669ba18640575ace91e217e6be9436e78c8c6b8407be4d1c1",
+          "plan.json": "0acb77b9bc48852308e720a01d95ab065dd394f849ff05baabe63ef07c9df878"
+        },
+        "environment_sha256": "37b7714e950765f26060a6451a78c56aba94db4e8a816a2b23b1f0cea0787711",
+        "read": 118785,
+        "heads": 1
+      },
+      {
+        "index": 3,
+        "arm": "copy",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1/3",
+        "port": 43641,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
+          "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
+          "bytes": 26546256
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-dflash2-prefill-kv-stage/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1/3/config.json",
+          "--port",
+          "43641",
+          "--prefill-exact-tokens",
+          "118785",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1/3/bench"
+        ],
+        "generated": {
+          "config.json": "f6e4933a3d2c0d51dfd7c8ecb76a5a6d79c921611ecfb9532b8638b58b08bc2d",
+          "plan.json": "0acb77b9bc48852308e720a01d95ab065dd394f849ff05baabe63ef07c9df878"
+        },
+        "environment_sha256": "1dabb06f23495d0efebc76ca3ba011c64a8978b2ae19ff357e7a02547e10556b",
+        "read": 118785,
+        "heads": 1
+      },
+      {
+        "index": 4,
+        "arm": "copy",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1/4",
+        "port": 32825,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
+          "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
+          "bytes": 26546256
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-dflash2-prefill-kv-stage/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1/4/config.json",
+          "--port",
+          "32825",
+          "--prefill-exact-tokens",
+          "118785",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1/4/bench"
+        ],
+        "generated": {
+          "config.json": "b9fd8d3e2c7b7044f54e383ed0a068ab26eb62429d4a9fdde4f76f96b0fa124e",
+          "plan.json": "0acb77b9bc48852308e720a01d95ab065dd394f849ff05baabe63ef07c9df878"
+        },
+        "environment_sha256": "637722519b14fc89811aea07862ce9a82cc5fb6aa7f2c3641519b4c1450c1a7e",
+        "read": 118785,
+        "heads": 1
+      },
+      {
+        "index": 5,
+        "arm": "direct",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1/5",
+        "port": 43219,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
+          "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
+          "bytes": 26546256
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-dflash2-prefill-kv-stage/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1/5/config.json",
+          "--port",
+          "43219",
+          "--prefill-exact-tokens",
+          "118785",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-window-writer-speed-v1/5/bench"
+        ],
+        "generated": {
+          "config.json": "3846211a710073563b301f407a12e2b8a76a50220d6f800a82f53b39f585c3fb",
+          "plan.json": "0acb77b9bc48852308e720a01d95ab065dd394f849ff05baabe63ef07c9df878"
+        },
+        "environment_sha256": "7ec3dfc61bd42ea1085a6498f7bc236daf9fde0dd76c6d9b1b2fe6216d800547",
+        "read": 118785,
+        "heads": 1
+      }
+    ],
+    "processes": [],
+    "budgets": {
+      "wall": 5400,
+      "cpu": 21600,
+      "rss_cap": 111669149696,
+      "text_cap": 25165824,
+      "file_cap": 67108864,
+      "total_cap": 167772160
+    },
+    "plan": {
+      "order": [
+        "copy",
+        "direct",
+        "direct",
+        "copy",
+        "copy",
+        "direct"
+      ],
+      "read": 118785,
+      "requests_per_process": 3,
+      "unit": "Change only the attention writer before exec. Keep mode16, the selected reader, checked drains, demand uploads, bank128, BF16 residuals, retained KV and DFlash2 fixed.",
+      "acceptance": "Three counterbalanced fresh-process pairs through the pinned exact-prefill benchmark. Verify actual stores, retained KV and all expert work against the original mode16 copy prompts. Keep first-use and warmed prompt time and client TTFT separate. Advance a repeated warm gain when all three paired warm prompt-time ratios are below one. Record the 1000 tok/s check separately.",
+      "stop": "Stop on changed inputs, route, state, runtime, ownership, budget or GPU faults. Keep all eligible samples. This protocol uses short generation to check handoff."
+    },
+    "request_hashes": {
+      "118785": [
+        "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
+        "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d",
+        "f952766eccc6720b841e5091c55231ae6d505e82bd53259c17062b9a19a2515f"
+      ]
+    },
+    "source_inputs": {
+      "files": 845,
+      "sha256": "1eb73432ad991ebe7f871a06a941b36fa68475ab6b4f27827da98f6a6463eb58"
+    },
+    "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   }
 }
