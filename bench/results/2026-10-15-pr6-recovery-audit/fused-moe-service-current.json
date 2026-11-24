@@ -670563,8 +670563,8 @@
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   },
   "dflash2_long_routing_train_replay_v1": {
-    "stage": "prepared",
-    "passed": false,
+    "stage": "closed",
+    "passed": true,
     "plan": {
       "source_commit": "8c4591875ce3d5b4c47ba235b592c27f97e4add0",
       "sources": {
@@ -670609,6 +670609,47 @@
         "bytes": 26546256
       },
       "scope": "Replay exact captured training work through the traced KV, CPU census and routing readers. Preserve the original failed checker and use the separate replay for training eligibility."
-    }
+    },
+    "routes": {
+      "attention_store": {
+        "pieces": 240,
+        "direct": 0,
+        "copy_bytes": 32652656640,
+        "gpu_rows": 33216,
+        "host_rows": 0,
+        "window_mode": 10,
+        "maximum_rows": 33216
+      },
+      "kv": {
+        "reloaded_pages": 61440,
+        "reused_pages": 184320,
+        "prefix_H2D_calls": 48,
+        "mirror_D2H_calls": 240,
+        "mirror_D2H_bytes": 420913152,
+        "requested_prefix_H2D_bytes": 259522560
+      },
+      "windows": 1345,
+      "target_rows": 4208,
+      "cpu_jobs": 1449976,
+      "cpu_entries": 1812670,
+      "logical_job_blob_bytes": 2956400972800,
+      "jobs_NT": [
+        1154781,
+        237631,
+        47629,
+        9935,
+        0,
+        0,
+        0,
+        0
+      ],
+      "membership_sha256": "7be037be3ed62aedcd10a0a2556fb7d96480892c35e683dbb38b329dbf7fff43",
+      "distinct_layer_expert_pairs": 22727,
+      "routing_bytes": 18256128,
+      "routing_sha256": "0451e19b17ea8e7e908fc601621bfe9da34ed7bb671aa6d41192c7381a4ee423",
+      "usage_file": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-long-routing-train-v1/0/verifier-usage.json",
+      "usage_sha256": "4f875eaadfefd52b98bcedf9a74ba400522cb0d5b71e833253c7323c942610bb"
+    },
+    "native_executed": false
   }
 }
