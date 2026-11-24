@@ -10742,9 +10742,8 @@ after matching it to `15630ce07`. The sorted relative paths, lengths and
 SHA-256 values cover 60 files and 12,871,271 bytes with inventory
 SHA-256 `a111b82a4bfcb9deb4630712f4c60bc92a3c0e9cfe90cb33710e3b73ac3f15ca`.
 
-Live server RESTORE remains pending. On the measured source, parking
-requires a populated MTP ring. The DFlash2
-launch leaves that ring empty, causing the snapshot estimate to reject the
+On the earlier measured source, parking requires a populated MTP ring.
+DFlash2 leaves that ring empty, so the snapshot estimate rejects the
 conversation before capture. The fix passes an optional MTP ring and retains
 the target K/V and running state for DFlash2. The SYCL host transfer fixture
 passes 1,656 checks, including target-only capture, incremental reuse and
@@ -10775,8 +10774,17 @@ The DFlash2 tail covers 2,046 rows. The unaligned continuation reloads
 its KV stage and requests 934,382,592 prefix H2D bytes. The fresh 32K
 case with the corrected reader passes at `8db58b418`, with the same
 snapshot hashes and normal owner closure without a fresh Xe fault.
-The next V2 case parks 253,919 tokens and continues to a 262,128-token
-prompt. Its target runtime limits and exact wire inputs are already pinned.
+The near-capacity V2 case closes at `962acee66`. It parks and restores
+253,919 tokens, reads 8,209 new tokens and serves a 262,128-token prompt
+with one generated token. The snapshot check reads back 3,607,695,360
+target KV bytes across 12 layers and 118,069,304 running-state bytes.
+All 15 model hashes match, the native process exits normally, and Xe
+reports zero fresh faults. The 8,208 residual rows after restoration
+use the ordinary copy route. Its unaligned prefix reload requests
+6,539,157,504 H2D bytes with 96 calls. Keep the exact 32K and near-capacity
+shapes for assessing a partial-page retention proposal. The 122,881-input
+direct route still needs the five-tap payload check and matched prefill
+and sustained decode measurements after the snapshot fix.
 
 Retire the first raw restore capture at `dflash2-target-snapshot-restore-v1`.
 The original failure, offline replay and independent passing replacement
