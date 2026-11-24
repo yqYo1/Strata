@@ -10740,11 +10740,23 @@ completion waits separately to locate the cost. The two further clean
 processes remain pending. Use a synthetic multi-source methods dossier for
 the next weak-acceptance screen.
 
-The first clean control in `dflash2_v2_decode_clocks_v1` reads 33217 tokens
-and emits 4111 at 12.222 tok/s after the official code subset warmups. It
-accepts 2767 of 2863 drafts and closes normally with no fresh Xe fault.
-Use the clocked process and the second clean control to check observer
-overhead and separate verifier waits from CPU expert service.
+`dflash2_v2_decode_clocks_v1` closes three independent processes after the
+official code subset warmups. Each reads 33217 fresh tokens, emits 4111 and
+accepts 2767 of 2863 drafts. Request and output hashes and expert work agree.
+The two clean rates are 12.222 and 11.349 tok/s. With clocks the rate is
+12.140 tok/s. The two clocked-to-clean latency ratios are 1.007 and 0.935,
+within the declared 1.10 factor. All three exit normally with no fresh Xe fault.
+
+The clocked request spends 338.64 s in decode. GPU layer completion waits
+take 142.72 s of caller wall time and CPU expert pool calls take 148.34 s.
+The caller uses 152.19 CPU s inside native waits across all measured regions.
+The pool interval includes the time until the workers return. These clocks
+leave CPU worker utilization and physical RAM, PCIe and VRAM saturation open.
+At the observed 1345 windows and yield, 70 tok/s allows 43.66 ms per window
+against the measured 251.78 ms. Evaluate CPU expert service and GPU layer
+completion separately before combining changes. Keep the same code subset
+for the focused next comparison and repeat the independent controls when
+judging a gain near their observed spread.
 
 #### DFlash2 KV stage retention outside the tap layers
 
