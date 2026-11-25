@@ -94,9 +94,12 @@ def project(foundation_native=None):
         component_sha256=bank.signature(gate))
 
 
-def build_inputs(expected=None):
+def build_inputs(expected=None, *, foundation_reader=None):
     bank.require(not bank.ROOT.exists(), 'finish the resident-input consumers and verify its retirement first')
-    native, foundation, _ = bank.basis.basis(expected=expected)
+    if foundation_reader is None:
+        native, foundation, _ = bank.basis.basis(expected=expected)
+    else:
+        native, foundation = foundation_reader(expected=expected)
     source, recipe, projection = project(native)
     verify_projection(projection)
     return native, foundation, source, recipe, projection

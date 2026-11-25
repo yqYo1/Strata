@@ -1,12 +1,14 @@
 """Recover the target-snapshot build's recorded sources using its Git recipe."""
 
 import fcntl
+from functools import partial
 import json
 from pathlib import Path
 import sys
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 
 sys.dont_write_bytecode = True
+import dflash2_primary_foundation_proof as foundation_proof
 import dflash2_primary_prefill_build as primary
 
 bank, builder, require = primary.bank, primary.builder, primary.require
@@ -21,7 +23,6 @@ def archived_module(name):
     raw = bank.basis.validation.git('show', REVISION + ':' + str(path))
     module = ModuleType(name)
     module.__file__ = str(bank.P / path)
-    sys.modules[name] = module
     exec(compile(raw, f'{REVISION}:{path}', 'exec'), module.__dict__)
     return module
 
@@ -35,9 +36,21 @@ def recover():
             and row['binaries']['strata'] == frozen['binary']
             and bank.signature(builder.compact(row)) == frozen['native_build_sha256'],
             'the target snapshot receipt must match the original long-prefill comparison')
-    archived_module('prefill_kv_upload_build')
-    snapshot = archived_module('dflash2_target_snapshot_build')
-    native, foundation, files, recipe, projection = snapshot.project()
+    upload_name = 'prefill_kv_upload_build'
+    upload = archived_module(upload_name)
+    gather = upload.gather
+    upload.gather = SimpleNamespace(
+        KEY=gather.KEY, DISPATCH_COUNTS=gather.DISPATCH_COUNTS, MODEL_ROOT=gather.MODEL_ROOT,
+        build_inputs=partial(gather.build_inputs, foundation_reader=foundation_proof.historical_foundation),
+    )
+    # Bind the snapshot to the archived upload projection during its import.
+    current_upload = sys.modules[upload_name]
+    sys.modules[upload_name] = upload
+    try:
+        snapshot = archived_module('dflash2_target_snapshot_build')
+    finally:
+        sys.modules[upload_name] = current_upload
+    native, foundation, files, recipe, projection = snapshot.project(expected=row['foundation'])
     hashes = bank.stage.hashed(files)
     require(hashes == row['source_files'] and recipe == row['recipe']
             and projection == row['projection'] and foundation == row['foundation']
