@@ -11254,9 +11254,17 @@ The exact JSON wire SHA-256 is
 The validator accepts the independently derived incident decision and
 rejects a wrong service, incomplete JSON block and duplicate key.
 Before the model screen, bind the wire hash and live count to the exact
-benchmark request. Capture native DONE segments and the corresponding
-server history row to account for server-inserted output separately.
-The screen will establish actual answer accuracy and draft acceptance.
+benchmark request. The [reconciliation client](../bench/dflash2_reconciliation_client.py)
+joins all native stderr request footers with a single new `/metrics` history
+row and the benchmark client's SSE response. The history supplies clocks
+from DONE; the native footers independently reconcile generated, read and draft
+counts and their rounded clocks. The API/native token difference can only
+bound inserted output from below. Calculate TG from native generated tokens
+and the native decode clock. Require at least 1,024 native outputs for the
+weak-agreement observation. Run the focused offline accounts with the qualified
+interpreter and `-B -m unittest discover -s bench -p test_dflash2_reconciliation_client.py`.
+The model screen still needs the owned same-build server plan and actual
+answer and acceptance evidence.
 
 Retired the six numbered directories and `host` under state
 `dflash2-prefill-kv-stage-speed-v4` covering 430 files and 74709297 bytes.
