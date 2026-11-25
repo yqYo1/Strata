@@ -414,6 +414,13 @@ source files and the exact recipe without retaining duplicate sources.
 All 279 project compiler inputs match the original census. The source
 manifest SHA-256 is `e28ba38869c135026faf009c516b7042390e9493341ae200c2db24efdd57cd07`
 and the recipe hash is `f81ab214ebe8f896a93362bfa72327cc6baf7a375dfee6a757a10942b869a429`.
+The census builder now reads the coherent build foundation through the exact
+committed primary receipt. The two serialized host checks at `2e2191bf8`
+pass: recovery succeeds with any open or stat of the 12 old executables
+rejected, and a changed expected recipe hash stops admission. The toolchain,
+runtime, probe and original compiler-input metadata are still checked live.
+The older snapshot references and other live readers still need reconciliation
+before retiring their builds.
 The artifact-free plan at `3a1fee123` accepts the exact measured primary
 binary and reports four native paths and 12 build targets. The proposed
 native files match the syntax-checked revision `88215efa1`. No new build
