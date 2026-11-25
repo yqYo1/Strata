@@ -3,6 +3,7 @@
 from collections import Counter
 import json
 from pathlib import Path
+import struct
 import sys
 
 sys.dont_write_bytecode = True
@@ -103,6 +104,27 @@ def choose(metric, counts, layers, base, formats, leaf_ns):
     return changes, count, moved
 
 
+def route_prefix_signature(early, windows):
+    """Canonical all-expert row census for the bounded decode observer."""
+    replay.require(len(early) == replay.LAYERS and 0 < EARLY < len(windows),
+                   'complete captured decode prefix required')
+    rows_per_layer = 10 * sum(width for _, width in windows[:EARLY])
+    pack = struct.Struct(f'<{replay.EXPERTS}I')
+    counts = []
+    for histogram in early:
+        routed = Counter()
+        for (expert, width), jobs in histogram.items():
+            routed[expert] += width * jobs
+        replay.require(sum(routed.values()) == rows_per_layer,
+                       'each layer must count all verifier rows in the prefix')
+        counts.append(pack.pack(*(routed[e] for e in range(replay.EXPERTS))))
+    payload = b''.join(counts)
+    return dict(windows=EARLY, layout='layer-major uint32 little-endian',
+                layers=replay.LAYERS, experts=replay.EXPERTS,
+                entries_per_layer=rows_per_layer, total_entries=rows_per_layer * replay.LAYERS,
+                bytes=len(payload), sha256=replay.sha(payload))
+
+
 def replay_cost():
     revision, raw, windows, base, formats, observed = replay.inputs()
     for name in ('bench/dflash2_decode_adapt_cost_replay.py', PROFILE, 'tools/make_profile.py',
@@ -122,6 +144,7 @@ def replay_cost():
     for _ in range(EARLY):
         for counts, jobs in zip(early, next(source), strict=True):
             counts.update(jobs.items())
+    prefix = route_prefix_signature(early, windows)
     variants = [choose(metric, early, layers, base, formats, leaf_ns) for metric in METRICS]
     cumulative = [dict(cpu_jobs_removed=0, logical_cpu_bytes_removed=0, modeled_leaf_cpu_ns_removed=0)
                   for _ in METRICS]
@@ -161,7 +184,8 @@ def replay_cost():
                    'the routed-row comparison failed to reproduce the original result')
     return dict(source_commit=revision, route_sha256=observed['routing_sha256'], capture_commit=replay.CAPTURE,
                 calibration_commit=LEAF_RECORD, early_windows=EARLY, early_outputs=start_output, stock_suffix_leaf_cpu_ns=suffix_cpu_ns,
-                observations=points, methods={name: dict(swaps=count, requested_each_direction_bytes=moved,
+                route_prefix=prefix, observations=points,
+                methods={name: dict(swaps=count, requested_each_direction_bytes=moved,
                     first_copy_only_crossover_outputs=crossing[j], final_crossing_outputs=never_below[j])
                     for j, (name, (_, count, moved)) in enumerate(zip(METRICS, variants, strict=True))},
                 copy_reference_bytes_per_second=COPY_REFERENCE_BYTES_PER_SECOND,
