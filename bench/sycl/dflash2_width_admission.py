@@ -97,7 +97,7 @@ def audit_requests(text, requests, responses, *, width):
     return result
 
 
-def audit_head(text, width_counts):
+def audit_head(text, width_counts, *, c5=False):
     """Join the first request's completed graph replays and head capture calls."""
     captures = {}
     heads = {}
@@ -141,15 +141,17 @@ def audit_head(text, width_counts):
         raise ValueError("decode head and graph captures must cover every observed width")
     if len({capture for capture, _ in captures.values()}) != len(captures):
         raise ValueError("decode widths share an unexpected capture identity")
-    if fallback_calls.keys() != captures.keys() - {4}:
+    dpas_widths = {4, 5} if c5 else {4}
+    if fallback_calls.keys() != captures.keys() - dpas_widths:
         raise ValueError("canonical head shapes must cover the widths outside DPAS")
     result = []
     for rows, (capture, completed) in sorted(captures.items()):
         head_capture, calls = heads[rows]
-        if completed != width_counts[rows] or head_capture != capture or calls != int(rows == 4):
+        dpas = rows in dpas_widths
+        if completed != width_counts[rows] or head_capture != capture or calls != int(dpas):
             raise ValueError("target head capture route or replay count differs from traced work")
-        if rows != 4 and fallback_calls[rows] != (capture, int(rows == 5), int(rows == 1)):
+        if not dpas and fallback_calls[rows] != (capture, int(rows == 5), int(rows == 1)):
             raise ValueError("canonical head fallback differs from the selected Q6 route")
-        route = {1: "q6-columns", 4: "dpas", 5: "q6-reference"}[rows]
+        route = "dpas" if dpas else {1: "q6-columns", 5: "q6-reference"}[rows]
         result.append(dict(rows=rows, capture_id=capture, completed=completed, route=route))
     return result

@@ -59,34 +59,42 @@ class WidthAdmissionTests(unittest.TestCase):
 
 
     def test_head_route_joins_the_actual_replays(self):
-        for width in (4, 5):
+        for width, c5 in ((4, False), (5, False), (5, True)):
             lines = []
             counts = {1: 1, width: 9}
             for capture, (rows, replays) in enumerate(counts.items(), start=1):
+                dpas = rows == 4 or (c5 and rows == 5)
                 identity = f"request=1 device=0 phase=decode tokens={rows} capture_id={capture}"
                 lines.append(f"strata Q6_ROUTE {identity} scope=live_capture_cumulative native_half_enabled=0 "
                              f"complete=1 shapes=7 cache_hits={replays - 1} "
                              f"replay_started={replays} replay_completed={replays}")
                 lines.append(f"strata Q6_DPAS_HEAD {identity} layout=canonical extra_weight_bytes=0 "
-                             f"canonical_table_excludes_dpas=1 calls={int(rows == 4)} complete=1")
-                if rows != 4:
+                             f"canonical_table_excludes_dpas=1 calls={int(dpas)} complete=1")
+                if not dpas:
                     lines.append(f"strata Q6_SHAPE {identity} ni=2560 no=248320 nc={rows} "
                                  f"reference_calls={int(rows == 5)} columns_calls={int(rows == 1)} "
                                  "centered_calls=0 native_half_calls=0")
             text = "\n".join(lines)
-            with self.subTest(width=width):
-                expected = "dpas" if width == 4 else "q6-reference"
-                self.assertEqual(audit_head(text, counts)[-1]["route"], expected)
+            with self.subTest(width=width, c5=c5):
+                expected = "dpas" if width == 4 or c5 else "q6-reference"
+                self.assertEqual(audit_head(text, counts, c5=c5)[-1]["route"], expected)
                 with self.assertRaisesRegex(ValueError, "capture route or replay"):
-                    audit_head(text, {1: 1, width: 8})
+                    audit_head(text, {1: 1, width: 8}, c5=c5)
                 cap_head = f"strata Q6_DPAS_HEAD request=1 device=0 phase=decode tokens={width} "
                 with self.assertRaisesRegex(ValueError, "must cover every observed width"):
-                    audit_head(text.replace(cap_head, "ignored "), counts)
+                    audit_head(text.replace(cap_head, "ignored "), counts, c5=c5)
                 with self.assertRaisesRegex(ValueError, "head fallback differs"):
                     audit_head(text.replace("reference_calls=0 columns_calls=1",
-                                            "reference_calls=1 columns_calls=0"), counts)
+                                            "reference_calls=1 columns_calls=0"), counts, c5=c5)
                 with self.assertRaisesRegex(ValueError, "sole-packed"):
-                    audit_head(text + "\nstrata Q6_PACKED_HEAD unexpected", counts)
+                    audit_head(text + "\nstrata Q6_PACKED_HEAD unexpected", counts, c5=c5)
+                if width == 5:
+                    with self.assertRaisesRegex(ValueError, "canonical head shapes"):
+                        audit_head(text, counts, c5=not c5)
+                if c5:
+                    with self.assertRaisesRegex(ValueError, "decode-only DPAS head"):
+                        audit_head(text.replace(cap_head, cap_head.replace("phase=decode", "phase=prompt")),
+                                   counts, c5=True)
 
 
 if __name__ == "__main__":
