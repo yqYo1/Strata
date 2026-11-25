@@ -61,6 +61,7 @@
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/sycl/checked_cleanup.hpp"
 #include "strata/sycl/checked_worker.hpp"
+#include "strata/program/dflash2_decode_route_census.hpp"
 #include "strata/kernels/cpu/iq2_pair_avx2.hpp"
 #include <stdexcept>
 #endif
@@ -1225,6 +1226,21 @@ void drive_pool_multi(void* user, const float* x_f, const int32_t* ids, int64_t 
     }
 }
 
+#ifdef STRATA_ENABLE_SYCL
+using DecodeRouteCensus = strata::program::Dflash2DecodeRouteCensus;
+struct Dflash2DecodeRouteTap {
+    Drive& drive;
+    DecodeRouteCensus* census;
+};
+
+void drive_pool_dflash2_decode_routes(void* user, const float* x_f, const int32_t* ids, int64_t n_tok, int64_t k,
+                                    float* out, int64_t layer) {
+    auto& tap = *static_cast<Dflash2DecodeRouteTap*>(user);
+    drive_pool_multi(&tap.drive, x_f, ids, n_tok, k, out, layer);
+    if (!tap.drive.d.failed) tap.census->observe_layer(layer, ids, n_tok, k);
+}
+#endif
+
 /// Layer split: every verify stage shares one Drive (its counters, usage and failure flags); the GPU plan, the expert
 /// cache and the PCIe share the pool uses for a layer are those of the stage that runs it.
 struct SplitDrive {
@@ -1906,6 +1922,13 @@ int main(int argc, char** argv) {
     }
     const bool use_df2 = o.draft == "dflash2";
 #ifdef STRATA_ENABLE_SYCL
+    const char* route_counts_path = std::getenv("STRATA_SYCL_DFLASH2_DECODE_ROUTE_DUMP");
+    if (route_counts_path && (!*route_counts_path || !use_df2 || !o.serve ||
+                              o.spec > DecodeRouteCensus::max_width || o.spec_split || o.gpu_stages || o.resident_cpu_experts ||
+                              (o.adapt_every > 0 && o.adapt_swaps > 0))) {
+        std::fprintf(stderr, "DFlash2 route dump needs serve, spec2..4, unsplit verifier and file-backed fixed experts\n");
+        return 2;
+    }
     const size_t draft_output_floor = use_df2 ? strata::core::Dflash2Drafter::kDrafts : 0;
 #else
     const size_t draft_output_floor = 0;
@@ -5049,6 +5072,19 @@ int main(int argc, char** argv) {
         }
         strata::prefill::Prefill sp;
 #ifdef STRATA_ENABLE_SYCL
+        std::unique_ptr<std::FILE, decltype(&std::fclose)> route_counts_file(nullptr, &std::fclose);
+        if (route_counts_path) {
+            if (multi_gpu || g.n_layers != DecodeRouteCensus::layers || g.n_expert != DecodeRouteCensus::experts ||
+                ss.k != DecodeRouteCensus::fanout) {
+                std::fprintf(stderr, "DFlash2 route dump requires a single-card 48-layer, 512-expert, top-10 model\n");
+                return 2;
+            }
+            route_counts_file.reset(std::fopen(route_counts_path, "wbx"));
+            if (!route_counts_file) {
+                std::fprintf(stderr, "Cannot create DFlash2 route dump: %s\n", route_counts_path);
+                return 2;
+            }
+        }
         if (use_df2) sp.on_layer = df2_layer_tap;
 #endif
         sp.requires_prefix_checkpoints = o.prompt_cache > 0 && o.prompt_cache_every > 0;
@@ -6933,6 +6969,10 @@ int main(int argc, char** argv) {
                 decode_service_enabled, census_request);
             strata::sycl_backend::decode_segment_clocks::Request segment_clocks(census_request);
 #endif
+#ifdef STRATA_ENABLE_SYCL
+            auto route_counts = route_counts_file ? std::make_unique<DecodeRouteCensus>() : nullptr;
+            Dflash2DecodeRouteTap route_tap{drive, route_counts.get()};
+#endif
             const Clock::time_point d0 = Clock::now();
             // STRATA_DECODE_TIMING=1: where a request's decode time goes (one line per request)
             static const bool dec_timing = std::getenv("STRATA_DECODE_TIMING") != nullptr;
@@ -7032,10 +7072,24 @@ int main(int argc, char** argv) {
                 tr("window", p, T);
                 if (cpu_census) cpu_census->begin_window((uint64_t)dec_windows + 1, p, T);
                 const Clock::time_point tw0 = Clock::now();
-                if (!ver.run(T, window.data(), p, win_pool_fn, win_pool_user, outv.data(), err) || drive.d.failed) {
+                auto decode_pool_fn = win_pool_fn;
+                void* decode_pool_user = win_pool_user;
+#ifdef STRATA_ENABLE_SYCL
+                const bool count_window = route_counts && dec_windows < DecodeRouteCensus::max_windows;
+                if (count_window) {
+                    route_counts->begin_window(T);
+                    // Verifier::run calls this synchronously on the owning host thread.
+                    decode_pool_fn = &drive_pool_dflash2_decode_routes;
+                    decode_pool_user = &route_tap;
+                }
+#endif
+                if (!ver.run(T, window.data(), p, decode_pool_fn, decode_pool_user, outv.data(), err) || drive.d.failed) {
                     std::printf("ERR %s\n", drive.d.failed && drive.d.fail ? drive.d.fail : err.c_str());
                     return 1;
                 }
+#ifdef STRATA_ENABLE_SYCL
+                if (count_window) route_counts->complete_window();
+#endif
                 int a = 0;
                 if (cpu_census) cpu_census->end_window();
                 while (a < T - 1 && window[(size_t) a + 1] == outv[(size_t) a]) ++a;
@@ -7123,6 +7177,10 @@ int main(int argc, char** argv) {
             }
 #ifdef STRATA_ENABLE_SYCL
             decode_service.finish(!cancelled && std::strcmp(finish, "cancel") != 0);
+            if (route_counts && !route_counts->write(route_counts_file.get(), census_request)) {
+                std::printf("ERR invalid or incomplete DFlash2 decode route census\n");
+                return 1;
+            }
 #endif
 #ifdef STRATA_CPU_SERVICE_PROFILE
             if (!strata::kernels::cpu::service::write_delta(stderr,census_request,cpu_service_begin,pool.service_snapshot())) {

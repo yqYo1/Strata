@@ -339,6 +339,38 @@ Compare this exact map in the captured request and check fresh per-request
 counts across prompt, cancellation and RESTORE boundaries before enabling
 any placement change.
 
+The bounded census source attaches its own observer to the synchronous
+serve decode callback after prompt refill and DFlash2 activation. It uses
+request-owned storage and stops after 256 successful verifier windows.
+The target callback counts the last prompt anchor in the width-one first
+window and all later rows offered to verification. The observer has no
+access to the adaptive usage vector or the placement table. The opt-in
+`STRATA_SYCL_DFLASH2_DECODE_ROUTE_DUMP` uses a new private destination
+and writes completed counts after the final verifier commit. The diagnostic
+admits the measured 48-layer, 512-expert, top-10 file-backed route with
+spec2–4, no verifier split and no legacy adaptation. This is a separate
+source change on an isolated worktree while the primary cache comparison
+requires unchanged native sources.
+
+Host fixture recipe pins g++-13 13.3.0-6ubuntu2~24.04.1 at
+`/usr/bin/x86_64-linux-gnu-g++-13` SHA-256
+`1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769`,
+libstdc++-13-dev 13.3.0-6ubuntu2~24.04.1, glibc 2.39-0ubuntu8.9 and binutils
+2.42-4ubuntu2.10. Compile `tests/core/dflash2_decode_route_census_test.cpp`
+with `-std=c++20 -O2 -Wall -Wextra -Werror -Iinclude` in a temporary
+external directory using `PATH=/usr/bin:/bin LC_ALL=C`. Require exact
+per-layer counts, the cap, fresh records including zero-window requests,
+rejection of incomplete or split windows and bounds rejection.
+
+After the host fixture, validate the exact serving callback with an
+independent routing capture on the same build and request. Compare the
+first 256 windows of offered rows and check a following short request,
+cancellation and RESTORE. Keep route, output, verifier work and slot map
+matched. Run timing separately with raw route tracing off and account for
+the request-end diagnostic write in client timing. A positive count gate
+does not authorize expert publication. A later placement test needs a
+separate preregistered transfer, restoration and end-to-end comparison.
+
 The retained decode source `96832af6f` allocates the existing routed-row
 counter only when both adaptive arguments are positive. Its serve loop
 submits adaptive work only when the process-wide window count reaches a
