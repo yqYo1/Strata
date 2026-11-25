@@ -218,19 +218,32 @@ the completed attribution bracket's largest intervals and observed
 format bins to choose placement and kernel candidates. Physical RAM
 traffic, GPU saturation and the attainable overlap remain unmeasured.
 
-The first clean process at `6dbbf2b02` repeats the original work and emits
-4,111 tokens at 16.696 tok/s. The decode counter reports 1,449,976 CPU
-expert jobs, or 352.71 jobs per emitted token. The pinned IQ3_S
-`native_experts.txt` has per-job blob extents between 1,510,400 and 2,662,400
-bytes. Charging one full blob to each job gives a logical range of
-532.73–939.05 MB per emitted token, or 37.29–65.73 GB/s at 70 tok/s with
-the same work. The unweighted bounds use only minimum and maximum blob
-sizes, since this clean process does not record the job count per format.
-Physical traffic depends on actual format mix, reuse and read behavior.
-For context, the prior six-thread 256 MiB checksum-read calibration reached
-24.03 GB/s of requested payload on a different build. Collect exact format
-and reuse evidence before selecting a residency, work-reduction or kernel
-change for the width-four path.
+The first clean process at `6dbbf2b02` emits 4,111 tokens at 16.696 tok/s
+with 1,449,976 CPU expert jobs, or 352.71 jobs per output. The two worker
+observations at `6bbd3e3e1` use the same executable, input, output and reasoning
+hashes, draft counts, attention and KV path, and CPU job and entry totals as
+the four width-four processes at `e0cb8fc25`. Their format and width counts
+also agree with each other. Keep the timings from these two cohorts separate.
+
+Using those format counts, sum `jobs × blob_bytes` for each gate/up and Down
+format pair and width in `routes.leaves.format_nt_jobs`. The size for each
+pair is constant across the 48 layers of `tests/data/native_experts/iq3_s.txt`
+and matches the packed model manifest byte for byte. The sum is **2,956,400,972,800
+logical bytes**, or **719.14 MB per output**. At 70 tok/s the same mix would
+require 50.34 GB/s if each job read its full packed blob once. The separate
+six-thread 256 MiB checksum-read calibration reached 24.03 GB/s of requested
+payload. Expert and cache reuse, partial reads and the packed kernel's access
+pattern determine actual DRAM traffic.
+
+In both worker observations, 1,154,781 jobs (79.64%) handle a single token.
+The three largest Gate/Up bins are single-token IQ3_XXS, IQ2_S and IQ3_S,
+each with IQ4_NL Down. Together their Gate/Up work is 40.31–40.32% of total
+leaf CPU time. Even eliminating all three would fall short of the roughly
+45% leaf CPU reduction needed at fixed work and six available cores. Use
+the existing native routing census for a held-out per-layer expert and
+residency sample so the next work-reduction candidate can account for both
+CPU misses saved and GPU work added at the same VRAM budget. The format
+histogram alone supplies no expert identity or cache reuse evidence.
 
 The first caller-observed process at `7340714a9` matches the clean work and
 emits 4,111 tokens at 16.649 tok/s. The 1,345 windows average 83.67 ms in the
