@@ -7982,10 +7982,12 @@ Both arms use the same Q6 weights. Each process passes numerical and buffer
 checks and closes without a fresh Xe fault. The initial clean gate stopped
 before kernels because it expected the diagnostic preload's loader mapping.
 The direct Level Zero adapter and driver identities pass the corrected gate.
-Use the head-only arm first for a matched width-five model comparison. Keep
-the dense projections as separate factors and use width four as the model
-reference for deciding whether the wider verifier pays off. The component
-samples leave sustained TG and model adoption open.
+The settled fixed-width comparison at `03e307dc1` retains width four as the
+model reference. The separate opt-in head at `b06064ead` is scoped to decode
+width five. The verification worktree's build plan at `5a1040990` projects
+that change onto the qualified target-snapshot source. Check the actual
+head capture in the bounded model probe before collecting sustained samples
+with the same width in both arms. Keep the dense projections separate.
 [Performance CSV](../bench/performance-records.csv).
 
 Keep prefill and decode kernels, placement, scheduling and selectors independent.
