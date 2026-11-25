@@ -11477,9 +11477,14 @@ attention stores and the selected KV policy.
 | Prose, subsequent request | 96,274 | 8,618 | 1,039.6 | 92.793 s | 11.487 | 3,442 / 4,864 |
 
 Both samples qualify for the planned workload and speed accounting. The
-prose result has 70.8% draft acceptance and does not supply the weak case.
-The first and subsequent clocks also use different prompts. Complete the
-two remaining independent processes before comparing their variability.
+prose result has 70.8% draft acceptance, above the weak-case limit. The
+second independent process preserves both request hashes, all generation and
+draft counts, and both routes. It closes normally with no fresh Xe fault.
+Its first code prefill takes 124.259 s with 125.611 s client TTFT. The
+subsequent prose prefill takes 92.634 s with 92.821 s client TTFT.
+Decode rates are 16.325 and 11.595 tok/s, respectively. The same-request
+repeats differ by 19.210 s for first prefill and 0.024 s for subsequent
+prefill so far. One independent process remains.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
