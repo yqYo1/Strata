@@ -681573,7 +681573,7 @@
       "tokens": 18,
       "token_ids_sha256": "8c13ee65ac1092fe69103cea638d02cdcc10e33e0ac0ce4277b654545a66c074"
     },
-    "stage": "ready",
+    "stage": "failed",
     "source_commit": "e9a3aac0b67e378e63afab037979d1b051457319",
     "host_passed": true,
     "ownership_closed": true,
@@ -681730,7 +681730,38 @@
         "environment_sha256": "0071224101c3e6b7f12bcd75b7e9938e1edd05668ed881d629e034ed4a7f7251"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "arm": "4",
+        "complete": false,
+        "host_probe_accepted": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/strata",
+          "sha256": "405bea1ac1628c88e78fea245350cd7ce2f0cab8a8a53b44262e483b8d5d5cf7",
+          "bytes": 26550352
+        },
+        "native_source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+        "native_identity": {
+          "pid": 2085921,
+          "start_ticks": 391530536,
+          "sid": 2085639
+        },
+        "error": "RuntimeError('official bench exit/ownership failed: output or return code')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    ],
     "budgets": {
       "wall": 5400,
       "cpu": 21600,
@@ -681768,5 +681799,38 @@
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "dflash2_width_generation_v1_prefill_refusal": {
+    "comparison": "dflash2_width_generation_v1",
+    "native_source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+    "process_index": 0,
+    "draft_width": 4,
+    "phase": "warm-up/prompt",
+    "request_sha256": "5bfbe662a340000044f832b1c766d95073683f7b9dfcc7e44ee6d63af2458613",
+    "successful_warmup_read_tokens": [
+      74,
+      257,
+      903
+    ],
+    "error": "prefill mixed scratch: requires mode10 native16, checked chunk8192 owners and one queue",
+    "configuration": {
+      "prefill_strategy": "throughput",
+      "chunk": 1024,
+      "prefill_borrow": false
+    },
+    "bench_and_native_exit_code": 1,
+    "reaped_and_session_empty": true,
+    "boot_unchanged": true,
+    "fresh_xe_faults": [],
+    "long_generation_requests": 0,
+    "raw_capture": {
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-width-generation-v1/0",
+      "sha256": {
+        "execution.json": "b2d15e79b2a93028668bf15b8d5318a912537b212a8a9c05c7190a21dcf6cb55",
+        "engine-exit.json": "0f7cfd7d428ee99fc8d9164846538226d668efd51b27e2379890cb1d6b6d2344",
+        "engine.stderr": "4e355e38b21d076f103d9a584d4d7871b88db8d6ff0cd08f0633ebb9c6b60fcf"
+      }
+    },
+    "decision": "Keep the original result failed. Pair the same loan-off chunk size and cache placement with the supported chunked TTFT strategy in the next comparison."
   }
 }
