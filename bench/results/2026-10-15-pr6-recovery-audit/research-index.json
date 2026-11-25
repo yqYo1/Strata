@@ -41876,5 +41876,25 @@
     "finding": "Non-LLM dynamic GPU worklists, resident staging and overlapped DMA. Read only for a concrete dependency or placement question.",
     "consumer": "Indexed-library retrieval for a later concrete source question; no current implementation consumer.",
     "retention": "Keep as a reusable retrieval reference."
+  },
+  "zen3-dflash2-cross-expert-nt1-20261126": {
+    "classification": "decision_support",
+    "stage": "native_reviewed",
+    "source_revision": "968e71988953dca3d98037d3b3fec9f903bdfd6f",
+    "main_policy_revision": "97251ff0edc22e3f5364ba66ab568a2afcc69777",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zen3-dflash2-cross-expert-nt1-20261126/report.md",
+    "report_bytes": 11921,
+    "report_sha256": "766d7619fa264e6c46a3be01344685a20fed843e6b3a956e1dbb7f0a96faddd6",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zen3-dflash2-cross-expert-nt1-20261126/native-luna-max-review.md",
+    "review_sha256": "4deba42b97ea5058100a0dcb21303f53f707537e3fb63c120a413f73a45eb984",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "dispatch": "ctx_e57c013214a7",
+    "worker_read_only": true,
+    "worker_side_orca_reachable": true,
+    "schedulable_now": false,
+    "finding": "The reached path already shares activation quantization and the pool submission. Grouping independent expert jobs preserves distinct weight traffic and Down input. Compare work descriptor grouping before changing packed row layout.",
+    "consumer": "For a CPU fixed-work follow-up, compare groups of 1, 2 and 4 with actual GU formats and hot/rotating weights. Commit repetition, order and stop rules, fix worker and submission counts, and require exact bit parity and a rotating-set gain before a model trial.",
+    "retention": "Review after the paired CPU scheduling decision. Report is decision support with no measured speedup."
   }
 }
