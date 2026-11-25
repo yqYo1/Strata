@@ -28,9 +28,13 @@ def inputs(revision):
     admitted, environment = width_probe.inputs(revision)
     compiled = bank.previous.read(build.ROOT / 'record.json')
     build.context().check(compiled)
+    policy = basis.validation.committed(bank.RESULT, (build.POLICY_KEY,))
     require(compiled['stage'] == 'built' and compiled['passed'] and compiled['ownership_closed']
-            and compiled['host_control']['passed'] and compiled['head_policy_control']['passed']
-            and compiled['head_policy_control']['ownership_closed'], 'verify the complete C5 build and host controls')
+            and compiled['host_control']['passed'] and policy['stage'] == 'closed' and policy['passed']
+            and policy['ownership_closed'] and policy['exit_code'] == 0 and not policy['GPU_executed']
+            and policy['plan']['build_sha256'] == bank.signature(build.builder.compact(compiled))
+            and policy['plan']['binary'] == compiled['binaries'][build.POLICY_TARGET],
+            'verify the C5 build and same-build host controls')
     binary = compiled['binaries']['strata']
     sources = {THIS, build.THIS, str(Path(width_probe.__file__).resolve().relative_to(bank.P)),
                str(Path(audit.__file__).resolve().relative_to(bank.P))}
@@ -61,6 +65,7 @@ def inputs(revision):
     plan = {k: admitted[k] for k in ('boot', 'driver', 'runtime_manifest', 'model_assets_sha256',
                                      'validation', 'drafter_assets', 'request', 'native_limits')}
     plan.update(source_commit=revision, sources=pins, predecessor_inputs=admitted['inputs'],
+                head_policy_sha256=bank.signature(policy),
                 binary=binary, native_source_commit=compiled['native_source_commit'],
                 native_build_sha256=bank.signature(build.builder.compact(compiled)),
                 cases=cases, order=list(ORDER),

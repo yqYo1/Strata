@@ -17,6 +17,11 @@ C5_INITIAL = 'ac3ba9d8501ecf88181fe6ec883120f532ec34d2'
 C5_SOURCE = 'b06064eadf1331104f48883c21425a296648392e'
 POLICY_TARGET = 'sycl_verify_window_policy_test'
 POLICY_TEST = 'tests/core/verify_window_policy_test.cpp'
+POLICY_KEY = 'dflash2_c5_head_policy_v2'
+POLICY_ROOT = ROOT / 'head-policy-v2'
+POLICY_REFUSAL = '1315025aaefe4af60709eec49fd8afca588a2169'
+POLICY_OUT = ('verify-window-policy: passed selections=30 centering=18 native-half=26 dpas-head=1 '
+              'dpas-dense=4 phase-roundtrip=1 invalid-keys=4 retirement=1 route-budget=64\n')
 VERIFY = 'src/core/verify.cpp'
 KERNEL_INPUTS = ('include/strata/core/verify_window_policy.hpp',
                  'src/kernels/sycl/q6_dpas_component.cpp',
@@ -143,32 +148,70 @@ def context():
     return ctx
 
 
-def head_policy(ctx):
-    row = bank.previous.read(ROOT / 'record.json')
-    ctx.check(row)
-    require(row['stage'] == 'built' and row['host_control']['passed'] and 'head_policy_control' not in row,
-            'commit the full build and its preserved prefill host controls')
-    owner = builder.ownership.Owner(ROOT / 'owned-policy')
-    binary = row['binaries'][POLICY_TARGET]
+def save_policy(row):
+    bank.stage.write(POLICY_ROOT / 'record.json', row)
+    data = bank.previous.read(bank.RESULT)
+    data[POLICY_KEY] = row
+    bank.stage.write(bank.RESULT, data)
+
+
+def head_policy(ctx, prepare):
+    compiled = bank.previous.read(ROOT / 'record.json')
+    ctx.check(compiled)
+    earlier = bank.previous.historic(POLICY_REFUSAL, KEY)
+    compact = builder.compact(compiled)
+    require(compact == earlier and not earlier['head_policy_control']['passed']
+            and compiled['stage'] == 'built' and compiled['host_control']['passed'],
+            'keep the original failed head check and successful prefill control')
+    binary = compiled['binaries'][POLICY_TARGET]
+    identity = dict(binary=binary, native_source_commit=compiled['native_source_commit'],
+                    build_sha256=bank.signature(compact), environment_sha256=bank.signature(compiled['recipe']['environment']))
+    if prepare:
+        require(not POLICY_ROOT.exists() and POLICY_KEY not in bank.basis.validation.committed(bank.RESULT),
+                'fresh host-policy supervision plan required')
+        pins = bank.stage.source.pin(bank.P, [THIS])
+        prior_budget_scope = builder.ownership.artifact_bytes(ROOT)
+        require(prior_budget_scope > (4 << 20), 'recover the original whole-build output-budget conflict')
+        plan = dict(**identity, source_commit=pins['revision'], controller_sha256=pins['source_sha256'][THIS],
+                    original=POLICY_REFUSAL, old_scope_bytes_at_review=prior_budget_scope,
+                    output_scope=str(POLICY_ROOT), expected=POLICY_OUT,
+                    budgets=dict(wall=90, cpu=60, rss_cap=1 << 30, text_cap=128 << 10,
+                                 file_cap=1 << 20, total_cap=4 << 20))
+        POLICY_ROOT.mkdir(mode=0o700)
+        save_policy(dict(stage='prepared', plan=plan, passed=False, ownership_closed=True))
+        return
+
+    row = bank.previous.read(POLICY_ROOT / 'record.json')
+    plan = row['plan']
+    execution = POLICY_ROOT / 'execution.json'
+    path = bank.P / THIS
+    require(row == bank.basis.validation.committed(bank.RESULT, (POLICY_KEY,)) and row['stage'] == 'prepared'
+            and all(plan[k] == v for k, v in identity.items())
+            and plan['output_scope'] == str(POLICY_ROOT) and plan['expected'] == POLICY_OUT
+            and bank.sha(path) == plan['controller_sha256']
+            and path.read_bytes() == bank.stage.source.git(bank.P, 'show', plan['source_commit'] + ':' + THIS)
+            and not execution.exists(), 'commit the independent host-policy check and preserve its inputs')
+    owner = builder.ownership.Owner(POLICY_ROOT / 'owned', lambda: bank.stage.write(
+        execution, dict(active=bool(owner.active), commands=owner.commands)))
     try:
-        entry, out, err = owner.run('verify-five-column-policy', [binary['path']], row['recipe']['environment'],
-                                     bank.P, wall=90, cpu=60, rss_cap=1 << 30, text_cap=128 << 10,
-                                     file_cap=1 << 20, total_cap=4 << 20)
+        entry, out, err = owner.run('verify-five-column-policy', [binary['path']], compiled['recipe']['environment'],
+                                    bank.P, **plan['budgets'])
+        row.update(exit_code=entry.get('exit_code'), supervisor_error=entry.get('error'))
         require(builder.ownership.closed(entry) and entry['exit_code'] == 0 and not err.read_bytes()
-                and out.read_text().startswith('verify-window-policy: passed '), 'head policy fixture failed')
-        row['head_policy_control'] = dict(passed=True, exit_code=0, binary=binary,
-                                         result=out.read_text().strip(), GPU_executed=False)
+                and out.read_text() == plan['expected'], 'head policy fixture failed')
+        row.update(stage='closed', passed=True, result=out.read_text().strip(), GPU_executed=False)
     except BaseException as error:
-        row['head_policy_control'] = dict(passed=False, error=repr(error))
+        row.update(stage='failed', passed=False, error=repr(error))
         raise
     finally:
-        row['head_policy_control']['ownership_closed'] = (not owner.active and bool(owner.commands)
-            and all(builder.ownership.closed(entry) for entry in owner.commands))
-        ctx.save(row)
+        row['ownership_closed'] = (not owner.active and bool(owner.commands)
+            and all(builder.ownership.closed(cmd) for cmd in owner.commands))
+        save_policy(row)
 
 
 def main(action):
-    require(action in ('projection', 'prepare', 'configure', 'compile', 'host', 'head-policy'), 'select a build stage')
+    require(action in ('projection', 'prepare', 'configure', 'compile', 'host', 'prepare-head-policy', 'head-policy'),
+            'select a build stage')
     with (bank.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         builder.guards.no_model_owners([])
@@ -181,8 +224,8 @@ def main(action):
             base.prepare(ctx)
         elif action == 'host':
             bank.stage.host(root_path=ROOT, check_build=ctx.check, save_record=ctx.save)
-        elif action == 'head-policy':
-            head_policy(ctx)
+        elif action in ('prepare-head-policy', 'head-policy'):
+            head_policy(ctx, prepare=action == 'prepare-head-policy')
         else:
             record = bank.previous.read(ROOT / 'record.json')
             builder.TARGETS = record['recipe']['targets']
