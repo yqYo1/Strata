@@ -1,5 +1,5 @@
 {
-  "stage": "built",
+  "stage": "checked",
   "source_commit": "fc0272d6778c30c243e05964a876ff1bc6842bb1",
   "machine": {
     "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
@@ -258,7 +258,96 @@
     "file": 67108864,
     "total": 402653184
   },
-  "processes": [],
+  "processes": [
+    {
+      "round": 0,
+      "mode": "pool",
+      "cores": 5,
+      "placement": {
+        "kind": "replay_placement",
+        "host_cpu": 0,
+        "workers": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "caller_computes": false
+      },
+      "arm": "reference",
+      "outputs": {
+        "prefill": "17224365448020706859",
+        "decode": "17224365448020706859"
+      },
+      "warm_check_rows": 74880,
+      "owner": {
+        "pid": 3549736,
+        "direct_identity": {
+          "pid": 3549736,
+          "state": "R",
+          "ppid": 3549605,
+          "pgid": 3549736,
+          "sid": 3549736,
+          "start_ticks": 395473145,
+          "rss_bytes": 450560
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 1.0070073041133583,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "errors": [],
+        "cleanup": [],
+        "peak_session_rss_bytes": 338649088
+      }
+    },
+    {
+      "round": 0,
+      "mode": "pool",
+      "cores": 5,
+      "placement": {
+        "kind": "replay_placement",
+        "host_cpu": 0,
+        "workers": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "caller_computes": false
+      },
+      "arm": "pair",
+      "outputs": {
+        "prefill": "17224365448020706859",
+        "decode": "17224365448020706859"
+      },
+      "warm_check_rows": 74880,
+      "owner": {
+        "pid": 3549774,
+        "direct_identity": {
+          "pid": 3549774,
+          "state": "R",
+          "ppid": 3549605,
+          "pgid": 3549774,
+          "sid": 3549774,
+          "start_ticks": 395473253,
+          "rss_bytes": 446464
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 0.9922017459757626,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "errors": [],
+        "cleanup": [],
+        "peak_session_rss_bytes": 372408320
+      }
+    }
+  ],
   "active": false,
   "ownership_closed": true,
   "gpu_executed": false,
