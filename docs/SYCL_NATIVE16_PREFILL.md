@@ -11279,7 +11279,18 @@ by 10.599–11.048 seconds. The bank's requested H2D bytes can increase or
 decrease on first use. Their largest absolute difference in these four
 processes is 66,713,600 bytes, about 11 ms at the separate large-copy
 reference. Measuring cache seeding and fixed first-use costs requires its
-own comparison. The held-out predictions await both blocks.
+own comparison. The final held-out comparison awaits both blocks.
+
+The 118,785-token process at `7ea730475` closes the forward block with
+matched placement, all routes and no fresh Xe fault. First prefill is
+964.2 tok/s, followed by 1,055.7 and 1,055.0 tok/s. Client TTFT is 123.387,
+112.716 and 112.789 seconds. A descriptive affine fit of the four training
+lengths in this first block gives first-prefill time `13.301 + 0.000926354 n`
+seconds and subsequent time `2.773 + 0.000925418 n` seconds. At the reserved
+110,593-token length, the predictions are 115.750 and 105.118 seconds,
+0.393 seconds below and 0.023 seconds above the observed times. These
+coefficients cover one process per length and this range. Complete the
+reverse block before comparing the candidate time models.
 
 The next prefill scheduling candidate is batched issue on the current
 32-slot bank. Earlier 128-slot comparisons at `982211f5c` and `297adab4d`
