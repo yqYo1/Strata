@@ -650828,5 +650828,144 @@
       "bytes": 23625042,
       "exact_source_and_recipe_recovered": true
     }
+  },
+  "q6_canonical_c5_component_build_v1": {
+    "stage": "prepared",
+    "toolchain": {
+      "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
+      "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
+      "/opt/intel/oneapi/compiler/2026.2/bin/icpx": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
+      "/opt/intel/oneapi/compiler/2026.2/bin/icx": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213"
+    },
+    "external_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
+      "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
+    },
+    "fallbacks": {
+      "strata": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/strata",
+        "sha256": "405bea1ac1628c88e78fea245350cd7ce2f0cab8a8a53b44262e483b8d5d5cf7",
+        "bytes": 26550352
+      }
+    },
+    "selected_native": {
+      "record": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/record.json",
+        "sha256": "1ea2f724ae858d4767ad2a2c98a1709defe38acd12f1ccf97d928cd97696b915"
+      },
+      "evidence_commit": "d6f2b82947018f85e8e6169bd2072fb076c03f19",
+      "source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+      "engine": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/strata",
+        "sha256": "405bea1ac1628c88e78fea245350cd7ce2f0cab8a8a53b44262e483b8d5d5cf7",
+        "bytes": 26550352
+      },
+      "verify_policy": {
+        "native_sha256": "36ee46ce251ec720710c7bb22550e20111fad94c259dbed5d65eecb4db7288ae",
+        "component_sha256": "be517d179213990d646d8d40f1843298d2e9c8df43f014a5eb41d87531dd87a4"
+      },
+      "runtime_sources": {
+        "files": 31,
+        "sha256": "d9a55a24fd29a93612f396d190d240d077a26c24dbc908723eda150968d4738c"
+      }
+    },
+    "budgets": {
+      "wall": 1200,
+      "cpu": 3600,
+      "rss_cap": 8589934592,
+      "text_cap": 33554432,
+      "file_cap": 134217728,
+      "total_cap": 536870912
+    },
+    "passed": false,
+    "complete": false,
+    "active": false,
+    "ownership_closed": true,
+    "host_budget": {
+      "wall": 120,
+      "cpu": 120,
+      "rss_cap": 1073741824,
+      "text_cap": 1048576,
+      "file_cap": 2097152,
+      "total_cap": 67108864
+    },
+    "plan": {
+      "compile_target": "sycl_q6_canonical_component",
+      "initial_native_checks": [
+        "--host",
+        "--host-c5",
+        "--check-c5-small"
+      ],
+      "scope": "One fixture-only build. Match the retained DPC++ recipe. Validate device loading and five-column numerical results in a separate bounded run.",
+      "next": "After the small guard/oracle checks, measure head and dense shapes independently in three fresh processes."
+    },
+    "retention": "One standalone fixture for the immediate C5 comparison. Retire the build after the component decision and preserve its exact source and recipe.",
+    "project": {
+      "root": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "revision": "a0e625ff8f0858269691be9ec3ca7306f1440b88",
+      "count": 924,
+      "aggregate_sha256": "fe1e5315d45b2a6a41900ae573aefcd566e35f1c51c2e898985e139dd49a3231"
+    },
+    "dependencies": [
+      {
+        "root": "/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
+        "count": 291,
+        "aggregate_sha256": "7a62d27a364d6b6725a2983cbf5bbf2a47aca52b55403c369528cbb05f998f82"
+      },
+      {
+        "root": "/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+        "revision": "87f6850680a580654b9ea2c80dbc01aeb36ad231",
+        "count": 906,
+        "aggregate_sha256": "66875926f8dac08c4a39af4ffbf57cfc18a375f608629dd535dd3994291c89a0"
+      }
+    ],
+    "recipe": {
+      "configure": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/orca/workspaces/Strata/sycl",
+        "-B",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-canonical-c5-component-v1/build",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
+        "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=OFF",
+        "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
+        "-DSTRATA_BUILD_TESTS:BOOL=OFF",
+        "-DSTRATA_CPU_ARCH:STRING=znver3",
+        "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
+        "-DSTRATA_ENABLE_HIP:BOOL=OFF",
+        "-DSTRATA_ENABLE_SYCL:BOOL=ON",
+        "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
+        "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
+        "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
+        "-DSTRATA_PORTABLE:BOOL=OFF",
+        "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
+        "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
+        "-DSTRATA_SYCL_TESTS:BOOL=ON",
+        "-DSTRATA_WERROR:BOOL=ON",
+        "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
+        "-DSTRATA_SYCL_DEVICE_ARCH=",
+        "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+        "-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+        "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t",
+        "-DSTRATA_CPU_SERVICE_PROFILE:BOOL=ON",
+        "-DSTRATA_SYCL_PREFILL_NATIVE_COPY=ON",
+        "-DSTRATA_QSA_PREFILL_PV_SOURCE:FILEPATH=/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/qsa_prefill_probability_generated.cpp"
+      ],
+      "targets": [
+        "sycl_q6_canonical_component"
+      ],
+      "build_targets": [
+        "sycl_q6_canonical_component"
+      ]
+    },
+    "build_environment_sha256": "1cfe2570e1a297779873d2058b29ba42e3c4f3b5ba747f8457cde4c39c3d5344",
+    "commands": []
   }
 }
