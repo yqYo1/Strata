@@ -658849,8 +658849,41 @@
       "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
       "scope": "Short observer smoke, then fresh copy and direct processes. Require matching five tap digests, active target state, expert/KV work and output. Diagnostic clocks only. Preserve the first failed outcome and stop."
     },
-    "stage": "prepared",
-    "outcomes": {},
+    "stage": "failed",
+    "outcomes": {
+      "smoke": {
+        "complete": false,
+        "host_probe_accepted": false,
+        "requests": [
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          }
+        ],
+        "native_exit_code": 0,
+        "native_identity": {
+          "pid": 216563,
+          "start_ticks": 397488525
+        },
+        "error": "RuntimeError('missing target state or DFlash2 verifier work')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
+      }
+    },
     "active": false,
     "complete": false,
     "passed": false,
