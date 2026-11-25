@@ -11334,6 +11334,16 @@ The fixture SHA-256 is
 The compact command ledger SHA-256 is
 `4a50ca54cfaffbc31a6c2f121464bbc88ee2d2a83d0561335b01afba9942dfca`.
 The model comparison requires its own coherent candidate engine.
+The [candidate build planner](../bench/sycl/dflash2_mode16_batch_build.py)
+preserves the closed primary prefill and independent decode executables
+and copies the primary CMake configuration into a new root. Its only
+native deltas are the checked prefill admission and 32-slot fixture.
+It reuses the historical foundation reader from `2e2191bf8` with the
+same Git blob, keeping the original source and recipe proof and checking
+live toolchain and runtime inputs. Use the artifact-free `plan` first.
+Before `prepare`, resolve the live consumers of the old coherent and
+snapshot builds. Retire this candidate at the first failed gate or
+after the comparison when its consumers close.
 
 The component completed its device test. The compact
 record remains under `dflash2-mode16-batch-fixture-v1`. Retired its
