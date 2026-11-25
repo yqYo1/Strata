@@ -11547,7 +11547,11 @@ host grouping. Match the archived native work in every request and
 require the accounting to fit inside the prompt interval. Check observer
 overhead separately on the subsequent requests. Keep the first-use clock
 ratios as observations because the first-use spread can exceed observer
-overhead. Host and model admission for this controller are pending.
+overhead. At `edfdc8812`, three host parser tests verify the complete CPU
+partition and reject incomplete MoE status wrapper output, incorrect call
+counts and nested totals outside the enclosing interval. The status copy,
+submission, drain and postcheck subtotals remain nested. Frontend and model
+admission for this comparison are pending.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
