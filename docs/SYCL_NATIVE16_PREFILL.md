@@ -11215,10 +11215,17 @@ from the pushed primary, matches the measured source manifest and the
 materialized header. Its SHA-256 is
 `36ee46ce251ec720710c7bb22550e20111fad94c259dbed5d65eecb4db7288ae`.
 The header at the snapshot controller revision has a different digest.
-Recover the exact header from `02d64c4ca` and scope the generic executable
-fallback check to the standalone Q6 fixture after the continuation cohort.
-That cohort pins the Q6 builder. Retain the consumed receipts and verify
-the remaining legacy readers and original build inputs before retirement.
+The Q6 controller at `7acf48b93` reads the exact Git header and keeps the
+original engine identity as provenance. Both standalone fixture plans pass
+source and recipe admission with access to the 24 old executables and the
+old materialized header blocked. The canonical proof uses a temporary key
+because its historical build key is occupied.
+
+The three host recovery tests at `15ac8515f` also pass. The target-snapshot
+projection recovers all 1,171 source files and the original 279 project
+compiler inputs while access to both generations' 24 executables is
+blocked. Retain the consumed receipts and verify the remaining legacy
+readers and exact original build outputs before retirement.
 
 The `host`, `taps` and `restore` captures under `dflash2-primary-checks-v1`
 were removed after verifying ownership and the committed proof. The 20
