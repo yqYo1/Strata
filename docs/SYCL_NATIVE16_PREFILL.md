@@ -11210,12 +11210,15 @@ The records and original measured engine identity match the committed
 `ad8652973` reference. The closed curve used both older executable
 generations during admission. The future packed Q6 fixture consumes the
 snapshot's build receipt, compiler receipt and original verifier policy
-header. Its generic fallback check also hashes the old snapshot engine
-even though the component command only runs the standalone fixture.
-Retain the consumed metadata and scope that fallback check before
-retiring the snapshot. Update the fallback check after the frozen
-continuation cohort, which also pins the Q6 builder. Recheck the remaining
-legacy consumers and original build inputs before removing either generation.
+header. The header at `02d64c4ca533e357b0c408047a749626790b476b`, reachable
+from the pushed primary, matches the measured source manifest and the
+materialized header. Its SHA-256 is
+`36ee46ce251ec720710c7bb22550e20111fad94c259dbed5d65eecb4db7288ae`.
+The header at the snapshot controller revision has a different digest.
+Recover the exact header from `02d64c4ca` and scope the generic executable
+fallback check to the standalone Q6 fixture after the continuation cohort.
+That cohort pins the Q6 builder. Retain the consumed receipts and verify
+the remaining legacy readers and original build inputs before retirement.
 
 The `host`, `taps` and `restore` captures under `dflash2-primary-checks-v1`
 were removed after verifying ownership and the committed proof. The 20
