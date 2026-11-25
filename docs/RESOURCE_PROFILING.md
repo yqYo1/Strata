@@ -363,7 +363,10 @@ per-layer counts, the cap, fresh records including zero-window requests,
 rejection of incomplete or split windows and bounds rejection. The first
 host compile at `227dc5826` stops on GCC's ignored-attributes warning for
 `decltype(&std::fclose)` under `-Werror`. Use a lambda deleter in both the
-fixture and native callback owner.
+fixture and native callback owner. The repaired fixture at `6fb0caa7c`
+passes with executable SHA-256
+`8421b1fe35b34012f23023db5c441899889d4ab52798af6cc0aee9143897618a`.
+The disposable test executable was removed after the run.
 
 After the host fixture, validate the exact serving callback with an
 independent routing capture on the same build and request. Compare the
