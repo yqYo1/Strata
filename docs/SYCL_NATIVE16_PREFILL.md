@@ -11297,6 +11297,12 @@ cache-hit contrast. The three counterbalanced clean pairs with statistics
 disabled decide the repeatable timing effect. The seeded diagnostic still
 has a 9.573 s first-versus-subsequent prefill gap at the same input length.
 
+In the first clean pair, the empty-cache process at `22f34df33` completes
+with no fresh Xe fault. Its first and subsequent prefill are 109.4903 and
+97.3855 s (935.252 and 1,051.502 tok/s), with first client TTFT 109.672 s.
+Both requests have the planned placement and work. The paired seeded
+process uses the same statistics-disabled protocol.
+
 The [primary continuation plan](../bench/dflash2_primary_continuation.py)
 uses the same retained binary and KV selection for three independent
 `bench.sh --long-generation-only --long-generation-input-case split-v1-96k`
