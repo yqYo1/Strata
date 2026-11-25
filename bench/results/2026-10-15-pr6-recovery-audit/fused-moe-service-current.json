@@ -651197,7 +651197,7 @@
     ]
   },
   "q6_canonical_c5_component_check_v1": {
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "6f93741e558e341337fe887388c1e0cf50a95907",
     "controller_sha256": "4a0e04071dec6a07d664e50447f2ca6233ccde3fa384d4f4df71bcbd110dc736",
     "python": {
@@ -651277,7 +651277,114 @@
       "STRATA_Q6_DPAS_GATE": "1"
     },
     "active": false,
-    "outcomes": [],
+    "outcomes": [
+      {
+        "mode": "small",
+        "provider_admission": [
+          {
+            "phase": 0,
+            "mapped_files": 21
+          },
+          {
+            "phase": 1,
+            "mapped_files": 34
+          }
+        ],
+        "host_probe_accepted": true,
+        "native_identity": {
+          "pid": 2273561,
+          "state": "S",
+          "ppid": 2272981,
+          "pgid": 2273561,
+          "sid": 2273561,
+          "start_ticks": 391995902,
+          "rss_bytes": 61014016
+        },
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2273561,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "numerical": [
+          {
+            "k": 256,
+            "n": 1,
+            "checked_outputs": 5,
+            "oracle_rows": 1,
+            "max_abs_error": 0.0
+          },
+          {
+            "k": 256,
+            "n": 1,
+            "checked_outputs": 5,
+            "oracle_rows": 1,
+            "max_abs_error": 0.0
+          },
+          {
+            "k": 256,
+            "n": 17,
+            "checked_outputs": 85,
+            "oracle_rows": 17,
+            "max_abs_error": 0.0
+          },
+          {
+            "k": 256,
+            "n": 17,
+            "checked_outputs": 85,
+            "oracle_rows": 17,
+            "max_abs_error": 0.0
+          },
+          {
+            "k": 512,
+            "n": 33,
+            "checked_outputs": 165,
+            "oracle_rows": 33,
+            "max_abs_error": 3.81469726562e-06
+          },
+          {
+            "k": 512,
+            "n": 33,
+            "checked_outputs": 165,
+            "oracle_rows": 33,
+            "max_abs_error": 3.81469726562e-06
+          },
+          {
+            "k": 6144,
+            "n": 33,
+            "checked_outputs": 165,
+            "oracle_rows": 33,
+            "max_abs_error": 2.28881835938e-05
+          },
+          {
+            "k": 6144,
+            "n": 33,
+            "checked_outputs": 165,
+            "oracle_rows": 33,
+            "max_abs_error": 3.0517578125e-05
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
     "plan": {
       "order": [
         "small",
