@@ -690386,7 +690386,7 @@
       "sources_count": 421,
       "sources_sha256": "7461c17614d2da194406c1fbfb6a187470fc27cfb6c9d5889dab1545f5876249"
     },
-    "stage": "partial",
+    "stage": "closed",
     "outcomes": {
       "smoke": {
         "complete": true,
@@ -690697,12 +690697,251 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "direct": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "requests": [
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          },
+          {
+            "prompt": 122881,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 25,
+            "finish": "length"
+          },
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          }
+        ],
+        "info": {
+          "context": "262144",
+          "spec": "4",
+          "kv": "int8",
+          "kv_resident": "20480",
+          "expert_slots": "1256"
+        },
+        "native_exit_code": 0,
+        "native_identity": {
+          "pid": 3980848,
+          "start_ticks": 396455572
+        },
+        "validation": {
+          "pid": 3980848,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "route": {
+          "free_bytes": 4197777408,
+          "arena_bytes": 1180698624,
+          "allocation_limit": 10132807680,
+          "logical_copy_bytes": 0,
+          "fixed_with_headroom": 4037215232,
+          "free_bytes_beyond_reserve": 160562176,
+          "requested_bank_H2D_bytes": 48769305600,
+          "uploads": 23813,
+          "jobs": 26628,
+          "dequants": 23813,
+          "windows": 48,
+          "maximum_rows": 122880
+        },
+        "states": [
+          {
+            "L": "114",
+            "gdn": "4f5ea7ff8b50a528",
+            "ple": "658c6b4cf144dfa8",
+            "tail": "60845c54dfa17711",
+            "pooled": "cd5a74ed9881eb7e",
+            "kv": "928417f78152ab15",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          },
+          {
+            "L": "122913",
+            "gdn": "b51752c8f06d8cbc",
+            "ple": "2fcd3e3d1fc3f7b4",
+            "tail": "f41393cfdfb0aaeb",
+            "pooled": "a2c5ecd0f00fa5b5",
+            "kv": "39f4010ae5f92133",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          },
+          {
+            "L": "114",
+            "gdn": "4f5ea7ff8b50a528",
+            "ple": "658c6b4cf144dfa8",
+            "tail": "60845c54dfa17711",
+            "pooled": "cd5a74ed9881eb7e",
+            "kv": "928417f78152ab15",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          }
+        ],
+        "kv_stage": {
+          "reloaded_pages": 645120,
+          "reused_pages": 1935360,
+          "prefix_H2D_calls": 168,
+          "mirror_D2H_calls": 720,
+          "mirror_D2H_bytes": 1557135360,
+          "requested_prefix_H2D_bytes": 2724986880
+        },
+        "tap_rows": [
+          81,
+          2046,
+          81
+        ],
+        "loan": {
+          "phase": "ready",
+          "generation": "1",
+          "chunk": "8192",
+          "first": "132",
+          "lent": "1124",
+          "decode_ready": "1"
+        },
+        "first_verifier_window": [
+          122880,
+          1
+        ],
+        "packed_layers_sha256": "b122de626509801416f205eefcf736da5063fe266bed080d526929ee4305cf7c",
+        "usable_slots_by_layer": [
+          39,
+          56,
+          43,
+          43,
+          43,
+          43,
+          43,
+          39,
+          56,
+          43,
+          56,
+          43,
+          49,
+          56,
+          39,
+          43,
+          39,
+          36,
+          39,
+          43,
+          49,
+          45,
+          39,
+          43,
+          43,
+          36,
+          43,
+          36,
+          36,
+          36,
+          49,
+          39,
+          43,
+          39,
+          43,
+          36,
+          56,
+          39,
+          39,
+          43,
+          36,
+          39,
+          39,
+          39,
+          36,
+          36,
+          39,
+          32
+        ],
+        "tap_payloads": [
+          {
+            "prompt": 82,
+            "first": 0,
+            "rows": 81,
+            "width": 2560,
+            "readback_bytes": 4147200,
+            "layer_digests": {
+              "5": "ccca5b76e361a98d",
+              "15": "ecabd168a31c99ea",
+              "25": "c2830715533c6d35",
+              "35": "6c7282e5768ae508",
+              "45": "ed7e4c50369e8ea0"
+            }
+          },
+          {
+            "prompt": 122881,
+            "first": 120834,
+            "rows": 2046,
+            "width": 2560,
+            "readback_bytes": 104755200,
+            "layer_digests": {
+              "5": "36793d4118030beb",
+              "15": "8b91eac8a876c7e9",
+              "25": "6440a7e781163448",
+              "35": "8e20c048686a4c0b",
+              "45": "03d964aee876a80b"
+            }
+          },
+          {
+            "prompt": 82,
+            "first": 0,
+            "rows": 81,
+            "width": 2560,
+            "readback_bytes": 4147200,
+            "layer_digests": {
+              "5": "ccca5b76e361a98d",
+              "15": "ecabd168a31c99ea",
+              "25": "c2830715533c6d35",
+              "35": "6c7282e5768ae508",
+              "45": "ed7e4c50369e8ea0"
+            }
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     },
     "active": false,
-    "complete": false,
-    "passed": false,
+    "complete": true,
+    "passed": true,
     "ownership_closed": true,
-    "speed_eligible": false
+    "speed_eligible": false,
+    "comparison": {
+      "independent_native_processes": true,
+      "tap_differences": [],
+      "matched_state": true,
+      "matched_work": true,
+      "correct_writer": true
+    }
   }
 }
