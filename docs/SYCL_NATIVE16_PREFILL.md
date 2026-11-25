@@ -11224,6 +11224,26 @@ full-chunk 122881 reference and any rejected admission or fallback. The curve
 runner reverses the process order for the second block and excludes the
 reserved length from each fit. [Length curve runner](../bench/dflash2_primary_prefill_curve.py).
 
+The first 110,593-token process at `aad1422fc` validates all three request
+routes and closes with no fresh Xe fault. Prefill is 952.219 tok/s on first
+use and 1,052.936 and 1,051.701 tok/s on subsequent requests. Client TTFT is
+116.331, 105.225 and 105.349 seconds, respectively. Every request observes
+672 direct pieces, 559,104 reloaded KV pages and 1,677,312 reused stage
+pages. Keep these observations outside the training lengths for the fit.
+
+The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
+at `38b2d252d` uses 54 synthetic services and 1,303 event records.
+The host count through the production chat renderer and tokenizer is
+35,915 input tokens with thinking enabled and a 16,384-token output cap.
+The exact JSON wire SHA-256 is
+`06b1845151ce2fa7a79fa020108b9c44b9afb0dd77046475dd4cb1c6441aa748`.
+The validator accepts the independently derived incident decision and
+rejects a wrong service, incomplete JSON block and duplicate key.
+Before the model screen, bind the wire hash and live count to the exact
+benchmark request. Capture native DONE segments and the corresponding
+server history row to account for server-inserted output separately.
+The screen will establish actual answer accuracy and draft acceptance.
+
 Retired the six numbered directories and `host` under state
 `dflash2-prefill-kv-stage-speed-v4` covering 430 files and 74709297 bytes.
 The inventory SHA-256 over relative paths, byte counts and file hashes is
