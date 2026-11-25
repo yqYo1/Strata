@@ -159,7 +159,7 @@ def validate_answer(text, expected):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--services', type=int, default=80)
+    parser.add_argument('--services', type=int, default=54)
     parser.add_argument('--check-answer', type=Path)
     args = parser.parse_args()
     fixture = build(args.services)
