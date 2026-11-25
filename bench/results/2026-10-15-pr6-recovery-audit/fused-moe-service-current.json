@@ -655030,7 +655030,7 @@
       "gates": "Require live target-only restore, checked RAM payload for all 12 attention layers and running state, expected server extents and progress, DFlash2 tail, KV staging and no runtime or ownership failure.",
       "limits": "Instrumented native correctness. HTTP, direct writer and clean throughput are separate."
     },
-    "stage": "running",
+    "stage": "closed",
     "outcomes": {
       "host": {
         "complete": true,
@@ -655196,6 +655196,195 @@
           "running": "92e1c5e185456913",
           "running_bytes": "118069304",
           "upto": "32769",
+          "result": "PASS"
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      },
+      "near-copy": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "GPU_executed": true,
+        "requests": [
+          {
+            "prompt": 253919,
+            "read": 253919,
+            "reused": 0,
+            "output_hash": "6d4bbfb66910386a154ce3ec0b3d4ce7909406eab7e56213f980fae1600e72ca",
+            "finish": "length",
+            "publications": [
+              8192,
+              16384,
+              24576,
+              32768,
+              40960,
+              49152,
+              57344,
+              65536,
+              73728,
+              81920,
+              90112,
+              98304,
+              106496,
+              114688,
+              122880,
+              131072,
+              139264,
+              147456,
+              155648,
+              163840,
+              172032,
+              180224,
+              188416,
+              196608,
+              204800,
+              212992,
+              221184,
+              229376,
+              237568,
+              245760,
+              253918
+            ],
+            "active_state": {
+              "L": "253919",
+              "gdn": "a43f5c013842d138",
+              "ple": "57f5e744994111a5",
+              "tail": "0b70afd538c07755",
+              "pooled": "328da75ed1ce33a0",
+              "kv": "5558623124f4db54",
+              "mtp": "14650fb0739d0383",
+              "ple_prev": "4061,4062"
+            },
+            "draft_tail": {
+              "rows": 2046,
+              "cold_prefix": 0,
+              "vram_bytes": 845776220
+            },
+            "attention_store": {
+              "pieces": 720,
+              "direct": 0,
+              "copy_bytes": 120795955200,
+              "gpu_rows": 122880,
+              "host_rows": 131038,
+              "window_mode": 10,
+              "maximum_rows": 81920
+            },
+            "kv_stage": {
+              "reloaded_pages": 2856960,
+              "reused_pages": 8570880,
+              "mirror_D2H_calls": 1584,
+              "mirror_D2H_bytes": 3217648896
+            }
+          },
+          {
+            "prompt": 33,
+            "read": 33,
+            "reused": 0,
+            "output_hash": "614fcb0d009bbde79e77f822d20745611e7bdc8e9226a0c5591fbe0c292f9b51",
+            "finish": "length",
+            "publications": [
+              32
+            ],
+            "active_state": {
+              "L": "33",
+              "gdn": "d9e9a3ad75f9a003",
+              "ple": "9f417bc11288f313",
+              "tail": "dca122c73a9b6f43",
+              "pooled": "3cfd6a9da9e65a29",
+              "kv": "06640dd3c43a1316",
+              "mtp": "14650fb0739d0383",
+              "ple_prev": "159,160"
+            },
+            "draft_tail": {
+              "rows": 32,
+              "cold_prefix": 0,
+              "vram_bytes": 845776220
+            },
+            "attention_store": {
+              "pieces": 0,
+              "direct": 0,
+              "copy_bytes": 0
+            }
+          },
+          {
+            "prompt": 262128,
+            "read": 8209,
+            "reused": 253919,
+            "output_hash": "4ec308a86927b5455193f71ed63ddefb06069cc0575c2ad34e4899f6ba5abd05",
+            "finish": "length",
+            "publications": [
+              262111,
+              262127
+            ],
+            "active_state": {
+              "L": "262128",
+              "gdn": "8a6a8dbd7fcba1b5",
+              "ple": "823f082ceb1feff0",
+              "tail": "6b01cbdab0e37288",
+              "pooled": "0eb2430a27ccebcd",
+              "kv": "fc5e12404709a390",
+              "mtp": "14650fb0739d0383",
+              "ple_prev": "271,256"
+            },
+            "draft_tail": {
+              "rows": 2046,
+              "cold_prefix": 0,
+              "vram_bytes": 845776220
+            },
+            "attention_store": {
+              "pieces": 96,
+              "direct": 0,
+              "copy_bytes": 8068792320,
+              "gpu_rows": 8208,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 8208
+            },
+            "kv_stage": {
+              "reloaded_pages": 1548096,
+              "reused_pages": 0,
+              "mirror_D2H_calls": 480,
+              "mirror_D2H_bytes": 104011776
+            }
+          }
+        ],
+        "validation": {
+          "pid": 181971,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "restored_tokens": 253919,
+        "restore_payload": {
+          "draft": "0000000000000000",
+          "cells": "0",
+          "mode": "0",
+          "source": "ram",
+          "resident": "0",
+          "main": "900c437dcca5fd39",
+          "main_layers": "12",
+          "main_bytes": "3607695360",
+          "draft_bytes": "0",
+          "running": "094200f8c3b9b3cf",
+          "running_bytes": "118069304",
+          "upto": "253919",
           "result": "PASS"
         },
         "ownership_closed": true,
@@ -655400,8 +655589,8 @@
         "environment_sha256": "773615d8fec720479cc9fa75335ba5d1b64cb94d0abb57c192f1be33b9d2945b"
       }
     ],
-    "complete": false,
-    "passed": false,
+    "complete": true,
+    "passed": true,
     "active": false,
     "ownership_closed": true,
     "speed_eligible": false,

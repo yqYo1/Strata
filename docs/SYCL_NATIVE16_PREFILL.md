@@ -11109,11 +11109,18 @@ fault. At `137fb933f`, the same copy-writer diagnostic processes all 262,144
 inputs. It batches 262,143 rows with 122,880 BF16 rows in VRAM and 139,263
 in host memory, then verifies the last physical slot and emits zero tokens.
 The process closes normally with no fresh Xe fault. All 15 model assets pass
-final full hashing. The native GEN restore runner repeats both parked prefix
-lengths and the unchanged continuation on this build. It reads the committed
-physical-context evidence. Direct-writer payload parity and clean speed have
-separate gates. [Physical-context runner](../bench/dflash2_primary_context.py)
-and [live restore runner](../bench/dflash2_primary_restore.py).
+final full hashing. The native GEN restore runner passes the two parked
+prefixes on the same primary build. Both resume with 8,209 fresh tokens.
+The 32,769-token prefix reaches 40,978 after restore. The 253,919-token prefix
+reaches 262,128 and emits one token. The near-capacity RAM snapshot passes
+readback verification for 3,607,695,360 bytes of target KV across 12 layers
+and 118,069,304 bytes of running state. Both native processes close normally
+with no fresh Xe faults. The final 15 model asset hashes match. Check the
+direct writer separately by comparing the five layer digests against the copy
+writer on the same build and fixed 82 / 122881 / 82 input sequence.
+[Physical-context runner](../bench/dflash2_primary_context.py),
+[live restore runner](../bench/dflash2_primary_restore.py) and
+[tap payload comparison](../bench/dflash2_primary_tap_payload.py).
 
 The primary long-prefill comparison closes at `bfc0c54ae`. The six
 independent processes use the same primary executable and change only
@@ -11131,8 +11138,7 @@ The final asset hashes match.
 Retain raises subsequent PP by 1.170%, 1.132% and 1.074% in pair order.
 It avoids 1,935,360 aligned-page copies, or 8,174,960,640 requested bytes
 per request. Each of the twelve subsequent measurements exceeds 1000 tok/s.
-Use retain for the length curve on this build. Live RESTORE and sustained
-decode checks remain separate.
+Use retain for the length curve on this build. Sustained decode checks are pending.
 
 Each private cache contains 54 driver cache entries. In all six processes
 the same 13 paths, totaling 954,872 bytes, have modification times between
