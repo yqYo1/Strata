@@ -11322,8 +11322,26 @@ The first attempt at `50ae05aa8` stopped during host admission while
 reading a probe field absent from the primary build receipt. Recover the
 probe from the closed same-build device qualification at `63c0c6353`
 and check both live image hashes.
-The transient component build serves this check. The model comparison
-requires its own coherent candidate engine.
+
+The bounded Arc B570 fixture passes at `3552b9d7a`. The 2,662,400-byte
+stride test checks 27 copies across five reused groups, then 16 copies
+through a cancellation drain. Payloads, the 16 unused slots and both
+guards match. All three owned compile, link and device commands close
+normally. Parameter validation is quiet, 33 initialized providers match
+their pins, and the boot and driver are unchanged with no fresh Xe fault.
+The fixture SHA-256 is
+`d1befbc96ef6cd8519e7856d968c4e0ce91fa2b009006507582510521cc71263`.
+The compact command ledger SHA-256 is
+`4a50ca54cfaffbc31a6c2f121464bbc88ee2d2a83d0561335b01afba9942dfca`.
+The model comparison requires its own coherent candidate engine.
+
+The component has completed its only device test. Retain the compact
+record under `dflash2-mode16-batch-fixture-v1` and retire its
+`cache`, `expert_bank.o`, `owned`, `sycl_expert_bank_test`, `tmp`
+and `validation.log` paths after verifying the committed inputs and
+closure. These paths hold 9 files and 974,941 bytes, with inventory
+SHA-256 `5f58aafc0b476a05a52c9369b318f282a4fe8ec3a722ae3d8fe1c6476edc0ebd`
+over sorted relative paths, byte counts and file hashes.
 
 On one candidate binary compare demand against batched with three
 opposite-order 102,401-token pairs. Hold the cache state, KV retention,
