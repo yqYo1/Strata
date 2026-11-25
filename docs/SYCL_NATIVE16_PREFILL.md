@@ -11043,8 +11043,12 @@ closure. At 122881 inputs the producer supplies 2046 rows beginning at
 120834. The direct control may change only the attention output writer.
 The host reader accepts the matched 82/122881/82 fixtures, reports the
 changed layer in a mismatched payload, and refuses eight invalid receipts.
-Native observer execution remains pending. Keep the diagnostic switch off
-when collecting speed samples.
+The coherent observer build has 137 fresh objects and passes its host gate
+at `89667ea9d`. The fresh 82-input request at `fb3d64f1d` records all five
+digests over 81 rows before ingestion, generates 32 tokens, accepts 23 of
+23 drafts and closes normally with no fresh Xe fault. The source and asset
+checks pass. The 82/122881/82 copy and direct payload comparison remains
+separate. Keep the diagnostic switch off when collecting speed samples.
 [Tap comparison reader](../bench/sycl/dflash2_tap_payloads.py).
 
 For the subsequent length curve, the measured source at `ad8652973`
