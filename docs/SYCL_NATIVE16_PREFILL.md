@@ -11207,14 +11207,15 @@ manifest SHA-256 is `e28ba38869c135026faf009c516b7042390e9493341ae200c2db24efdd5
 and the configure/build recipe hash is
 `f81ab214ebe8f896a93362bfa72327cc6baf7a375dfee6a757a10942b869a429`.
 The records and original measured engine identity match the committed
-`ad8652973` reference. The old executables still have admission readers;
-the running curve uses both. The future packed Q6 fixture consumes the
+`ad8652973` reference. The closed curve used both older executable
+generations during admission. The future packed Q6 fixture consumes the
 snapshot's build receipt, compiler receipt and original verifier policy
 header. Its generic fallback check also hashes the old snapshot engine
 even though the component command only runs the standalone fixture.
 Retain the consumed metadata and scope that fallback check before
-retiring the snapshot. Check the remaining legacy consumers again at
-curve closure before removing either generation.
+retiring the snapshot. Update the fallback check after the frozen
+continuation cohort, which also pins the Q6 builder. Recheck the remaining
+legacy consumers and original build inputs before removing either generation.
 
 The `host`, `taps` and `restore` captures under `dflash2-primary-checks-v1`
 were removed after verifying ownership and the committed proof. The 20
@@ -11320,8 +11321,30 @@ fixed budget including reserve. Eight of ten processes have completed.
 The reverse 94,209-token process at `d50febe07` passes all three request
 and ownership gates without a fresh Xe fault. First prefill is 931.8 tok/s
 and TTFT is 101.289 s. Subsequent rates are 1,047.1 and 1,047.4 tok/s.
-Nine of ten processes have completed. The last repeat supplies the held-out
-110,593-token result for the fitting comparison.
+The last repeat at `71ddd9046` closes the comparison. At 110,593 tokens,
+the three prefill rates are 952.1, 1054.3 and 1052.3 tok/s. Client TTFT is
+116.348, 105.083 and 105.292 seconds. All ten processes complete their
+three matched requests, exit normally and record no fresh Xe fault.
+
+For this route over 94,209–126,977 input tokens, let `n` be actual input
+tokens. Fit the medians of two independent processes per length, reserving
+110,593 tokens for the prediction check. The affine estimates in seconds
+and absolute holdout errors follow.
+
+| Clock | Affine estimate | Affine error | Quadratic error | n log n error |
+| --- | --- | ---: | ---: | ---: |
+| First prefill | `7.850 + 0.000989727 n` | 1.156 s | 3.135 s | 3.049 s |
+| Subsequent prefill | `2.580 + 0.000927125 n` | 0.068 s | 0.070 s | 0.069 s |
+| First client TTFT | `7.998 + 0.000990143 n` | 1.161 s | 3.146 s | 3.060 s |
+| Subsequent client TTFT | `2.717 + 0.000927646 n` | 0.071 s | 0.065 s | 0.064 s |
+
+Use the affine estimates as local planning approximations. The nonlinear
+models reduce training residuals. Their subsequent holdout errors differ
+from the affine errors by at most 7 ms. Adjacent subsequent prefill slopes
+are 0.910–0.950 ms per token. First-use slopes spread from 0.339 to
+1.517 ms per token and the first-use training residual reaches 3.160 s.
+Treat intercepts as fitted terms over this range and keep individual
+process measurements for decisions about startup cost and route changes.
 
 The next prefill scheduling candidate is batched issue on the current
 32-slot bank. Earlier 128-slot comparisons at `982211f5c` and `297adab4d`
@@ -11443,8 +11466,8 @@ that a changed physical-context proof fails admission. Both pass at
 `d50febe07`: the replacement baseline exactly matches the old result while
 opens and stats on all 14 original reference executables are rejected.
 The three model processes are prepared at `c6e52edf8`. Both frontend
-probes pass at `a87131dfe`. The first native continuation process remains
-pending while the length curve finishes with the legacy readers.
+probes pass at `a87131dfe`. The first native continuation process starts
+after the closed length comparison. Sustained generation results are pending.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
