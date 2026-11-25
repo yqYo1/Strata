@@ -80,7 +80,7 @@ def command(plan):
             '--workload-id', WORKLOAD, '--fail-fast-engine-error', '--ready-timeout', '600', '--out', str(root / 'bench')]
 
 
-def route(text, plan):
+def route(text, plan, *, direct=True):
     rows = READ - 1
     layout = workspace.one(text, 'strata prefill: layer-major candidate, ')
     mode = workspace.one(text, 'strata MoE window configuration: ')
@@ -116,9 +116,11 @@ def route(text, plan):
     inputs = workspace.one(text, 'strata prefill attention input: ')
     require(inputs == dict(requested='0', eligible=str(46 * (rows // CHUNK)), borrowed='0',
             borrowed_bytes='0', requested_D2D_bytes=str(46 * rows * 20480)), 'attention reader changed')
-    require(storage == dict(requested='1', pieces=pieces, direct=pieces, requested_D2D_bytes='0')
+    expected_store = dict(requested=str(int(direct)), pieces=pieces, direct=pieces if direct else '0',
+                          requested_D2D_bytes='0' if direct else str(48 * rows * 20480))
+    require(storage == expected_store
             and 'strata prefill heads: draft_reader=absent-dflash2' in text
-            and 'strata prefill heads: target detached ' in text, 'direct writer or head retirement changed')
+            and 'strata prefill heads: target detached ' in text, 'attention writer or head retirement changed')
     expected = []
     for layer in range(3, 48, 4):
         reloaded, reused, _ = physical.kv.expected_prefix(range(0, rows, CHUNK), layer,
@@ -129,7 +131,7 @@ def route(text, plan):
     tap, = re.findall(r'^strata DFlash2: eager, prompt_tail_rows=2046 cold_prefix=0 vram_bytes=([1-9]\d*)$', text, re.M)
     req, = re.findall(clock.footer.HEADER, text, re.M)
     return dict(kv=dict(reloaded_pages=sum(v[1] for v in actual), reused_pages=sum(v[2] for v in actual)),
-                work=work, uploads=uploads, target_rows=rows, direct_pieces=int(pieces), tap_vram_bytes=int(tap),
+                work=work, uploads=uploads, target_rows=rows, direct_pieces=int(storage['direct']), tap_vram_bytes=int(tap),
                 native_request=list(map(int, req)))
 
 
