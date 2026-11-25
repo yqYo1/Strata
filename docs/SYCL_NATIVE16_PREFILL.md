@@ -11114,6 +11114,24 @@ holding the head switch fixed. The CPU expert service experiment has its
 own control. The weak-draft, agent-session, physical-context and RESTORE
 checks remain open for the new composition.
 
+The dense build controller recovers the closed C5 head build from Git.
+The recovery matches 1,171 native sources, 138 objects, the configured
+recipe, actual compiler and linker inputs and the exact measured executable
+`048cb0cc283243bc20c965b16380e1c2a183f02d47d784a2ac71c35e16146de7`.
+The same-binary dense comparison keeps its head enabled in both arms.
+Retire the closed head generation before building the replacement. Its
+plan, model results, individual samples and CSV remain reachable on this
+retained verification branch. Retain only its `record.json` as the
+source-recovery input to the dense controller. The independent width-four
+and physical-context/RESTORE builds remain the phase references.
+
+The retirement scope is `dflash2-c5-head-native-v1` except `record.json`.
+Its 1,377 files total 196,642,427 bytes. SHA-256 of the sorted paths, sizes
+and content hashes in compact JSON is
+`1bbe5df435b6124e2dca743dbd97a36ee0cfc607a46a81eed56bf8c1a0a8ed66`.
+The retained record's SHA-256 is
+`5032b167618be3a8135d4fde97148382b12b538fccbeedfb0051068ed8a2470e`.
+
 Even at five emitted tokens per verifier window, 70 tok/s allows only
 71.43 ms for a complete window. The older regular-code clock bracket at
 `e26315def2` observes 110.29 ms of CPU-pool caller time and 106.11 ms of GPU
