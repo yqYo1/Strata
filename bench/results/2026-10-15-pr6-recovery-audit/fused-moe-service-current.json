@@ -666971,13 +666971,13 @@
     },
     "selected_arm": "retain",
     "selection_sha256": "e11f8ba2578f2e7d80a25ab117140cdfb0cb35effd759e8a618886655673cf77",
-    "stage": "ready",
+    "stage": "closed",
     "source_commit": "f974e960d2ab781a698c149c3bc7cd2d3ca22dc4",
     "host_passed": true,
     "ownership_closed": true,
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "plans": [
       {
         "index": 0,
@@ -667003,7 +667003,147 @@
         "environment_sha256": "90894b7c682606b2c5e45a7703ece3fb0a8d193734ce58033b5c3396cf3c0526"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "arm": "dflash2",
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_identity": {
+          "pid": 1042034,
+          "start_ticks": 399424347,
+          "sid": 1041940
+        },
+        "evidence": {
+          "samples": [
+            {
+              "ok": true,
+              "err": null,
+              "ttft_s": 69.784,
+              "total_s": 1046.137,
+              "prompt_tokens": 35915,
+              "reused_tokens": 0,
+              "read_tokens": 35915,
+              "generated_tokens": 15168,
+              "prompt_tps": 303.4,
+              "prompt_tps_source": "engine",
+              "decode_tps": 16.3,
+              "decode_tps_source": "engine",
+              "prompt_ms": 118358.4,
+              "decode_ms": 927750.2,
+              "drafts_offered": 11482,
+              "drafts_accepted": 10379,
+              "finish_reason": "stop",
+              "request_sha256": "06b1845151ce2fa7a79fa020108b9c44b9afb0dd77046475dd4cb1c6441aa748",
+              "stream_complete": true,
+              "truncated": false,
+              "generated_tokens_source": "usage",
+              "client_interval": {
+                "request_begin_monotonic_ns": 3994296208589829,
+                "first_output_monotonic_ns": 3994365992245171,
+                "request_end_monotonic_ns": 3995342345688036
+              },
+              "native_segments": [
+                {
+                  "prompt": 35915,
+                  "reused": 0,
+                  "read": 35915,
+                  "prompt_ms_rounded": 65044,
+                  "generated": 12289,
+                  "decode_ms_rounded": 749699,
+                  "accepted": 8486,
+                  "offered": 9368
+                },
+                {
+                  "prompt": 48221,
+                  "reused": 0,
+                  "read": 48221,
+                  "prompt_ms_rounded": 53314,
+                  "generated": 2862,
+                  "decode_ms_rounded": 178052,
+                  "accepted": 1893,
+                  "offered": 2114
+                }
+              ]
+            }
+          ],
+          "observation": {
+            "eligibility": {
+              "eligible": true,
+              "agreement_eligible": true,
+              "speed_eligible": true,
+              "speed_ineligible_reasons": [],
+              "ineligible_reasons": [],
+              "acceptance_rate": 0.9039365964117749,
+              "usage_generated_tokens": 15168,
+              "completion_includes_thinking": true
+            },
+            "native_generated": 15151,
+            "api_generated": 15168,
+            "native_tg": 16.33090459048136,
+            "minimum_server_added_tokens": 17,
+            "native_generation_long_enough": true,
+            "weak_drafts_observed": false,
+            "reasoning_recoveries": 0,
+            "answer_correct": true,
+            "answer_error": null,
+            "answer_sha256": "2bb2b3faf86bfd5abfe34539adb571067e7a5476b79c9b4abb2795b682a87f3e",
+            "thinking_sha256": "d64d5fd12d6e3d35aee3c6173da9a1ad51b872639e7f8f756067a4d45bdb0975"
+          }
+        },
+        "routes": {
+          "expert_work": [
+            {
+              "submitted_blobs": 0,
+              "submitted_bytes": 0,
+              "completed_blobs": 0,
+              "completed_bytes": 0,
+              "host_view_groups": 0,
+              "gpu_miss_groups": 0,
+              "cpu_unique_misses": 4555772,
+              "cpu_entries": 5699194
+            },
+            {
+              "submitted_blobs": 0,
+              "submitted_bytes": 0,
+              "completed_blobs": 0,
+              "completed_bytes": 0,
+              "host_view_groups": 0,
+              "gpu_miss_groups": 0,
+              "cpu_unique_misses": 1013236,
+              "cpu_entries": 1295689
+            }
+          ],
+          "prefill_policy": []
+        },
+        "validation": {
+          "pid": 1042034,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "postconditions_complete": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
     "budgets": {
       "wall": 5400,
       "cpu": 21600,
@@ -667035,6 +667175,13 @@
         "passed": true
       }
     ],
+    "decision": {
+      "observed_low_acceptance": false,
+      "correct_answer": true,
+      "eligible_for_repeated_weak_trial": false,
+      "client_speed_eligible": true,
+      "sustained_70_observed": false
+    },
     "source_inputs": {
       "files": 831,
       "sha256": "765728e67eeeee9afea6f6ad9e7438cf580083c3bd11aa8b99306b74d3f0739e"

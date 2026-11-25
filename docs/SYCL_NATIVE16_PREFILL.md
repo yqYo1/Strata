@@ -11556,8 +11556,19 @@ acceptance, native TG and answer check together with client TTFT. Repeat the
 workload as a weak case only if the first screen generates at least 1,024
 native tokens, passes the answer check and accepts at most 40% of offered
 drafts. Retain the compact observation and retire the closed raw output after
-the next workload decision. Host admission and actual model execution are
-next on the serialized measurement slot.
+the next workload decision.
+
+The screen closes normally with quiet validation, no fresh Xe fault and all
+15 final model hashes verified. The answer passes the fixture's oracle. With
+thinking enabled, the API returns 15,168 tokens and the engine emits 15,151
+at 16.331 tok/s across the two native decode intervals. Client TTFT is
+69.784 seconds. The first leg reads all 35,915 input tokens in 65.044
+seconds. The answer-room continuation rereads all 48,221 tokens in
+53.314 seconds, with zero reported reuse. The two legs accept 10,379 of
+11,482 DFlash2 drafts, or 90.39 percent. This closes the task-quality screen.
+It exceeds the 40 percent weak-case limit, so selecting a different
+workload is the next weak-case action. The continuation clock is also
+usable evidence for the separately scoped request-prefix handoff.
 
 Retired the six numbered directories and `host` under state
 `dflash2-prefill-kv-stage-speed-v4` covering 430 files and 74709297 bytes.
