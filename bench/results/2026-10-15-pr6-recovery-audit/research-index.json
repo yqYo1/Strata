@@ -41333,5 +41333,22 @@
     "consumer": "Trace the continuation dispatch into the native resume path. Check whether a request ID can guard the live prefix through leg two and whether physical skipped-prefix extent is reported; then verify unrelated requests remain cold and counts stay 16,366 + 18 = 16,384.",
     "prerequisite": "The two-leg replay at 226e2d78c and confirmed default answer-room behavior. Both legs run inside the serial API FIFO in the pinned frontend. Native live resume and continuation validity are separate checks.",
     "startup_proof": "Orca identity verified from the startup receipt. The completion message includes the report hash."
+  },
+  "dflash2-q6-width-five-kernel-20261125": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "source_commit": "aa0c82289726ab1cb1b7d3e4b30a35d957bd6add",
+    "native_source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-q6-width-five-kernel-20261125/report.md",
+    "report_sha256": "533674f5148b1a4c343ea4a669f9f61f364ccbd06f0d07599688575a9fcfad1a",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-q6-width-five-kernel-20261125/review.json",
+    "review_sha256": "98be0bbb5d69b178a700b6cbe4d2dde4c192147c07f78ad8ed87412591e245b5",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": true,
+    "finding": "Width five takes the Q6 reference head and loses dense DPAS captures. The C4-only speed result leaves C4 plus C1 and padded C8 open. Additional reads may offset gains. Assess target head and dense projections independently.",
+    "prerequisite": "The exact snapshot image with both observed width routes at 66810f130 and the dense capture comparison at 48876620c.",
+    "consumer": "Check Xe2 fragment and resource feasibility. Measure production-dispatched C5 against feasible alternatives with five-row numerical validation and repeated timings including extra reads and allocations.",
+    "startup_proof": "Read-only product access and Orca IPC were verified at startup. The completion message pins the report hash."
   }
 }
