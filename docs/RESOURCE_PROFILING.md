@@ -287,6 +287,15 @@ both arms to measure the existing counting path across the whole process.
 A later 256-window implementation must explicitly start after
 prefill and stop after the selected decode window.
 
+The first count-only controller at `395aee434` stopped before model launch.
+It compared the checked generated program against the unprojected
+`96832af6f` Git tree. The retained build recipe applies the DFlash2 tap
+overlay to that translation unit. The corrected controller at `7aaa9f423`
+requires the reconstructed source, build receipt and actual compiler input
+to agree. The unchanged executable remains the candidate for the
+configuration-only comparison. Finish preparation in the retained decode
+worktree at a serialized measurement boundary.
+
 Read-only enumeration on the Ryzen 5 5600X (family 19h, model 21h), kernel
 `7.0.0-38-generic`, exposes `cpu`, `ibs_op` and `ibs_fetch` in
 `/sys/bus/event_source/devices`. The data-fabric and memory-controller PMUs
