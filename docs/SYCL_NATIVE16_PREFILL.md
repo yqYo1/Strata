@@ -11137,16 +11137,24 @@ width-four attribution use the committed proofs.
 | `dflash2-primary-physical-context-v1` | 119 | 26523236 | `8e083c4d34dd8c5af69d9a97a6cce2728683289f70d17f172972535a5b06b6f7` |
 | `dflash2-snapshot-physical-context-v1` | 119 | 26398509 | `0b493c82bffe52dccd3a4119ea7e8b9ab0cd935b6e22b7611bf3f867aed429e5` |
 
-For the subsequent length curve, the measured source at `ad8652973`
-requires 81921–131072 actual prefill rows in `make_long_prefill_scratch`.
-The earlier suggested 32768, 65536 and 81920 rows therefore cannot use the
-same mode-16 workspace. For the first same-route sweep, qualify 90112,
-98304, 106496, 114688 and 122880 rows with full 8192-row chunks. Each request
-adds one final anchor token to those row counts. Reserve 106496 rows for
-held-out prediction. Check effective mode, relocated mixed workspace,
-all-GPU residual placement, bank capacity and direct-store counters at each
-length before scoring. Shorter requests and physical-capacity fallback
-belong to separate route curves.
+The subsequent length curve uses the primary native source `968e71988`.
+`make_long_prefill_scratch` accepts 81921–131072 batched rows. The bank
+planner excludes 90112 rows because the ordinary window leaves a short
+8192-row tail there. The next full-chunk point above 122880 requires
+4,305,716,224 bytes including the 512 MiB reserve. That exceeds the minimum
+4,237,037,568 free bytes measured in the first matched pair. These two limits
+leave four full-chunk points in the observed VRAM budget.
+
+Use 94209, 102401, 110593, 118785 and 126977 actual prompt tokens for the
+same-route curve. Each request subtracts one final anchor to yield batched
+rows in full 8192-row chunks plus a fixed 4096-row tail. Reserve 110593
+prompt tokens for held-out prediction. The source-derived budget at 126976
+batched rows is 4,171,465,728 bytes including headroom, with 25,376,768 bytes
+remaining in the relocated shared arena. The budget allows staging in the
+first pair's observed envelope. Verify effective mode16, the relocated
+workspace and tail, all-GPU residual placement, the 32-slot bank, KV reuse
+and direct-store counters at every length. Record a separate series for the
+full-chunk 122881 reference and any rejected admission or fallback.
 
 Retired the six numbered directories and `host` under state
 `dflash2-prefill-kv-stage-speed-v4` covering 430 files and 74709297 bytes.
