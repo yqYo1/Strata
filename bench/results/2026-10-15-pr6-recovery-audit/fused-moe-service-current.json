@@ -655030,8 +655030,26 @@
       "gates": "Require live target-only restore, checked RAM payload for all 12 attention layers and running state, expected server extents and progress, DFlash2 tail, KV staging and no runtime or ownership failure.",
       "limits": "Instrumented native correctness. HTTP, direct writer and clean throughput are separate."
     },
-    "stage": "prepared",
-    "outcomes": {},
+    "stage": "running",
+    "outcomes": {
+      "host": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "GPU_executed": false,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    },
     "plans": [
       {
         "name": "short-copy",
