@@ -324,8 +324,11 @@ counting-off process at `c4ddf9dde` closes normally with no fresh Xe fault.
 The 33,217-input code request generates 4,111 tokens in 247.0915 seconds
 of native decode time, or 16.638 tok/s, with 2,767 of 2,863 drafts accepted.
 Prefill takes 48.3305 seconds and client TTFT is 49.663 seconds. The on arm
-follows in the same fixed-work cohort. A counting effect needs both planned
-pairs and their work checks.
+at `02b17d4ce` closes normally without a fresh Xe fault and matches the
+workload, output, draft counts and recorded routes. It measures 16.764 tok/s
+over 245.2332 seconds of native decode with zero adaptive refills. This
+single pair has 0.752% lower decode time with the counter on. Complete the
+reverse pair before deciding the counting overhead envelope.
 
 Read-only enumeration on the Ryzen 5 5600X (family 19h, model 21h), kernel
 `7.0.0-38-generic`, exposes `cpu`, `ibs_op` and `ibs_fetch` in

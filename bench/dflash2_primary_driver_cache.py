@@ -21,6 +21,7 @@ ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 READ, RUNS, DONOR_INDEX = 102401, 2, 3
 DONOR = '0577a8bbca081ba5ec5d03d32d3ed4376d7d553f'
+DONOR_CACHE = (54, 12434952, 'c93c2b41a2fc8642b3abc00424449f3466c584634b971c36b28258f5206b3ddb')
 TIMED = ('empty', 'seed', 'seed', 'empty', 'empty', 'seed')
 ORDER = ('empty', 'seed', *TIMED)
 PLAN = dict(order=list(ORDER), diagnostics=[0, 1], read=READ, requests_per_process=RUNS,
@@ -61,9 +62,8 @@ def baseline():
             and receipt['binary'] == donor['binary'], 'the cache donor native exit differs')
     require(bank.signature(curve.environment(row, plan)) == plan['environment_sha256'],
             'the donor cache environment differs from the original launch')
-    inventory = driver_cache.inventory(source)
-    require(inventory[0] > 0, 'the closed donor must have populated the NEO cache')
-    return dict(row, seed=dict(path=str(source), record_commit=DONOR, inventory=list(inventory)),
+    require(driver_cache.inventory(source) == DONOR_CACHE, 'the closed donor NEO inventory changed')
+    return dict(row, seed=dict(path=str(source), record_commit=DONOR, inventory=list(DONOR_CACHE)),
                 donor_work=work(donor['routes'][:RUNS]),
                 donor_request_sha256s=[s['request_sha256'] for s in donor['samples'][:RUNS]])
 

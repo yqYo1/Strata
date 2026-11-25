@@ -11269,6 +11269,12 @@ the original first prefill needs to fall by 5.674 seconds to reach 1,000 tok/s.
 The older 117,489-token campaign established the hit mechanism on its own
 build and stopped before a full clean comparison. A disk seed does not
 isolate in-process compilation, module creation or expert page-in.
+An offline check of `55d9e4096` reconciles both request hashes and the
+closed donor. The 54 images total 12,434,952 bytes with inventory SHA-256
+`c93c2b41a2fc8642b3abc00424449f3466c584634b971c36b28258f5206b3ddb`.
+The copied tree matches the donor inventory. The older counter replay
+passes at 0/12 empty hits/misses and 12/0 seeded. Equal counters fail.
+No new native process ran in this check.
 
 The [primary continuation plan](../bench/dflash2_primary_continuation.py)
 uses the same retained binary and KV selection for three independent
