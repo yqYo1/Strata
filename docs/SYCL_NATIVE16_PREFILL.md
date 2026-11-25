@@ -11139,7 +11139,12 @@ The existing prefill host control and the exact dense policy check both
 exit normally at `9e9c70182` and `532ce18eb`. The native 82-input plan at
 `159ef1515` requires 22 moves from reference to DPAS, unchanged head
 replays, matching output hashes and placement, and normal device closure.
-Use that evidence before advancing the counterbalanced sustained comparison.
+Both device probes pass at `e961023e3`. Generic calls drop from 102 to 80
+and the candidate runs all 22 dense calls through DPAS. Both runs emit the
+same 32 tokens, accept all 28 offered drafts and use the same head,
+verifier replay counts and placement. The processes close with no fresh
+Xe faults. The same-binary sustained comparison is frozen at `19f40a065`
+with six independent processes on the 33,217-input regular-code workload.
 
 Even at five emitted tokens per verifier window, 70 tok/s allows only
 71.43 ms for a complete window. The older regular-code clock bracket at
@@ -11262,6 +11267,29 @@ Charging a raw blob for each logged CPU job at 70 tok/s would require
 large-copy reference would cover about 12.5–12.9% and 11.1–11.5% of those
 respective logical bytes. These are conditional transfer envelopes.
 For a hybrid experiment, measure actual coverage and moved bytes.
+
+The static cache bound at `208c92b15` holds the recorded code and prose
+routes fixed and protects the original 132 slots. With future expert use
+known, it relaxes layer quotas, slot count and whole-expert residency and
+allocates payload by logical bytes saved per aligned byte. The table gives
+optimistic lower bounds for logical CPU weight visits at 70 tok/s.
+
+| Expert payload budget | Code GB/s | Prose GB/s |
+| --- | ---: | ---: |
+| Actual stock placement, 2,575,206,400 bytes | 50.34 | 56.61 |
+| Relaxed allocation at the same payload | 39.70 | 39.55 |
+| Relaxed allocation with 4 GiB | 32.81 | 32.64 |
+| Relaxed allocation with 6 GiB | 26.37 | 26.34 |
+| Relaxed allocation with 8 GiB | 21.43 | 21.53 |
+
+Against the measured continuous-read reference of 39.3035 GB/s, the
+relaxation needs at least 2.661 GB of aligned expert payload on code and
+2.626 GB on prose. These budgets exclude the head, KV and other device
+buffers. They describe perfect-future static placement and logical weight
+visits on two traces. Use the causal replay and separate CPU and GPU
+service clocks to choose placement experiments alongside compute and
+verifier-yield improvements. Recover the completed one-shot analysis
+source from `ce7e3b7fc`.
 
 Retired the V1 outputs at `dflash2-expert-rank-live-check-v1/{stock,trained}`
 after preserving the original failure and the V2 replacement in Git. The
