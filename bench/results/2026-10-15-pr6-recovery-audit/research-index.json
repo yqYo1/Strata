@@ -41638,5 +41638,81 @@
     "limitation": "Transferable methods only: cited platform results do not predict Battlemage/SYCL. Caller-wall windows do not show device service, overlap or saturation; flow and evidence claims were not independently rechecked in this review.",
     "consumer": "Retrieve on: frontier-density switching/push-pull; CSR-k row bucketing; segmented reduction/CPU repair; work-weighted layer partitioning; CPU/device interval overlap; shared-DRAM contention.",
     "prerequisite": "Revisit when a fixed-route native trace provides per-layer CPU/GPU intervals, event and copy timing, work/bytes, queue waits and combine cost; use held-out routing to assess whether thresholds generalize."
+  },
+  "dflash2-fixed-verifier-replay-20261125": {
+    "classification": "decision_support",
+    "source_revision": "dd7f1171cb7560621b827a04453907aa79eca278",
+    "main_policy_revision": "89a6edcba34737fb1c617fc8cb889337257dc65d",
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-fixed-verifier-replay-20261125/report.md",
+      "sha256": "7e0290b9c6a7311d6926e0b799685eb7f6df1ad48097d96fa39f8a1ce0102dc3",
+      "bytes": 9950
+    },
+    "review": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-width-four-and-residual-20261125.4qjzrzry/review.json",
+      "sha256": "c12267066787ffa6826993541c552fc0d41926c473d78a086f59dd2266e8f321"
+    },
+    "finding": "The C5 arms differ in verifier rows, expert work, windows, and outputs, so their speed gap cannot isolate the kernel; the report proposes a bounded 32-window paired replay.",
+    "correction": "SHA-256 and revision pins match. No arithmetic issue found; the report correctly leaves the observed speed gap unattributed.",
+    "consumer": "Freeze the capture manifest, then check baseline replay reproduces rows, decisions, routes, and expert-work signatures before paired replay and separate free-generation evaluation.",
+    "scope_feedback": "Well scoped; prior width and yield work overlaps as context, while fixed-state replay and quality separation add distinct guidance.",
+    "schedulable_now": false
+  },
+  "dflash2-decode-barrier-dependencies-20261125": {
+    "classification": "decision_support",
+    "source_revision": "dd7f1171cb7560621b827a04453907aa79eca278",
+    "main_policy_revision": "89a6edcba34737fb1c617fc8cb889337257dc65d",
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-decode-barrier-dependencies-20261125/report.md",
+      "sha256": "02f53c972de52c6fc140936fe52e64781315860202e115490b1396035a293715",
+      "bytes": 11572
+    },
+    "review": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-width-four-and-residual-20261125.4qjzrzry/review.json",
+      "sha256": "c12267066787ffa6826993541c552fc0d41926c473d78a086f59dd2266e8f321"
+    },
+    "finding": "Per-layer route visibility needs host completion, while resident work is ordered on the compute stream; the proposed probe suppresses only the pool-return event query and preserves completion and error checks.",
+    "correction": "SHA-256 and revision pins match. No arithmetic issue found; the cited pool intervals are nested wall times, not CPU-only service.",
+    "consumer": "First establish whether the resident event query is pending or adds host cost; then run the single query-suppression comparison with all lifetime and error fences intact.",
+    "scope_feedback": "Well scoped; it extends prior clock and acceptance notes with a per-edge dependency map and a specific probe.",
+    "schedulable_now": false
+  },
+  "zen3-expert-last-worker-20261125": {
+    "classification": "decision_support",
+    "source_revision": "dd7f1171cb7560621b827a04453907aa79eca278",
+    "main_policy_revision": "89a6edcba34737fb1c617fc8cb889337257dc65d",
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zen3-expert-last-worker-20261125/report.md",
+      "sha256": "48b58ddee910aad57dc4d866563ba857c63d9ebfd0bc46c36529fa101560b100",
+      "bytes": 10034
+    },
+    "review": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-width-four-and-residual-20261125.4qjzrzry/review.json",
+      "sha256": "c12267066787ffa6826993541c552fc0d41926c473d78a086f59dd2266e8f321"
+    },
+    "finding": "The source shows one CPU job per distinct expert and a synchronous pool barrier, but no per-worker tail measurements; static splitting and bounded assist remain untested options.",
+    "correction": "SHA-256 and revision pins match. Label `Tmax − Tavg` as max-load excess; it does not directly measure the phase’s idle tail.",
+    "consumer": "Capture per-worker phase service, finish, and barrier timestamps on the held-out fixed slice; test weighted static splitting only if the tail gate repeats.",
+    "scope_feedback": "Partly duplicative with prior pool-granularity and worker-sweep guidance; same-count row splitting and bounded assist add distinct decision gates.",
+    "schedulable_now": false
+  },
+  "dflash2-context-prefill-residual-tiling-20261125": {
+    "classification": "knowledge_collection",
+    "source_revision": "dd7f1171cb7560621b827a04453907aa79eca278",
+    "main_policy_revision": "89a6edcba34737fb1c617fc8cb889337257dc65d",
+    "report": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-context-prefill-residual-tiling-20261125/report.md",
+      "sha256": "d8cacd73083618b48ae9d28bd2bfa78891a74b280d0923b170f36c69ff9d5d48",
+      "bytes": 11543
+    },
+    "review": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-width-four-and-residual-20261125.4qjzrzry/review.json",
+      "sha256": "c12267066787ffa6826993541c552fc0d41926c473d78a086f59dd2266e8f321"
+    },
+    "finding": "Retrieve after owner-level allocation and completion-wait evidence shows the 122,880-row GPU residual suffix constrains admission or throughput; use it to compare tile packing, residual handling, and spill tiers under the DFlash2 tail.",
+    "correction": "SHA-256 matches; no material numerical error found. Keep modeled payload arithmetic separate from measured PCIe traffic, and do not extrapolate near-boundary throughput to 262,144 rows.",
+    "consumer": "After per-owner peak allocation and transfer/event attribution, compare candidate layouts with output and tap-parity checks; assess 120K throughput separately from 262K admission.",
+    "scope_feedback": "Somewhat broad and partly duplicative on tile and overlap methods; DFlash2 tail constraints and the 120K-versus-262K boundary add a distinct retrieval case.",
+    "schedulable_now": false
   }
 }
