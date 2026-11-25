@@ -8125,8 +8125,12 @@ original source `fc0272d67` stays reachable with the measurement.
 The follow-up lossless-layout audit uses the actual IQ3_S block fields.
 The packed block carries 110 bytes for 256 weights. Signed four-bit code
 planes would carry 128 bytes of codes plus six bytes of scales, a 21.8%
-payload increase. The existing AVX2 multi-token path already decodes each
-32-weight group once outside the token loop. Keep the compact format.
+payload increase. At the observed 289,038 IQ3_S CPU jobs for 4,111 emitted
+tokens in both runs at `6bbd3e3e1`, that layout adds 88.79 GB of logical visits
+per request, or 1.51 GB/s at 70 tok/s if one full payload is visited per job.
+The projection keeps the observed route. Physical RAM traffic remains unmeasured.
+The existing AVX2 multi-token path already decodes each 32-weight group once
+outside the token loop. Keep the compact format.
 Gate/Up interleaving at the same byte size remains a locality hypothesis
 until a production-shaped caller comparison shows a gain.
 
