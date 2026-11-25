@@ -11115,8 +11115,35 @@ physical-context evidence. Direct-writer payload parity and clean speed have
 separate gates. [Physical-context runner](../bench/dflash2_primary_context.py)
 and [live restore runner](../bench/dflash2_primary_restore.py).
 
-Use the same primary binary in both long-prefill arms, changing only
-`STRATA_SYCL_PREFILL_KEEP_KV_STAGE` before execution.
+The primary long-prefill comparison closes at `bfc0c54ae`. The six
+independent processes use the same primary executable and change only
+`STRATA_SYCL_PREFILL_KEEP_KV_STAGE` before execution. Each completes three
+fresh 122881-input requests with the same non-KV work and no fresh Xe faults.
+The final asset hashes match.
+
+| Median of three processes | Reload | Retain |
+| --- | ---: | ---: |
+| First prefill | 955.367 tok/s | 965.514 tok/s |
+| First client TTFT | 128.819 s | 127.469 s |
+| Subsequent prefill | 1044.430 tok/s | 1056.148 tok/s |
+| Subsequent client TTFT | 117.849 s | 116.544 s |
+
+Retain raises subsequent PP by 1.170%, 1.132% and 1.074% in pair order.
+It avoids 1,935,360 aligned-page copies, or 8,174,960,640 requested bytes
+per request. Each of the twelve subsequent measurements exceeds 1000 tok/s.
+Use retain for the length curve on this build. Live RESTORE and sustained
+decode checks remain separate.
+
+Each private cache contains 54 driver cache entries. In all six processes
+the same 13 paths, totaling 954,872 bytes, have modification times between
+the first long request and first output. Subsequent requests have no entries
+in those intervals. The comparison agrees using the last journal write
+offset and the realtime-minus-monotonic offset varied by 0.5 seconds in
+either direction. SHA-256 over the sorted newline-delimited relative names
+is `fe1dd0c57f1b93a4b18e3517be775f01af1852ff055a0a398000bddc23cb0785`.
+This identifies first-use cache activity. A matched cache-seed trial would
+be needed to measure its effect on TTFT.
+
 [Primary build](../bench/sycl/dflash2_primary_prefill_build.py) and
 [fixture sequence](../bench/dflash2_primary_checks.py).
 
