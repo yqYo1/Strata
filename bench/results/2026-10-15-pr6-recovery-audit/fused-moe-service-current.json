@@ -660936,5 +660936,92 @@
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "dflash2_decode_residency_count_v1": {
+    "stage": "closed",
+    "complete": true,
+    "passed": true,
+    "ownership_closed": true,
+    "host_passed": true,
+    "source_commit": "7aaa9f42345964981bd71d6f53e6308a10ef3db6",
+    "native_source_commit": "96832af6f7119631a78e16f066129860faf0a619",
+    "native_build_sha256": "927e584bfaa1701d751fc28b3c2781521b8cf1992cfc701bdfc1da25be586162",
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
+      "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
+      "bytes": 26546256
+    },
+    "decision": {
+      "matched_original_work": true,
+      "on_over_off_latency": [
+        0.9924793042253579,
+        0.9856629138500441
+      ],
+      "geometric_mean_latency_ratio": 0.9890652369478116,
+      "bounded_count_overhead": true,
+      "decode_tok_s": [
+        16.637561389201977,
+        16.76363559257066,
+        16.76725934639094,
+        16.52686570464308
+      ],
+      "observed_refills": 0,
+      "adopted": false
+    },
+    "original_evidence_commit": "c6c2aa0abc10e9c2968f839f23d167494e40abdd",
+    "reference_comparison": "d6f2b82947018f85e8e6169bd2072fb076c03f19",
+    "workload": "bench.sh regular-code, 4 warmups, thinking on, DFlash2 spec4/conf0.6, 1256 resident expert slots",
+    "isolated_unit": "Only routed-row counting changes. --adapt-every 1000000, --adapt-swaps 0 or 1. No experimental refill or placement.",
+    "paired_overhead_factor": 1.05,
+    "processes": [
+      {
+        "arm": "off",
+        "native_exit_code": 0,
+        "fresh_faults": [],
+        "read_tokens": 33217,
+        "generated_tokens": 4111,
+        "prompt_ms": 48330.5,
+        "ttft_s": 49.663,
+        "decode_ms": 247091.5,
+        "drafts_accepted": 2767,
+        "drafts_offered": 2863
+      },
+      {
+        "arm": "on",
+        "native_exit_code": 0,
+        "fresh_faults": [],
+        "read_tokens": 33217,
+        "generated_tokens": 4111,
+        "prompt_ms": 48407.1,
+        "ttft_s": 49.731,
+        "decode_ms": 245233.2,
+        "drafts_accepted": 2767,
+        "drafts_offered": 2863
+      },
+      {
+        "arm": "on",
+        "native_exit_code": 0,
+        "fresh_faults": [],
+        "read_tokens": 33217,
+        "generated_tokens": 4111,
+        "prompt_ms": 50013.9,
+        "ttft_s": 51.356,
+        "decode_ms": 245180.2,
+        "drafts_accepted": 2767,
+        "drafts_offered": 2863
+      },
+      {
+        "arm": "off",
+        "native_exit_code": 0,
+        "fresh_faults": [],
+        "read_tokens": 33217,
+        "generated_tokens": 4111,
+        "prompt_ms": 49261.4,
+        "ttft_s": 50.61,
+        "decode_ms": 248746.5,
+        "drafts_accepted": 2767,
+        "drafts_offered": 2863
+      }
+    ]
   }
 }

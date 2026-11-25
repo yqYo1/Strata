@@ -329,6 +329,16 @@ sensitivity calculation. Retain the simpler routed-row score for the next
 bounded trial. A new model rate requires an independently reserved workload
 and direct timing of expert publication, GPU service, upload and restoration.
 
+The request-local counter fixture at `62e7cc2fc` summarizes every routed
+row in those first 256 verification windows, including computed draft rows.
+They contain 463 verified input rows, 4,630 expert entries per layer and
+222,240 entries across 48 layers. A second raw-route unpack matches the
+98,304-byte layer-major little-endian uint32 count array's SHA-256
+`746a3da65686fbfde34d06df14d1e377fd7211bc8f0921a52d32cd0b58215d05`.
+Compare this exact map in the captured request and check fresh per-request
+counts across prompt, cancellation and RESTORE boundaries before enabling
+any placement change.
+
 The retained decode source `96832af6f` allocates the existing routed-row
 counter only when both adaptive arguments are positive. Its serve loop
 submits adaptive work only when the process-wide window count reaches a
@@ -357,11 +367,16 @@ Prefill takes 48.3305 seconds and client TTFT is 49.663 seconds. The on arm
 at `02b17d4ce` closes normally without a fresh Xe fault and matches the
 workload, output, draft counts and recorded routes. It measures 16.764 tok/s
 over 245.2332 seconds of native decode with zero adaptive refills. This
-single pair has 0.752% lower decode time with the counter on. Complete the
-reverse pair before deciding the counting overhead envelope. Its on process
+pair has 0.752% lower decode time with the counter on. The reverse pair's on process
 at `b43bfaf88` repeats the same work and output at 16.767 tok/s over
-245.1802 seconds. All three processes have normal closure and no fresh Xe
-fault. Keep the final off process and the original criteria.
+245.1802 seconds. The final off process at `c6c2aa0ab` measures 16.527 tok/s
+over 248.7465 seconds. All four match the original work and output, complete
+owner and asset verification, and report zero refills and no fresh Xe faults.
+The on/off latency ratios are 0.99248 and 0.98566, both inside the planned
+factor of 1.05. This qualifies the existing counter's cost envelope. The
+next comparison isolates a request-local count prefix and checks that it
+does not accumulate prefill or prior-request routes. The complete original
+configuration and process records are retained in `c6c2aa0ab`.
 
 Read-only enumeration on the Ryzen 5 5600X (family 19h, model 21h), kernel
 `7.0.0-38-generic`, exposes `cpu`, `ibs_op` and `ibs_fetch` in
