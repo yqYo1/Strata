@@ -11346,26 +11346,26 @@ cache-hit contrast. The three counterbalanced clean pairs with statistics
 disabled decide the repeatable timing effect. The seeded diagnostic still
 has a 9.573 s first-versus-subsequent prefill gap at the same input length.
 
-In the first clean pair, the empty-cache process at `22f34df33` completes
-with no fresh Xe fault. Its first and subsequent prefill are 109.4903 and
-97.3855 s (935.252 and 1,051.502 tok/s), with first client TTFT 109.672 s.
-Both requests have the planned placement and work. The paired seeded
-process at `c87be1f29` completes with the same work and no new Xe fault.
-Its first and subsequent prefill are 108.8540 and 97.4229 s (940.719 and
-1,051.098 tok/s), with first client TTFT 109.043 s. The first-prefill and
-subsequent-prefill time ratios are 0.99419 and 1.00038. Readiness spans
-54.881–54.966 s empty and 42.568–42.653 s seeded. Seed directory preparation
-takes 0.206 s. Collect the reverse-order pair before deciding repeatability.
-Its seeded process at `c76deeef0` closes with the required work and no
-new Xe fault. First and subsequent prefill take 106.7133 and 97.3427 s;
-first TTFT is 106.899 s. The matched empty process at `c143f687a` closes
-with the same work and no fresh Xe fault. It takes 108.9276 s first and
-97.5302 s subsequently, with first TTFT 109.119 s. The seed saves 2.2143 s
-of first-prefill time and 2.220 s of first TTFT in this pair; the
-subsequent-prefill difference is 0.1875 s. Readiness spans 53.749–53.835 s
-empty and 47.405–47.491 s seeded; seed preparation takes 0.213 s.
-Two of three clean pairs are complete. Preserve the final pair before the
-declared decision.
+All eight processes close at `ad009f585` with matching work and placement,
+normal exits, all final asset checks and no fresh Xe fault. In the three
+clean pairs, positive values mean the seed shortens the interval.
+
+| Clean pair | First prefill saved | First client TTFT saved | Subsequent prefill saved |
+| --- | ---: | ---: | ---: |
+| Empty then seed | 0.6363 s | 0.629 s | −0.0374 s |
+| Seed then empty | 2.2143 s | 2.220 s | 0.1875 s |
+| Empty then seed | 2.9729 s | 2.972 s | −0.0009 s |
+
+The first-prefill and first-TTFT gates pass. Median first prefill is
+109.4903 s empty and 106.7133 s seeded. Median readiness brackets are
+53.749–53.835 s and 42.568–42.653 s. The 74-token warm-up median falls
+from 26.456 s to 6.205 s. Seed preparation takes 0.206–0.213 s. Both
+subsequent-request gain gates fail. All six first-prefill rates are below
+1,000 tok/s. Even with the cache seeded, first prefill takes 9.235–11.431 s
+longer than the second request. Keep the seed timing as a verified startup
+and first-request result. Investigate the remaining gap and preserve the
+length curve's original comparator settings. This does not change the
+shipping cache policy.
 
 The [primary continuation plan](../bench/dflash2_primary_continuation.py)
 uses the same retained binary and KV selection for three independent
