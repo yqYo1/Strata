@@ -11093,14 +11093,24 @@ The MTP path supplies its existing ring. The earlier exact snapshot build
 context checks. Separately validate the primary build's host transfers,
 full-context and RESTORE behavior. Its source manifest differs from that
 measured snapshot, so the earlier throughput does not qualify this port.
-The primary build controller pins the actual `feature/sycl` source and
-reuses the measured ICX and SYCL recipe with the conversation fixtures
-enabled. The host and device tap tests, snapshot test and physical-context
-diagnostic compile in the same source tree. Preserve the two measured phase
-references, and retire the closed tap-observer build before preparing a new
-engine generation. Test aligned retention with the same binary and startup
-environment in both arms, changing only `STRATA_SYCL_PREFILL_KEEP_KV_STAGE`.
-[Primary build controller](../bench/sycl/dflash2_primary_prefill_build.py).
+The primary build at `0ab86d36b` compiles actual `feature/sycl` source
+`968e71988` with 139 fresh objects and 11 executable identities. The fixture
+sequence at `83c6936a6` passes 1,656 host transfer checks, 134 extent checks,
+9,459 host KV span/hash cases, 16 Arc DFlash2 kernel cases and 113 Arc
+same-device snapshot smoke checks. The two traced device processes verify
+the qualified providers and close without validation errors or fresh Xe
+faults. Whole-model tap parity, full context and live RESTORE remain open.
+Use the same primary binary in both long-prefill arms, changing only
+`STRATA_SYCL_PREFILL_KEEP_KV_STAGE` before execution.
+[Primary build](../bench/sycl/dflash2_primary_prefill_build.py) and
+[fixture sequence](../bench/dflash2_primary_checks.py).
+
+Retire the `host`, `taps` and `restore` captures under tuning state
+`dflash2-primary-checks-v1` after verifying ownership closure and the
+committed proof. Their 20 files and 3,493,419 bytes have inventory SHA-256
+`8f620f67282feb277ad1822ebb3d8169d6b3d87913bff7f95c996389e9f60d15`
+over sorted relative paths, sizes and file hashes. The compact receipt and
+three engine builds serve the upcoming model checks.
 
 For the subsequent length curve, the measured source at `ad8652973`
 requires 81921–131072 actual prefill rows in `make_long_prefill_scratch`.
