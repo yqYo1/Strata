@@ -11127,12 +11127,10 @@ files and 3,493,419 bytes had inventory SHA-256
 over sorted relative paths, sizes and file hashes. The compact receipt and
 three engine builds serve the upcoming model checks.
 
-The closed standalone physical-context captures are ready for retirement.
-Keep `record.json` in each directory and the original `137fb933f` and
-`321c5776a` results. The live restore and width-four attribution readers
-consume those proofs without the standalone logs or generated token files.
-Recheck identities and ownership before removing these paths under the tuning
-state root.
+The closed standalone physical-context captures were retired after checking
+identities, ownership and the original `137fb933f` and `321c5776a` results.
+Only `record.json` remains in each directory below. Live restore and
+width-four attribution use the committed proofs.
 
 | Directory | Files | Bytes | Inventory SHA-256 |
 | --- | ---: | ---: | --- |
