@@ -651600,7 +651600,7 @@
     "decision": "Keep the refused timing unchanged. Record actual clean provider mappings at the pre-kernel gate in a separately committed diagnostic."
   },
   "q6_c5_clean_provider_probe_v1": {
-    "stage": "ready",
+    "stage": "closed",
     "source_commit": "31ce45b7f2a53905f8a1200d518bd26bca3ce5da",
     "controller_sha256": "61811cda28b8e1419bf85437192a15b0022f21633972536532936f8fa6782abf",
     "parent_reader_sha256": "4a0e04071dec6a07d664e50447f2ca6233ccde3fa384d4f4df71bcbd110dc736",
@@ -651673,6 +651673,44 @@
       "file_cap": 1048576,
       "total_cap": 33554432
     },
-    "scope": "Inspect the clean runtime at the two fixture gates. Refuse entry before any kernel or timing work."
+    "scope": "Inspect the clean runtime at the two fixture gates. Refuse entry before any kernel or timing work.",
+    "outcome": {
+      "phases": [
+        {
+          "stage": 0,
+          "changed_environment_names": [],
+          "mapped_files": 9,
+          "missing": [
+            "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+            "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+            "/usr/lib/x86_64-linux-gnu/libze_intel_gpu.so.1.17.39758"
+          ],
+          "extra": []
+        },
+        {
+          "stage": 1,
+          "changed_environment_names": [],
+          "mapped_files": 32,
+          "missing": [
+            "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0"
+          ],
+          "extra": []
+        }
+      ],
+      "host_probe_accepted": true,
+      "native_exit_code": 2,
+      "ownership_closed": true,
+      "fresh_faults": [],
+      "boot_unchanged": true,
+      "driver_after": {
+        "pci": "/sys/bus/pci/devices/0000:05:00.0",
+        "driver": "xe",
+        "vendor": "0x8086",
+        "device": "0xe20c",
+        "kernel": "7.0.0-38-generic",
+        "devcoredump": false
+      },
+      "passed": true
+    }
   }
 }
