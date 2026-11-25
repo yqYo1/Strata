@@ -11154,7 +11154,9 @@ remaining in the relocated shared arena. The budget allows staging in the
 first pair's observed envelope. Verify effective mode16, the relocated
 workspace and tail, all-GPU residual placement, the 32-slot bank, KV reuse
 and direct-store counters at every length. Record a separate series for the
-full-chunk 122881 reference and any rejected admission or fallback.
+full-chunk 122881 reference and any rejected admission or fallback. The curve
+runner reverses the process order for the second block and excludes the
+reserved length from each fit. [Length curve runner](../bench/dflash2_primary_prefill_curve.py).
 
 Retired the six numbered directories and `host` under state
 `dflash2-prefill-kv-stage-speed-v4` covering 430 files and 74709297 bytes.
