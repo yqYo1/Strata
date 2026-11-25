@@ -650830,7 +650830,7 @@
     }
   },
   "q6_canonical_c5_component_build_v1": {
-    "stage": "prepared",
+    "stage": "failed",
     "toolchain": {
       "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
       "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
@@ -650900,6 +650900,7 @@
       "next": "After the small guard/oracle checks, measure head and dense shapes independently in three fresh processes."
     },
     "retention": "One standalone fixture for the immediate C5 comparison. Retire the build after the component decision and preserve its exact source and recipe.",
+    "error": "RuntimeError('fixture build command failed: configure')",
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "a0e625ff8f0858269691be9ec3ca7306f1440b88",
@@ -650966,6 +650967,26 @@
       ]
     },
     "build_environment_sha256": "1cfe2570e1a297779873d2058b29ba42e3c4f3b5ba747f8457cde4c39c3d5344",
-    "commands": []
+    "commands": [
+      {
+        "label": "configure",
+        "exit_code": 1,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      }
+    ]
+  },
+  "q6_canonical_c5_component_build_v1_configure_refusal": {
+    "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-canonical-c5-component-v1",
+    "source_commit": "a0e625ff8f0858269691be9ec3ca7306f1440b88",
+    "stage": "configure",
+    "exit_code": 1,
+    "compilation_started": false,
+    "missing_source": "bench/sycl/qsa_prefill_probability_generated.cpp",
+    "option": "STRATA_QSA_PREFILL_PV_SOURCE",
+    "consumer": "sycl_qsa_prefill_pv_kernel",
+    "configure_stderr_sha256": "c4beb829c82dcd2a9b4095be776b86419d683e484dc579cbe654f02b216df7f5",
+    "decision": "Freeze a separate fixture-only recipe without the unused generated prefill probe option."
   }
 }
