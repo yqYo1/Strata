@@ -11243,7 +11243,18 @@ the subsequent requests give 1,055.113 and 1,054.066 tok/s. Client TTFT is
 126,976 BF16 residual rows in VRAM and observes 768 direct pieces. At the
 tightest admission, 4,237,041,664 available bytes exceed the fixed budget
 including the reserve by 65,575,936 bytes. Three of the ten independent
-processes are complete. The held-out predictions await both blocks.
+processes were complete at that point.
+
+The first 102,401-token process at `0577a8bbc` passes all three route gates
+and closes with no fresh Xe fault. Prefill is 947.498 tok/s first and
+1,050.770 / 1,050.285 tok/s subsequently. Client TTFT is 108.285 / 97.637 /
+97.709 seconds. Four of ten independent processes are complete. Across
+the completed lengths, first-use prompt time exceeds the subsequent median
+by 10.599–11.048 seconds. The bank's requested H2D bytes can increase or
+decrease on first use. Their largest absolute difference in these four
+processes is 66,713,600 bytes, about 11 ms at the separate large-copy
+reference. Measuring cache seeding and fixed first-use costs requires its
+own comparison. The held-out predictions await both blocks.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
@@ -11263,6 +11274,7 @@ bound inserted output from below. Calculate TG from native generated tokens
 and the native decode clock. Require at least 1,024 native outputs for the
 weak-agreement observation. Run the focused offline accounts with the qualified
 interpreter and `-B -m unittest discover -s bench -p test_dflash2_reconciliation_client.py`.
+All four cases pass at `cccf6e8a7` with the exact production client and fixture.
 The model screen still needs the owned same-build server plan and actual
 answer and acceptance evidence.
 

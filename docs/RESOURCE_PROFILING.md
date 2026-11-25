@@ -317,8 +317,9 @@ It compared the checked generated program against the unprojected
 overlay to that translation unit. The corrected controller at `7aaa9f423`
 requires the reconstructed source, build receipt and actual compiler input
 to agree. The unchanged executable remains the candidate for the
-configuration-only comparison. Finish preparation in the retained decode
-worktree at a serialized measurement boundary.
+configuration-only comparison. Preparation passes at `ce94cc031` with the
+no-refill plan and effective arguments frozen in the verification worktree.
+Use its host admission before the first of four native processes.
 
 Read-only enumeration on the Ryzen 5 5600X (family 19h, model 21h), kernel
 `7.0.0-38-generic`, exposes `cpu`, `ibs_op` and `ibs_fetch` in
