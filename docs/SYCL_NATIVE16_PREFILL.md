@@ -11190,9 +11190,11 @@ configured recipe, 138 graph objects, 1,475 compiler inputs, 30 external
 link inputs and all 13 executables. The measured engine SHA-256 is
 `da3268e6e9ddab025c85aab61b4b7c6447f574667038ffff80a3de5a6b635783`.
 
-Retire the following state paths after preserving the committed result.
-The scopes exclude each root's compact `record.json`. Hashes cover sorted
-relative paths, sizes and content hashes in compact JSON.
+Retired 1,842 files (305,721,586 bytes) after verifying the original source
+and evidence on the remote verification ref at `fbd24cc45`. The two phase
+reference executables still match their recorded sizes and hashes. Each
+scope retains only `record.json` for the upcoming integration check.
+Hashes cover sorted relative paths, sizes and content hashes in compact JSON.
 
 | Scope | Files | Bytes | Inventory SHA-256 |
 | --- | ---: | ---: | --- |
