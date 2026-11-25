@@ -12,7 +12,7 @@ from decode_kv_bench import insertion_recipe, native_windows
 bank, basis, require, leaves = snapshot.bank, snapshot.basis, snapshot.require, snapshot.leaves
 gen = leaves.suite.gen
 model = snapshot.confidence.model
-KEY = "dflash2_width_generation_v3"
+KEY = "dflash2_width_generation_v4"
 ROOT = bank.B / KEY.replace("_", "-")
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 WIDTH_EVIDENCE = "66810f1301de259d53839d597b68389a7acb9712"
@@ -24,6 +24,26 @@ ORDER = ("4", "5", "5", "4")
 WRAP_TOKENS = 18
 CONTEXT = 262144
 MAX_OUTPUT = 16384
+
+# Imported benchmark modules that support the baseline and live result readers.
+# The inherited suite pins the remaining controller and native inputs.
+VALIDATION_INPUTS = (
+    "bench/sycl/client_resources.py",
+    "bench/sycl/dflash2_prefill_direct_store.py",
+    "bench/sycl/dflash2_prefill_direct_store_speed.py",
+    "bench/sycl/dflash2_prefill_kv_stage_model.py",
+    "bench/sycl/dflash2_prefill_kv_stage_speed.py",
+    "bench/sycl/dflash2_prefill_window_admission.py",
+    "bench/sycl/dflash2_prefill_window_bank.py",
+    "bench/sycl/dflash2_prefill_window_bank_speed.py",
+    "bench/sycl/dflash2_prefill_window_direct.py",
+    "bench/sycl/dflash2_prefill_window_speed.py",
+    "bench/sycl/dflash2_prefill_window_writer_speed.py",
+    "bench/sycl/dflash2_target_snapshot_restore.py",
+    "bench/sycl/dflash2_v2_commit_order.py",
+    "bench/sycl/dflash2_v2_split_admission.py",
+    "bench/sycl/prefill_kv_upload_capacity.py",
+)
 
 PROTOCOL = dict(
     order=list(ORDER), workload=leaves.WORKLOAD,
@@ -234,7 +254,8 @@ def experiment():
 
     def pins(revision):
         result = prior_pins(revision)
-        for name in (THIS, "tools/sycl/decode_kv_bench.py", "tools/sycl/generation_engine.py"):
+        for name in (THIS, "tools/sycl/decode_kv_bench.py", "tools/sycl/generation_engine.py",
+                     *VALIDATION_INPUTS):
             p = bank.P / name
             require(p.read_bytes() == basis.validation.git("show", revision + ":" + name),
                     "changed fixed-width input: " + name)
