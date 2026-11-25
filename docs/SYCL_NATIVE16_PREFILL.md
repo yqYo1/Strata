@@ -8089,6 +8089,23 @@ workload and check its overlap with GPU work in the model before choosing a
 worker setting. The scan bounds this read pattern only. Physical DRAM traffic,
 model-level overlap and the effect on sustained decode remain unmeasured.
 
+The next fixed-work comparison at `d8fd00bf4` exercises the production
+IQ3_S single-token gate/up entry with five workers and a reserved caller.
+Of the 81 IQ3_S single-token expert jobs, the current pool partition leaves
+36 as complete 640-row calls. Only those calls can select the paired AVX2
+kernel. The exact generated descriptor and packed slices match `cd60b5041`.
+Check both phase outputs and every timed route in three ordered pairs before
+considering a model comparison. The new source and plan are committed, with
+the coherent CPU build and all native checks pending after the active Arc job.
+[Comparison plan](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-iq3s-full-replay-current.json).
+
+The closed scaling build has no current binary consumer. Its final executable,
+209 project and 1,376 dependency inputs, 633 actual compiler inputs and 22
+external linker inputs match the original committed source and recipe. Retire
+that auxiliary build and its raw outputs at the first serialized boundary
+before compiling the new replay. Keep the held-out routing capture for the
+model cache and fixed-work decisions that still use it.
+
 The quiet DFlash2 process 2 at `94f7eb2b0` uses native source `96832af6f`
 and reports a filled 1,256-slot cache at 2.40 GiB. The manifest and the
 native 256-byte slot alignment give 2,575,206,400 bytes for 26 slots in
