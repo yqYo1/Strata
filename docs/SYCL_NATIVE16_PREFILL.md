@@ -11398,7 +11398,7 @@ drain on success, cancellation and error.
 
 The [Arc 32-slot component result](https://github.com/yqYo1/Strata/blob/4f0bbef71/docs/SYCL_NATIVE16_PREFILL.md#dflash2-kv-stage-retention-outside-the-tap-layers)
 passes both full transfer and cancellation at `3552b9d7a`. The coherent
-model build and the actual relocated-workspace route remain to be checked.
+model build and the relocated-workspace route also pass their execution checks.
 
 First verify 16-slot bank reuse with the relocated scratch and a partial
 chunk. On one candidate binary compare demand against batched with three
@@ -11410,6 +11410,15 @@ in at least two pairs with a median time ratio below one. Record first
 prefill and client TTFT separately. Payload and device timing checks are
 required before broadening admission. Coalescing has its own prior failed
 incremental comparison and remains outside this test.
+
+The six-process comparison closes at `60db3b84b`. All 18 requests match
+the expected route and work, all processes exit normally, the final assets
+match, and no fresh Xe fault appears. Batched issue increases subsequent
+prefill time by 0.184%, 0.193% and 0.165% and first prefill time by 0.076%,
+1.095% and 1.773% in pair order. Keep demand on the 32-slot route. Restore
+the exact rejected candidate and its full receipts from their original Git
+revisions if needed. The candidate build and raw outputs are pending the
+post-comparison recovery and ownership check before retirement.
 
 The [primary driver cache comparison](../bench/dflash2_primary_driver_cache.py)
 reuses the older NEO inventory, private copy, readiness and counter readers.
@@ -11613,7 +11622,8 @@ reuse enabled. Periodic, turn, root and parked checkpoints stay disabled.
 Require the full first prefill, at most 64 fresh tokens on the continuation,
 the live DFlash2 prefix and a correct answer with sustained generation.
 Compare the continuation clock with the archived 53.314 s observation.
-The screen precedes a repeated timing comparison and any production change.
+The eight host accounting and configuration tests pass at `0804e46fc`.
+The live screen precedes a repeated timing comparison and any production change.
 
 The next weak-case candidate is the
 [maintenance-window scheduling fixture](../bench/dflash2_scheduling_fixture.py)
