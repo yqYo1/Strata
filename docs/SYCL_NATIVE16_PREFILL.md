@@ -8105,6 +8105,12 @@ external linker inputs match the original committed source and recipe. Retire
 that auxiliary build and its raw outputs at the first serialized boundary
 before compiling the new replay. Keep the held-out routing capture for the
 model cache and fixed-work decisions that still use it.
+The planned deletion is the external state directory
+`cpu-fixed-expert-replay-v1` only. It contains 158 files totaling 16,587,180
+bytes, with SHA-256
+`17b057f245eec966db5529605c339ef47bc72561afc9deedbc9afec7be85a4e4` of the
+sorted relative paths, sizes and content hashes in compact JSON. The
+closed result and source are reachable from the pushed feature branch.
 
 The quiet DFlash2 process 2 at `94f7eb2b0` uses native source `96832af6f`
 and reports a filled 1,256-slot cache at 2.40 GiB. The manifest and the
