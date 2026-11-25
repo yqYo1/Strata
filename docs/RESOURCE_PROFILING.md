@@ -391,7 +391,10 @@ Select exactly `CMakeFiles/strata.dir/src/program/generate.cpp.o`;
 redirect primary source and include operands to the committed validation
 worktree and replace `-o OBJECT -c` with `-fsyntax-only`. Retain the other
 flags, external dependencies and environment from the primary recipe.
-This check produces no linked executable or GPU result.
+At `88215efa1`, the five Python reader tests and pinned oneAPI SYCL
+syntax-only compile both pass. This checks the actual serving translation
+unit's C++ and SYCL declarations. The native link and model callback
+validation remain pending.
 
 Compare the native first 256 verifier windows of offered rows and check a
 following short request, cancellation and RESTORE. Keep route, output,
