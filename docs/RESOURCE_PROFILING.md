@@ -299,6 +299,23 @@ recoverable with `git show 410332a8f:bench/dflash2_decode_residency_replay.py`.
 The counters describe assignment and logical work. Actual DRAM traffic and
 end-to-end latency remain open.
 
+The [layer-quota replay](../bench/dflash2_decode_layer_quota_replay.py)
+uses the same verified prose trace and holds out its second half. It keeps
+the first 132 stock experts and the exact width of every one of the 1,256
+slots. Rank the remaining experts by unique CPU jobs from the first half.
+Compare the stock map, a new within-layer ranking, and a ranking across
+layers with the same aligned slot size. The third arm can change layer quotas
+with 2,575,206,400 total arena bytes and the same 2,321,664,000-byte loan
+tail. Each full global profile places a maximum-size excluded expert at the
+first excluded position to preserve the loader's actual stop rule.
+Advance to native admission only if the held-out CPU jobs and logical bytes
+both fall against both controls. On the native build, compare the original
+per-layer stock map with the same rank/slot map loaded globally first. Verify
+actual mapping, byte accounting, occupied loan/refill, short handoff and
+RESTORE before a profile comparison. Real traffic and latency require separate
+measurements. The replay captures only compact workload results and ranking
+hashes. Defer generating profile files until a named native trial needs them.
+
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
 96-swap and 197,913,600-byte caps. Compare early distinct jobs, routed rows
