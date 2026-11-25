@@ -11068,6 +11068,23 @@ The observer is charged in this comparison. The clean prefill speed
 reference remains the earlier paired `ad8652973` result.
 [Tap comparison reader](../bench/sycl/dflash2_tap_payloads.py).
 
+At the next idle measurement boundary, retire the closed tap-observer build
+and its run captures. Recover the 1,171 source inputs, recipe and 137 fresh
+objects for `593e7c5db` and check all 12 executable identities. The observer
+engine hash is `70dd5d376eb64ee0be2093f232251034b40601da466b33d9d226021365f49560`.
+Under the tuning state root, the retirement covers these files except
+`record.json`. Inventories hash sorted relative paths, byte counts and file hashes.
+
+| Directory | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-tap-payload-native-v1` | 1369 | 196426489 | `05e7292a927312003c20a5ae74d0be1e0050045d6e96668a1c80672515bed28d` |
+| `dflash2-tap-payload-model-v1` | 164 | 36631666 | `4006cc73cc8ec7290f8fb88e8d9a6908469f762a86cc6483f70f847984081188` |
+
+Preserve the snapshot prefill and width-four decode reference executables.
+The observer and matching model result are reachable at `321c5776a` in
+the pushed primary history. The inventory is a deletion decision pending
+the ownership check, identity recheck and actual removal.
+
 The target-only conversation snapshot change from `7e1ad6e28` and its host
 transfer fixture from `3a93dafd7` are ported to the primary source. DFlash2
 parks the target state and rebuilds the drafter from its captured tail.
