@@ -11539,10 +11539,15 @@ in isolation. Effective copy time, physical traffic and overlap within
 the model request remain unmeasured. The 102,401-token cache-seed experiment
 at `ad009f585` separately saves 0.636–2.973 seconds of first prefill.
 For the next cold attribution, use the matched first and subsequent
-requests at 118,785 tokens. The layer-major CPU wait observer already
+requests at 118,785 tokens. The
+[CPU wait controller](../bench/dflash2_primary_prefill_cpu_wait.py) prepares
+two opposite-order pairs on the unchanged retained engine. The layer-major CPU wait observer already
 separates thread CPU and wall time in GPU waits, copy submission and
-host grouping. Bracket that observer with clean timings and check the
-actual placement and disjoint accounting before assigning any cost.
+host grouping. Match the archived native work in every request and
+require the accounting to fit inside the prompt interval. Check observer
+overhead separately on the subsequent requests. Keep the first-use clock
+ratios as observations because the first-use spread can exceed observer
+overhead. Host and model admission for this controller are pending.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
