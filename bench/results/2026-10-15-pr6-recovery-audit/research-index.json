@@ -41714,5 +41714,27 @@
     "consumer": "After per-owner peak allocation and transfer/event attribution, compare candidate layouts with output and tap-parity checks; assess 120K throughput separately from 262K admission.",
     "scope_feedback": "Somewhat broad and partly duplicative on tile and overlap methods; DFlash2 tail constraints and the 120K-versus-262K boundary add a distinct retrieval case.",
     "schedulable_now": false
+  },
+  "dflash2-cpu-result-publication-20261126": {
+    "classification": "decision_support",
+    "source_revision": "96832af6f7119631a78e16f066129860faf0a619",
+    "main_policy_revision": "b3e8da2fd8cd1125d6a71cf3f9af34242e98dad8",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-cpu-result-publication-20261126/report.md",
+    "report_sha256": "ff0a770b8b032e53e8a3dc33ca29bbc98edf6905cfe085ce1aa6f6c75e926697",
+    "report_bytes": 11438,
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-cpu-result-publication-20261126/review.json",
+    "review_sha256": "c158e387554b4526cd19143c755e13f8a3d2fa5c73a4468fe1d0e79c37b8baca",
+    "stage": "reviewed",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_message_report_hash_matches": true,
+    "worker_message_startup_hash_matches": true,
+    "schedulable_now": false,
+    "finding": "The CPU worker can finish disjoint output rows before the pool drains. CPU atomics alone do not establish Arc visibility. A queued copy with dependent consumers is a candidate. Each token still needs every routed contribution in the existing reduction order.",
+    "correction": "Group complete token contributions, not arbitrary expert rows. After partial publication, a fallback needs explicit rollback and retirement of all dependent events. The 30.17 tok/s whole-decode overlap sensitivity does not estimate this candidate.",
+    "consumer": "Use a matched fixed-activation and routing replay on one production layer before attempting 2- or 4-token publication. Match output and work in the barrier control first, then measure readiness, GPU copies, submission, combination and layer completion. Advance only when the observed interval can contract.",
+    "retention": "Keep the scoped report and short review through the fixed-layer replay decision. Preserve the digest and provenance in Git."
   }
 }
