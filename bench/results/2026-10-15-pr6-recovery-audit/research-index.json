@@ -41492,5 +41492,51 @@
     "finding": "Retrieval cues: five-row Q6 DPAS operand delivery and register-stream, resident-interleave, and SLM hypotheses extend the prior C5 and RC5 qualification lines.",
     "consumer": "Retrieve after the exact image at 66810f130, dense capture at 48876620c, and RC5 compile plus five-row guard validation are available.",
     "limitation": "Format-derived sizes are logical extents; no cache, physical-memory, spill, occupancy, or XMX bottleneck is measured."
+  },
+  "dflash2-fixed-worker-replay-protocol-audit-20261125": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "source_commit": "d8f190ff5febc60369597600465a2f6117724b02",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-fixed-worker-replay-protocol-audit-20261125/report.md",
+    "report_sha256": "499ffe5e861d377c393c1a5fffb2a64182522813dbb7a6f1914c483b3cad6a88",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-reviews/fixed-cpu-replay-and-width5-projection-20261125/review.json",
+    "review_sha256": "f12a4e49a029c5eb27e3c3e57b23f7c4c9e9f3f160ec5541b55cd15a36027d58",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": false,
+    "finding": "It finds a source-visible role mismatch: the scan caller computes on a worker core while replay reserves the host core for coordination in the 1–5 worker arms.",
+    "limitation": "This is a control-protocol defect, not a kernel defect or measured performance result; logical bytes and scan plateaus do not establish physical DRAM traffic or saturation.",
+    "consumer": "Use the role-matched pool and scan checks before scoring fixed core counts.",
+    "main_checked_source": "91fce0ee9"
+  },
+  "zen3-expert-pool-phase-granularity-20261125": {
+    "classification": "knowledge_collection",
+    "stage": "reviewed",
+    "source_commit": "d8f190ff5febc60369597600465a2f6117724b02",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zen3-expert-pool-phase-granularity-20261125/report.md",
+    "report_sha256": "1dbbad73633a7b74692b9ec9202fb176e13a540ea1831ede37ca323c5eddd1bd",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-reviews/fixed-cpu-replay-and-width5-projection-20261125/review.json",
+    "review_sha256": "f12a4e49a029c5eb27e3c3e57b23f7c4c9e9f3f160ec5541b55cd15a36027d58",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": false,
+    "finding": "Retrieval cues: dynamic chunk claims, contiguous static ranges, persistent teams, barriers, output ownership and false sharing.",
+    "limitation": "Keep scope to dispatch and granularity references after fixed-work replay; preserve oneTBB and BLIS license provenance and treat no method as a Zen 3 result.",
+    "consumer": "Retrieve if qualified replay shows dispatch overhead or worker tail imbalance."
+  },
+  "dflash2-width5-projection-capture-protocol-20261125": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "source_commit": "d8f190ff5febc60369597600465a2f6117724b02",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-width5-projection-capture-protocol-20261125/report.md",
+    "report_sha256": "105df86f26f5d430a866f59fe7a631da99a40477d261257f2bcf0a9879bc5fb7",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-reviews/fixed-cpu-replay-and-width5-projection-20261125/review.json",
+    "review_sha256": "f12a4e49a029c5eb27e3c3e57b23f7c4c9e9f3f160ec5541b55cd15a36027d58",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": false,
+    "finding": "It narrows the prior width-five question to one dense C5 route and specifies capture-counter and numerical admission gates.",
+    "limitation": "This is source reasoning and a proposed protocol; prior CUDA C4 timing does not qualify the Xe2/SYCL route, and logical extents do not show physical traffic.",
+    "consumer": "Confirm exact build inputs, compile the isolated switch, and pass five-row numerical and capture checks before matched timing."
   }
 }
