@@ -141,14 +141,15 @@ def fit(points, holdout, feature=None):
     train = [n for n in READS if n != holdout]
     x = [n / 65536 for n in train]
     y = [points[n] for n in train]
-    c = 0.0
+    line = statistics.linear_regression(x, y)
+    c = None
     if feature:
         z = [feature(t) for t in x]
         p = statistics.linear_regression(x, z)
-        residual = [v - p.intercept - p.slope * t for t, v in zip(x, z, strict=True)]
-        c = math.fsum(a * b for a, b in zip(residual, y, strict=True)) / math.fsum(a * a for a in residual)
-        y = [v - c * t for v, t in zip(y, z, strict=True)]
-    line = statistics.linear_regression(x, y)
+        z_residual = [v - p.intercept - p.slope * t for t, v in zip(x, z, strict=True)]
+        y_residual = [v - line.intercept - line.slope * t for t, v in zip(x, y, strict=True)]
+        c = math.fsum(a * b for a, b in zip(z_residual, y_residual, strict=True)) / math.fsum(a * a for a in z_residual)
+        line = statistics.linear_regression(x, [v - c * t for v, t in zip(y, z, strict=True)])
 
     def evaluate(n):
         t = n / 65536
