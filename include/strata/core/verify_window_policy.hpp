@@ -52,13 +52,13 @@ constexpr bool verify_q6_dpas_dense(bool enabled, VerifyInput input, bool exact,
         verify_q6_dense_dpas_index(n_in, n_out) < verify_q6_dense_dpas_shapes.size();
 }
 
-// 0ccc4ed45:q6_canonical_component_v4: only the full target head/C4 won.
-// The enabled owner supplies unchanged canonical Q6 rows. Never select the
-// slower 2560x640 matrix. This is eligibility for a model trial only.
+// The full target head won the C4 and C5 component comparisons at
+// 0ccc4ed45 and f282d174d. C5 has a separate opt-in for its model trial.
 constexpr bool verify_q6_dpas_head(bool dpas_ready, VerifyInput input, bool exact,
-                                  int type, int n_in, int n_out, int columns) {
-    return dpas_ready && input==VerifyInput::decode && exact && type==14 &&
-           n_in==2560 && n_out==248320 && columns==4;
+                                  int type, int n_in, int n_out, int columns,
+                                  bool enable_c5 = false) {
+    return dpas_ready && input == VerifyInput::decode && exact && type == 14 &&
+           n_in == 2560 && n_out == 248320 && (columns == 4 || (enable_c5 && columns == 5));
 }
 
 // Only these shapes passed all three independent process medians in

@@ -221,12 +221,10 @@ void q6_dpas_c4_canonical(const void* canonical, const void* q8, float* output,
     launch<true>(canonical, q8, output, k, n, columns, stream);
 }
 
-#ifdef STRATA_Q6_CANONICAL_C5_COMPONENT
 void q6_dpas_c5_canonical(const void* canonical, const void* q8, float* output,
                          int k, int n, int columns, void* stream) {
     launch<true, 5>(canonical, q8, output, k, n, columns, stream);
 }
-#endif
 
 template <int Columns>
 void packed_columns(const uint16_t* packed, const void* q8, float* output,

@@ -47,22 +47,25 @@ int main() try {
     auto nonstreamed=kv;nonstreamed.streamed_int8=false;
     need(!strata::core::decode_verify_coalesced_kv(true,VerifyInput::decode,nonstreamed),
         "KV planner selected a non-streamed/other-format cache");
-    // Only the independently measured winning head can use the new packing.
-    // Exercise negative phase/layout/owner/type controls and every window size.
-    int dpas_selected=0;
-    for(bool ready:{false,true}) for(bool exact:{false,true})
-        for(auto phase:{VerifyInput::prompt,VerifyInput::decode,static_cast<VerifyInput>(255)})
-            for(int type:{-1,13,14,15}) for(int c=0;c<=9;++c) {
-                const bool expected=ready && exact && phase==VerifyInput::decode && type==14 && c==4;
-                need(verify_q6_dpas_head(ready,phase,exact,type,2560,248320,c)==expected,
-                    "packed target-head policy escaped measured owner/phase/layout/type/columns");
-                dpas_selected+=expected;
-                for(const auto& shape:{std::array<int,2>{2560,640},{2560,248319},{2561,248320},
-                                      {0,248320},{2560,0},{-2560,248320}})
-                    need(!verify_q6_dpas_head(ready,phase,exact,type,shape[0],shape[1],c),
-                        "unmeasured packed-head geometry selected");
-            }
-    need(dpas_selected==1,"wrong number of packed target-head selections");
+    for (bool opt_in_c5 : {false, true}) {
+        int dpas_selected = 0;
+        for (bool ready : {false, true}) for (bool exact : {false, true})
+            for (auto phase : {VerifyInput::prompt, VerifyInput::decode, static_cast<VerifyInput>(255)})
+                for (int type : {-1, 13, 14, 15}) for (int c = 0; c <= 9; ++c) {
+                    const bool expected = ready && exact && phase == VerifyInput::decode && type == 14 &&
+                                          (c == 4 || (opt_in_c5 && c == 5));
+                    need(verify_q6_dpas_head(ready, phase, exact, type, 2560, 248320, c, opt_in_c5) == expected,
+                         "canonical target-head policy escaped measured owner/phase/layout/type/columns");
+                    dpas_selected += expected;
+                    for (const auto& shape : {std::array<int, 2>{2560, 640}, {2560, 248319}, {2561, 248320},
+                                              {0, 248320}, {2560, 0}, {-2560, 248320}})
+                        need(!verify_q6_dpas_head(ready, phase, exact, type, shape[0], shape[1], c, opt_in_c5),
+                             "unmeasured canonical head geometry selected");
+                }
+        need(dpas_selected == (opt_in_c5 ? 2 : 1), "wrong number of canonical target-head selections");
+    }
+    need(!verify_q6_dpas_head(true, VerifyInput::decode, true, 14, 2560, 248320, 5),
+         "canonical C5 head selected without opt-in");
     // Independent expected set from e44575158; exclude the losing512-row
     // shape, packed full head and every prompt/C1-C3/C8 call.
     int dense_selected = 0;

@@ -72,6 +72,15 @@ using Clock = std::chrono::steady_clock;
 double ms_since(Clock::time_point t) { return std::chrono::duration<double, std::milli>(Clock::now() - t).count(); }
 #ifdef STRATA_ENABLE_SYCL
 namespace segment_clocks = strata::sycl_backend::decode_segment_clocks;
+
+bool decode_q6_c5_head_enabled() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_SYCL_DECODE_Q6_DPAS_C5_HEAD");
+        return value && std::strcmp(value, "1") == 0;
+    }();
+    return enabled;
+}
+
 bool decode_clock_geometry(VerifyInput input, int width, bool split, int64_t first, int64_t end, int64_t layers) {
     return input == VerifyInput::decode && width == 4 && !split && first == 0 &&
            end == layers && layers == segment_clocks::layers;
@@ -266,8 +275,9 @@ bool Verifier::report_q6_routes(std::FILE* file, uint64_t request) const {
             total[0] == window.q6_reference_calls &&
             total[1] + total[2] + total[3] == window.q6_columns_calls &&
             total[2] == window.q6_centered_calls && total[3] == window.q6_native_half_calls &&
-            (window.q6_dpas_head_calls==0 || (input==VerifyInput::decode && T==4 &&
-             window.q6_dpas_head_calls==1 && head_ && head_->decode_dpas_ready())) &&
+            (window.q6_dpas_head_calls == 0 || (window.q6_dpas_head_calls == 1 && head_ &&
+             verify_q6_dpas_head(head_->decode_dpas_ready(), input, strata::kernels::native_mmvq_multi_exact(),
+                 head_->type(), int(g_->n_embd), int(n_vocab_), T, T == 5 && decode_q6_c5_head_enabled()))) &&
             (window.q6_packed_head_calls==0 || (T<=4 && window.q6_packed_head_calls==1 &&
              head_ && head_->primary_packed() && head_->loaded() && !head_->head_detached()));
         valid = valid && complete;
@@ -1520,9 +1530,13 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
                 if(head_->primary_packed()) {
                     head_->run_packed_columns(xq_,head_logits_,T,cs);
                     ++graph_window.q6_packed_head_calls;
-                } else if(verify_q6_dpas_head(head_->decode_dpas_ready(),input,native_mmvq_multi_exact(),
-                    head_->type(),int(N),int(n_vocab_),T)) {
-                    head_->run_decode_c4(xq_,head_logits_,cs);
+                } else if (verify_q6_dpas_head(head_->decode_dpas_ready(), input, native_mmvq_multi_exact(),
+                    head_->type(), int(N), int(n_vocab_), T, T == 5 && decode_q6_c5_head_enabled())) {
+                    if (T == 4) {
+                        head_->run_decode_c4(xq_, head_logits_, cs);
+                    } else {
+                        component::q6_dpas_c5_canonical(head_->weights(), xq_, head_logits_, int(N), int(n_vocab_), T, cs);
+                    }
                     ++graph_window.q6_dpas_head_calls;
                 } else
 #endif

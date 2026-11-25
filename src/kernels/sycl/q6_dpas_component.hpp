@@ -70,10 +70,7 @@ void q6_dpas_columns(const uint16_t* packed, const void* q8, float* output,
 void q6_dpas_c4_canonical(const void* canonical, const void* q8, float* output,
                          int k, int n, int columns, void* stream);
 
-#ifdef STRATA_Q6_CANONICAL_C5_COMPONENT
-// Standalone Arc qualification for five live columns with the same ownership
-// contract as C4. The candidate reads the canonical weights without padding.
+// Five live columns with the same canonical allocation contract as C4.
 void q6_dpas_c5_canonical(const void* canonical, const void* q8, float* output,
                          int k, int n, int columns, void* stream);
-#endif
 } // namespace strata::kernels::component

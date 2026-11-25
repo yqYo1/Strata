@@ -127,7 +127,6 @@ add_executable(sycl_q6_canonical_component EXCLUDE_FROM_ALL
 target_include_directories(sycl_q6_canonical_component PRIVATE src/kernels/sycl)
 target_link_libraries(sycl_q6_canonical_component PRIVATE strata_sycl_runtime strata_warnings)
 target_compile_options(sycl_q6_canonical_component PRIVATE -fno-fast-math -ffp-contract=off)
-target_compile_definitions(sycl_q6_canonical_component PRIVATE STRATA_Q6_CANONICAL_C5_COMPONENT)
 target_compile_features(sycl_q6_canonical_component PRIVATE cxx_std_20)
 add_executable(sycl_q6_head_owner_test EXCLUDE_FROM_ALL tests/sycl/native_head_dpas.cpp)
 # Next admission uses the exact production owner/kernel objects,not a second
