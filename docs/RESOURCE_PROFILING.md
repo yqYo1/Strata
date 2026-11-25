@@ -403,10 +403,10 @@ native source delta, and the relocated recipe. Subsequent
 `prepare`, `configure` and `compile` use a separate candidate directory
 and the standard owned measurement lock. The only new build target is
 the standalone host fixture. This avoids a partial relink and preserves
-the existing measurements and both phase references. The current primary
-curve and continuation readers still use the older snapshot executable and
-the coherent build fixtures. Resolve those consumers before creating the
-candidate generation. The
+the existing measurements and both phase references. The closed primary
+curve used the older snapshot executable and coherent build fixtures.
+The continuation reader verifies the selected engine directly. Resolve
+remaining legacy consumers before creating the candidate generation. The
 [historical snapshot recovery](../bench/sycl/dflash2_snapshot_source_recovery.py)
 passes at `416c66058`: the two archived projections reconstruct all 1,171
 source files and the exact recipe without retaining duplicate sources.
@@ -421,14 +421,23 @@ runtime, probe and original compiler-input metadata are still checked live.
 The artifact-free plan at `883309be1` verifies the selected primary prefill
 binary from `bfc0c54ae` and the separate decode binary from `d6f2b8294`.
 It reports four native paths matching the syntax-checked revision
-`88215efa1` and 12 build targets. The old target snapshot binary is
-still needed by the frozen primary readers; the census plan uses the
-current primary recipe. Native link and callback validation remain pending.
+`88215efa1` and 12 build targets. The census plan uses the current primary
+recipe. Native link and callback validation remain pending.
 
-Compare the native first 256 verifier windows of offered rows and check a
-following short request, cancellation and RESTORE. Keep route, output,
-verifier work and slot map matched. Time separately with raw route tracing
-off and account for the request-end diagnostic write in client timing. A positive count gate
+The [native model census controller](../bench/dflash2_verify_route_census_model.py)
+requires the actual coherent build and prepares two separate processes with
+identical raw routing, state audit and fixed-placement spec4 settings. It
+disables prompt caching and compares observer off and on using three fresh
+requests with exact output caps of 32, 1025 and 32 tokens. The middle
+request must exercise more than 256 verifier windows. The final short
+request must reproduce the initial short count map. Require matching
+output, active state, expert work and raw routes across the two processes.
+Retain the raw captures through the parity decision and then retire them
+once their compact evidence and owner closure are committed.
+
+Check cancellation and RESTORE separately. Time separately with raw route
+tracing off and account for the request-end diagnostic write in client
+timing. A positive count gate
 does not authorize expert publication. A later placement test needs a
 separate preregistered transfer, restoration and end-to-end comparison.
 

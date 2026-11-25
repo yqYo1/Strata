@@ -81,19 +81,22 @@ def recipe(row):
                                              for k, v in original['environment'].items()}, targets=TARGETS)
 
 
-def main(action):
-    require(action in ('plan', 'prepare', 'configure', 'compile'), 'use plan|prepare|configure|compile')
-    reference_row, controls = phase_references()
-    revision = changed_sources()
-    evidence = dict(native_source_commit=BASE_SOURCE, binary=reference_row['binaries']['strata'],
-                    build_record_sha256=bank.sha(BASE / 'record.json'), control_evidence=BASE_EVIDENCE)
-
+def configure_controller():
     primary.ROOT, primary.KEY, primary.THIS = ROOT, KEY, THIS
     primary.PREFILL, primary.references = PREFILL_EVIDENCE, phase_references
     primary.TARGETS = TARGETS
     primary.REQUIRED_SOURCES = (*primary.REQUIRED_SOURCES, *UNITS[1:])
     primary.recipe = recipe
     primary.foundation_reader = foundation.historical_foundation
+
+
+def main(action):
+    require(action in ('plan', 'prepare', 'configure', 'compile'), 'use plan|prepare|configure|compile')
+    reference_row, controls = phase_references()
+    revision = changed_sources()
+    evidence = dict(native_source_commit=BASE_SOURCE, binary=reference_row['binaries']['strata'],
+                    build_record_sha256=bank.sha(BASE / 'record.json'), control_evidence=BASE_EVIDENCE)
+    configure_controller()
     original_save = primary.save
 
     def save(row):
