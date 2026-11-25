@@ -315,6 +315,11 @@ actual mapping, byte accounting, occupied loan/refill, short handoff and
 RESTORE before a profile comparison. Real traffic and latency require separate
 measurements. The replay captures only compact workload results and ranking
 hashes. Defer generating profile files until a named native trial needs them.
+The first attempt at `46b767500` stopped before reading the trace because
+the old physical checkout path for the stock profile had been retired.
+The reader now recovers that tracked input from the original capture's
+source revision and requires its hash to match both the recorded profile and
+the working repository's profile. The original capture and hashes stay fixed.
 
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same

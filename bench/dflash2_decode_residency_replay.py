@@ -17,6 +17,7 @@ from cpu_work_census import expected_membership, manifest_formats
 CAPTURE = 'b28a9372bc1943812a87d170402435cc1c7425f0'
 EVIDENCE = 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
 KEY = 'dflash2_long_routing_holdout_v1'
+PROFILE = 'data/expert-profile.bin'
 ROUTE = struct.Struct('<ii10i40s')
 LAYERS, EXPERTS = 48, 512
 EMBEDDING, EXPERT_HIDDEN = 2560, 640
@@ -41,7 +42,7 @@ def sha(data):
 
 def inputs():
     revision = git('rev-parse', 'HEAD').decode().strip()
-    for name in ('bench/dflash2_decode_residency_replay.py', 'tools/sycl/cpu_work_census.py',
+    for name in ('bench/dflash2_decode_residency_replay.py', PROFILE, 'tools/sycl/cpu_work_census.py',
                  'tools/sycl/measurement_guards.py', 'tools/gguf_reader.py', 'third_party/ggml/ggml-common.h'):
         require((ROOT / name).read_bytes() == git('show', revision + ':' + name), 'commit the replay reader')
     capture = json.loads(git('show', CAPTURE + ':' + EVIDENCE))[KEY]
@@ -51,9 +52,13 @@ def inputs():
             and process['ownership_closed'] and process['fresh_faults'] == [], 'capture did not close')
     observed = process['routes']
     assets = capture['routing_metadata']
-    for name in ('profile', 'manifest'):
-        require(sha(Path(assets[name]).read_bytes()) == assets[name + '_sha256'], 'rank or weights changed')
-    baseline = expected_membership(assets['profile'])
+    profile = ROOT / PROFILE
+    # The original checkout may have been retired. Recover its tracked input
+    # at the recorded source revision and admit only the same bytes.
+    require(sha(profile.read_bytes()) == sha(git('show', capture['source_commit'] + ':' + PROFILE))
+            == assets['profile_sha256'], 'original rank bytes differ')
+    require(sha(Path(assets['manifest']).read_bytes()) == assets['manifest_sha256'], 'packed manifest changed')
+    baseline = expected_membership(profile)
     require(sha(b''.join(mask.to_bytes(64, 'little') for mask in baseline)) == observed['membership_sha256'],
             'initial resident membership disagrees with the native capture')
     folder = Path(capture['plans'][0]['root'])

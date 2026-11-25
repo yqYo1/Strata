@@ -16,7 +16,7 @@ from make_profile import read_profile
 STATE = Path('/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007')
 PYTHON = '/home/yayoi/.local/share/strata-sycl/venv/bin/python3'
 THIS = str(Path(__file__).resolve().relative_to(replay.ROOT))
-PROFILE = 'data/expert-profile.bin'
+PROFILE = replay.PROFILE
 PROFILE_SHA256 = '8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf'
 PROTECTED = 132
 EXPECTED_SLOTS = 1256
