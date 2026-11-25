@@ -3,6 +3,7 @@
 
 import copy
 import fcntl
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -22,6 +23,7 @@ REFERENCE = 'd6f2b82947018f85e8e6169bd2072fb076c03f19'
 NATIVE = B / 'dflash2-target-snapshot-native-v2'
 FOUNDATION = B / 'coherent-prefill-native-v1' / 'record.json'
 VERIFY_POLICY = 'include/strata/core/verify_window_policy.hpp'
+VERIFY_POLICY_SOURCE = '02d64c4ca533e357b0c408047a749626790b476b'
 THIS = str(Path(__file__).resolve().relative_to(P))
 UNITS = (
     'src/sycl/runtime.cpp', 'src/sycl/compat.cpp', 'src/sycl/command_profile.cpp',
@@ -34,8 +36,7 @@ UNITS = (
 require, sha = base.require, base.digest
 
 
-def q6_dispatch_source(path):
-    source = path.read_bytes()
+def q6_dispatch_source(source):
     start = source.index(b'constexpr bool verify_q6_columns(')
     return source[start:source.index(b'\n}', start) + 2]
 
@@ -66,11 +67,11 @@ def reference():
     require(all(sha(P / name) == value for name, value in sources.items()), 'reference or runtime source changed')
     # The primary header has a separate KV policy and graph counters. This
     # fixture consumes its Q6 dispatch predicate and pins the entire header.
-    native_policy = NATIVE / 'source' / VERIFY_POLICY
-    component_policy = P / VERIFY_POLICY
-    require(sha(native_policy) == source_files[VERIFY_POLICY]
+    native_policy = base.source.git(P, 'show', VERIFY_POLICY_SOURCE + ':' + VERIFY_POLICY)
+    component_policy = (P / VERIFY_POLICY).read_bytes()
+    require(hashlib.sha256(native_policy).hexdigest() == source_files[VERIFY_POLICY]
             and q6_dispatch_source(component_policy) == q6_dispatch_source(native_policy), 'Q6 dispatch policy changed')
-    policy = dict(native_sha256=source_files[VERIFY_POLICY], component_sha256=sha(component_policy))
+    policy = dict(native_sha256=source_files[VERIFY_POLICY], component_sha256=hashlib.sha256(component_policy).hexdigest())
     return native, compiler, dict(record=dict(path=str(record), sha256=sha(record)),
         evidence_commit=REFERENCE, source_commit=native['native_source_commit'],
         engine=selected['binary'], runtime_sources=sources, verify_policy=policy)
@@ -126,7 +127,7 @@ def prepare(ctx):
             and recipe['configure'][recipe['configure'].index('-B') + 1] == str(root / 'build'), 'isolated build paths')
     row = dict(stage='prepared', project=project, dependencies=compiler['dependencies'],
         toolchain=compiler['toolchain'], external_inputs=native['external_inputs'], recipe=recipe,
-        fallbacks=dict(strata=identity['engine']), selected_native=identity,
+        fallbacks={}, selected_native=identity,
         budgets=ctx.BUDGET, commands=[], passed=False, complete=False, active=False, ownership_closed=True,
         host_budget=dict(wall=120, cpu=120, rss_cap=1 << 30, text_cap=1 << 20,
                          file_cap=2 << 20, total_cap=64 << 20),
