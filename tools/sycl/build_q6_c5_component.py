@@ -12,9 +12,9 @@ sys.dont_write_bytecode = True
 import build_compat_profile as base
 
 P, B = base.P, base.B
-ROOT = B / 'q6-canonical-c5-component-v1'
+ROOT = B / 'q6-canonical-c5-component-v2'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
-KEY = 'q6_canonical_c5_component_build_v1'
+KEY = 'q6_canonical_c5_component_build_v2'
 TARGET = 'sycl_q6_canonical_component'
 REFERENCE = 'd6f2b82947018f85e8e6169bd2072fb076c03f19'
 NATIVE = B / 'dflash2-target-snapshot-native-v2'
@@ -112,7 +112,8 @@ def prepare(ctx):
                                 'src', 'include', 'third_party', 'bench/sycl', 'tools/sycl'))
     recipe = copy.deepcopy(native['recipe'])
     recipe['configure'] = [value.replace(str(NATIVE / 'source'), str(P)).replace(str(NATIVE), str(ROOT))
-                           for value in recipe['configure']]
+                           for value in recipe['configure']
+                           if not value.startswith('-DSTRATA_QSA_PREFILL_PV_SOURCE:')]
     recipe['environment'] = {key: value.replace(str(NATIVE), str(ROOT))
                              for key, value in recipe['environment'].items()}
     recipe['targets'] = recipe['build_targets'] = [TARGET]
@@ -125,7 +126,7 @@ def prepare(ctx):
         host_budget=dict(wall=120, cpu=120, rss_cap=1 << 30, text_cap=1 << 20,
                          file_cap=2 << 20, total_cap=64 << 20),
         plan=dict(compile_target=TARGET, initial_native_checks=['--host', '--host-c5', '--check-c5-small'],
-            scope='One fixture-only build. Match the retained DPC++ recipe. Validate device loading and five-column numerical results in a separate bounded run.',
+            scope='One fixture-only build. Omit the generated prefill test source. Preserve the retained DPC++ flags. Validate device loading and five-column numerical results in a separate bounded run.',
             next='After the small guard/oracle checks, measure head and dense shapes independently in three fresh processes.'),
         retention='One standalone fixture for the immediate C5 comparison. Retire the build after the component decision and preserve its exact source and recipe.')
     ctx.current(row, committed=False)
