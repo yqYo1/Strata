@@ -11276,6 +11276,27 @@ The copied tree matches the donor inventory. The older counter replay
 passes at 0/12 empty hits/misses and 12/0 seeded. Equal counters fail.
 No new native process ran in this check.
 
+The two native cache diagnostics at `2997fef19` and `b64605400` both
+close with the original two 102,401-token requests, matched route and
+warm-up work, identical final image inventories and no new Xe fault.
+During the first long request the empty cache gives 0 hits and 13 misses;
+the seeded cache gives 13 hits and 0 misses. These two processes have
+driver statistics enabled.
+
+| Observed diagnostic clock | Empty | Seeded |
+| --- | ---: | ---: |
+| Server readiness bracket | 56.440–56.525 s | 39.450–39.535 s |
+| Four-row verifier capture during the 74-token warm-up | 12.273 s | 0.173 s |
+| First long prefill | 109.9024 s | 106.8552 s |
+| First long client TTFT | 110.087 s | 107.043 s |
+| Subsequent long prefill | 97.3020 s | 97.2824 s |
+
+The private seed copy took 0.237 s. The capture interval belongs to the
+warm-up, so keep those two clocks separate. This establishes the intended
+cache-hit contrast. The three counterbalanced clean pairs with statistics
+disabled decide the repeatable timing effect. The seeded diagnostic still
+has a 9.573 s first-versus-subsequent prefill gap at the same input length.
+
 The [primary continuation plan](../bench/dflash2_primary_continuation.py)
 uses the same retained binary and KV selection for three independent
 `bench.sh --long-generation-only --long-generation-input-case split-v1-96k`
