@@ -233,10 +233,10 @@ def timing(text,index):
         scope='One repeated prequantized canonical matrix;graph submission/completion and parameter validation charged. Not model cache,critical wall,physical traffic or model throughput.')
 
 
-def decision(runs):
+def decision(runs, shapes=SHAPES):
     require([v['index'] for v in runs]==[0,1,2],'three independent timing processes required')
     cells={}
-    for k,n in SHAPES:
+    for k,n in shapes:
         name=f'{k}x{n}';ratios=[v['median_ns'][name]['1']/v['median_ns'][name]['0'] for v in runs]
         cells[name]=dict(candidate_over_reference_process_ratios=ratios,
             geometric_mean_time_ratio=math.exp(statistics.mean(math.log(v) for v in ratios)),

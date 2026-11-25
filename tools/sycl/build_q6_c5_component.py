@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the five-column canonical Q6 fixture with the retained SYCL recipe."""
+"""Build the five-column Q6 fixture with the retained SYCL recipe."""
 
 import copy
 import fcntl
@@ -15,6 +15,8 @@ P, B = base.P, base.B
 ROOT = B / 'q6-canonical-c5-component-v2'
 RESULT = P / 'bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json'
 KEY = 'q6_canonical_c5_component_build_v2'
+PACKED_ROOT = B / 'q6-packed-c5-component-v1'
+PACKED_KEY = 'q6_packed_c5_component_build_v1'
 TARGET = 'sycl_q6_canonical_component'
 REFERENCE = 'd6f2b82947018f85e8e6169bd2072fb076c03f19'
 NATIVE = B / 'dflash2-target-snapshot-native-v2'
@@ -74,15 +76,17 @@ def reference():
         engine=selected['binary'], runtime_sources=sources, verify_policy=policy)
 
 
-def context():
+def context(packed=False):
     spec = importlib.util.spec_from_file_location('canonical_c5_fixture_build', base.__file__)
     ctx = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(ctx)
-    ctx.ROOT, ctx.RESULT, ctx.KEY, ctx.TARGET, ctx.UNITS = ROOT, RESULT, KEY, TARGET, UNITS
+    ctx.ROOT, ctx.KEY = (PACKED_ROOT, PACKED_KEY) if packed else (ROOT, KEY)
+    ctx.RESULT, ctx.TARGET, ctx.UNITS = RESULT, TARGET, UNITS
+    ctx.PACKED = packed
 
     def current(row, committed=True):
         if committed:
-            require(ctx.feature.validation.committed(RESULT, (KEY,)) == ctx.compact(row), 'commit exact fixture plan')
+            require(ctx.feature.validation.committed(RESULT, (ctx.KEY,)) == ctx.compact(row), 'commit exact fixture plan')
         _, _, identity = reference()
         require(identity == row['selected_native'], 'native build provenance changed')
         required_sources = {*UNITS, THIS, VERIFY_POLICY, 'tools/sycl/build_compat_profile.py'}
@@ -106,19 +110,20 @@ def context():
 
 
 def prepare(ctx):
-    require(not ROOT.exists() and KEY not in ctx.feature.validation.committed(RESULT), 'fresh component build required')
+    root = ctx.ROOT
+    require(not root.exists() and ctx.KEY not in ctx.feature.validation.committed(RESULT), 'fresh component build required')
     native, compiler, identity = reference()
     project = ctx.source.pin(P, ('CMakeLists.txt', 'AGENTS.md', 'docs/ARTIFACT_RETENTION.md', 'cmake',
                                 'src', 'include', 'third_party', 'bench/sycl', 'tools/sycl'))
     recipe = copy.deepcopy(native['recipe'])
-    recipe['configure'] = [value.replace(str(NATIVE / 'source'), str(P)).replace(str(NATIVE), str(ROOT))
+    recipe['configure'] = [value.replace(str(NATIVE / 'source'), str(P)).replace(str(NATIVE), str(root))
                            for value in recipe['configure']
                            if not value.startswith('-DSTRATA_QSA_PREFILL_PV_SOURCE:')]
-    recipe['environment'] = {key: value.replace(str(NATIVE), str(ROOT))
+    recipe['environment'] = {key: value.replace(str(NATIVE), str(root))
                              for key, value in recipe['environment'].items()}
     recipe['targets'] = recipe['build_targets'] = [TARGET]
     require(recipe['configure'][recipe['configure'].index('-S') + 1] == str(P)
-            and recipe['configure'][recipe['configure'].index('-B') + 1] == str(ROOT / 'build'), 'isolated build paths')
+            and recipe['configure'][recipe['configure'].index('-B') + 1] == str(root / 'build'), 'isolated build paths')
     row = dict(stage='prepared', project=project, dependencies=compiler['dependencies'],
         toolchain=compiler['toolchain'], external_inputs=native['external_inputs'], recipe=recipe,
         fallbacks=dict(strata=identity['engine']), selected_native=identity,
@@ -129,26 +134,36 @@ def prepare(ctx):
             scope='One fixture-only build. Omit the generated prefill test source. Preserve the retained DPC++ flags. Validate device loading and five-column numerical results in a separate bounded run.',
             next='After the small guard/oracle checks, measure head and dense shapes independently in three fresh processes.'),
         retention='One standalone fixture for the immediate C5 comparison. Retire the build after the component decision and preserve its exact source and recipe.')
+    if ctx.PACKED:
+        row['plan'].update(initial_native_checks=['--host', '--host-c5', '--host-packed-c5'],
+            scope='Build the canonical/packed comparison on one coherent SYCL fixture. Model dispatch stays outside this comparison.',
+            next='Require traced small and full-head numerical checks, then three clean matched timing processes.')
     ctx.current(row, committed=False)
-    ROOT.mkdir(mode=0o700)
+    root.mkdir(mode=0o700)
     for name in ('tmp', 'cache'):
-        (ROOT / name).mkdir(mode=0o700)
+        (root / name).mkdir(mode=0o700)
     ctx.save(row)
 
 
 def host(ctx):
-    row = json.loads((ROOT / 'record.json').read_text())
+    root = ctx.ROOT
+    row = json.loads((root / 'record.json').read_text())
     ctx.current(row)
     require(row['stage'] == 'built' and row['passed'] and row['ownership_closed']
             and 'host' not in row, 'a fresh committed fixture is required')
     def persist():
-        ctx.write(ROOT / 'host-execution.json', dict(active=bool(owner.active), commands=owner.commands))
+        ctx.write(root / 'host-execution.json', dict(active=bool(owner.active), commands=owner.commands))
 
-    owner = base.ownership.Owner(ROOT / 'owned-host', persist)
+    owner = base.ownership.Owner(root / 'owned-host', persist)
+    controls = [('--host', 'HOST passed=1 cases=31 GPU=0'),
+                ('--host-c5', 'HOST_C5 passed=1 cases=10 GPU=0')]
+    if ctx.PACKED:
+        controls.append(('--host-packed-c5', 'HOST_PACKED_C5 passed=1 cases=7 GPU=0'))
     outcomes = []
     try:
-        for flag, expected in (('--host', 'HOST passed=1 cases=31 GPU=0'),
-                               ('--host-c5', 'HOST_C5 passed=1 cases=10 GPU=0')):
+        require(row['plan']['initial_native_checks'][:len(controls)] == [flag for flag, _ in controls],
+                'native host controls differ from the committed plan')
+        for flag, expected in controls:
             entry, out, _ = owner.run(flag.removeprefix('--'), [row['binary']['path'], flag],
                                       row['recipe']['environment'], P, **row['host_budget'])
             require(base.ownership.closed(entry) and entry['exit_code'] == 0
@@ -165,11 +180,12 @@ def host(ctx):
 
 
 if __name__ == '__main__':
-    require(sys.argv[1:] in (['prepare'], ['build'], ['host']), 'use prepare, build or host')
+    require(len(sys.argv) in (2, 3) and sys.argv[1] in ('prepare', 'build', 'host')
+            and sys.argv[2:] in ([], ['--packed']), 'use prepare, build or host with optional --packed')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         base.feature.guards.no_model_owners([])
-        ctx = context()
+        ctx = context(packed=sys.argv[2:] == ['--packed'])
         if sys.argv[1] == 'prepare':
             prepare(ctx)
         elif sys.argv[1] == 'build':

@@ -8015,8 +8015,10 @@ Use the retained C5 component recipe and a fresh fixture, verifying its
 source, toolchain, actual executable and providers before running. Run
 `--host-packed-c5`, then `--check-packed-c5-small` and `--check-packed-c5`
 for two seeds, exact five-column spans, unchanged canaries and inputs, and the
-shared scalar-oracle envelope. Check the unpadded 17- and 33-row tails as well
-as the actual full head. Run `--time-packed-c5 0`, `1` and `2` in three
+shared scalar-oracle envelope. Trace both kernel entries in the small check
+and leave parameter validation active on the full-head check. These checks
+cover the 17- and 33-row tails as well as the actual full head. Run
+`--time-packed-c5 0`, `1` and `2` in three
 fresh processes, with five batches of 256 completion-checked graph launches
 per arm after warmup. Candidate-first in the middle process, canonical-first
 in the others. Exclude setup and use the 10 ms and 300 timer-stamp floor.
@@ -8025,6 +8027,11 @@ a lower packed median in each process to advance on speed. A pass only
 qualifies the five-column head component. The later head and cache retirement
 checks need separate width-five controls and admission, including the refill,
 lazy graph recapture, actual memory fit and sustained decode and prefill timing.
+The [build controller](../tools/sycl/build_q6_c5_component.py) and
+[measurement controller](../tools/sycl/check_q6_c5_component.py) select this
+separate campaign with `--packed`, retaining the original canonical receipts.
+Run the packed build after the active width-five dense campaign closes and its
+build retention is resolved.
 
 The next independent projection trial selects only the exact Q6 2560×10240
 calls in width-five decode windows. The component medians are 0.604 ms for
