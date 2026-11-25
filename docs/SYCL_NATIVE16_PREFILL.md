@@ -8045,8 +8045,15 @@ C5-head source. Reversing it restores each of the four original hashes.
 The old head build was retired after full recovery. The coherent projection
 build passes both host controls and the two native 82-input probes at
 `e961023e3`. The candidate moves exactly 22 calls, with identical generated
-tokens, drafter work, head replays and placement. Use the isolated
-counterbalanced sustained comparison for the decode decision.
+tokens, drafter work, head replays and placement. The sustained comparison
+closes at `7360c14ac` on the verification branch. All six processes exit
+normally without fresh Xe faults. The per-arm TG medians are
+14.782 and 15.470 tok/s, with 3,039 and 3,203 output tokens. All three pairs
+change verifier and expert work and fail the projection gain gate. Keep
+width four as the operational reference. The next model qualification
+checks the five DFlash2 tap payloads on the measured 122,881-input
+direct-writer route. The packed C5 layout comparison is an independent
+component trial.
 [Performance CSV](../bench/performance-records.csv).
 
 Keep prefill and decode kernels, placement, scheduling and selectors independent.
