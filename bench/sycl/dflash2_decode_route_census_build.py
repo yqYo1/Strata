@@ -14,6 +14,8 @@ THIS = str(Path(__file__).resolve().relative_to(bank.P))
 BASE = primary.ROOT
 BASE_KEY = primary.KEY
 BASE_EVIDENCE = '0ab86d36b'
+PREFILL_EVIDENCE = 'bfc0c54aea58bc7f9e8a75103fa370606c54dd9d'
+PREFILL_KEY = 'dflash2_primary_prefill_speed_v1'
 BASE_SOURCE = '968e71988953dca3d98037d3b3fec9f903bdfd6f'
 CHECKED_SOURCE = '88215efa1b45b1f7383cda91ce05775f76da1dba'
 BASE_BINARY = '5153182852b607e781570b606d4b2a444b143027425da90c8d05f1a31e85522e'
@@ -37,6 +39,24 @@ def reference():
             and Path(engine['path']).stat().st_size == engine['bytes'],
             'recover the actual retained primary build and preserve its engine')
     return row
+
+
+def phase_references():
+    build = reference()
+    prefill = bank.previous.historic(PREFILL_EVIDENCE, PREFILL_KEY)
+    decode = bank.previous.historic(primary.DECODE, 'dflash2_snapshot_regular_code_v1')
+    require(all(row['stage'] == 'closed' and row['passed'] and row['complete']
+                and row['ownership_closed'] and not row['active'] for row in (prefill, decode))
+            and prefill['native_source_commit'] == BASE_SOURCE
+            and prefill['binary'] == build['binaries']['strata']
+            and prefill['native_build_sha256'] == bank.signature(builder.compact(build))
+            and prefill['decision']['all_pairs_faster'] and prefill['decision']['all_warm_requests_1000']['retain']
+            and decode['decision']['matched_work'], 'require the closed primary prefill and separate decode references')
+    retained_decode = decode['binary']
+    require(Path(retained_decode['path']).stat().st_size == retained_decode['bytes']
+            and bank.sha(retained_decode['path']) == retained_decode['sha256'],
+            'preserve the selected independent decode executable')
+    return build, dict(prefill=prefill['binary'], decode=retained_decode)
 
 
 def changed_sources():
@@ -63,15 +83,16 @@ def recipe(row):
 
 def main(action):
     require(action in ('plan', 'prepare', 'configure', 'compile'), 'use plan|prepare|configure|compile')
-    reference_row = reference()
+    reference_row, controls = phase_references()
     revision = changed_sources()
     evidence = dict(native_source_commit=BASE_SOURCE, binary=reference_row['binaries']['strata'],
                     build_record_sha256=bank.sha(BASE / 'record.json'), control_evidence=BASE_EVIDENCE)
 
     primary.ROOT, primary.KEY, primary.THIS = ROOT, KEY, THIS
+    primary.PREFILL, primary.references = PREFILL_EVIDENCE, phase_references
     primary.TARGETS = TARGETS
     primary.REQUIRED_SOURCES = (*primary.REQUIRED_SOURCES, *UNITS[1:])
-    primary.recipe = lambda _: recipe(reference_row)
+    primary.recipe = recipe
     primary.foundation_reader = foundation.historical_foundation
     original_save = primary.save
 
@@ -86,6 +107,7 @@ def main(action):
     primary.save = save
     if action == 'plan':
         print(json.dumps(dict(source_commit=revision, primary_reference=evidence, new_root=str(ROOT),
+                              phase_references=controls,
                               native_changed_sources=sorted(CHANGES), recipe_configure=recipe(reference_row)['configure'],
                               targets=TARGETS, produces_artifacts=False), indent=2))
         return
