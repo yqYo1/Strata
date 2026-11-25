@@ -8068,6 +8068,13 @@ activations. Qualify numerical output and the observed placement before
 timing the same work across pinned physical-core counts, with a streaming
 read control at the matching counts. The input selection is offline evidence
 for a CPU service experiment. Actual bandwidth remains to be measured.
+The [fixed replay controller](../bench/sycl/cpu_roofline/fixed_replay.py)
+pins those slices, the prepared descriptor, build and runtime inputs. Its
+compatibility mode checks both ends of the worker-count range, then it scores
+three independent processes per core count and workload. The first five pool
+arms reserve the caller for dispatch and hidden quantization. The six-core arm
+also lets the caller run expert work. The elapsed GU, hidden quantization and
+Down phases, process CPU time and caller CPU time are recorded separately.
 
 The quiet DFlash2 process 2 at `94f7eb2b0` uses native source `96832af6f`
 and reports a filled 1,256-slot cache at 2.40 GiB. The manifest and the

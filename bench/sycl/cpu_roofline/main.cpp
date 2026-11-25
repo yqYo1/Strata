@@ -9,18 +9,25 @@
 #include <barrier>
 #include <chrono>
 #include <cmath>
+#include <cstdlib>
 #include <cstring>
 #include <fcntl.h>
+#include <filesystem>
+#include <fstream>
 #include <iomanip>
 #include <immintrin.h>
 #include <iostream>
+#include <limits>
+#include <memory>
 #include <numeric>
 #include <random>
 #include <sched.h>
 #include <stdexcept>
+#include <string_view>
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <vector>
 
 namespace cpu = strata::kernels::cpu;
 using Clock = std::chrono::steady_clock;
@@ -28,14 +35,17 @@ constexpr int group = 6, reps = 5;
 constexpr size_t guard = 64;
 void require(bool ok, const char* message) { if (!ok) throw std::runtime_error(message); }
 double seconds(Clock::time_point start) { return std::chrono::duration<double>(Clock::now()-start).count(); }
-double cpu_seconds() {
-    rusage r{}; require(getrusage(RUSAGE_SELF, &r)==0, "getrusage");
+double cpu_seconds(int who = RUSAGE_SELF) {
+    rusage r{}; require(getrusage(who, &r)==0, "getrusage");
     return r.ru_utime.tv_sec+r.ru_utime.tv_usec*1e-6+r.ru_stime.tv_sec+r.ru_stime.tv_usec*1e-6;
 }
 struct Buffer {
     uint8_t* base = nullptr; size_t bytes;
     explicit Buffer(size_t n) : bytes(n) {
-        require(posix_memalign(reinterpret_cast<void**>(&base), 64, n+2*guard)==0, "allocation");
+        require(n <= std::numeric_limits<size_t>::max() - 3 * guard, "allocation extent");
+        const size_t aligned = ((n + 3 * guard - 1) / guard) * guard;
+        base = static_cast<uint8_t*>(std::aligned_alloc(guard, aligned));
+        require(base != nullptr, "allocation");
         std::memset(base, 0xA7, n+2*guard);
     }
     ~Buffer() { std::free(base); }
@@ -178,7 +188,8 @@ struct Inputs {
         return {gu_error,down_error,pool_error,q2_ggml_gap};
     }
 };
-template<class F> void measure(F pass, uint64_t bytes, uint64_t visits, const std::string& fields, cpu::ExpertPool* pool=nullptr) {
+template<class F> void measure(F pass, uint64_t bytes, uint64_t visits, const std::string& fields,
+                              cpu::ExpertPool* pool = nullptr, bool audit_host = false) {
     pass();
     double fastest=1e9;
     for(int i=0;i<5;++i) { const auto t=Clock::now(); pass(); fastest=std::min(fastest,seconds(t)); }
@@ -191,15 +202,22 @@ template<class F> void measure(F pass, uint64_t bytes, uint64_t visits, const st
     // cannot select an undersized batch. Preserve the original >=1s gate.
     for(int r=0;r<reps;++r) {
         const double gu=pool?pool->ms_multi_gu:0, q=pool?pool->ms_multi_q:0, down=pool?pool->ms_multi_down:0;
+        const auto pool_bytes = pool ? pool->multi_bytes : 0;
+        const auto h0 = audit_host ? cpu_seconds(RUSAGE_THREAD) : 0;
         const auto c0=cpu_seconds(); const auto t0=Clock::now();
         uint64_t iterations=0; double elapsed;
         do { pass(); ++iterations; elapsed=seconds(t0); } while(elapsed<1.3 && iterations<1000000);
         const double wall=seconds(t0), process_cpu=cpu_seconds()-c0;
+        const double host_cpu = audit_host ? cpu_seconds(RUSAGE_THREAD) - h0 : 0;
         require(wall>=1.0 && iterations<1000000,"timing floor/iteration budget");
+        if (audit_host && pool)
+            require(static_cast<uint64_t>(pool->multi_bytes - pool_bytes) == bytes * iterations,
+                    "expert replay byte accounting");
         std::cout<<"{\"kind\":\"sample\","<<fields<<",\"attempt\":0,\"rep\":"<<r
             <<",\"iterations\":"<<iterations<<",\"visits\":"<<visits*iterations
             <<",\"requested_bytes\":"<<bytes*iterations<<",\"wall_s\":"<<wall<<",\"cpu_s\":"<<process_cpu;
         if(pool) std::cout<<",\"gu_s\":"<<(pool->ms_multi_gu-gu)*.001<<",\"q_s\":"<<(pool->ms_multi_q-q)*.001<<",\"down_s\":"<<(pool->ms_multi_down-down)*.001;
+        if (audit_host) std::cout << ",\"host_cpu_s\":" << host_cpu;
         std::cout<<"}"<<std::endl;
     }
 }
@@ -212,8 +230,38 @@ __attribute__((noinline)) uint64_t scan(const uint64_t* p, size_t n) {
     alignas(32) uint64_t a[4]; _mm256_store_si256(reinterpret_cast<__m256i*>(a),v);
     return a[0]+a[1]+a[2]+a[3];
 }
-void ram_scan(const std::vector<int>& cores) {
-    constexpr size_t words=(256ull<<20)/8;
+void verify_placement(int host, std::vector<int> workers) {
+    std::vector<int> observed;
+    bool found_host = false;
+    for (const auto& task : std::filesystem::directory_iterator("/proc/self/task")) {
+        const int tid = std::stoi(task.path().filename().string());
+        cpu_set_t mask;
+        CPU_ZERO(&mask);
+        require(sched_getaffinity(tid, sizeof mask, &mask) == 0 && CPU_COUNT(&mask) == 1,
+                "replay thread has no single-CPU affinity");
+        if (tid == getpid()) {
+            require(CPU_ISSET(host, &mask), "replay caller affinity differs");
+            found_host = true;
+        } else {
+            for (int id = 0; id < CPU_SETSIZE; ++id)
+                if (CPU_ISSET(id, &mask)) observed.push_back(id);
+        }
+    }
+    std::sort(workers.begin(), workers.end());
+    std::sort(observed.begin(), observed.end());
+    require(found_host && workers == observed, "replay worker affinity differs");
+}
+
+void report_placement(int host, const std::vector<int>& workers) {
+    std::cout << "{\"kind\":\"replay_placement\",\"host_cpu\":" << host << ",\"workers\":[";
+    for (size_t i = 0; i < workers.size(); ++i)
+        std::cout << (i ? "," : "") << workers[i];
+    std::cout << "]}" << std::endl;
+}
+
+void ram_scan(const std::vector<int>& cores, size_t bytes = 256ull << 20, bool replay = false) {
+    require(bytes >= 32 && bytes % 32 == 0, "scan layout");
+    const size_t words = bytes / sizeof(uint64_t);
     std::vector<uint64_t> data(words); uint64_t expected=0;
     for(size_t i=0;i<words;++i) { data[i]=i*6364136223846793005ull+1442695040888963407ull; expected+=data[i]; }
     std::barrier phase(static_cast<ptrdiff_t>(cores.size()));
@@ -230,15 +278,215 @@ void ram_scan(const std::vector<int>& cores) {
         sums[0]=scan(data.data(),end); phase.arrive_and_wait();
         require(std::accumulate(sums.begin(),sums.end(),uint64_t(0))==expected,"RAM checksum");
     };
-    try { measure(pass,data.size()*8,1,"\"mode\":\"scan\",\"threads\":"+std::to_string(cores.size())); }
+    try {
+        if (replay) {
+            pass();
+            const std::vector<int> workers(cores.begin() + 1, cores.end());
+            verify_placement(cores[0], workers);
+            report_placement(cores[0], workers);
+        }
+        measure(pass, bytes, 1, "\"mode\":\"scan\",\"threads\":" + std::to_string(cores.size()),
+                nullptr, replay);
+        if (replay) verify_placement(cores[0], {cores.begin() + 1, cores.end()});
+    }
     catch(...) { stop=true; phase.arrive_and_wait(); for(auto& t:workers)t.join(); throw; }
     stop=true; phase.arrive_and_wait(); for(auto& t:workers)t.join();
 }
+
+constexpr int replay_rows = 4, replay_experts = 512;
+
+struct ReplayLayer {
+    cpu::NativeFmt format;
+    std::array<uint64_t, 3> offsets{};
+    std::array<std::unique_ptr<Buffer>, replay_experts> weights;
+    int fd = -1;
+
+    ~ReplayLayer() { if (fd >= 0) close(fd); }
+
+    void open_source(std::istream& in) {
+        int gu = 0, down = 0;
+        uint64_t bytes = 0;
+        std::string path, error;
+        in >> gu >> down >> bytes >> offsets[0] >> offsets[1] >> offsets[2] >> std::quoted(path);
+        require(in.good() && (gu == 18 || gu == 21) && down == 20 && path.starts_with('/'),
+                "replay layer schema");
+        require(cpu::native_fmt(gu, down, cpu::H, cpu::FF, format, error), error.c_str());
+        require(format.bytes == bytes &&
+                std::ranges::all_of(offsets, [&](uint64_t offset) {
+                    return offset <= std::numeric_limits<uint64_t>::max() - replay_experts * bytes;
+                }), "replay weight layout");
+        fd = open(path.c_str(), O_RDONLY | O_CLOEXEC);
+        require(fd >= 0, "open replay model shard");
+    }
+
+    const uint8_t* weight(int expert) {
+        auto& blob = weights[expert];
+        if (!blob) {
+            auto slice = std::make_unique<Buffer>(format.bytes);
+            const auto gu = format.up_off;
+            const auto down = format.bytes - format.down_off;
+            pread_exact(fd, slice->data(), gu, offsets[0] + expert * gu);
+            pread_exact(fd, slice->data() + gu, gu, offsets[1] + expert * gu);
+            pread_exact(fd, slice->data() + format.down_off, down, offsets[2] + expert * down);
+            blob = std::move(slice);
+        }
+        return blob->data();
+    }
+};
+
+struct ReplayBatch {
+    std::array<std::unique_ptr<Buffer>, replay_rows> acts;
+    std::vector<std::unique_ptr<Buffer>> outputs;
+    std::vector<cpu::ExpertJobMulti> jobs;
+    const cpu::NativeFmt* format = nullptr;
+
+    void read(std::istream& in, std::array<ReplayLayer, 2>& layers) {
+        int window = 0, width = 0, layer_index = 0, count = 0;
+        in >> window >> width >> layer_index >> count;
+        require(in.good() && window >= 0 && window < 262144 && width >= 1 && width <= replay_rows &&
+                layer_index >= 0 && layer_index < static_cast<int>(layers.size()) &&
+                count >= 1 && count <= 10 * width, "replay batch geometry");
+        auto& layer = layers[layer_index];
+        format = &layer.format;
+        uint32_t seed = 20261125u ^ (static_cast<uint32_t>(window) * 0x9e3779b9u + layer_index);
+        for (int t = 0; t < width; ++t) {
+            std::array<float, cpu::H> x;
+            for (auto& value : x) {
+                seed = 1664525u * seed + 1013904223u;
+                value = (int(seed >> 8) - 8388608) * 0x1p-23f;
+            }
+            acts[t] = std::make_unique<Buffer>(format->act_bytes);
+            cpu::native_quant_act(*format, x.data(), acts[t]->data());
+        }
+        std::array<bool, replay_experts> seen{};
+        for (int i = 0; i < count; ++i) {
+            int expert = 0;
+            cpu::ExpertJobMulti job;
+            in >> expert >> job.nt;
+            require(in.good() && expert >= 0 && expert < replay_experts && !seen[expert] &&
+                    job.nt > 0 && job.nt <= width, "replay job geometry");
+            seen[expert] = true;
+            job.blob = layer.weight(expert);
+            auto out = std::make_unique<Buffer>(job.nt * cpu::H * sizeof(float));
+            int previous_row = -1;
+            for (int t = 0; t < job.nt; ++t) {
+                int row = 0;
+                in >> row;
+                require(!in.fail() && row > previous_row && row < width, "replay job row order");
+                previous_row = row;
+                job.nact[t] = acts[row]->data();
+                job.out[t] = reinterpret_cast<float*>(out->data()) + t * cpu::H;
+            }
+            jobs.push_back(job);
+            outputs.push_back(std::move(out));
+        }
+    }
+
+    // The pool borrows these buffers until its synchronous retirement.
+    void run(cpu::ExpertPool& pool) noexcept {
+        pool.run_split_multi_native(*format, jobs.data(), static_cast<int>(jobs.size()),
+                                    cpu::NativeGuPhase::Decode);
+    }
+
+    void validate(cpu::ExpertPool& pool) {
+        for (const auto& job : jobs)
+            for (int t = 0; t < job.nt; ++t)
+                std::fill_n(job.out[t], cpu::H, std::numeric_limits<float>::quiet_NaN());
+        run(pool);
+        for (const auto& job : jobs) {
+            std::array<std::array<float, cpu::FF>, replay_rows> hidden;
+            std::array<std::array<float, cpu::H>, replay_rows> expected;
+            std::array<std::unique_ptr<Buffer>, replay_rows> quant;
+            std::array<float*, replay_rows> hidden_rows{}, expected_rows{};
+            std::array<const void*, replay_rows> quant_rows{};
+            for (int t = 0; t < job.nt; ++t) {
+                hidden_rows[t] = hidden[t].data();
+                expected_rows[t] = expected[t].data();
+                quant[t] = std::make_unique<Buffer>(format->h_bytes);
+                quant_rows[t] = quant[t]->data();
+            }
+            cpu::native_gu_rows(*format, job.blob, job.nact, job.nt, hidden_rows.data(), 0, cpu::FF);
+            for (int t = 0; t < job.nt; ++t)
+                cpu::native_quant_h(*format, hidden_rows[t], quant[t]->data());
+            cpu::native_down_rows(*format, job.blob, quant_rows.data(), job.nt, expected_rows.data(), 0, cpu::H);
+            for (int t = 0; t < job.nt; ++t) {
+                quant[t]->check();
+                for (int row = 0; row < cpu::H; ++row)
+                    require(std::isfinite(expected[t][row]) && job.out[t][row] == expected[t][row],
+                            "replay pool differs from serial native output");
+            }
+        }
+        for (const auto& in : acts) if (in) in->check();
+        for (const auto& out : outputs) out->check();
+    }
+};
+
+void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int threads, bool timing) {
+    const bool host_works = threads == 6;
+    const int workers = threads - static_cast<int>(host_works);
+    cpu::ExpertPool pool(workers, true, host_works);
+    require(pool.workers() == workers && pool.host_works() == host_works, "replay pool topology");
+    pin(topo.host_core);
+    std::ifstream in(descriptor);
+    std::string version;
+    in >> version;
+    require(in.good() && version == "strata-expert-replay-v1", "replay descriptor version");
+    std::array<ReplayLayer, 2> layers;
+    for (auto& layer : layers) layer.open_source(in);
+    std::array<ReplayBatch, 8> batches;
+    for (auto& batch : batches) batch.read(in, layers);
+    in >> std::ws;
+    require(in.eof(), "trailing replay instructions");
+
+    uint64_t jobs = 0, entries = 0, visits = 0, unique_blobs = 0, unique_bytes = 0;
+    for (const auto& batch : batches) {
+        jobs += batch.jobs.size();
+        visits += batch.jobs.size() * batch.format->bytes;
+        for (const auto& job : batch.jobs) entries += job.nt;
+    }
+    for (const auto& layer : layers)
+        for (const auto& blob : layer.weights)
+            if (blob) { ++unique_blobs; unique_bytes += blob->bytes; }
+    const std::vector<int> worker_cores(topo.worker_cores.begin(), topo.worker_cores.begin() + workers);
+    auto validate = [&] {
+        for (auto& batch : batches) batch.validate(pool);
+        for (const auto& layer : layers)
+            for (const auto& blob : layer.weights) if (blob) blob->check();
+        verify_placement(topo.host_core, worker_cores);
+    };
+    validate();
+    report_placement(topo.host_core, worker_cores);
+    std::cout << "{\"kind\":\"replay_input\",\"batches\":" << batches.size() << ",\"jobs\":" << jobs
+              << ",\"entries\":" << entries << ",\"logical_bytes\":" << visits
+              << ",\"unique_blobs\":" << unique_blobs << ",\"unique_bytes\":" << unique_bytes
+              << ",\"threads\":" << threads << ",\"host_works\":" << (host_works ? "true" : "false")
+              << ",\"serial_output_equal\":true,\"verified_affinity\":true}" << std::endl;
+    if (timing) {
+        measure([&] { for (auto& batch : batches) batch.run(pool); }, visits, jobs,
+                "\"mode\":\"replay\",\"threads\":" + std::to_string(threads), &pool, true);
+        validate();
+    }
+}
+
 int main(int argc,char** argv) try {
     std::cout<<std::setprecision(12);
     const auto topo=cpu::detect_cpu_topology(true);
     require(topo.host_core>=0 && topo.worker_cores.size()>=5,"six physical CPUs required");
-    if(argc==3 && std::string(argv[1])=="scan") {
+    if (argc == 5 && std::string_view(argv[1]) == "replay") {
+        const int threads = std::stoi(argv[3]);
+        const std::string_view mode(argv[4]);
+        require(threads >= 1 && threads <= 6 && (mode == "measure" || mode == "check"), "replay arm");
+        route_replay(argv[2], topo, threads, mode == "measure");
+    } else if (argc == 4 && std::string_view(argv[1]) == "replay-scan") {
+        const int threads = std::stoi(argv[2]);
+        const auto bytes = std::stoull(argv[3]);
+        require(threads >= 1 && threads <= 6 && bytes <= (512ull << 20), "replay scan arm");
+        const int workers = threads == 6 ? 5 : threads;
+        std::vector<int> cores(topo.worker_cores.begin(), topo.worker_cores.begin() + workers);
+        if (threads == 6) cores.insert(cores.begin(), topo.host_core);
+        pin(topo.host_core);
+        ram_scan(cores, static_cast<size_t>(bytes), true);
+    } else if(argc==3 && std::string(argv[1])=="scan") {
         std::vector<int> ids; std::string s=argv[2]; size_t at=0;
         while(at<s.size()) { size_t end=s.find(',',at); ids.push_back(std::stoi(s.substr(at,end-at))); if(end==std::string::npos)break; at=end+1; }
         require((ids.size()>=1 && ids.size()<=6) || ids.size()==12,"scan thread count");

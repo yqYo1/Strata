@@ -263,19 +263,21 @@ def receipt(entry):
         'direct_child_reaped', 'session_empty', 'session_anchored', 'errors', 'cleanup', 'peak_session_rss_bytes')}
 
 
-def build_check(row, root, *, iq3s=False):
+def build_check(row, root, *, iq3s=False, build_root=None, required_units=None):
+    build_root = ROOT / 'build' if build_root is None else build_root
     allowed = input_map(row)
     paths = {str((Path(line.strip()) if Path(line.strip()).is_absolute() else
-        ROOT / 'build' / line.strip()).resolve()) for line in
+        build_root / line.strip()).resolve()) for line in
         (root / 'deps.stdout').read_text().splitlines() if line.startswith('    ') and line.strip()}
     need(len(paths) > 150 and all(allowed.get(p) == digest(p) for p in paths),
         'missing/unplanned actual compiler inputs: ' + str([p for p in paths if allowed.get(p) != digest(p)][:5]))
-    required_units = ('src/kernels/cpu/iq_single_avx2.cpp', 'src/kernels/cpu/native_expert.cpp',
-        'tests/core/iq_single_exact_test.cpp', 'tests/core/cpu_service_pool_test.cpp',
-        'bench/sycl/cpu_roofline/iq3_pair.cpp')
+    if required_units is None:
+        required_units = ('src/kernels/cpu/iq_single_avx2.cpp', 'src/kernels/cpu/native_expert.cpp',
+            'tests/core/iq_single_exact_test.cpp', 'tests/core/cpu_service_pool_test.cpp',
+            'bench/sycl/cpu_roofline/iq3_pair.cpp')
     need(all(str(P / name) in paths for name in required_units),
         'required real production/fixture units absent')
-    units = json.loads((ROOT / 'build/compile_commands.json').read_text())
+    units = json.loads((build_root / 'compile_commands.json').read_text())
     for name in required_units:
         matches = [x for x in units if x['file'] == str(P / name)
             and (name != 'bench/sycl/cpu_roofline/iq3_pair.cpp' or
@@ -286,7 +288,7 @@ def build_check(row, root, *, iq3s=False):
             '-march=znver3' in argv and '-DNDEBUG' in argv and
             '-DSTRATA_CPU_SERVICE_PROFILE=1' in argv and not any(x in argv
                 for x in ('-ffast-math', '-Ofast', '-fsycl')), 'unplanned CPU flags')
-    cache = (ROOT / 'build/CMakeCache.txt').read_text()
+    cache = (build_root / 'CMakeCache.txt').read_text()
     need(all(re.search('^' + key + ':BOOL=OFF$', cache, re.M) for key in
         ('GGML_CUDA', 'GGML_HIP', 'GGML_SYCL', 'GGML_OPENMP', 'GGML_BACKEND_DL')),
         'CPU-only configuration required')
@@ -295,17 +297,18 @@ def build_check(row, root, *, iq3s=False):
         name = line.strip(); path = Path(name)
         if not name or any(c.isspace() for c in name) or not (path.is_absolute() or path.suffix in ('.o', '.a') or '.so' in path.name):
             continue
-        path = (path if path.is_absolute() else ROOT / 'build' / path).resolve()
-        if path.is_relative_to(ROOT / 'build') or path.is_relative_to(ROOT / 'tmp'):
+        path = (path if path.is_absolute() else build_root / path).resolve()
+        if path.is_relative_to(build_root) or path.is_relative_to(build_root.parent / 'tmp'):
             generated.add(str(path))
         else:
             need(path.is_file() and allowed.get(str(path)) == digest(path), 'unplanned external linker input: ' + str(path))
             frozen[str(path)] = digest(path)
     need(len(frozen) > 8, 'actual external linker trace missing')
-    write(ROOT / 'compiler-inputs.json', {p:allowed[p] for p in sorted(paths)})
-    return dict(compiler_inputs=dict(path=str(ROOT / 'compiler-inputs.json'),
-        sha256=digest(ROOT / 'compiler-inputs.json'), files=len(paths), uncovered=0),
-        compile_database_sha256=digest(ROOT / 'build/compile_commands.json'),
+    compiler_inputs = build_root.parent / 'compiler-inputs.json'
+    write(compiler_inputs, {p:allowed[p] for p in sorted(paths)})
+    return dict(compiler_inputs=dict(path=str(compiler_inputs),
+        sha256=digest(compiler_inputs), files=len(paths), uncovered=0),
+        compile_database_sha256=digest(build_root / 'compile_commands.json'),
         external_link_inputs=frozen, owned_link_products=len(generated))
 
 
