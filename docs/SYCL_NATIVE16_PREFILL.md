@@ -11354,6 +11354,17 @@ prefill and client TTFT separately. Payload and device timing checks are
 required before broadening admission. Coalescing has its own prior failed
 incremental comparison and remains outside this test.
 
+The [model route reader](../bench/dflash2_mode16_batch_route.py) also
+checks the following decode expert footer. It compares the actual
+requested bytes, jobs and post-prefill decode work, ignoring only observed
+free VRAM and the expected change to the permanent-slot count. Use
+`dflash2_mode16_batch_route.py replay` under the named interpreter after
+the running process closes. Reconcile all three demand frames against
+`0577a8bbc` and require synthetic batch admission and rejection controls
+for silent demand fallback, wrong window/copy counts and changed decode
+placement. The replay uses the exact retained demand log from curve
+process 3 and exercises the parser before launching the model candidate.
+
 The [primary driver cache comparison](../bench/dflash2_primary_driver_cache.py)
 reuses the older NEO inventory, private copy, readiness and counter readers.
 It selects the closed 102,401-token primary process as the only permitted

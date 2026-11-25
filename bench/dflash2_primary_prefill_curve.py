@@ -53,7 +53,7 @@ def command(plan):
     return cmd
 
 
-def route(text, plan):
+def route(text, plan, *, batched_upload=False):
     n = plan['read'] - 1
     require(plan['read'] in READS and n % speed.CHUNK == 4096, 'the curve requires the fixed partial chunk')
     pieces = (n + speed.CHUNK - 1) // speed.CHUNK
@@ -101,8 +101,15 @@ def route(text, plan):
             and tail == dict(rows=str(n), primary_rows='65536', tail_bytes=str(layout['tail_payload']),
                 guard='checked', final_drain='checked', decode_changed='0'), 'relocated planes/guards differ')
     require(uploads['final_drain'] == 'checked' and int(uploads['uploads']) + int(uploads['permanent_hits'])
-            == int(work['dequants']) > 0 and 'strata MoE split expert upload: ' not in text,
-            'actual demand upload or bank retirement changed')
+            == int(work['dequants']) > 0, 'actual upload count or bank retirement changed')
+    batch_prefix = 'strata MoE split expert upload: '
+    if batched_upload:
+        require(uploads['permanent_slots'] == uploads['permanent_hits'] == '0'
+                and one(text, batch_prefix) == dict(windows='48', experts=uploads['uploads'],
+                    copy_commands=uploads['uploads'], final_drain='checked'),
+                'actual batched upload count, copy commands or bank retirement changed')
+    else:
+        require(batch_prefix not in text, 'demand upload unexpectedly used a batch')
     check_attention(text, n, pieces)
     request, = re.findall(speed.clock.footer.HEADER, text, re.M)
     return dict(work=work, uploads=uploads, kv=kv_pages(text, n, plan['kv_arm']),
