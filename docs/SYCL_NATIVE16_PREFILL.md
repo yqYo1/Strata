@@ -11224,8 +11224,20 @@ because its historical build key is occupied.
 The three host recovery tests at `15ac8515f` also pass. The target-snapshot
 projection recovers all 1,171 source files and the original 279 project
 compiler inputs while access to both generations' 24 executables is
-blocked. Retain the consumed receipts and verify the remaining legacy
-readers and exact original build outputs before retirement.
+blocked.
+
+The running reconciliation and planned stock-map RESTORE controls use
+`dflash2_primary_retained.baseline()`. The 32-slot upload and route-census
+verification branches use the selected primary prefill engine and the
+independent `dflash2-prefill-kv-stage-native-v1` decode engine. They check
+the historical foundation against its receipts. The original coherent
+model and speed jobs and the target-snapshot direct-prefill and sustained
+jobs have closed ownership. The older primary build/check and historical
+comparison entrypoints still enforce their exact legacy executable pins
+when replayed from their original campaign. Their historical readers
+remain in Git. At the next free measurement slot, verify the original
+build file hashes and remove the compiled outputs while retaining the
+recipe, receipts and generated inputs used by the current foundation check.
 
 The `host`, `taps` and `restore` captures under `dflash2-primary-checks-v1`
 were removed after verifying ownership and the committed proof. The 20
