@@ -41981,5 +41981,26 @@
     "finding": "The bank still requests 32 slots. Each batch uses at most 16 via PrefillSplitExpertBatch::capacity_limit in include/strata/prefill/expert_bank_upload.hpp and the per-layer minimum in src/prefill/moe_window.inc.",
     "consumer": "After the model A/B passes, compare capacity 16 with 8 or 4 while keeping the bank size, scratch, order and copy payload fixed. Measure CPU submission and exposed GPU work separately. Retrieve What the path does, Bounded comparison, and Documentation and accelerator evidence.",
     "retention": "Review after the 32-slot model A/B. The report contains implementation evidence and no measured speedup."
+  },
+  "zen3-expert-page-translation-methods-20261126": {
+    "classification": "knowledge_collection",
+    "stage": "reviewed",
+    "source_revision": "ba2e9de4f14a81d62631d147b85998c9cafd5ded",
+    "native_source_commit": "968e71988953dca3d98037d3b3fec9f903bdfd6f",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zen3-expert-page-translation-methods-20261126/report.md",
+    "report_sha256": "ccaf4b38f9fa039dda469cda9de25530149d155e1057cd8ea99a64e47d98db85",
+    "report_bytes": 7463,
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-zen3-expert-page-translation-methods-20261126/retry/review.json",
+    "review_sha256": "8a3e7542648722121d73f0aebf3fb6a99c249a9b8af3c05b9fbe211f045afda7",
+    "dispatch": "ctx_32ac8d44ab0f",
+    "worker": "Orca Codex gpt-6-luna medium",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_side_orca_reachable": true,
+    "schedulable_now": false,
+    "finding": "Local methods reference on Zen 3 expert-weight address translation, effective Linux page backing and byte-preserving layout. The report estimates page and copy counts. Workload translation cost and physical DRAM traffic are still unmeasured.",
+    "consumer": "Retrieve for a fixed-work mmap versus compact-copy or byte-preserving layout comparison after effective backing and relevant IBS access are established.",
+    "retention": "Keep the reviewed report locally while this issue remains eligible for future resource attribution; retire launch and review transcripts after verification."
   }
 }
