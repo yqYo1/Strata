@@ -11299,6 +11299,13 @@ fault. First prefill grows from 123.1927 to 133.9573 s and first TTFT from
 to 112.6664 s. Keep the two first-use samples separate from subsequent
 samples. The first-use spread needs repeat measurements and attribution.
 
+The reverse 102,401-token process at `9a748e1eb` matches the previous
+route and work with no fresh Xe fault. First prefill and TTFT take 108.7542
+and 108.944 s, compared with 108.0752 and 108.285 s forward. The subsequent
+prefill medians are 97.4284 and 97.4758 s. Seven of ten processes have
+completed. The first-use difference at 118,785 tokens is much larger than
+at this length, and the subsequent intervals at both lengths remain close.
+
 The next prefill scheduling candidate is batched issue on the current
 32-slot bank. Earlier 128-slot comparisons at `982211f5c` and `297adab4d`
 reduce paired warm prompt time by 2.55% and 1.00% respectively. The
