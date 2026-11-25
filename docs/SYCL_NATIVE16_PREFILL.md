@@ -11268,6 +11268,10 @@ PP, TG and the observed acceptance separately by workload and request order.
 Stop on a placement fallback and preserve its result. This plan exercises
 the measured long-prefill handoff. The ordinary official agent suite and
 the reconciliation task have independent purposes and evidence.
+At `a151628bd`, the route reader agrees with the three archived ragged
+102,401-token observations on writer pieces, KV pages and requested bank
+bytes. The same check rejects a substituted mode10 marker. This checks the
+reader using existing logs. The new sustained processes remain pending.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.

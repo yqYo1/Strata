@@ -319,7 +319,13 @@ requires the reconstructed source, build receipt and actual compiler input
 to agree. The unchanged executable remains the candidate for the
 configuration-only comparison. Preparation passes at `ce94cc031` with the
 no-refill plan and effective arguments frozen in the verification worktree.
-Use its host admission before the first of four native processes.
+Benchmark and server host admission pass at `ebcdbcc0b`. The first
+counting-off process at `c4ddf9dde` closes normally with no fresh Xe fault.
+The 33,217-input code request generates 4,111 tokens in 247.0915 seconds
+of native decode time, or 16.638 tok/s, with 2,767 of 2,863 drafts accepted.
+Prefill takes 48.3305 seconds and client TTFT is 49.663 seconds. The on arm
+follows in the same fixed-work cohort. A counting effect needs both planned
+pairs and their work checks.
 
 Read-only enumeration on the Ryzen 5 5600X (family 19h, model 21h), kernel
 `7.0.0-38-generic`, exposes `cpu`, `ibs_op` and `ibs_fetch` in
