@@ -8137,9 +8137,11 @@ until a production-shaped caller comparison shows a gain.
 The independent Zen 3 IQ3_S single-token path now reads each eight-byte
 sign group with a fixed-size byte copy into two 32-bit words. It preserves
 the same x86 mask bits, integer lanes and floating-point reduction order.
-Run the existing linked GGML parity fixture and a matched caller comparison
-before assigning any performance effect. This affects the opt-in decode
-path; the frozen width-five measurement uses its original executable.
+The [parity controller](../bench/sycl/cpu_roofline/iq3s_sign_parity.py) pins
+the current source, original compiler recipe and GGML revision. It recovers
+the passing old parity stage from `4cb47ff93` and builds only the existing
+CPU test. Fresh validation and matched caller timing are pending. This affects
+the opt-in decode path; the live width-five cohort uses its pinned executable.
 
 Retired the closed external state directory `cpu-fixed-expert-replay-v1`
 before compiling the new replay on 2026-11-25 JST. The executable, 209 project
