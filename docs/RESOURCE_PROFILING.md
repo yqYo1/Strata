@@ -299,6 +299,18 @@ recoverable with `git show 410332a8f:bench/dflash2_decode_residency_replay.py`.
 The counters describe assignment and logical work. Actual DRAM traffic and
 end-to-end latency remain open.
 
+The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
+that same 256-window cut. Keep the protected first 132 slots and the same
+96-swap and 197,913,600-byte caps. Compare early distinct jobs, routed rows
+and format/width-weighted leaf cost. Calibrate each job's Gate/Up, quantization
+and Down weights from the two closed code-request CPU leaf observations at
+`6bbd3e3e1`. The replay reuses the prose suffix and verifies the original
+routed-row result. It keeps every method's cumulative work and copy-only
+crossover in output-token coordinates. For that sensitivity estimate divide
+modeled thread CPU time by six and charge both upload and restoration at
+the lower large-copy reference. The estimate excludes GPU cost, publication
+and memory contention and does not establish real break-even latency.
+
 The retained decode source `96832af6f` allocates the existing routed-row
 counter only when both adaptive arguments are positive. Its serve loop
 submits adaptive work only when the process-wide window count reaches a

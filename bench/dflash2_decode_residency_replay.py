@@ -80,13 +80,12 @@ def inputs():
     return revision, data, windows, baseline, manifest_formats(assets['manifest']), observed
 
 
-def count_routes(data, widths):
+def window_counts(data, widths):
     offset = len(data) - sum(widths) * LAYERS * ROUTE.size
     require(offset >= 0 and offset % ROUTE.size == 0, 'unbound routing extent')
-    counts = [[Counter() for _ in range(LAYERS)] for _ in range(2)]
     empty_weights = bytes(40)
-    for window, width in enumerate(widths):
-        half = counts[int(window >= len(widths) // 2)]
+    for width in widths:
+        frame = []
         for layer in range(LAYERS):
             jobs = Counter()
             for _ in range(width):
@@ -95,8 +94,17 @@ def count_routes(data, widths):
                 require((actual, fanout, weights) == (layer, 10, empty_weights)
                         and len(set(experts)) == 10 and all(0 <= e < EXPERTS for e in experts), 'bad route')
                 jobs.update(experts)
-            half[layer].update(jobs.items())
+            frame.append(jobs)
+        yield frame
     require(offset == len(data), 'trailing capture bytes')
+
+
+def count_routes(data, widths):
+    counts = [[Counter() for _ in range(LAYERS)] for _ in range(2)]
+    for window, frame in enumerate(window_counts(data, widths)):
+        half = counts[int(window >= len(widths) // 2)]
+        for histogram, jobs in zip(half, frame, strict=True):
+            histogram.update(jobs.items())
     return counts
 
 
