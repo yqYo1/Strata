@@ -22,9 +22,12 @@ ORDER = ('clean', 'cpu-wait', 'cpu-wait', 'clean')
 SELECTOR = 'STRATA_PREFILL_CPU_WAIT_PROFILE'
 WAIT_KINDS = ('compute', 'transfer', 'event', 'compat', 'direct')
 HOST_KINDS = observer.CPU_HOST_BASE + observer.CPU_HOST_MOE
+OBSERVER_PREFIXES = ('strata prefill cpu wait:', 'strata prefill cpu host:', 'strata prefill status:')
 PLAN = dict(order=list(ORDER), read=READ, requests_per_process=speed.RUNS,
     scope='Same selected mode16 engine, inputs, private cache policy and three requests per process. '
           'Enable only the native layer-major CPU wait observer for the two observed processes.',
+    accounting='Require whole-scope CPU and wall conservation and one completed nested status wrapper '
+               'per accumulator window. Keep the nested times separate from the disjoint wait and host totals.',
     decision='Keep first and subsequent clocks separate. Require both paired subsequent medians '
              'within five percent before using the observer for attribution. Report first-use ratios '
              'separately because first-use variance can exceed observer overhead.',
@@ -68,9 +71,13 @@ def environment(row, plan):
 def route(text, plan):
     frame = curve.route(text, plan)
     if plan['arm'] == 'clean':
-        require(not any(line.startswith(('strata prefill cpu wait:', 'strata prefill cpu host:'))
-                        for line in text.splitlines()), 'unexpected CPU observer on clean request')
+        require(not any(line.startswith(OBSERVER_PREFIXES) for line in text.splitlines()),
+                'unexpected CPU observer on clean request')
         return frame
+    return dict(frame, cpu_wait=cpu_partition(text, int(frame['work']['windows'])))
+
+
+def cpu_partition(text, windows):
     data = observer.extract_cpu_observers(text, expected_version=4)
     wait, host = data['wait'], data['host']
     counts = [int(wait[name + '_count']) for name in WAIT_KINDS]
@@ -78,14 +85,26 @@ def route(text, plan):
     for unit in ('cpu_s', 'wall_s'):
         require(abs(sum(float(wait[f'{name}_{unit}']) for name in WAIT_KINDS)
                     - float(wait['wait_' + unit])) < 1e-7, 'CPU wait intervals do not conserve')
-    return dict(frame, cpu_wait=dict(
-        wall_s=float(wait['wall_s']), cpu_s=float(wait['main_cpu_s']),
-        wait_cpu_s=float(wait['wait_cpu_s']), wait_wall_s=float(wait['wait_wall_s']),
+    cpu_s, wall_s = float(wait['main_cpu_s']), float(wait['wall_s'])
+    wait_cpu_s, wait_wall_s = float(wait['wait_cpu_s']), float(wait['wait_wall_s'])
+    require(abs(cpu_s - wait_cpu_s - float(wait['outside_wait_cpu_s'])) < 1e-7,
+            'whole-scope CPU intervals do not conserve')
+
+    # The status readback and drain each perform a precheck and queue lookup.
+    status_calls = dict.fromkeys(observer.CPU_STATUS_NAMES, windows)
+    status_calls.update(precheck=2 * windows, queue_context=2 * windows)
+    status = observer.extract_status_observer(text, windows, status_calls)
+    require(int(host['moe_status_count']) == windows and all(
+            float(host[f'moe_status_{unit}']) - 1e-7 <= status[unit] <= whole + 1e-7
+            for unit, whole in (('cpu_s', cpu_s), ('wall_s', wall_s))),
+            'nested status wrapper is outside the layer-major scope')
+    return dict(wall_s=wall_s, cpu_s=cpu_s, wait_cpu_s=wait_cpu_s, wait_wall_s=wait_wall_s,
         waits={name: [int(wait[name + '_count']), float(wait[name + '_cpu_s']),
                       float(wait[name + '_wall_s'])] for name in WAIT_KINDS},
         outside_wait={name: [float(host[name + '_outside_wait_cpu_s']),
                              float(host[name + '_outside_wait_wall_s'])] for name in HOST_KINDS},
-        unclassified=[float(host['unclassified_cpu_s']), float(host['unclassified_wall_s'])]))
+        unclassified=[float(host['unclassified_cpu_s']), float(host['unclassified_wall_s'])],
+        nested_status={key: value for key, value in status.items() if key != 'limits'})
 
 
 def after_execution(outcome, row, plan):
