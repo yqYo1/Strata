@@ -41896,5 +41896,25 @@
     "finding": "The reached path already shares activation quantization and the pool submission. Grouping independent expert jobs preserves distinct weight traffic and Down input. Compare work descriptor grouping before changing packed row layout.",
     "consumer": "For a CPU fixed-work follow-up, compare groups of 1, 2 and 4 with actual GU formats and hot/rotating weights. Commit repetition, order and stop rules, fix worker and submission counts, and require exact bit parity and a rotating-set gain before a model trial.",
     "retention": "Review after the paired CPU scheduling decision. Report is decision support with no measured speedup."
+  },
+  "mode16-batch-capacity-and-issue-order-20261126": {
+    "classification": "decision_support",
+    "stage": "native_reviewed",
+    "source_revision": "0bfbb4fbcb123daa4f2318f682ccefb4293cf2f5",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/mode16-batch-capacity-and-issue-order-20261126-supervised/report.md",
+    "report_sha256": "8d45a115300752211502417bbe86597631151763fe780eecfd55412e9d695a7d",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/mode16-batch-capacity-and-issue-order-20261126-supervised/native-luna-max-review-v2.md",
+    "review_sha256": "4661bb0b6afe134f6cfbc9a658046d14fcff1af5a45bb88f94147e6bbf1f6018",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "dispatch": "ctx_4c6b44febe9e",
+    "worker_read_only": true,
+    "worker_side_orca_reachable": true,
+    "worker_exited": true,
+    "schedulable_now": false,
+    "prerequisite": "The fixed 32-slot mode16 model A/B at 102,401 input tokens accepts batched issue against demand.",
+    "finding": "The bank still requests 32 slots. Each batch uses at most 16 via PrefillSplitExpertBatch::capacity_limit in include/strata/prefill/expert_bank_upload.hpp and the per-layer minimum in src/prefill/moe_window.inc.",
+    "consumer": "After the model A/B passes, compare capacity 16 with 8 or 4 while keeping the bank size, scratch, order and copy payload fixed. Measure CPU submission and exposed GPU work separately. Retrieve What the path does, Bounded comparison, and Documentation and accelerator evidence.",
+    "retention": "Review after the 32-slot model A/B. The report contains implementation evidence and no measured speedup."
   }
 }
