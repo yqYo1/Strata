@@ -19,6 +19,7 @@ TARGET = 'sycl_q6_canonical_component'
 REFERENCE = 'd6f2b82947018f85e8e6169bd2072fb076c03f19'
 NATIVE = B / 'dflash2-target-snapshot-native-v2'
 FOUNDATION = B / 'coherent-prefill-native-v1' / 'record.json'
+VERIFY_POLICY = 'include/strata/core/verify_window_policy.hpp'
 THIS = str(Path(__file__).resolve().relative_to(P))
 UNITS = (
     'src/sycl/runtime.cpp', 'src/sycl/compat.cpp', 'src/sycl/command_profile.cpp',
@@ -29,6 +30,12 @@ UNITS = (
     'src/kernels/sycl/iq.cpp', 'src/kernels/sycl/q6_dpas_component.cpp', 'bench/sycl/q6_canonical.cpp',
 )
 require, sha = base.require, base.digest
+
+
+def q6_dispatch_source(path):
+    source = path.read_bytes()
+    start = source.index(b'constexpr bool verify_q6_columns(')
+    return source[start:source.index(b'\n}', start) + 2]
 
 
 def reference():
@@ -51,13 +58,20 @@ def reference():
             and selected['binary'] == native['binaries']['strata'], 'retain the checked model and recipe')
     require(sha(FOUNDATION) == native['foundation']['original_record_sha256'], 'compiler foundation changed')
     compiler = json.loads(FOUNDATION.read_text())
-    paths = set(UNITS[:-2]) | {'include/strata/core/verify_window_policy.hpp'}
+    paths = set(UNITS[:-2])
     paths |= {p for p in source_files if p.startswith(('src/sycl/', 'include/strata/sycl/'))}
     sources = {name: source_files[name] for name in sorted(paths)}
     require(all(sha(P / name) == value for name, value in sources.items()), 'reference or runtime source changed')
+    # The primary header has a separate KV policy and graph counters. This
+    # fixture consumes its Q6 dispatch predicate and pins the entire header.
+    native_policy = NATIVE / 'source' / VERIFY_POLICY
+    component_policy = P / VERIFY_POLICY
+    require(sha(native_policy) == source_files[VERIFY_POLICY]
+            and q6_dispatch_source(component_policy) == q6_dispatch_source(native_policy), 'Q6 dispatch policy changed')
+    policy = dict(native_sha256=source_files[VERIFY_POLICY], component_sha256=sha(component_policy))
     return native, compiler, dict(record=dict(path=str(record), sha256=sha(record)),
         evidence_commit=REFERENCE, source_commit=native['native_source_commit'],
-        engine=selected['binary'], runtime_sources=sources)
+        engine=selected['binary'], runtime_sources=sources, verify_policy=policy)
 
 
 def context():
@@ -71,7 +85,7 @@ def context():
             require(ctx.feature.validation.committed(RESULT, (KEY,)) == ctx.compact(row), 'commit exact fixture plan')
         _, _, identity = reference()
         require(identity == row['selected_native'], 'native build provenance changed')
-        required_sources = {*UNITS, THIS, 'tools/sycl/build_compat_profile.py'}
+        required_sources = {*UNITS, THIS, VERIFY_POLICY, 'tools/sycl/build_compat_profile.py'}
         require(required_sources <= row['project']['source_sha256'].keys(),
                 'required fixture and builder sources are missing')
         ctx.build.check_inputs(row)

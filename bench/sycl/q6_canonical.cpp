@@ -85,6 +85,10 @@ void host() {
 
 void host_c5() {
     int cases = 0;
+    for (const auto& shape : production_shapes) {
+        need(!use_columns(shape.input, shape.output, 5), "C5 compares with the production generic reference");
+        ++cases;
+    }
     alignas(2) uint8_t weights[4]{};
     auto queue = reinterpret_cast<void*>(uintptr_t(1));
     for (int width : {1, 4, 6}) {
