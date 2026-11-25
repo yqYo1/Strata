@@ -10838,6 +10838,19 @@ and 116.508 s. The three paired warm PP deltas are +0.418%, −0.005% and
 faults. The copy-route physical context check is now complete. Direct tap
 content and matched sustained decode remain open.
 [Performance CSV](../bench/performance-records.csv).
+
+The [tap observer build](../bench/sycl/dflash2_tap_payload_build.py) binds the
+exact 122,881-input snapshot build and applies the owned `57191d9f4` observer
+to `dflash2_taps.cpp` alone. Reversing the delta recovers the original compiled
+source, including its layer-slot selector. Preserve the measured fallback and
+resolve retention of the finished dense comparison build before preparing the
+observer generation. The [model gate](../bench/sycl/dflash2_tap_payload_model.py)
+first checks one 82-input request, then compares independent copy and direct
+processes on the original fresh 82/122881/82 fixtures. It verifies all five
+tap digests before ingestion, the actual attention stores, KV and cache state,
+matched work, runtime validation and normal owner closure. The build and native
+gates remain pending. Collect clean speed without the observer.
+
 The archived coherent source and recipe recover fully from Git, and all
 12 local executable hashes match the original receipt. A checks-only
 absence test identifies an active ancestor dependency on its
