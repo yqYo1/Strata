@@ -8048,6 +8048,27 @@ the actual cache reuse are open. The worker clock comparison checks its
 observed format and width counts against the exact manifest before comparing
 logical weight visits with and without grouping.
 
+The fixed-worker replay has a feasible input from the closed held-out
+DFlash2 routing capture at `b28a9372b`. Verify the original routing SHA-256,
+native closure, cache profile and expert manifest before reading its suffix.
+Take the entries at the first and third quartile indices of the width-two
+and width-four window lists. Windows 1675, 2769, 4801 and 5799 are zero-based.
+Within each window, take the first IQ3_XXS/IQ4_NL and IQ3_S/IQ4_NL layers
+(0 and 17). Keep CPU misses in first-occurrence order, joining repeated
+experts by their verifier row indices. This matches the production job
+construction in `src/core/expert_source.cpp` at `96832af6f`.
+The eight batches have 20/17/36/35/13/14/35/31 CPU jobs. The 166 unique
+layer/expert blocks cover 374,425,600 packed bytes. The ordered descriptor
+SHA-256 is `931fa301815eb3824492e10c571fcd0e63d1f3124ff9d09a3b93df305c080933`.
+Its compact JSON uses keys `window,width,layer,fmt,jobs`, where `fmt`
+holds GU type, Down type and blob bytes, and each job holds the expert ID
+and its ordered row indices.
+Build this fixture from the original model slices and seeded typed
+activations. Qualify numerical output and the observed placement before
+timing the same work across pinned physical-core counts, with a streaming
+read control at the matching counts. The input selection is offline evidence
+for a CPU service experiment. Actual bandwidth remains to be measured.
+
 The quiet DFlash2 process 2 at `94f7eb2b0` uses native source `96832af6f`
 and reports a filled 1,256-slot cache at 2.40 GiB. The manifest and the
 native 256-byte slot alignment give 2,575,206,400 bytes for 26 slots in
