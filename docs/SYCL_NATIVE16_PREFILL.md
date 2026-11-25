@@ -11488,8 +11488,16 @@ and the native decode clock. Require at least 1,024 native outputs for the
 weak-agreement observation. Run the focused offline accounts with the qualified
 interpreter and `-B -m unittest discover -s bench -p test_dflash2_reconciliation_client.py`.
 All four cases pass at `cccf6e8a7` with the exact production client and fixture.
-The model screen still needs the owned same-build server plan and actual
-answer and acceptance evidence.
+The [reconciliation model controller](../bench/dflash2_reconciliation_model.py)
+uses the retained primary build and the same owned launch, provider and
+exit checks as the 96K continuation. It starts one private server with no
+benchmark warm-up and pins the same fixture and client. Report the observed
+acceptance, native TG and answer check together with client TTFT. Repeat the
+workload as a weak case only if the first screen generates at least 1,024
+native tokens, passes the answer check and accepts at most 40% of offered
+drafts. Retain the compact observation and retire the closed raw output after
+the next workload decision. Host admission and actual model execution are
+pending while the continuation cohort uses the serialized measurement slot.
 
 Retired the six numbered directories and `host` under state
 `dflash2-prefill-kv-stage-speed-v4` covering 430 files and 74709297 bytes.
