@@ -8063,20 +8063,31 @@ SHA-256 is `931fa301815eb3824492e10c571fcd0e63d1f3124ff9d09a3b93df305c080933`.
 Its compact JSON uses keys `window,width,layer,fmt,jobs`, where `fmt`
 holds GU type, Down type and blob bytes, and each job holds the expert ID
 and its ordered row indices.
-Build this fixture from the original model slices and seeded typed
-activations. Qualify numerical output and the observed placement before
-timing the same work across pinned physical-core counts, with a streaming
-read control at the matching counts. The input selection is offline evidence
-for a CPU service experiment. Actual bandwidth remains to be measured.
-The [fixed replay controller](../bench/sycl/cpu_roofline/fixed_replay.py)
-pins those slices, the prepared descriptor, build and runtime inputs. Its
-compatibility mode checks both ends of the worker-count range, then it scores
-three independent processes per core count and workload. The first five pool
-arms reserve the caller for dispatch and hidden quantization. The six-core arm
-also lets the caller run expert work. The scan uses the corresponding caller
-and worker affinities and gives the caller read work only in the six-core arm.
-The elapsed GU, hidden quantization and
-Down phases, process CPU time and caller CPU time are recorded separately.
+The [fixed replay result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-expert-replay-current.json)
+at `cd60b5041` closes four numerical and affinity checks and 36 timed CPU
+processes. It uses the original model slices and seeded typed activations.
+Each pass repeats the same 201 expert jobs and 452,275,200 logical packed
+weight bytes. The scan reads the 374,425,600-byte union of the same slices.
+Each point is the median of three independent process medians, with five
+scored batches per process.
+
+| Physical worker cores | Expert replay per pass | Scan per pass |
+| ---: | ---: | ---: |
+| 1 | 76.971 ms | 11.698 ms |
+| 2 | 40.798 ms | 8.728 ms |
+| 3 | 27.697 ms | 8.638 ms |
+| 4 | 22.860 ms | 8.781 ms |
+| 5 | 19.750 ms | 8.941 ms |
+| 6 | 17.598 ms | 9.131 ms |
+
+The first five arms reserve the caller for dispatch and hidden quantization.
+In the six-core arm the caller also runs work in both the pool and scan.
+From four to five workers the replay saves 13.6% wall time while the scan
+changes from 42.64 to 41.88 GB/s of payload. Gate/up (GU) takes about 15.0 ms
+out of 19.75 ms at five workers. Prioritize a bounded GU comparison on this
+workload and check its overlap with GPU work in the model before choosing a
+worker setting. The scan bounds this read pattern only. Physical DRAM traffic,
+model-level overlap and the effect on sustained decode remain unmeasured.
 
 The quiet DFlash2 process 2 at `94f7eb2b0` uses native source `96832af6f`
 and reports a filled 1,256-slot cache at 2.40 GiB. The manifest and the
