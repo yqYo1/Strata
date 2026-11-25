@@ -11292,6 +11292,13 @@ seconds and subsequent time `2.773 + 0.000925418 n` seconds. At the reserved
 coefficients cover one process per length and this range. Complete the
 reverse block before comparing the candidate time models.
 
+The reverse 118,785-token process at `dda5bf72e` matches the forward
+process's route and expert work, exits normally and records no fresh Xe
+fault. First prefill grows from 123.1927 to 133.9573 s and first TTFT from
+123.387 to 134.149 s. The subsequent prefill median grows from 112.5531
+to 112.6664 s. Keep the two first-use samples separate from subsequent
+samples. The first-use spread needs repeat measurements and attribution.
+
 The next prefill scheduling candidate is batched issue on the current
 32-slot bank. Earlier 128-slot comparisons at `982211f5c` and `297adab4d`
 reduce paired warm prompt time by 2.55% and 1.00% respectively. The
