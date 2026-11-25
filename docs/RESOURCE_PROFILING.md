@@ -342,6 +342,16 @@ for stock, `f731c6a0fd04` for within-layer and `2863acb7b313` for cross-layer
 exact stock global layout and prefill/RESTORE control first, then use separate
 workloads to measure whether the change reduces decode time.
 
+The [stock admission controller](../bench/dflash2_decode_stock_global_restore.py)
+uses the retained primary executable and recovers the original restore plans
+from `3d75f7e91`. It generates only the stock global profile. Both loaders
+run the 32,769- and 253,919-token park/restore protocols with the same short
+handoff and 8,209-token resumed suffix. Require identical active state,
+output, full loan/refill and all 48 actual membership masks. Advance reranked
+profiles only after this control passes. Run the two host protocol controls
+before either GPU arm. The generated stock profile remains a
+consumer of the next within-layer comparison only after this check passes.
+
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
 96-swap and 197,913,600-byte caps. Compare early distinct jobs, routed rows

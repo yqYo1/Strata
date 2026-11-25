@@ -77,22 +77,30 @@ def masks(slots):
     return out
 
 
+def stock_geometry(profile, stock_masks, formats):
+    require(replay.sha(profile.read_bytes()) == PROFILE_SHA256, 'stock profile ordering changed')
+    order = read_profile(profile)
+    stock = sorted((pair for pair in order if stock_masks[pair[0]] >> pair[1] & 1), key=lambda pair: pair[0])
+    sizes = [replay.aligned(fmt[2]) for fmt in formats]
+    slot_sizes = [sizes[layer] for layer, _ in stock]
+    require(all(size == fmt[2] for size, fmt in zip(sizes, formats, strict=True))
+            and masks(stock) == stock_masks and len(stock) == EXPECTED_SLOTS
+            and sum(slot_sizes) == EXPECTED_BYTES and sum(slot_sizes[PROTECTED:]) == EXPECTED_TAIL
+            and slot_sizes[PROTECTED] == EXPECTED_FIRST_LENT, 'the original cache or prefill loan geometry changed')
+    return order, stock, sizes, slot_sizes
+
+
+def rank_sha256(ranking):
+    return replay.sha(b''.join(struct.pack('<HH', *pair) for pair in ranking))
+
+
 def analyze():
     revision, route, windows, stock_masks, formats, observed = replay.inputs()
     for name in (THIS, PROFILE, 'tools/make_profile.py', 'src/program/generate.cpp', 'src/core/expert_cache.cpp',
                  'include/strata/core/expert_cache.hpp', 'include/strata/core/expert_slot_sizes.hpp'):
         require((replay.ROOT / name).read_bytes() == replay.git('show', revision + ':' + name),
                 'commit exact residency replay and loader inputs: ' + name)
-    profile = replay.ROOT / PROFILE
-    require(replay.sha(profile.read_bytes()) == PROFILE_SHA256, 'stock profile ordering changed')
-    order = read_profile(profile)
-    stock = sorted((pair for pair in order if stock_masks[pair[0]] >> pair[1] & 1), key=lambda pair: pair[0])
-    sizes = [replay.aligned(fmt[2]) for fmt in formats]
-    stock_sizes = [sizes[layer] for layer, _ in stock]
-    require(all(size == fmt[2] for size, fmt in zip(sizes, formats, strict=True))
-            and masks(stock) == stock_masks and len(stock) == EXPECTED_SLOTS
-            and sum(stock_sizes) == EXPECTED_BYTES and sum(stock_sizes[PROTECTED:]) == EXPECTED_TAIL
-            and stock_sizes[PROTECTED] == EXPECTED_FIRST_LENT, 'the original cache or prefill loan geometry changed')
+    order, stock, sizes, stock_sizes = stock_geometry(replay.ROOT / PROFILE, stock_masks, formats)
 
     train, holdout = replay.count_routes(route, [width for _, width in windows])
     original = replay.score([a + b for a, b in zip(train, holdout, strict=True)], stock_masks, formats)
@@ -108,7 +116,7 @@ def analyze():
                 'protected experts or physical slot sequence changed')
         ranking, requested = global_profile(slots, order, sizes)
         selected = masks(slots)
-        cases[label] = dict(ranking_sha256=replay.sha(b''.join(struct.pack('<HH', *pair) for pair in ranking)),
+        cases[label] = dict(ranking_sha256=rank_sha256(ranking),
                             requested_expert_cache=requested, effective_slots=len(slots),
                             layer_slots=[layer.bit_count() for layer in selected],
                             changed_members=len(set(stock) - set(slots)),
