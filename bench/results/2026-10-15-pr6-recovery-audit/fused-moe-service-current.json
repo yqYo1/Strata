@@ -654208,8 +654208,41 @@
         }
       }
     ],
-    "stage": "prepared",
-    "results": [],
+    "stage": "host_passed",
+    "results": [
+      {
+        "step": "host",
+        "fixtures": [
+          {
+            "target": "sycl_conversation_transfer_test",
+            "exit_code": 0,
+            "ownership_closed": true,
+            "checks": 1656
+          },
+          {
+            "target": "full_context_diagnostic_host_test",
+            "exit_code": 0,
+            "ownership_closed": true,
+            "bounds_cases": 134,
+            "kv_hash_cases": 9459,
+            "physical_model_GPU_qualified": false
+          }
+        ],
+        "host_probe_accepted": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
     "passed": false,
     "complete": false,
     "ownership_closed": true,
