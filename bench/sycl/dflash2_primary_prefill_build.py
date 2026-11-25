@@ -9,6 +9,7 @@ import prefill_kv_upload_build as comparison
 
 bank, builder, require = comparison.bank, comparison.builder, comparison.require
 publish = builder.save
+foundation_reader = builder.original.verify_original
 KEY = 'dflash2_primary_prefill_native_v1'
 ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
@@ -67,7 +68,7 @@ def check(row, committed=True):
         require(bank.basis.validation.committed(bank.RESULT, (KEY,)) == builder.compact(row),
                 'commit the preceding primary build stage')
     snapshot, controls = references()
-    native, foundation = builder.original.verify_original(expected=row['foundation'])
+    native, foundation = foundation_reader(expected=row['foundation'])
     current = source_pins()['source_sha256']
     recovered = bank.stage.hashed(dict(bank.stage.source.blobs(bank.P, row['native_source_commit'], current)))
     require(current == recovered == row['source_files'] and row['controller_sources'] == {THIS: current[THIS]}
@@ -110,7 +111,7 @@ def prepare():
     require(not (OBSERVER_ROOT / 'build' / 'strata').exists(),
             'retire the closed observer generation after exact source recovery')
     snapshot, controls = references()
-    native, foundation = builder.original.verify_original()
+    native, foundation = foundation_reader()
     pins = source_pins()
     files, revision = pins['source_sha256'], pins['revision']
     row = dict(stage='prepared', source_commit=revision, native_source_commit=revision,

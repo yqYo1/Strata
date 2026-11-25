@@ -7,6 +7,7 @@ import sys
 
 sys.dont_write_bytecode = True
 import dflash2_primary_prefill_build as primary
+import dflash2_primary_foundation_proof as foundation
 
 bank, builder, require = primary.bank, primary.builder, primary.require
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
@@ -71,6 +72,7 @@ def main(action):
     primary.TARGETS = TARGETS
     primary.REQUIRED_SOURCES = (*primary.REQUIRED_SOURCES, *UNITS[1:])
     primary.recipe = lambda _: recipe(reference_row)
+    primary.foundation_reader = foundation.historical_foundation
     original_save = primary.save
 
     def save(row):
