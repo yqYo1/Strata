@@ -11119,18 +11119,27 @@ The recovery matches 1,171 native sources, 138 objects, the configured
 recipe, actual compiler and linker inputs and the exact measured executable
 `048cb0cc283243bc20c965b16380e1c2a183f02d47d784a2ac71c35e16146de7`.
 The same-binary dense comparison keeps its head enabled in both arms.
-Retire the closed head generation before building the replacement. Its
-plan, model results, individual samples and CSV remain reachable on this
-retained verification branch. Retain only its `record.json` as the
-source-recovery input to the dense controller. The independent width-four
-and physical-context/RESTORE builds remain the phase references.
+The closed head generation was retired before preparing the replacement.
+Its plan, model results, individual samples and CSV remain reachable on
+this retained verification branch. Its `record.json` supplies source-recovery
+inputs to the dense controller. The independent width-four and
+physical-context/RESTORE builds supply the phase references.
 
-The retirement scope is `dflash2-c5-head-native-v1` except `record.json`.
-Its 1,377 files total 196,642,427 bytes. SHA-256 of the sorted paths, sizes
+The retirement removed 1,377 files and 196,642,427 bytes from
+`dflash2-c5-head-native-v1`. SHA-256 of the sorted paths, sizes
 and content hashes in compact JSON is
 `1bbe5df435b6124e2dca743dbd97a36ee0cfc607a46a81eed56bf8c1a0a8ed66`.
 The retained record's SHA-256 is
 `5032b167618be3a8135d4fde97148382b12b538fccbeedfb0051068ed8a2470e`.
+
+The replacement at `700e3b74c` builds 138 fresh objects with zero uncovered
+compiler inputs. Its executable SHA-256 is
+`da3268e6e9ddab025c85aab61b4b7c6447f574667038ffff80a3de5a6b635783`.
+The existing prefill host control and the exact dense policy check both
+exit normally at `9e9c70182` and `532ce18eb`. The native 82-input plan at
+`159ef1515` requires 22 moves from reference to DPAS, unchanged head
+replays, matching output hashes and placement, and normal device closure.
+Use that evidence before advancing the counterbalanced sustained comparison.
 
 Even at five emitted tokens per verifier window, 70 tok/s allows only
 71.43 ms for a complete window. The older regular-code clock bracket at
