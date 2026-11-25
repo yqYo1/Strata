@@ -653850,5 +653850,143 @@
       },
       "complete": true
     }
+  },
+  "dflash2_primary_prefill_native_v1": {
+    "stage": "prepared",
+    "source_commit": "968e71988953dca3d98037d3b3fec9f903bdfd6f",
+    "native_source_commit": "968e71988953dca3d98037d3b3fec9f903bdfd6f",
+    "retained_references": {
+      "prefill": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/strata",
+        "sha256": "405bea1ac1628c88e78fea245350cd7ce2f0cab8a8a53b44262e483b8d5d5cf7",
+        "bytes": 26550352
+      },
+      "decode": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-kv-stage-native-v1/build/strata",
+        "sha256": "7a8e5b1ab2a8d59d0ad74ff7820df59b6f1fbb865cc17f9829f2ce2d0a6c72d1",
+        "bytes": 26546256
+      }
+    },
+    "prefill_evidence": "ad8652973c8f025e73bd07bc791a9976a55e20a9",
+    "decode_evidence": "d6f2b82947018f85e8e6169bd2072fb076c03f19",
+    "recipe": {
+      "configure": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/source",
+        "-B",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/build",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
+        "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=ON",
+        "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
+        "-DSTRATA_BUILD_TESTS:BOOL=OFF",
+        "-DSTRATA_CPU_ARCH:STRING=znver3",
+        "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
+        "-DSTRATA_ENABLE_HIP:BOOL=OFF",
+        "-DSTRATA_ENABLE_SYCL:BOOL=ON",
+        "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
+        "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
+        "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
+        "-DSTRATA_PORTABLE:BOOL=OFF",
+        "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
+        "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
+        "-DSTRATA_SYCL_TESTS:BOOL=ON",
+        "-DSTRATA_WERROR:BOOL=ON",
+        "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
+        "-DSTRATA_SYCL_DEVICE_ARCH=",
+        "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+        "-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+        "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t",
+        "-DSTRATA_CPU_SERVICE_PROFILE:BOOL=ON",
+        "-DSTRATA_SYCL_PREFILL_NATIVE_COPY=ON"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/cache",
+        "STRATA_IQ_SINGLE_EXACT": "0",
+        "STRATA_IQ3_PAIR": "1",
+        "STRATA_IQ3_PAIR_AUDIT": "1",
+        "STRATA_CPU_SERVICE": "0",
+        "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+        "STRATA_SYCL_DECODE_Q6_CENTERING": "0",
+        "STRATA_SYCL_DECODE_SERVICE_PROFILE": "0",
+        "STRATA_SYCL_DECODE_Q6_NATIVE_HALF": "0",
+        "STRATA_SYCL_Q6_ROUTE_AUDIT": "0",
+        "STRATA_SYCL_DECODE_Q6_DPAS_HEAD": "0",
+        "STRATA_SYCL_DECODE_Q6_DPAS_DENSE": "0",
+        "STRATA_PREFILL_HEAD_HOST_BACKING": "0",
+        "STRATA_SYCL_PREFILL_QSA_STREAM": "1"
+      },
+      "targets": [
+        "strata",
+        "prefill_moe_routes_test",
+        "prefill_moe_workspace_test",
+        "sycl_expert_bank_test",
+        "sycl_moe_down_scatter_bench",
+        "sycl_native16_paired_gemm_bench",
+        "strata_full_context_diagnostic",
+        "full_context_diagnostic_host_test",
+        "sycl_conversation_transfer_test",
+        "sycl_conversation_snapshot_test",
+        "sycl_dflash2_test"
+      ]
+    },
+    "external_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
+      "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
+    },
+    "build_tools": {
+      "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
+      "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb"
+    },
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "active": false,
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true,
+    "scope": "Build the primary tree without historical overlays. Check aligned KV retention, tap payloads, target snapshots and the unchanged decode path using this source.",
+    "retention": "Keep the measured prefill and decode references through the matched checks. Review this third generation at the first failed gate or comparison closure.",
+    "controller_sources": {
+      "files": 1,
+      "sha256": "87870b72a5f79e18111e473d07dbfb5796bc8e76185fb14ea41a2c5baf1f96c9"
+    },
+    "source_files": {
+      "files": 1327,
+      "sha256": "81e9d8ad1133b492c0b7039c2bebe9332402bc8733d0ff0952855101787936a4"
+    },
+    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
   }
 }
