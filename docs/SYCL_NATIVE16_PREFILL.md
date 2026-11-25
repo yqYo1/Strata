@@ -11334,7 +11334,14 @@ subsequent-prefill time ratios are 0.99419 and 1.00038. Readiness spans
 takes 0.206 s. Collect the reverse-order pair before deciding repeatability.
 Its seeded process at `c76deeef0` closes with the required work and no
 new Xe fault. First and subsequent prefill take 106.7133 and 97.3427 s;
-first TTFT is 106.899 s. The matched reverse-order empty process follows.
+first TTFT is 106.899 s. The matched empty process at `c143f687a` closes
+with the same work and no fresh Xe fault. It takes 108.9276 s first and
+97.5302 s subsequently, with first TTFT 109.119 s. The seed saves 2.2143 s
+of first-prefill time and 2.220 s of first TTFT in this pair; the
+subsequent-prefill difference is 0.1875 s. Readiness spans 53.749–53.835 s
+empty and 47.405–47.491 s seeded; seed preparation takes 0.213 s.
+Two of three clean pairs are complete. Preserve the final pair before the
+declared decision.
 
 The [primary continuation plan](../bench/dflash2_primary_continuation.py)
 uses the same retained binary and KV selection for three independent
