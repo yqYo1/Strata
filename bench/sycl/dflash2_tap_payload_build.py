@@ -16,8 +16,6 @@ TAPS = 'src/prefill/sycl/dflash2_taps.cpp'
 OBSERVER = '57191d9f489f30efe09290b972e20e709d23f07f'
 SPEED = 'ad8652973c8f025e73bd07bc791a9976a55e20a9'
 SPEED_KEY = 'dflash2_snapshot_direct_prefill_v1'
-DENSE_KEY = 'dflash2_c5_dense_generation_v1'
-DENSE_BUILD = bank.B / 'dflash2-c5-dense-native-v1'
 
 
 def project(expected=None):
@@ -84,14 +82,6 @@ def context():
     return ctx
 
 
-def prepare(ctx):
-    prior = bank.basis.validation.committed(bank.RESULT, (DENSE_KEY,))
-    require(prior['stage'] in ('closed', 'failed') and prior['ownership_closed'] and not prior['active'],
-            'close the scheduled width-five model comparison before preparing the observer build')
-    require(not (DENSE_BUILD / 'build').exists(), 'resolve retention of the closed dense comparison build first')
-    base.prepare(ctx)
-
-
 def main(action):
     require(action in ('prepare', 'configure', 'compile', 'host'), 'select a tap observer build stage')
     with (bank.B / 'owned-v0141-measurement.lock').open('a+') as lock:
@@ -100,7 +90,7 @@ def main(action):
         ctx = context()
         builder.ROOT, builder.KEY, builder.check, builder.save = ROOT, KEY, ctx.check, ctx.save
         if action == 'prepare':
-            prepare(ctx)
+            base.prepare(ctx)
         elif action == 'host':
             bank.stage.host(root_path=ROOT, check_build=ctx.check, save_record=ctx.save)
         else:

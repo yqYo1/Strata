@@ -10842,9 +10842,9 @@ content and matched sustained decode remain open.
 The [tap observer build](../bench/sycl/dflash2_tap_payload_build.py) binds the
 exact 122,881-input snapshot build and applies the owned `57191d9f4` observer
 to `dflash2_taps.cpp` alone. Reversing the delta recovers the original compiled
-source, including its layer-slot selector. Preserve the measured fallback and
-resolve retention of the finished dense comparison build before preparing the
-observer generation. The [model gate](../bench/sycl/dflash2_tap_payload_model.py)
+source, including its layer-slot selector. Verify the live measurement lease and
+retained-build consumers before preparing the observer generation. The
+[model gate](../bench/sycl/dflash2_tap_payload_model.py)
 first checks one 82-input request, then compares independent copy and direct
 processes on the original fresh 82/122881/82 fixtures. It verifies all five
 tap digests before ingestion, the actual attention stores, KV and cache state,
