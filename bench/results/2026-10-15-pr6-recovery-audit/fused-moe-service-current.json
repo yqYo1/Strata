@@ -659684,7 +659684,7 @@
     "reference_evidence": "ad8652973c8f025e73bd07bc791a9976a55e20a9",
     "selected_arm": "retain",
     "selection_sha256": "e11f8ba2578f2e7d80a25ab117140cdfb0cb35effd759e8a618886655673cf77",
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "90f16f869aecda2424d382d5b7497afff55718e7",
     "host_passed": true,
     "ownership_closed": true,
@@ -660093,7 +660093,200 @@
         "kv_arm": "retain"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 110593,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/build/strata",
+          "sha256": "5153182852b607e781570b606d4b2a444b143027425da90c8d05f1a31e85522e",
+          "bytes": 26695112
+        },
+        "native_source_commit": "968e71988953dca3d98037d3b3fec9f903bdfd6f",
+        "native_identity": {
+          "pid": 274549,
+          "start_ticks": 397618662,
+          "sid": 274491
+        },
+        "request_routes_checked_before_continue": 3,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 274549,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18825",
+              "jobs": "23408",
+              "source_H2D_bytes": "212336640",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "110592"
+            },
+            "uploads": {
+              "uploads": "18825",
+              "requested_H2D_bytes": "38443212800",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 559104,
+              "reused": 1677312
+            },
+            "fixed_bytes": 3634463744,
+            "free_bytes": 4320706560,
+            "direct_pieces": 672,
+            "native_request": [
+              110593,
+              0,
+              110593,
+              24,
+              14,
+              16
+            ]
+          },
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18833",
+              "jobs": "23421",
+              "source_H2D_bytes": "212336640",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "110592"
+            },
+            "uploads": {
+              "uploads": "18833",
+              "requested_H2D_bytes": "38443827200",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 559104,
+              "reused": 1677312
+            },
+            "fixed_bytes": 3634463744,
+            "free_bytes": 4237111296,
+            "direct_pieces": 672,
+            "native_request": [
+              110593,
+              0,
+              110593,
+              24,
+              13,
+              15
+            ]
+          },
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18851",
+              "jobs": "23448",
+              "source_H2D_bytes": "212336640",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "110592"
+            },
+            "uploads": {
+              "uploads": "18851",
+              "requested_H2D_bytes": "38492518400",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 559104,
+              "reused": 1677312
+            },
+            "fixed_bytes": 3634463744,
+            "free_bytes": 4237045760,
+            "direct_pieces": 672,
+            "native_request": [
+              110593,
+              0,
+              110593,
+              24,
+              14,
+              16
+            ]
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 110593,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 116142.4,
+            "prompt_tps": 952.2,
+            "ttft_s": 116.331,
+            "total_s": 118.037,
+            "generated_tokens": 24,
+            "request_sha256": "3ab1770ff22d61f00232bb2eda96702a51ae110ea225779d33c4d21b8a4c3868",
+            "drafts_offered": 16,
+            "drafts_accepted": 14,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 110593,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 105033.0,
+            "prompt_tps": 1052.9,
+            "ttft_s": 105.225,
+            "total_s": 106.937,
+            "generated_tokens": 24,
+            "request_sha256": "9c4fb6bc53d879e1bed78c4f3cc4826350f66e5c5fe362e87cf0f551319a3163",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 110593,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 105156.3,
+            "prompt_tps": 1051.7,
+            "ttft_s": 105.349,
+            "total_s": 106.928,
+            "generated_tokens": 24,
+            "request_sha256": "01d18c9714aaafbbed3a0f49185c3f2a0423c7b3a317f50decd9e062266bf877",
+            "drafts_offered": 16,
+            "drafts_accepted": 14,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 105094.65,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
     "budgets": {
       "wall": 5400,
       "cpu": 21600,
@@ -660129,7 +660322,13 @@
       "fit": "Fit affine, quadratic and n log n separately on first-use and subsequent medians for engine PP time and client TTFT. Exclude the reserved length from all fits. Report every prediction, residual and independent-process spread.",
       "stop": "Stop on the first changed route, allocation, work, input or safety outcome. Preserve each observed timing. No replacement length or automatic adoption."
     },
-    "request_hashes": {},
+    "request_hashes": {
+      "110593": [
+        "3ab1770ff22d61f00232bb2eda96702a51ae110ea225779d33c4d21b8a4c3868",
+        "9c4fb6bc53d879e1bed78c4f3cc4826350f66e5c5fe362e87cf0f551319a3163",
+        "01d18c9714aaafbbed3a0f49185c3f2a0423c7b3a317f50decd9e062266bf877"
+      ]
+    },
     "host_results": [
       {
         "role": "benchmark",
