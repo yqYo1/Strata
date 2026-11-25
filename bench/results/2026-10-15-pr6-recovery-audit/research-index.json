@@ -41328,11 +41328,27 @@
     "review_sha256": "86f39f3e7eb15ede793f574c6efc8e9b91eb97d2115739b01a8a85432cdf2dae",
     "reviewer": "native Codex gpt-6-luna max",
     "owners_closed": true,
-    "schedulable_now": true,
+    "schedulable_now": false,
     "finding": "Raw evidence establishes only that leg two reread 57,933 tokens with zero reuse; it does not prove a cause or fix. Checked-in scope identifies live resume and snapshot paths, but does not establish that the engine remains owned by this request between legs. Require a request-bound lease or fail cold; do not assume seriality.",
-    "consumer": "Trace the continuation dispatch into the native resume path. Check whether a request ID can guard the live prefix through leg two and whether physical skipped-prefix extent is reported; then verify unrelated requests remain cold and counts stay 16,366 + 18 = 16,384.",
+    "consumer": "Use the reviewed follow-up to design a request-bound exact-prefix handoff and test interleaving, cancellation, output, DFlash2 state and context boundaries. Prepare a paired production API comparison only after those controls pass.",
     "prerequisite": "The two-leg replay at 226e2d78c and confirmed default answer-room behavior. Both legs run inside the serial API FIFO in the pinned frontend. Native live resume and continuation validity are separate checks.",
-    "startup_proof": "Orca identity verified from the startup receipt. The completion message includes the report hash."
+    "startup_proof": "Orca identity verified from the startup receipt. The completion message includes the report hash.",
+    "follow_up_review": {
+      "source_revision": "f6150ab1fe94dfc34bdb604621b24342abff84ad",
+      "selected_native_revision": "968e71988953dca3d98037d3b3fec9f903bdfd6f",
+      "pilot_replay": "226e2d78cc6470312b862d60c5e4b99a20ceb57b",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-request-prefix-ownership-20261126/report.md",
+      "report_sha256": "e240b09bd4f80dcd1549ec1b1326c109712dbd1bd5da6f22f2a8cab24ab4ea36",
+      "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-request-prefix-ownership-20261126/native-luna-max-review-v3.md",
+      "review_sha256": "4cdd466aff599498a0067dbf7b8f7715957908334523c3f280500091e1be1dac",
+      "reviewer": "Native Codex gpt-6-luna max",
+      "dispatch": "ctx_b3786cb10613",
+      "worker_task_completed": true,
+      "worker_terminal_last_observed": "live",
+      "finding": "The API wrap, native resume and DFlash2 source analysis supports a request-bound design. The pilot rereads 57,933 tokens in 62.273 seconds with ordinary caching disabled, leaving the exact cause and any speedup unmeasured.",
+      "prerequisite": "Pin a checked lease and exact-prefix extent, including output/context boundaries, two-leg interleaving and DFlash2 state. Declare matched repetitions and decision rules and observe weak-draft eligibility.",
+      "retention": "Decision support for the next implementation review. Retrieve alongside the committed two-leg replay."
+    }
   },
   "dflash2-q6-width-five-kernel-20261125": {
     "classification": "decision_support",
