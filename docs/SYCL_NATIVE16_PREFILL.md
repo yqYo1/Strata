@@ -11208,8 +11208,13 @@ and the configure/build recipe hash is
 `f81ab214ebe8f896a93362bfa72327cc6baf7a375dfee6a757a10942b869a429`.
 The records and original measured engine identity match the committed
 `ad8652973` reference. The old executables still have admission readers;
-retirement needs the scoped reader migration and post-change admission
-checks. No build or source was deleted in this audit.
+the running curve uses both. The future packed Q6 fixture consumes the
+snapshot's build receipt, compiler receipt and original verifier policy
+header. Its generic fallback check also hashes the old snapshot engine
+even though the component command only runs the standalone fixture.
+Retain the consumed metadata and scope that fallback check before
+retiring the snapshot. Check the remaining legacy consumers again at
+curve closure before removing either generation.
 
 The `host`, `taps` and `restore` captures under `dflash2-primary-checks-v1`
 were removed after verifying ownership and the committed proof. The 20
@@ -11311,6 +11316,12 @@ and closes with no fresh Xe fault. First prefill is 964.6 tok/s with 131.838 s
 TTFT. Later prefill is 1,055.7 and 1,053.8 tok/s with 120.479 and 120.696 s
 TTFT. The tightest observed allocation leaves 65,571,840 bytes above the
 fixed budget including reserve. Eight of ten processes have completed.
+
+The reverse 94,209-token process at `d50febe07` passes all three request
+and ownership gates without a fresh Xe fault. First prefill is 931.8 tok/s
+and TTFT is 101.289 s. Subsequent rates are 1,047.1 and 1,047.4 tok/s.
+Nine of ten processes have completed. The last repeat supplies the held-out
+110,593-token result for the fitting comparison.
 
 The next prefill scheduling candidate is batched issue on the current
 32-slot bank. Earlier 128-slot comparisons at `982211f5c` and `297adab4d`
@@ -11428,8 +11439,12 @@ The continuation now verifies the selected executable directly. Run the
 two host controls in `bench/test_dflash2_primary_retained.py` under the named
 interpreter and measurement lock before preparing the suite. The controls
 compare the original baseline with legacy executable access denied and check
-that a changed physical-context proof fails admission. The active length
-curve still needs the legacy readers through its final process.
+that a changed physical-context proof fails admission. Both pass at
+`d50febe07`: the replacement baseline exactly matches the old result while
+opens and stats on all 14 original reference executables are rejected.
+The three model processes are prepared at `c6e52edf8`. Both frontend
+probes pass at `a87131dfe`. The first native continuation process remains
+pending while the length curve finishes with the legacy readers.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
