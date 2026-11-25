@@ -661978,6 +661978,174 @@
           "drafts_accepted": 19,
           "drafts_offered": 21
         }
+      },
+      {
+        "index": 2,
+        "read": 102401,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/build/strata",
+          "sha256": "5153182852b607e781570b606d4b2a444b143027425da90c8d05f1a31e85522e",
+          "bytes": 26695112
+        },
+        "native_source_commit": "968e71988953dca3d98037d3b3fec9f903bdfd6f",
+        "seed_arm": "empty",
+        "prepare_directory_s": 3.834301605820656e-05,
+        "native_identity": {
+          "pid": 581547,
+          "start_ticks": 398329547,
+          "sid": 581476
+        },
+        "readiness": {
+          "server_pid": 581483,
+          "server_start_ticks": 398329416,
+          "owner": 581476,
+          "native": {
+            "pid": 581547,
+            "start_ticks": 398329547,
+            "sid": 581476
+          },
+          "lower_s": 54.881026559043676,
+          "upper_s": 54.96645923797041
+        },
+        "request_routes_checked_before_continue": 2,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 581547,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18766",
+              "jobs": "22971",
+              "source_H2D_bytes": "196608000",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "102400"
+            },
+            "uploads": {
+              "uploads": "18766",
+              "requested_H2D_bytes": "38313779200",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 479232,
+              "reused": 1437696
+            },
+            "fixed_bytes": 3365962752,
+            "free_bytes": 4320706560,
+            "direct_pieces": 624,
+            "native_request": [
+              102401,
+              0,
+              102401,
+              24,
+              13,
+              15
+            ]
+          },
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18771",
+              "jobs": "22977",
+              "source_H2D_bytes": "196608000",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "102400"
+            },
+            "uploads": {
+              "uploads": "18771",
+              "requested_H2D_bytes": "38328499200",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 479232,
+              "reused": 1437696
+            },
+            "fixed_bytes": 3365962752,
+            "free_bytes": 4237045760,
+            "direct_pieces": 624,
+            "native_request": [
+              102401,
+              0,
+              102401,
+              24,
+              13,
+              15
+            ]
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 102401,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 109490.3,
+            "prompt_tps": 935.3,
+            "ttft_s": 109.672,
+            "total_s": 111.48,
+            "generated_tokens": 24,
+            "request_sha256": "f1482e718928e6841637e9a236f292b9bf9c9b2619808df8afffb98266324525",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 102401,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 97385.5,
+            "prompt_tps": 1051.5,
+            "ttft_s": 97.571,
+            "total_s": 99.196,
+            "generated_tokens": 24,
+            "request_sha256": "65e52ef14eca425d016e89d30728992780fd5c13ea02b40c913aa7b0042a75b2",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 97385.5,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "short_warmup_s": 26.08281952,
+        "warmup_work": {
+          "request_sha256": "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "read_tokens": 74,
+          "reused_tokens": 0,
+          "generated_tokens": 24,
+          "drafts_accepted": 19,
+          "drafts_offered": 21
+        }
       }
     ],
     "budgets": {
