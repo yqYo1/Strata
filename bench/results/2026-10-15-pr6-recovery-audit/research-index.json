@@ -41571,5 +41571,39 @@
     "consumer": "Keep implementation unchanged; first qualify the aligned DFlash2 callback, ownership, tap parity, RESTORE, and route-selector receipts.",
     "prerequisite": "After admission proof, run the rotated same-route sweep and use 106496 rows only as a held-out prediction check after freezing the model.",
     "source_correction": "At ad8652973, make_long_prefill_scratch rejects at most 81920 physical prefill rows. The three suggested low lengths use another route. Qualify the aligned 90112–122880-row span first. The measured anchor is 122880 rows plus one input anchor token."
+  },
+  "dflash2-direct-tap-observer-contract-20261125": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-direct-tap-observer-contract-20261125/report.md",
+    "report_sha256": "3b72190f1c52d66fab485fefda2babdedd70a7c03d0374e75af6f2896dce9d0a",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-reviews/tap-observer-and-cold-expert-20261125-v2/review.json",
+    "review_sha256": "1c93013e14d7349af2687b4f7d1d4856e8ba5719ad9292e94c8d387020612a0c",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": false,
+    "finding": "Adds a source-derived audit contract for capture ranges, digest scope, readback lifetime, and the gap between receipts and teardown.",
+    "limitation": "There are no native receipts; digests are probabilistic, CUDA-compatibility/SYCL reasoning is not Xe2 execution evidence, and neither teardown nor physical traffic is proved.",
+    "consumer": "Keep implementation unchanged; run the 82-token smoke, then the ordered 82/122881/82 copy/direct digest pair and record teardown separately.",
+    "prerequisite": "After those receipts, resume the prior ownership, parity, RESTORE, route-selector, and held-out performance gates.",
+    "source_correction": "The 82-token native probe needs a coherent observer-enabled build. The retained snapshot binary predates the observer.",
+    "review_admission": "The first digest changed both assigned classifications and failed verification. V2 preserves the original classifications and report hashes."
+  },
+  "mixed-precision-cold-expert-policy-20261125": {
+    "classification": "knowledge_collection",
+    "stage": "reviewed",
+    "source_commit": "15d5820ea105f269120ad8ecaf3d2c3b35986fe6",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/mixed-precision-cold-expert-policy-20261125/report.md",
+    "report_sha256": "3acc08847be7ba673af2d058718255292deca28e2567e5bb2c59c00587324c15",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-reviews/tap-observer-and-cold-expert-20261125-v2/review.json",
+    "review_sha256": "1c93013e14d7349af2687b4f7d1d4856e8ba5719ad9292e94c8d387020612a0c",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": false,
+    "finding": "Adds a mixed-precision MoE reference on calibration coverage, format granularity, tier representation, and quality-versus-byte/runtime tradeoffs beyond the prior cache and byte reports.",
+    "limitation": "No Strata candidate, format histogram, quality result, or runtime measurement is supplied; logical bytes establish neither physical traffic nor throughput, and the literature does not validate CUDA/Xe2 behavior or port license provenance.",
+    "consumer": "Index under mixed-precision MoE, expert-balanced calibration, per-expert quantization, and host/resident representation.",
+    "prerequisite": "Revisit when per-format jobs, quality evidence, and exact artifact and license provenance are available; keep byte and throughput evidence separate."
   }
 }
