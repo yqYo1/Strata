@@ -15,11 +15,12 @@ from engine_once import native_environment
 
 bank, basis, require = speed.bank, speed.basis, speed.require
 validation, owners = basis.validation, model.owner_module
-KEY = 'dflash2_primary_tap_payload_v1'
+KEY = 'dflash2_primary_tap_payload_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 REFERENCE = '321c5776ab4c73d502529d4a4f23f7175f39bfd6'
 REFERENCE_KEY = 'dflash2_tap_payload_model_v1'
+PREVIOUS_ATTEMPT = '1cfd63cd0a3d5e847b5c96c4b5b3e9411fbc2964'
 WRITER = 'STRATA_SYCL_PREFILL_DIRECT_ATTENTION_STORE'
 ORDER = ('smoke', 'copy', 'direct')
 LIMITS = dict(model.LIMITS)
@@ -28,6 +29,11 @@ LIMITS = dict(model.LIMITS)
 def inputs(revision):
     row = curve.baseline()
     prior = bank.previous.historic(REFERENCE, REFERENCE_KEY)
+    stopped = bank.previous.historic(PREVIOUS_ATTEMPT, 'dflash2_primary_tap_payload_v1')
+    require(stopped['stage'] == 'failed' and stopped['ownership_closed'] and not stopped['active']
+            and stopped['plan']['binary'] == row['binary']
+            and stopped['outcomes']['smoke']['error'] == "RuntimeError('missing target state or DFlash2 verifier work')",
+            'preserve the original smoke rejection')
     require(row['selected_arm'] == 'retain' and prior['stage'] == 'closed' and prior['passed']
             and prior['complete'] and prior['ownership_closed'] and not prior['active']
             and not prior['comparison']['tap_differences'] and prior['comparison']['correct_writer'],
@@ -69,7 +75,7 @@ def inputs(revision):
     plan = {k: row[k] for k in ('native_source_commit', 'native_build_sha256', 'binary', 'boot', 'driver',
                                'runtime_manifest', 'native_validation_probe', 'dflash2_assets', 'selection_sha256')}
     plan.update(source_commit=revision, source_inputs=dict(count=len(sources), sha256=bank.signature(sources)),
-                reference=REFERENCE, order=list(ORDER), command=command, cases=cases,
+                reference=REFERENCE, previous_attempt=PREVIOUS_ATTEMPT, order=list(ORDER), command=command, cases=cases,
                 model_assets_sha256=bank.signature(row['model_assets']),
                 scope='Short observer smoke, then fresh copy and direct processes. Require matching five tap '
                       'digests, active target state, expert/KV work and output. Diagnostic clocks only. '
@@ -80,6 +86,7 @@ def inputs(revision):
 def inspect(log, pid, plan, name, responses):
     proof = validation.preload_evidence(log, pid)
     require(proof['loader'] == plan['native_validation_probe']['loader']['path']
+            and log.count('strata native head DPAS: ready=1 columns=4 layout=canonical') == 1
             and not re.search(r'(?m)^strata mtp: .*loaded|UR_RESULT_ERROR_|ZE_RESULT_ERROR_|teardown uncertain', log),
             'unexpected MTP or runtime validation')
     prompts = tuple(item['read'] for item in plan['cases'][name]['wire'])
@@ -90,7 +97,9 @@ def inspect(log, pid, plan, name, responses):
     for line in re.findall(r'^strata serve: STATE_HASH L=.*$', log, re.M):
         state = dict(re.findall(r'(\w+)=([0-9a-f,-]+)', line))
         states.append({k: state[k] for k in model.restore.ACTIVE_STATE})
-    require([int(state['L']) for state in states] == list(prompts)
+    # The native STATE_HASH is emitted after committing the generated tokens.
+    require([r['prompt'] for r in responses] == list(prompts)
+            and [int(state['L']) for state in states] == [r['prompt'] + r['generated'] for r in responses]
             and all(r['offered'] > 0 for r in responses), 'missing target state or DFlash2 verifier work')
     evidence = dict(tap_payloads=payloads, states=states, validation=proof)
     if name != 'smoke':
@@ -160,6 +169,7 @@ def run(row, base, name, env, requests):
         entry, _, err = owner.run(name, plan['command'], env, bank.P, interaction=interact, **plan['cases'][name]['limits'])
         outcome['native_exit_code'] = entry['exit_code']
         require(owners.closed(entry) and entry['exit_code'] == 0, 'native process failed')
+        require((root / 'validation.log').stat().st_size == 0, 'UR validation output was not quiet')
         outcome['native_identity'] = {k: entry['direct_identity'][k] for k in ('pid', 'start_ticks')}
         outcome.update(inspect(err.read_text(), entry['pid'], plan, name, outcome['requests']))
         if name != 'smoke':
