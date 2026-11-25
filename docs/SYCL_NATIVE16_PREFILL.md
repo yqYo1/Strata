@@ -11099,7 +11099,16 @@ sequence at `83c6936a6` passes 1,656 host transfer checks, 134 extent checks,
 9,459 host KV span/hash cases, 16 Arc DFlash2 kernel cases and 113 Arc
 same-device snapshot smoke checks. The two traced device processes verify
 the qualified providers and close without validation errors or fresh Xe
-faults. Whole-model tap parity, full context and live RESTORE remain open.
+faults.
+The standalone model plan at `d2142368c` recovers the two original token
+streams, safety environment and byte-identical primary expert ranking. At
+`7339ae8e4`, the 16,385-input case keeps all 16,384 batched BF16 rows on the
+GPU, passes the KV placement and DFlash2 tail gates, and emits four fixture
+IDs matching the previous build. The process closes without a fresh Xe
+fault. Use the paired 262,144-input case for the physical final-slot check.
+Whole-model tap parity on the direct writer and live RESTORE each have a
+separate gate. [Physical-context runner](../bench/dflash2_primary_context.py).
+
 Use the same primary binary in both long-prefill arms, changing only
 `STRATA_SYCL_PREFILL_KEEP_KV_STAGE` before execution.
 [Primary build](../bench/sycl/dflash2_primary_prefill_build.py) and
