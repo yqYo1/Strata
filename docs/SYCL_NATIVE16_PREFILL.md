@@ -8004,8 +8004,11 @@ heuristic. Both routes use the same canonical weights. Compare the projection
 with its own switch and keep the head setting fixed until the combined trial.
 The four-file projection from `063ec7946` applies to the verified compiled
 C5-head source. Reversing it restores each of the four original hashes.
-Reconstruct the complete source and recipe before retiring the head
-comparison generation and making the coherent projection build.
+The old head build was retired after full recovery. The coherent projection
+build passes both host controls and the two native 82-input probes at
+`e961023e3`. The candidate moves exactly 22 calls, with identical generated
+tokens, drafter work, head replays and placement. Use the isolated
+counterbalanced sustained comparison for the decode decision.
 [Performance CSV](../bench/performance-records.csv).
 
 Keep prefill and decode kernels, placement, scheduling and selectors independent.
@@ -8021,6 +8024,15 @@ attribution, not useful CPU work or critical-path wall time. Neither useful CPU
 arithmetic nor physical RAM/PCIe transactions, VRAM traffic/bandwidth, hardware
 ceilings or saturation are established. Keep requested transfer bytes distinct
 from measured physical traffic.
+
+The static cache study at `208c92b15` gives an optimistic allocation bound
+for the recorded code and prose requests. At the stock 2,575,206,400-byte
+payload, perfect future knowledge and relaxed residency give lower bounds
+of 39.70 and 39.55 GB/s for logical CPU weight visits at 70 tok/s. The
+stock values are 50.34 and 56.61 GB/s. Under the assumption that every
+visit reads the full blob from RAM, both lower bounds exceed the 39.3035
+GB/s sequential read reference. Use causal placement, measured CPU
+service and verifier yield for adoption decisions.
 
 The CPU-only read calibration at source
 `b3f2d7f31fbd836008930c2354c0a6479a6caea5`now closes:one1GiB anonymous
