@@ -11029,7 +11029,17 @@ on the model. Keep the candidate engine and worktree for that comparison
 after the original V2 split route checks. Sustained decode, the physical
 262144-token fill and RESTORE remain pending.
 
-The 122881-input direct-writer reference at `ad8652973` still needs the
+The 122881-input reference at `ad8652973` runs with aligned KV retention
+enabled. Each matched arm reports 1,935,360 reused and 645,120 reloaded
+pages. The owned `44a2926a6` delta is ported to the primary source, keeping
+the existing direct-reader audit and partial-page mode. It permits reuse
+only where the DFlash2 callback is known to return without touching the
+stream. The tap layers, other callbacks and the final layer retain the
+existing reload. Rebuild all affected units before paired primary checks
+with aligned retention enabled and disabled. Verify actual page counts,
+five-layer tap content, task behavior and the decode handoff on that build.
+
+The 122881-input direct-writer reference at `ad8652973` has a separate
 five-layer DFlash2 payload comparison. The diagnostic switch
 `STRATA_DFLASH2_TAP_PAYLOAD_AUDIT=1` reads the completed FP32 tap means
 immediately before draft ingestion. It reports one digest per layer and

@@ -41,6 +41,7 @@
 #include "strata/sycl/checked_cleanup.hpp"
 #include "strata/sycl/cpu_wait_profile.hpp"
 #include "strata/prefill/native16.hpp"
+#include "strata/prefill/dflash2_taps.hpp"
 #include "strata/prefill/moe_window_routes.hpp"
 #include "strata/prefill/moe_accum_plan.hpp"
 #include "strata/prefill/expert_bank_upload.hpp"
@@ -2306,20 +2307,24 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         if (std::strcmp(value, "partial-page") == 0) return PrefillKvReuse::partial_page;
         throw std::invalid_argument("STRATA_SYCL_PREFILL_KEEP_KV_STAGE requires 0, 1 or partial-page");
     }();
-    // A single layer-major pass owns its staging pool until run_impl returns.
-    // External layer taps and the final output callback keep the original reloads.
     static const bool prefill_pack_suffix = [] {
         const char* value = std::getenv("STRATA_SYCL_PREFILL_PACK_KV_SUFFIX");
         if (!value || std::strcmp(value, "0") == 0) return false;
         if (std::strcmp(value, "1") == 0) return true;
         throw std::invalid_argument("STRATA_SYCL_PREFILL_PACK_KV_SUFFIX requires 0 or 1");
     }();
+    // A single layer-major pass owns its staging pool until run_impl returns.
     const bool owns_layer_stage = (prefill_kv_reuse != PrefillKvReuse::reload || prefill_pack_suffix) &&
         m.layer_major_active && m.native16_active &&
-        LE == LB + 1 && LE < g.n_layers && !on_layer && !m.pp && !next_ &&
+        LE == LB + 1 && LE < g.n_layers && !m.pp && !next_ &&
         same_queue && m.copy == m.cs && stage_own();
-    const bool keep_kv_stage = prefill_kv_reuse != PrefillKvReuse::reload && owns_layer_stage;
-    const bool keep_packed_kv = prefill_pack_suffix && owns_layer_stage;
+    // Aligned KV retention can also cross a DFlash2 observer call on layers
+    // outside its capture set. General callbacks require a fresh prefix.
+    const bool untapped_dflash2_layer = prefill_kv_reuse == PrefillKvReuse::aligned &&
+        on_layer.target<Dflash2PrefillTaps::LayerTap>() && !Dflash2PrefillTaps::captures_layer(LB);
+    const bool keep_kv_stage = prefill_kv_reuse != PrefillKvReuse::reload && owns_layer_stage &&
+        (!on_layer || untapped_dflash2_layer);
+    const bool keep_packed_kv = prefill_pack_suffix && owns_layer_stage && !on_layer;
     // No prefix is trusted on entry, including a resumed or cancelled request.
     int64_t kv_stage_end = -1;
     int64_t packed_kv_end = -1;

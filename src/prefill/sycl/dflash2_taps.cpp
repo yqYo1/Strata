@@ -102,7 +102,7 @@ bool Dflash2PrefillTaps::begin(int64_t n, int device, std::string& err) try {
 
 bool Dflash2PrefillTaps::capture(int64_t layer, int64_t pos0, int64_t rows, const float* R,
                                const uint16_t* R_bf16, void* stream, std::string& err) try {
-    const auto slot = std::find(std::begin(layers), std::end(layers), layer) - std::begin(layers);
+    const auto slot = layer_slot(layer);
     if (slot == kLayers) return true;
     if (!data_ || !stream || pos0 < 0 || pos0 > 262144 || rows < 0 || rows > 262144 - pos0) {
         err = "DFlash2 prompt taps: invalid residual extent/owner"; return false;

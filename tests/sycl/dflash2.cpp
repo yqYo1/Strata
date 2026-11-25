@@ -131,6 +131,7 @@ void prompt_taps(const std::shared_ptr<strata::sycl_backend::Runtime>& runtime) 
     constexpr int N = int(Tail::kWidth), HC = int(Tail::kStreams), Stride = 5 * N, MaxRows = 12;
     auto& q = runtime->compute();
     Tail tail;
+    const Tail::LayerTap tap{tail};
     std::string error;
     Allocation dr(runtime, MaxRows * HC * N * 4, MemoryKind::Device),
                db(runtime, MaxRows * HC * N * 2, MemoryKind::Device),
@@ -172,8 +173,8 @@ void prompt_taps(const std::shared_ptr<strata::sycl_backend::Runtime>& runtime) 
         }
         if (bf16) q.memcpy(db.data(), packed.data(), packed.size() * 2).wait_and_throw();
         else q.memcpy(dr.data(), input.data(), input.size() * 4).wait_and_throw();
-        ok(tail.capture(Tail::layers[slot], pos, rows, bf16 ? nullptr : dr.as<float>(),
-                        bf16 ? db.as<uint16_t>() : nullptr, &q, error));
+        ok(tap(Tail::layers[slot], pos, rows, bf16 ? nullptr : dr.as<float>(),
+               bf16 ? db.as<uint16_t>() : nullptr, &q, error));
     };
     auto window = [&](int64_t pos, int rows) {
         std::vector<float> input(size_t(rows) * Stride);
@@ -204,6 +205,11 @@ void prompt_taps(const std::shared_ptr<strata::sycl_backend::Runtime>& runtime) 
     pass("empty_anchor");
 
     ok(tail.begin(10, 0, error));
+    for (int layer = 3; layer < 48; layer += 4) {
+        need(Tail::captures_layer(layer) == (layer == 15 || layer == 35), "QSA layer tap selection");
+        if (!Tail::captures_layer(layer))
+            ok(tap(layer, 0, MaxRows, nullptr, nullptr, nullptr, error));
+    }
     for (int slot = 0; slot < 5; ++slot) put(slot, 0, MaxRows);
     check({{0, 9}}, mean); // exclude the last prompt anchor and following rows
     pass("mixed_fp32_bf16");

@@ -3629,10 +3629,7 @@ int main(int argc, char** argv) {
         if (n - resume > std::max<int64_t>(o.short_read, 0)) df2.reset();
         return df2_taps.begin(n, 0, why);
     };
-    auto df2_layer_tap = [&](int64_t layer, int64_t pos0, int64_t rows, const float* R,
-                             const uint16_t* R16, void* stream, std::string& why) {
-        return df2_taps.capture(layer, pos0, rows, R, R16, stream, why);
-    };
+    const strata::prefill::Dflash2PrefillTaps::LayerTap df2_layer_tap{df2_taps};
     auto df2_activate = [&](strata::core::Verifier& verifier, const std::vector<int64_t>& ids,
                             int64_t resume, int max_drafts, std::string& why) {
         if (!use_df2) return true;
