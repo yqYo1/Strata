@@ -11586,9 +11586,25 @@ at 16.331 tok/s across the two native decode intervals. Client TTFT is
 seconds. The answer-room continuation rereads all 48,221 tokens in
 53.314 seconds, with zero reported reuse. The two legs accept 10,379 of
 11,482 DFlash2 drafts, or 90.39 percent. This closes the task-quality screen.
-It exceeds the 40 percent weak-case limit, so selecting a different
-workload is the next weak-case action. The continuation clock is also
-usable evidence for the separately scoped request-prefix handoff.
+It exceeds the 40 percent weak-case limit. The continuation clock is
+also usable evidence for the separately scoped request-prefix handoff.
+
+The next weak-case candidate is the
+[maintenance-window scheduling fixture](../bench/dflash2_scheduling_fixture.py)
+at `3590c990f`. The fixed seed produces 2,016 scored choices for 36 required
+changes and 56 exclusive windows. The independent assignment oracle checks
+approval, exclusivity, both objective totals and the ordered tie-break. All
+three host tests pass, including an exhaustive comparison on a small
+rectangular instance. The canonical optimum has risk 2,106 and disruption
+6,696.
+
+The retained production chat template and tokenizer first reproduce the
+reconciliation wire hash and 35,915-token input count. With the same
+thinking and output policy, they count 52,055 tokens for the scheduling
+packet and an output cap of 16,384. The scheduling request's wire SHA-256 is
+`a7b6c72e9a06280eb216d5d34340a451b5deb07b363a3d0da4b554b45cc4874b`.
+The next native screen must bind the live count and body and verify its
+visible answer, output length and per-request draft counters.
 
 Retired the six numbered directories and `host` under state
 `dflash2-prefill-kv-stage-speed-v4` covering 430 files and 74709297 bytes.
