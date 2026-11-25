@@ -269,8 +269,11 @@ bool Verifier::report_q6_routes(std::FILE* file, uint64_t request) const {
                 input, strata::kernels::native_mmvq_multi_exact(), 14, shape[0], shape[1], 4))
                 dense_complete = false;
         }
+        const auto [c5_in, c5_out] = verify_q6_dense_c5_shape;
+        const bool dense_c5_allowed = verify_q6_dpas_dense_c5(decode_q6_dpas_dense_c5_, input,
+            strata::kernels::native_mmvq_multi_exact(), 14, c5_in, c5_out, T, 5);
         const bool complete = window.q6_routes_complete && window.q6_capture_id != 0 &&
-            dense_complete &&
+            dense_complete && (window.q6_dpas_dense_c5_calls == 0 || dense_c5_allowed) &&
             window.q6_replay_started == window.q6_replay_completed &&
             total[0] == window.q6_reference_calls &&
             total[1] + total[2] + total[3] == window.q6_columns_calls &&
@@ -314,6 +317,12 @@ bool Verifier::report_q6_routes(std::FILE* file, uint64_t request) const {
                 (unsigned long long)request, device_, phase, T, (unsigned long long)window.q6_capture_id,
                 shape[0], shape[1], (unsigned long long)window.q6_dpas_dense_calls[i], int(complete)) >= 0 && valid;
         }
+        if (dense_c5_allowed)
+            valid = std::fprintf(file, "strata Q6_DPAS_DENSE request=%llu device=%d phase=%s tokens=%d "
+                "capture_id=%llu ni=%d no=%d nc=5 layout=canonical extra_weight_bytes=0 "
+                "canonical_table_excludes_dpas=1 calls=%llu complete=%d\n",
+                (unsigned long long)request, device_, phase, T, (unsigned long long)window.q6_capture_id,
+                c5_in, c5_out, (unsigned long long)window.q6_dpas_dense_c5_calls, int(complete)) >= 0 && valid;
     }
     return std::fflush(file) == 0 && valid;
 }
@@ -633,6 +642,14 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
     if (decode_q6_dpas_dense_ && (!decode_q6_columns_ || decode_q6_centering_ || decode_q6_native_half_)) {
         err = "verify: decode Q6 dense-DPAS requires columns=1,centering=0,native-half=0"; return false;
     }
+    const char* q6_dense_c5 = std::getenv("STRATA_SYCL_DECODE_Q6_DPAS_C5_10240");
+    if (q6_dense_c5 && std::strcmp(q6_dense_c5, "0") != 0 && std::strcmp(q6_dense_c5, "1") != 0) {
+        err = "verify: STRATA_SYCL_DECODE_Q6_DPAS_C5_10240 must be 0 or 1"; return false;
+    }
+    decode_q6_dpas_dense_c5_ = q6_dense_c5 && std::strcmp(q6_dense_c5, "1") == 0;
+    if (decode_q6_dpas_dense_c5_ && !strata::kernels::native_mmvq_multi_exact()) {
+        err = "verify: decode Q6 width-five DPAS requires the exact MMVQ layout"; return false;
+    }
     const char* q6_audit = std::getenv("STRATA_SYCL_Q6_ROUTE_AUDIT");
     if (q6_audit && std::strcmp(q6_audit, "0") != 0 && std::strcmp(q6_audit, "1") != 0) {
         err = "verify: STRATA_SYCL_Q6_ROUTE_AUDIT must be 0 or 1"; return false;
@@ -903,18 +920,23 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
     graph_window.q6_dpas_head_calls = 0;
     graph_window.q6_packed_head_calls = 0;
     graph_window.q6_dpas_dense_calls.fill(0);
+    graph_window.q6_dpas_dense_c5_calls = 0;
 #endif
     auto window_mmvq = [&](int type, const void* weights, const void* x, float* y,
                            int n_in, int n_out, int columns, void* stream) {
 #ifdef STRATA_ENABLE_SYCL
-        if (verify_q6_dpas_dense(decode_q6_dpas_dense_, input, native_mmvq_multi_exact(),
-                                 type, n_in, n_out, columns)) {
+        const bool exact = native_mmvq_multi_exact();
+        if (verify_q6_dpas_dense(decode_q6_dpas_dense_, input, exact, type, n_in, n_out, columns)) {
             component::q6_dpas_c4_canonical(weights, x, y, n_in, n_out, columns, stream);
             ++graph_window.q6_dpas_dense_calls[verify_q6_dense_dpas_index(n_in, n_out)];
             return;
         }
-        if (verify_q6_columns(decode_q6_columns_, input, native_mmvq_multi_exact(),
-                              type, n_in, n_out, columns)) {
+        if (verify_q6_dpas_dense_c5(decode_q6_dpas_dense_c5_, input, exact, type, n_in, n_out, T, columns)) {
+            component::q6_dpas_c5_canonical(weights, x, y, n_in, n_out, columns, stream);
+            ++graph_window.q6_dpas_dense_c5_calls;
+            return;
+        }
+        if (verify_q6_columns(decode_q6_columns_, input, exact, type, n_in, n_out, columns)) {
             // The outer policy already established the exact Q81 layout.
             VerifyQ6Route route = VerifyQ6Route::columns;
             if (verify_q6_native_half(decode_q6_native_half_, input, true,

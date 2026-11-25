@@ -85,6 +85,20 @@ int main() try {
         for (int c=0;c<=9;++c)
             need(!verify_q6_dpas_dense(true,VerifyInput::decode,true,14,shape[0],shape[1],c),
                  "unqualified dense DPAS shape selected");
+    for (bool enabled : {false, true}) for (bool exact : {false, true})
+        for (auto phase : {VerifyInput::prompt, VerifyInput::decode, static_cast<VerifyInput>(255)})
+            for (int type : {13, 14, 15}) for (int window = 0; window <= 9; ++window)
+                for (int columns = 0; columns <= 9; ++columns) {
+                    const bool expected = enabled && exact && phase == VerifyInput::decode &&
+                                          type == 14 && window == 5 && columns == 5;
+                    need(strata::core::verify_q6_dpas_dense_c5(enabled, phase, exact, type,
+                             2560, 10240, window, columns) == expected,
+                         "width-five projection escaped its phase, layout, type or window");
+                }
+    for (const auto& shape : {std::array<int, 2>{6144, 2560}, {2560, 6144}, {2560, 12288},
+                              {2560, 512}, {2560, 248320}, {2561, 10240}, {2560, 10239}})
+        need(!strata::core::verify_q6_dpas_dense_c5(true, VerifyInput::decode, true, 14,
+                  shape[0], shape[1], 5, 5), "unqualified width-five projection selected");
     // Expected selections come from the committed component decision, not a
     // second implementation of the dispatch predicate. Bit c means columns c.
     const int eligible[][3] = {
@@ -196,6 +210,12 @@ int main() try {
          cache.at(VerifyInput::decode,4).q6_dpas_dense_calls==std::array<uint64_t,4>{40,14,22,5} &&
          cache.at(VerifyInput::decode,3).q6_dpas_dense_calls==std::array<uint64_t,4>{},
          "dense DPAS capture metadata crossed phase/token keys");
+    auto& decode5 = cache.at(VerifyInput::decode, 5);
+    decode5.q6_dpas_dense_c5_calls = 22;
+    need(cache.at(VerifyInput::prompt, 5).q6_dpas_dense_c5_calls == 0 &&
+         decode.q6_dpas_dense_c5_calls == 0 &&
+         decode5.q6_dpas_dense_calls == std::array<uint64_t, 4>{},
+         "width-five DPAS capture metadata crossed phase, window or call-width keys");
     auto& decode8 = cache.at(VerifyInput::decode, 8);
     decode8.layer = {31};
     decode8.q6_columns_calls = decode8.q6_native_half_calls = 26;
@@ -241,6 +261,7 @@ int main() try {
          prompt.q6_dpas_head_calls==0 && decode.q6_dpas_head_calls==0 &&
          prompt.q6_dpas_dense_calls==std::array<uint64_t,4>{} &&
          decode.q6_dpas_dense_calls==std::array<uint64_t,4>{} &&
+         decode5.q6_dpas_dense_c5_calls == 0 &&
          decode8.q6_native_half_calls == 0 && decode8.q6_shapes.empty() &&
          decode8.q6_capture_id == 0 && decode8.q6_replay_started == 0 &&
          decode8.q6_replay_completed == 0 && decode8.q6_cache_hits == 0 &&

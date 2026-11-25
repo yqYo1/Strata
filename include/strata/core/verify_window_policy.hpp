@@ -52,6 +52,15 @@ constexpr bool verify_q6_dpas_dense(bool enabled, VerifyInput input, bool exact,
         verify_q6_dense_dpas_index(n_in, n_out) < verify_q6_dense_dpas_shapes.size();
 }
 
+inline constexpr std::array<int, 2> verify_q6_dense_c5_shape{2560, 10240};
+
+// f282d174d measured this projection independently at five columns.
+constexpr bool verify_q6_dpas_dense_c5(bool enabled, VerifyInput input, bool exact,
+                                      int type, int n_in, int n_out, int window, int columns) {
+    return enabled && input == VerifyInput::decode && exact && type == 14 &&
+        window == 5 && columns == 5 && std::array<int, 2>{n_in, n_out} == verify_q6_dense_c5_shape;
+}
+
 // The full target head won the C4 and C5 component comparisons at
 // 0ccc4ed45 and f282d174d. C5 has a separate opt-in for its model trial.
 constexpr bool verify_q6_dpas_head(bool dpas_ready, VerifyInput input, bool exact,
@@ -123,6 +132,7 @@ public:
         // Separate from the four-arm legacy Q6_SHAPE schema. These are static
         // capture counts, never a per-replay global/atomic counter.
         std::array<uint64_t, verify_q6_dense_dpas_shapes.size()> q6_dpas_dense_calls{};
+        uint64_t q6_dpas_dense_c5_calls = 0;
         struct Q6Shape {
             int n_in, n_out, columns;
             std::array<uint64_t, 4> calls{};
@@ -163,6 +173,7 @@ public:
             q6_dpas_head_calls = 0;
             q6_packed_head_calls = 0;
             q6_dpas_dense_calls.fill(0);
+            q6_dpas_dense_c5_calls = 0;
             q6_shapes.clear();
             q6_capture_id = q6_cache_hits = q6_replay_started = q6_replay_completed = 0;
             q6_routes_complete = true;

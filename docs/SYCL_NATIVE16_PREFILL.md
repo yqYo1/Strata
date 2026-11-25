@@ -7985,9 +7985,19 @@ The direct Level Zero adapter and driver identities pass the corrected gate.
 The settled fixed-width comparison at `03e307dc1` retains width four as the
 model reference. The separate opt-in head at `b06064ead` is scoped to decode
 width five. The verification worktree's build plan at `5a1040990` projects
-that change onto the qualified target-snapshot source. Check the actual
-head capture in the bounded model probe before collecting sustained samples
-with the same width in both arms. Keep the dense projections separate.
+that change onto the qualified target-snapshot source. The same-build 82-input
+probe at `dfc260d23` observes seven width-five verifier windows in each arm,
+with the Q6 head using its intended kernel, matched draft work and no new Xe
+fault. `758de922c` freezes the three independent process pairs at fixed
+width. The frontend admission passes at `a39df7aea`.
+
+The next independent projection trial selects only the exact Q6 2560×10240
+calls in width-five decode windows. The component medians are 0.604 ms for
+generic MMVQ and 0.203 ms for canonical DPAS. The short probe records 22
+such calls per width-five capture. This gives the largest sum of component
+time differences among the four audited dense shapes. The sum is a selection
+heuristic. Both routes use the same canonical weights. Compare the projection
+with its own switch and keep the head setting fixed until the combined trial.
 [Performance CSV](../bench/performance-records.csv).
 
 Keep prefill and decode kernels, placement, scheduling and selectors independent.

@@ -311,6 +311,7 @@ private:
     bool decode_q6_centering_ = false; // independent opt-in;18 measured column shapes only
     bool decode_q6_native_half_ = false; // immutable;26-cell incumbent intersection
     bool decode_q6_dpas_dense_ = false; // immutable;four measured non-head C4 shapes
+    bool decode_q6_dpas_dense_c5_ = false;
     bool q6_route_audit_ = false;
     uint64_t q6_capture_sequence_ = 0;
     cudaEvent_t pcie_copy_ready_ = nullptr, pcie_done_ = nullptr;
