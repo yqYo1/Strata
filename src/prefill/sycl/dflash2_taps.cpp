@@ -1,14 +1,68 @@
 #include "strata/prefill/dflash2_taps.hpp"
 #include "strata/core/dflash2.hpp"
 #include "strata/core/on_device.hpp"
+#include "strata/core/pinned.hpp"
 #include "strata/kernels/dflash2.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
 #include "strata/sycl/launch.hpp"
 
 #include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
 #include <exception>
 
 namespace strata::prefill {
+namespace {
+
+bool audit_tap_payload(const float* data, int64_t rows, int64_t pos, std::string& err) {
+    using Tail = Dflash2PrefillTaps;
+    constexpr int64_t stride = Tail::kLayers * Tail::kWidth;
+    constexpr int64_t copy_rows = 64;
+    constexpr auto layer_bytes = size_t(Tail::kWidth) * sizeof(float);
+    if (!data || rows <= 0 || rows >= Tail::kTail || pos < 0 || pos > 262144 - rows) {
+        err = "DFlash2 prompt tap audit: invalid consumed range";
+        return false;
+    }
+
+    std::vector<float> host(size_t(std::min(rows, copy_rows) * stride));
+    std::array<uint64_t, Tail::kLayers> hashes;
+    hashes.fill(core::fnv1a64(nullptr, 0));
+    for (int64_t first = 0; first < rows; first += copy_rows) {
+        const auto count = std::min(copy_rows, rows - first);
+        // consume() has drained the producer and selected the owning device.
+        // Finish every copy before reading or releasing the host staging.
+        if (cudaMemcpy(host.data(), data + first * stride, size_t(count * stride) * sizeof(float),
+                       cudaMemcpyDeviceToHost) != cudaSuccess) {
+            err = "DFlash2 prompt tap audit: readback failed";
+            return false;
+        }
+        for (int64_t row = 0; row < count; ++row) {
+            for (int64_t slot = 0; slot < Tail::kLayers; ++slot) {
+                const auto* values = host.data() + row * stride + slot * Tail::kWidth;
+                if (!std::all_of(values, values + Tail::kWidth, [](float value) { return std::isfinite(value); })) {
+                    err = "DFlash2 prompt tap audit: nonfinite value";
+                    return false;
+                }
+                hashes[size_t(slot)] = core::fnv1a64(reinterpret_cast<const uint8_t*>(values),
+                                                       layer_bytes, hashes[size_t(slot)]);
+            }
+        }
+    }
+    if (std::fprintf(stderr, "strata DFlash2 tap payload: first=%lld rows=%lld width=%lld "
+                     "layer5=%016llx layer15=%016llx layer25=%016llx layer35=%016llx layer45=%016llx\n",
+                     static_cast<long long>(pos), static_cast<long long>(rows), static_cast<long long>(Tail::kWidth),
+                     static_cast<unsigned long long>(hashes[0]), static_cast<unsigned long long>(hashes[1]),
+                     static_cast<unsigned long long>(hashes[2]), static_cast<unsigned long long>(hashes[3]),
+                     static_cast<unsigned long long>(hashes[4])) < 0 || std::fflush(stderr) != 0) {
+        err = "DFlash2 prompt tap audit: receipt write failed";
+        return false;
+    }
+    return true;
+}
+
+} // namespace
 
 Dflash2PrefillTaps::~Dflash2PrefillTaps() { release(); }
 
@@ -108,7 +162,12 @@ bool Dflash2PrefillTaps::ingest(core::Dflash2Drafter& drafter, std::string& err)
     if (!data_ || drafter.n_embd() != kWidth || drafter.tap_layers() != std::vector<int>(std::begin(layers), std::end(layers))) {
         err = "DFlash2 prompt taps: drafter/owner mismatch"; return false;
     }
+    static const bool payload_audit = [] {
+        const char* value = std::getenv("STRATA_DFLASH2_TAP_PAYLOAD_AUDIT");
+        return value && value[0] == '1' && value[1] == '\0';
+    }();
     return consume([&](const float* data, int64_t rows, int64_t pos, std::string& error) {
+        if (payload_audit && !audit_tap_payload(data, rows, pos, error)) return false;
         return drafter.context(data, rows, pos, error);
     }, err);
 } catch (const std::exception& e) {

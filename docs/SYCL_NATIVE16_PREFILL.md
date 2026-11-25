@@ -10925,6 +10925,21 @@ on the model. Keep the candidate engine and worktree for that comparison
 after the original V2 split route checks. Sustained decode, the physical
 262144-token fill and RESTORE remain pending.
 
+The 122881-input direct-writer reference at `ad8652973` still needs the
+five-layer DFlash2 payload comparison. The diagnostic switch
+`STRATA_DFLASH2_TAP_PAYLOAD_AUDIT=1` reads the completed FP32 tap means
+immediately before draft ingestion. It reports one digest per layer and
+keeps raw activations out of the log. Host staging is capped at 64 rows
+(3,276,800 bytes) and each device read completes before staging reuse.
+Verify the observer with a bounded short request, then compare copied and
+direct writes in one coherent build for the same fresh requests at
+82, 122881 and 82 inputs. Require matching five-layer digests over the
+exact tail, checked ingestion, independent target/cache state and normal
+closure. At 122881 inputs the producer supplies 2046 rows beginning at
+120834. The direct control may change only the attention output writer.
+Keep the diagnostic switch off when collecting speed samples.
+[Tap comparison reader](../bench/sycl/dflash2_tap_payloads.py).
+
 Retired the six numbered directories and `host` under state
 `dflash2-prefill-kv-stage-speed-v4` covering 430 files and 74709297 bytes.
 The inventory SHA-256 over relative paths, byte counts and file hashes is
