@@ -11105,9 +11105,9 @@ Use the same primary binary in both long-prefill arms, changing only
 [Primary build](../bench/sycl/dflash2_primary_prefill_build.py) and
 [fixture sequence](../bench/dflash2_primary_checks.py).
 
-Retire the `host`, `taps` and `restore` captures under tuning state
-`dflash2-primary-checks-v1` after verifying ownership closure and the
-committed proof. Their 20 files and 3,493,419 bytes have inventory SHA-256
+The `host`, `taps` and `restore` captures under `dflash2-primary-checks-v1`
+were removed after verifying ownership and the committed proof. The 20
+files and 3,493,419 bytes had inventory SHA-256
 `8f620f67282feb277ad1822ebb3d8169d6b3d87913bff7f95c996389e9f60d15`
 over sorted relative paths, sizes and file hashes. The compact receipt and
 three engine builds serve the upcoming model checks.
