@@ -10946,6 +10946,17 @@ closure. At 122881 inputs the producer supplies 2046 rows beginning at
 Keep the diagnostic switch off when collecting speed samples.
 [Tap comparison reader](../bench/sycl/dflash2_tap_payloads.py).
 
+For the subsequent length curve, the measured source at `ad8652973`
+requires 81921–131072 actual prefill rows in `make_long_prefill_scratch`.
+The earlier suggested 32768, 65536 and 81920 rows therefore cannot use the
+same mode-16 workspace. For the first same-route sweep, qualify 90112,
+98304, 106496, 114688 and 122880 rows with full 8192-row chunks. Each request
+adds one final anchor token to those row counts. Reserve 106496 rows for
+held-out prediction. Check effective mode, relocated mixed workspace,
+all-GPU residual placement, bank capacity and direct-store counters at each
+length before scoring. Shorter requests and physical-capacity fallback
+belong to separate route curves.
+
 Retired the six numbered directories and `host` under state
 `dflash2-prefill-kv-stage-speed-v4` covering 430 files and 74709297 bytes.
 The inventory SHA-256 over relative paths, byte counts and file hashes is
