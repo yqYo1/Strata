@@ -275,6 +275,24 @@ recoverable with `git show 410332a8f:bench/dflash2_decode_residency_replay.py`.
 The counters describe assignment and logical work. Actual DRAM traffic and
 end-to-end latency remain open.
 
+The retained decode source `96832af6f` allocates the existing routed-row
+counter only when both adaptive arguments are positive. Its serve loop
+submits adaptive work only when the process-wide window count reaches a
+multiple of `--adapt-every`. For the counting control, hold this interval
+at 1,000,000 and compare `--adapt-swaps 0` with `--adapt-swaps 1` on the
+file-backed expert route. Bound the sum of requested outputs across the
+process below the interval, and require zero adaptive submissions or
+commits and identical native work. Keep the same startup trace flag in
+both arms to measure the existing counting path across the whole process.
+A later 256-window implementation must explicitly start after
+prefill and stop after the selected decode window.
+
+Read-only enumeration on the Ryzen 5 5600X (family 19h, model 21h), kernel
+`7.0.0-38-generic`, exposes `cpu`, `ibs_op` and `ibs_fetch` in
+`/sys/bus/event_source/devices`. The data-fabric and memory-controller PMUs
+`amd_df` and `amd_umc` are absent from that list. `perf_event_paranoid` is
+4. IBS activation and physical DRAM bytes remain unmeasured.
+
 The first caller-observed process at `7340714a9` matches the clean work and
 emits 4,111 tokens at 16.649 tok/s. The 1,345 windows average 83.67 ms in the
 CPU expert-pool wrapper, 82.26 ms in layer and final GPU completion intervals,
