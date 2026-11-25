@@ -11076,6 +11076,14 @@ The MTP path supplies its existing ring. The earlier exact snapshot build
 context checks. Separately validate the primary build's host transfers,
 full-context and RESTORE behavior. Its source manifest differs from that
 measured snapshot, so the earlier throughput does not qualify this port.
+The primary build controller pins the actual `feature/sycl` source and
+reuses the measured ICX and SYCL recipe with the conversation fixtures
+enabled. The host and device tap tests, snapshot test and physical-context
+diagnostic compile in the same source tree. Preserve the two measured phase
+references, and retire the closed tap-observer build before preparing a new
+engine generation. Test aligned retention with the same binary and startup
+environment in both arms, changing only `STRATA_SYCL_PREFILL_KEEP_KV_STAGE`.
+[Primary build controller](../bench/sycl/dflash2_primary_prefill_build.py).
 
 For the subsequent length curve, the measured source at `ad8652973`
 requires 81921–131072 actual prefill rows in `make_long_prefill_scratch`.
