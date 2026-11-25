@@ -239,11 +239,41 @@ In both worker observations, 1,154,781 jobs (79.64%) handle a single token.
 The three largest Gate/Up bins are single-token IQ3_XXS, IQ2_S and IQ3_S,
 each with IQ4_NL Down. Together their Gate/Up work is 40.31–40.32% of total
 leaf CPU time. Even eliminating all three would fall short of the roughly
-45% leaf CPU reduction needed at fixed work and six available cores. Use
-the existing native routing census for a held-out per-layer expert and
-residency sample so the next work-reduction candidate can account for both
-CPU misses saved and GPU work added at the same VRAM budget. The format
-histogram alone supplies no expert identity or cache reuse evidence.
+45% leaf CPU reduction needed at fixed work and six available cores.
+
+The fixed-quota ranking replay at `410332a8f` uses the separate native
+varied-prose capture at `b28a9372b`. Its 33,287-input, 11,783-output request
+uses 6,485 verifier windows. Replay of the incumbent conserves 4,668,262 CPU
+jobs, 5,982,938 routed CPU rows, all NT bins and 9,529,065,216,000 logical
+blob bytes. Select experts per layer using only the first 3,242 windows.
+Score against the original profile on the remaining 3,243 windows.
+All profiles use the same 1,256 slots and 2,575,206,400 bytes of aligned
+allocation.
+
+| Profile | CPU jobs on held-out windows | CPU rows | Logical CPU blob bytes |
+| --- | ---: | ---: | ---: |
+| Incumbent | 2,581,636 | 3,359,952 | 5,266,123,776,000 |
+| Rank by first-half distinct jobs per window | 1,928,873 | 2,361,989 | 3,923,950,464,000 |
+| Rank by first-half routed rows | 1,924,474 | 2,351,266 | 3,915,350,502,400 |
+
+The routed-row ranking replaces 1,124 slots and saves 25.46% of held-out CPU
+jobs and 25.65% of logical CPU weight visits. It assigns 1,008,686 more rows
+to the resident GPU path. The holdout is the second half of the same request,
+so it measures within-request rank persistence after a long observation.
+The earlier code-only static rank saves just 0.046% of jobs on the separate
+prose request, and its traced cache-loan check at `489ac7c6c` raises CPU jobs
+by 7.57–8.19% on the six synthetic requests. Keep the stock static rank.
+
+The earlier `f6e3af5fa` replay offers the smaller runtime comparison. After
+256 windows it projects a 3.27% suffix CPU-job reduction with 96 in-layer
+swaps and 197,913,600 requested bytes in each direction. Use the same
+decode counts in both arms after separately checking counting overhead.
+Charge resident GPU work, publication and exact restoration of the original
+profile before the next prefill. Compare a separately reserved sustained
+workload and verify prefill preservation. The long-observation reader is
+recoverable with `git show 410332a8f:bench/dflash2_decode_residency_replay.py`.
+The counters describe assignment and logical work. Actual DRAM traffic and
+end-to-end latency remain open.
 
 The first caller-observed process at `7340714a9` matches the clean work and
 emits 4,111 tokens at 16.649 tok/s. The 1,345 windows average 83.67 ms in the
