@@ -11507,6 +11507,28 @@ span 0.080 seconds. The code case confirms strong draft agreement at
 case limit. The long-prefill handoff check passes. The 70 tok/s goal and
 weak-case qualification remain open.
 
+The three matched code requests at `9261c4b44` request the same
+41,499,571,200 bytes of expert-bank H2D copies. The difference between
+client TTFT and the native prompt interval is 1.337–1.377 seconds, a spread
+of 0.040 seconds. In the five same-length process pairs at `71ddd9046`,
+that difference changes by at most 0.020 seconds. At 118,785 tokens, the
+first prompt interval changes by 10.765 seconds and the first TTFT by
+10.762 seconds, while the subsequent prompt median changes by 0.113
+seconds. These matched samples place the observed variation inside the
+native prompt interval. Its internal cause remains open.
+
+The median 96,204-token first prompt needs 8.845 seconds less to reach
+1,000 tok/s. Sending its requested expert-bank payload at the separately
+measured bulk-copy rate of 6.292–6.485 GB/s would take 6.40–6.60 seconds
+in isolation. Effective copy time, physical traffic and overlap within
+the model request remain unmeasured. The 102,401-token cache-seed experiment
+at `ad009f585` separately saves 0.636–2.973 seconds of first prefill.
+For the next cold attribution, use the matched first and subsequent
+requests at 118,785 tokens. The layer-major CPU wait observer already
+separates thread CPU and wall time in GPU waits, copy submission and
+host grouping. Bracket that observer with clean timings and check the
+actual placement and disjoint accounting before assigning any cost.
+
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
 The host count through the production chat renderer and tokenizer is
