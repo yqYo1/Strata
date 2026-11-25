@@ -651197,7 +651197,7 @@
     ]
   },
   "q6_canonical_c5_component_check_v1": {
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "6f93741e558e341337fe887388c1e0cf50a95907",
     "controller_sha256": "4a0e04071dec6a07d664e50447f2ca6233ccde3fa384d4f4df71bcbd110dc736",
     "python": {
@@ -651517,6 +651517,39 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "mode": "time0",
+        "provider_admission": [
+          {
+            "phase": 0,
+            "mapped_files": 9
+          }
+        ],
+        "host_probe_accepted": false,
+        "native_identity": {
+          "pid": 2280264,
+          "state": "S",
+          "ppid": 2279683,
+          "pgid": 2280264,
+          "sid": 2280264,
+          "start_ticks": 392011511,
+          "rss_bytes": 5754880
+        },
+        "native_exit_code": -15,
+        "error": "RuntimeError('owned fixture failed')",
+        "ownership_closed": false,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
       }
     ],
     "plan": {
@@ -651545,5 +651578,25 @@
       "file_cap": 33554432,
       "total_cap": 805306368
     }
+  },
+  "q6_canonical_c5_component_check_v1_clean_provider_refusal": {
+    "stage": "device_gate",
+    "original_case": "time0",
+    "same_fixture": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-canonical-c5-component-v2/build/sycl_q6_canonical_component",
+      "sha256": "5646e3940b13dc3aa5d59a6137abbc9a0a144e5cb141215532f07d227be92bc6",
+      "bytes": 11668216,
+      "source_commit": "8d97e35f7be29fd76a6523fcf46719851a68e005"
+    },
+    "native_exit_code": -15,
+    "teardown_reason": "RuntimeError('unexpected runtime providers or environment at fixture gate')",
+    "direct_child_reaped": true,
+    "session_empty": true,
+    "kernel_execution_observed": false,
+    "fresh_faults": [],
+    "driver_unchanged": true,
+    "execution_sha256": "f5ad612a7077d3f7ae38c22d8f7dd59b900d0c6df74b78d4f36652a06913fe84",
+    "stdout_sha256": "ce9d6ff602f0f6ff4a7594f60781eb9452bd877628b6dcf7525a279d13905b70",
+    "decision": "Keep the refused timing unchanged. Record actual clean provider mappings at the pre-kernel gate in a separately committed diagnostic."
   }
 }
