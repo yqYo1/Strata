@@ -11194,11 +11194,16 @@ primary foundation proof. The target-snapshot `4b4ac554c` build still
 matches its retained source, compiled and linked inputs and measured
 engine. Its materialized recipe has 1,171 source files. Reading the
 named Git commit alone matches 1,130 files. The other 41 include 15
-compile inputs, so recover the archived DFlash2 KV and snapshot
-projections before retiring that build. The old executables still have
-admission readers. Keep them until a tested reader can use the exact
-historical proof where appropriate and the live consumers are resolved.
-No build or source was deleted in this audit.
+compile inputs. A full-history scan on the pushed `feature/sycl` ref
+recovers 35 of those 41 as exact reachable Git blobs at their logical paths.
+The remaining six are the generated QSA probability fixture,
+`cmake/sycl_backend.cmake`, `src/prefill/layer_major.inc`,
+`src/prefill/moe_window.inc`, `src/prefill/prefill.cpp` and
+`src/program/generate.cpp`. Recover those bytes via the archived DFlash2
+KV and target snapshot projections at `4b4ac554c`. The old executables
+still have admission readers. Keep them until a tested reader can use
+the exact historical proof where appropriate and the live consumers
+are resolved. No build or source was deleted in this audit.
 
 The `host`, `taps` and `restore` captures under `dflash2-primary-checks-v1`
 were removed after verifying ownership and the committed proof. The 20
