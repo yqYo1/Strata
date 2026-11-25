@@ -215,10 +215,24 @@ The width-four controller at `14f102cdb` uses the retained 16.694 tok/s
 incumbent with two clean processes bracketing separate caller-ledger and
 query observations. It checks identical serving inputs and expert work,
 binds each observer to the actual request, and records its individual
-overhead gate. Existing source and the offline control checks pass. The
-model runs remain pending. Use the larger caller intervals and observed
+overhead gate. Existing source and the offline control checks pass. Use
+the completed attribution bracket's largest intervals and observed
 format bins to choose placement and kernel candidates. Physical RAM
 traffic, GPU saturation and the attainable overlap remain unmeasured.
+
+The first clean process at `6dbbf2b02` repeats the original work and emits
+4,111 tokens at 16.696 tok/s. The decode counter reports 1,449,976 CPU
+expert jobs, or 352.71 jobs per emitted token. The pinned IQ3_S
+`native_experts.txt` has per-job blob extents between 1,510,400 and 2,662,400
+bytes. Charging one full blob to each job gives a logical range of
+532.73–939.05 MB per emitted token, or 37.29–65.73 GB/s at 70 tok/s with
+the same work. The unweighted bounds use only minimum and maximum blob
+sizes, since this clean process does not record the job count per format.
+Physical traffic depends on actual format mix, reuse and read behavior.
+For context, the prior six-thread 256 MiB checksum-read calibration reached
+24.03 GB/s of requested payload on a different build. Collect exact format
+and reuse evidence before selecting a residency, work-reduction or kernel
+change for the width-four path.
 
 ### Decode worker instrumentation on the a347 build
 
