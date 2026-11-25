@@ -11226,7 +11226,7 @@ projection recovers all 1,171 source files and the original 279 project
 compiler inputs while access to both generations' 24 executables is
 blocked.
 
-The running reconciliation and planned stock-map RESTORE controls use
+The reconciliation and planned stock-map RESTORE controls use
 `dflash2_primary_retained.baseline()`. The 32-slot upload and route-census
 verification branches use the selected primary prefill engine and the
 independent `dflash2-prefill-kv-stage-native-v1` decode engine. They check
@@ -11235,9 +11235,24 @@ model and speed jobs and the target-snapshot direct-prefill and sustained
 jobs have closed ownership. The older primary build/check and historical
 comparison entrypoints still enforce their exact legacy executable pins
 when replayed from their original campaign. Their historical readers
-remain in Git. At the next free measurement slot, verify the original
-build file hashes and remove the compiled outputs while retaining the
-recipe, receipts and generated inputs used by the current foundation check.
+remain in Git. Neither selected engine's actual compiler/link census reads
+compiled outputs from these two older roots.
+
+After the reconciliation process closes at `c5ffe8f77`, the original
+coherent and target-snapshot source and recipe checks pass. Each old root's
+12 final executable hashes match. The coherent intermediate paths come from
+its original compile and link lists and the pinned Ninja AOT rule. All
+target-snapshot compiler/link inputs and intermediate hashes match.
+The 320 exact files are removed under the measurement lock. All three
+host recovery tests pass again after removal at controller `15ac8515f`.
+Inventory SHA-256 uses compact
+JSON of sorted relative paths, sizes and file hashes. Retain the recipes,
+receipts and generated inputs required by the historical foundation reader.
+
+| Old build root | Deleted files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `coherent-prefill-native-v1/build` | 160 | 188752214 | `857de3a4d052c77400d4f9726ae59b2fec085d5eb8d5a6c16dd13fe61e5a6e70` |
+| `dflash2-target-snapshot-native-v2/build` | 160 | 175203404 | `9bac235f1300e7deff1a2d496061cf044aeda5b3d5137aa6d13f2cccc7e58984` |
 
 The `host`, `taps` and `restore` captures under `dflash2-primary-checks-v1`
 were removed after verifying ownership and the committed proof. The 20
