@@ -18,6 +18,10 @@ THIS = str(Path(__file__).resolve().relative_to(bank.P))
 FLAG = 'STRATA_SYCL_DECODE_Q6_DPAS_C5_HEAD'
 ORDER = ('reference', 'c5')
 DECODE_C5 = re.compile(r'(?m)^strata verify: phase=decode tokens=5 q6_reference_calls=(\d+) q6_columns_calls=(\d+)$')
+DENSE_SHAPES = {(6144, 2560), (2560, 6144), (2560, 10240), (2560, 12288)}
+DENSE_ROUTE = re.compile(r'(?m)^strata Q6_SHAPE request=1 device=0 phase=decode tokens=5 capture_id=(\d+) '
+                         r'ni=(\d+) no=(\d+) nc=5 reference_calls=(\d+) columns_calls=(\d+) '
+                         r'centered_calls=0 native_half_calls=0$')
 
 
 def inputs(revision):
@@ -80,8 +84,16 @@ def inspect_case(text, plan, pid, requests, responses, enabled):
     sample, = audit.audit_requests(text, requests, responses, width=5)
     require(sample['width_counts'].keys() == {1, 5}, 'the native request must execute both width-one and width-five graphs')
     (reference, columns), = DECODE_C5.findall(text)
+    heads = audit.audit_head(text, sample['width_counts'], c5=enabled)
+    dense_calls = {}
+    for capture, ni, no, generic, optimized in (map(int, row) for row in DENSE_ROUTE.findall(text)):
+        if (ni, no) in DENSE_SHAPES:
+            shape = f'{ni}x{no}'
+            require(capture == heads[-1]['capture_id'] and shape not in dense_calls and optimized == 0,
+                    'unexpected dense projection dispatch during a head-only probe')
+            dense_calls[shape] = generic
     return dict(validation=proof, window_work=sample,
-                head_captures=audit.audit_head(text, sample['width_counts'], c5=enabled),
+                head_captures=heads, dense_reference_calls=dense_calls,
                 capture_counts=dict(reference=int(reference), columns=int(columns)),
                 draft_vram_bytes=int(taps[0]), verifier_buffer_mib=float(ready[0]))
 
@@ -126,8 +138,10 @@ def main(action):
         passed = outcome['passed'] and (action != 'c5' or all(
             outcome[k] == row['outcomes']['reference'][k] for k in ('draft_vram_bytes', 'verifier_buffer_mib')))
         if passed and action == 'c5':
-            old = row['outcomes']['reference']['capture_counts']
-            passed = outcome['capture_counts'] == dict(old, reference=old['reference'] - 1)
+            prior = row['outcomes']['reference']
+            old = prior['capture_counts']
+            passed = (outcome['capture_counts'] == dict(old, reference=old['reference'] - 1)
+                      and outcome['dense_reference_calls'] == prior['dense_reference_calls'])
         complete = passed and action == 'c5'
         row.update(stage=('closed' if complete else 'partial') if passed else 'failed', passed=complete,
                    complete=complete, ownership_closed=outcome['ownership_closed'])
