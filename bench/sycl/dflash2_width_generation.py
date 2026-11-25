@@ -12,11 +12,12 @@ from decode_kv_bench import insertion_recipe, native_windows
 bank, basis, require, leaves = snapshot.bank, snapshot.basis, snapshot.require, snapshot.leaves
 gen = leaves.suite.gen
 model = snapshot.confidence.model
-KEY = "dflash2_width_generation_v1"
+KEY = "dflash2_width_generation_v2"
 ROOT = bank.B / KEY.replace("_", "-")
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 WIDTH_EVIDENCE = "66810f1301de259d53839d597b68389a7acb9712"
 REPLAY_EVIDENCE = "226e2d78cc6470312b862d60c5e4b99a20ceb57b"
+REFUSAL_EVIDENCE = "22a7d484bcba16e219fbc1484149a33ad1a8c049"
 ORDER = ("4", "5", "5", "4")
 WRAP_TOKENS = 18
 CONTEXT = 262144
@@ -25,7 +26,8 @@ MAX_OUTPUT = 16384
 PROTOCOL = dict(
     order=list(ORDER), workload=leaves.WORKLOAD,
     factor="Use the same target snapshot executable, single GPU, fixed loan-off 1024-slot "
-           "placement and 1024-token chunk. Change only --spec. Hold draft confidence zero "
+           "placement and a 1024-token chunk on the explicit chunked TTFT strategy. "
+           "Change only --spec between arms. Hold draft confidence zero "
            "in all processes to reconcile the actual full-width windows from draft counts.",
     evidence="Four warmups and one fresh thinking-on regular-code request in each process. "
              "Require at least 32768 actual fresh prompt tokens and 1024 native outputs "
@@ -42,6 +44,14 @@ PROTOCOL = dict(
 
 def baseline():
     row = snapshot.baseline()
+    failed = bank.previous.historic(REFUSAL_EVIDENCE, "dflash2_width_generation_v1")
+    refusal = bank.previous.historic(REFUSAL_EVIDENCE, "dflash2_width_generation_v1_prefill_refusal")
+    require(failed["stage"] == "failed" and failed["ownership_closed"] and not failed["active"]
+            and failed["snapshot_arm"] == row["snapshot_arm"]
+            and refusal["configuration"] == dict(prefill_strategy="throughput", chunk=1024, prefill_borrow=False)
+            and refusal["phase"] == "warm-up/prompt" and refusal["long_generation_requests"] == 0
+            and refusal["reaped_and_session_empty"] and refusal["boot_unchanged"] and not refusal["fresh_xe_faults"],
+            "recover the closed chunk8192 mixed-scratch admission refusal")
     admitted = bank.previous.historic(WIDTH_EVIDENCE, "dflash2_width_admission_v3")
     plan = admitted["plan"]
     require(admitted["stage"] == "closed" and admitted["complete"] and admitted["passed"]
@@ -78,13 +88,19 @@ def baseline():
     wrap = insertion_recipe(row["configuration"])["REASONING_WRAP_UP"]
     require(wrap == replay["wrap"] and wrap["tokens"] == WRAP_TOKENS, "checked continuation insertion differs")
     return dict(row, width_evidence=WIDTH_EVIDENCE, width_evidence_sha256=bank.signature(admitted),
+                prior_refusal=dict(commit=REFUSAL_EVIDENCE, sha256=bank.signature(refusal)),
                 checked_width_args=commands, continuation_wrap=wrap)
 
 
 def configuration(row, plan):
     width = plan["arm"]
     template = snapshot.confidence.configuration(row, dict(plan, arm="full"))
-    args = row["checked_width_args"][width]
+    args = list(row["checked_width_args"][width])
+    strategy = "--prefill-strategy"
+    require(args.count(strategy) == 1 and strategy not in template["user_args"]
+            and args[args.index(strategy) + 1] == "throughput",
+            "recover the explicit strategy from the fixed-width launch")
+    args[args.index(strategy) + 1] = "ttft"
     user_args = model.server.user_args.merge(template["user_args"],
         ["--spec", width, "--prefill", "1024", "--expert-cache", "1024", "--no-prefill-borrow"])
     cfg = dict(template, args=args, user_args=user_args)
@@ -147,20 +163,22 @@ def routes(text, samples, arm):
             "require actual long input and native generation")
     expert_work, _ = leaves.leaf_reader.evidence("\n".join(long_frames), joined["segments"], width, False)
 
+    # The native argv pins TTFT, whose engine dispatch always uses run_impl.
+    # Verify the real scratch geometry and handoff without enabling tracing.
+    scratch = re.findall(r"(?m)^strata prefill: FP16 MoE compact requested=1 effective=1, "
+                         r"chunk=(\d+), scratch rows=(\d+), accounted=(\d+), shared region=(\d+) bytes$", text)
+    require(len(scratch) == 1 and scratch[0][:2] == ("1024", "1024")
+            and not any(mark in text for mark in ("strata prefill: layer-major candidate",
+                                                  "strata prefill attention bank:",
+                                                  "strata prefill heads: target detached")),
+            "require the admitted chunked scratch with no layer-major transition")
     placement = []
     for frame, leg in zip(long_frames, joined["segments"], strict=True):
-        extents = re.findall(
-            r"(?m)^strata prefill: layer-major candidate, tokens=(\d+) chunk=(\d+) residual_dtype=bf16 "
-            r"residual_element_bytes=2 residual_total=\d+ residual_gpu_rows=(\d+) residual_gpu=\d+ "
-            r"residual_host=(\d+) residual_staging=(\d+) layer_cache=(\d+);", frame)
-        stores = re.findall(r"(?m)^strata prefill attention bank: ([^\n]+)$", frame)
-        require(len(extents) == len(stores) == 1
-                and int(extents[0][0]) == leg["read_tokens"] - 1
-                and extents[0][1] == "1024" and leg["reused_tokens"] == 0
+        require(leg["read_tokens"] > 1024 and leg["reused_tokens"] == 0
                 and frame.count("strata DFlash2: eager, prompt_tail_rows=2046 cold_prefix=0") == 1,
-                "verify actual BF16 layer-major placement and DFlash2 handoff")
-        placement.append(dict(residual=dict(zip(("rows", "chunk", "gpu_rows", "host_bytes",
-            "staging_bytes", "layer_cache_bytes"), map(int, extents[0]), strict=True)), attention_store=stores[0]))
+                "require fresh multi-chunk prefill and a complete DFlash2 tap handoff")
+        placement.append(dict(strategy="ttft", chunk=1024, batched_rows=leg["read_tokens"] - 1,
+                              scratch_bytes=int(scratch[0][2]), shared_bytes=int(scratch[0][3])))
     work = [fixed_window_work(leg, width) for leg in joined["segments"]]
     return dict(generation=joined, verifier_work=work, expert_work=expert_work, prefill_placement=placement,
                 effective_width=width, verifier_buffer_mib=float(ready[0][1]))
