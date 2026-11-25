@@ -11398,6 +11398,8 @@ The initial host check at `0bfbb4fbc` exposed an inherited absolute launcher
 path into the primary worktree. Generate the configuration with the
 candidate worktree's pinned launcher and working directory, and select
 the executable from its hashed plan.
+All three host controls pass at `8c2d96e57`. The model candidate remains
+pending coherent compilation and the owned comparison.
 
 The [primary driver cache comparison](../bench/dflash2_primary_driver_cache.py)
 reuses the older NEO inventory, private copy, readiness and counter readers.
