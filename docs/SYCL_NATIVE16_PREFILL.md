@@ -11295,7 +11295,26 @@ span checks, relocated arena bounds, bank overwrite ordering and checked
 drain on success, cancellation and error.
 
 First verify 16-slot bank reuse with the relocated scratch and a partial
-chunk. On one candidate binary compare demand against batched with three
+chunk. The candidate only changes eligibility at the request's bank
+admission. The batched selector uses the existing in-order upload and
+reader, checked drain and cancellation path. The 32-slot fixture
+`sycl_expert_bank_test --split-upload-bank32` uses a native 2,662,400-byte
+stride. It verifies complete payloads and the remaining 16 slots and both
+guards through repeated reuse and cancellation.
+
+For the serialized syntax check, select just the
+`strata_prefill` `src/prefill/prefill.cpp` and
+`sycl_expert_bank_test` `tests/sycl/expert_bank.cpp` entries in the primary
+compile database SHA-256
+`660138a4f65f93f17485225cad35b3155ba262644b14dca894013d1d8e1e5e4b`.
+Use the primary pinned `icpx` SHA-256
+`59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213`
+and recipe environment with private temporary/cache paths. Substitute this
+committed worktree for the primary materialized source paths and replace
+`-o OBJECT -c` with `-fsyntax-only`. The hardware fixture and model
+admission require a separate coherent candidate build.
+
+On one candidate binary compare demand against batched with three
 opposite-order 102,401-token pairs. Hold the cache state, KV retention,
 input/output, kernel path, scratch, bank budget and decode placement fixed.
 Compare all 48 upload windows, expert copies, requested bytes, dequants,

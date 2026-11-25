@@ -669,7 +669,8 @@ void prefill_fullfit_eager_case(int experts,size_t source_stride,unsigned layers
         <<" layers="<<layers<<" cancellations="<<cancellations<<" rejects="<<rejects<<"\n";
 }
 
-static void split_prefill_upload_case(size_t stride, bool coalesced, bool cancel) {
+static void split_prefill_upload_case(size_t stride, bool coalesced, bool cancel,
+                                      int32_t bank_slots = pd::PrefillSplitExpertBatch::capacity_limit) {
     constexpr int32_t capacity = pd::PrefillSplitExpertBatch::capacity_limit;
     constexpr size_t source_experts = 48;
     constexpr std::array<std::pair<int32_t, int32_t>, 5> ranges{
@@ -690,11 +691,13 @@ static void split_prefill_upload_case(size_t stride, bool coalesced, bool cancel
     auto runtime = sb::runtime_for();
     auto& queue = runtime->compute();
     need(queue.is_in_order(), "split upload fixture requires the ordered compute queue");
-    sb::Allocation bank(runtime, capacity * stride + 2 * G * sizeof(uint32_t), sb::MemoryKind::Device);
+    need(bank_slots >= capacity, "split upload fixture bank is smaller than one batch");
+    sb::Allocation bank(runtime, bank_slots * stride + 2 * G * sizeof(uint32_t), sb::MemoryKind::Device);
     sb::Allocation snapshots(runtime, wanted * stride, sb::MemoryKind::Device);
     auto* slots = reinterpret_cast<uint8_t*>(bank.as<uint32_t>() + G);
     std::vector<uint32_t> observed(wanted * words);
-    std::array<uint32_t, 2 * G> guards{};
+    const size_t trailing_words = size_t(bank_slots - capacity) * words + G;
+    std::vector<uint32_t> guards(G + trailing_words);
     size_t readers = 0, commands = 0, groups = 0;
     unsigned drains = 0;
     try {
@@ -716,7 +719,7 @@ static void split_prefill_upload_case(size_t stride, bool coalesced, bool cancel
         }
         queue.memcpy(observed.data(), snapshots.data(), wanted * stride);
         queue.memcpy(guards.data(), bank.data(), G * sizeof(uint32_t));
-        queue.memcpy(guards.data() + G, slots + capacity * stride, G * sizeof(uint32_t));
+        queue.memcpy(guards.data() + G, slots + capacity * stride, trailing_words * sizeof(uint32_t));
         if (cancel) throw Stop{};
     } catch (const Stop&) {
         need(cancel, "unexpected cancellation");
@@ -724,7 +727,7 @@ static void split_prefill_upload_case(size_t stride, bool coalesced, bool cancel
     need(drains == 1 && readers == wanted && groups == (cancel ? 1 : ranges.size()) &&
         commands == (coalesced ? groups : readers), "split upload submission or retirement count");
     need(std::all_of(guards.begin(), guards.end(), [](uint32_t word) { return word == Guard; }),
-         "split upload overwrote a bank guard");
+         "split upload overwrote an unused slot or bank guard");
     size_t row = 0;
     for (const auto& [first, last] : ranges) {
         for (int32_t expert = first; expert < last; ++expert, ++row) {
@@ -740,6 +743,11 @@ static void split_prefill_upload_case(size_t stride, bool coalesced, bool cancel
 }
 
 int main(int argc, char** argv) try {
+    if (argc == 2 && std::string(argv[1]) == "--split-upload-bank32") {
+        split_prefill_upload_case(2662400, false, false, 32);
+        split_prefill_upload_case(2662400, false, true, 32);
+        return 0;
+    }
     if (argc == 2 && (std::string(argv[1]) == "--split-upload-smoke" ||
                       std::string(argv[1]) == "--split-upload-native-stride")) {
         const size_t stride = std::string(argv[1]) == "--split-upload-smoke" ? 4096 : 2662400;
