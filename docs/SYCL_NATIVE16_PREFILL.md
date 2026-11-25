@@ -11132,6 +11132,17 @@ and content hashes in compact JSON is
 The retained record's SHA-256 is
 `5032b167618be3a8135d4fde97148382b12b538fccbeedfb0051068ed8a2470e`.
 
+Retire the closed C5 head capture scopes after the dense frontend gate
+closes. The dense path reads the committed head evidence and its build
+receipt. The former generated request and log files have no current
+reader. The retirement inventory lists relative path, size and content
+hash in sorted compact JSON and excludes both root `record.json` files.
+
+| Scope | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-c5-head-generation-v1/{0,1,2,3,4,5,host}` | 373 | 85,825,938 | `c090c06f8b814a3c0a11899452bd1fbe1e500b27cf5b337f15040f0f2a348653` |
+| `dflash2-c5-head-admission-v1/{reference,c5}` | 91 | 22,772,146 | `b8d6baf59cc15b069b12918c99a18ac487dab0581d438902005ceb0f973a0742` |
+
 The replacement at `700e3b74c` builds 138 fresh objects with zero uncovered
 compiler inputs. Its executable SHA-256 is
 `da3268e6e9ddab025c85aab61b4b7c6447f574667038ffff80a3de5a6b635783`.
