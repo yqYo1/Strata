@@ -11115,12 +11115,36 @@ The 32,769-token prefix reaches 40,978 after restore. The 253,919-token prefix
 reaches 262,128 and emits one token. The near-capacity RAM snapshot passes
 readback verification for 3,607,695,360 bytes of target KV across 12 layers
 and 118,069,304 bytes of running state. Both native processes close normally
-with no fresh Xe faults. The final 15 model asset hashes match. Check the
-direct writer separately by comparing the five layer digests against the copy
-writer on the same build and fixed 82 / 122881 / 82 input sequence.
+with no fresh Xe faults. The final 15 model asset hashes match.
+
+The primary copy/direct comparison closes on the same build with fixed
+82 / 122881 / 82 inputs. Both processes return identical digests for all
+five tap layers, identical active target state and outputs, and identical
+expert, KV and verifier work. Each long prompt passes 2,046 rows per tap
+layer to the drafter. Direct store writes all 720 pieces and eliminates
+120,795,955,200 bytes of requested device copies on that request. Both
+processes close normally, the validation logs are quiet, and the final
+asset hashes match. These instrumented observations qualify the payload.
+
+The first 82-input smoke at `1cfd63cd0` has native exit zero and no fresh
+Xe fault but fails the original state-length checker. Its state contains
+114 tokens after 32 outputs. The corrected smoke at `be1f51c82` verifies
+the post-generation extent and preserves the earlier failure.
 [Physical-context runner](../bench/dflash2_primary_context.py),
 [live restore runner](../bench/dflash2_primary_restore.py) and
 [tap payload comparison](../bench/dflash2_primary_tap_payload.py).
+
+The three closed diagnostic roots below have no subsequent raw-output
+consumer. The curve reads the committed timing reference. Preserve the
+validated model and build assets. Remove these exact private state roots
+after the result is reachable from the pushed primary. Inventory SHA-256
+uses compact JSON of sorted relative paths, file byte counts and file hashes.
+
+| Diagnostic root | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-primary-live-restore-v1` | 120 | 25182273 | `2176fdb20b0ff98bbb2160e1c818b9884b10308f46d60e87270df9e299e80d39` |
+| `dflash2-primary-tap-payload-v1` | 47 | 11506432 | `df8a2b9a9e72d9d53736776ca97a3920aa7e174e4208c195881486260efe8b3c` |
+| `dflash2-primary-tap-payload-v2` | 165 | 36894906 | `5022e55f4a7db4d02c177e32c06d6b24d640b97dfe3cabae1e1a70a0fbd5cf3c` |
 
 The primary long-prefill comparison closes at `bfc0c54ae`. The six
 independent processes use the same primary executable and change only
