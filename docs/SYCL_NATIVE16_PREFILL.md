@@ -11312,6 +11312,10 @@ the validated private bank/ordered queue. Keep the existing source and GPU
 span checks, relocated arena bounds, bank overwrite ordering and checked
 drain on success, cancellation and error.
 
+The [Arc 32-slot component result](https://github.com/yqYo1/Strata/blob/4f0bbef71/docs/SYCL_NATIVE16_PREFILL.md#dflash2-kv-stage-retention-outside-the-tap-layers)
+passes both full transfer and cancellation at `3552b9d7a`. The coherent
+model build and the actual relocated-workspace route remain to be checked.
+
 First verify 16-slot bank reuse with the relocated scratch and a partial
 chunk. On one candidate binary compare demand against batched with three
 opposite-order 102,401-token pairs. Hold the cache state, KV retention,
