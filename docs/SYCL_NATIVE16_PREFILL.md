@@ -11132,11 +11132,11 @@ and content hashes in compact JSON is
 The retained record's SHA-256 is
 `5032b167618be3a8135d4fde97148382b12b538fccbeedfb0051068ed8a2470e`.
 
-Retire the closed C5 head capture scopes after the dense frontend gate
-closes. The dense path reads the committed head evidence and its build
-receipt. The former generated request and log files have no current
-reader. The retirement inventory lists relative path, size and content
-hash in sorted compact JSON and excludes both root `record.json` files.
+The closed C5 head capture scopes were retired after the dense frontend
+gate passed at `d95518269`. The dense path reads the committed head
+evidence and its build receipt. The retirement inventory lists relative
+path, size and content hash in sorted compact JSON and excludes both
+retained root `record.json` files.
 
 | Scope | Files | Bytes | Inventory SHA-256 |
 | --- | ---: | ---: | --- |
