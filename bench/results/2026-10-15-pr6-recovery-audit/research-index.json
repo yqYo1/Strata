@@ -41605,5 +41605,38 @@
     "limitation": "No Strata candidate, format histogram, quality result, or runtime measurement is supplied; logical bytes establish neither physical traffic nor throughput, and the literature does not validate CUDA/Xe2 behavior or port license provenance.",
     "consumer": "Index under mixed-precision MoE, expert-balanced calibration, per-expert quantization, and host/resident representation.",
     "prerequisite": "Revisit when per-format jobs, quality evidence, and exact artifact and license provenance are available; keep byte and throughput evidence separate."
+  },
+  "zen3-lossless-expert-weight-layout-20261125": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "source_commit": "0f188bed305085744025099caa31c9f25f10fc39",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zen3-lossless-expert-weight-layout-20261125/report.md",
+    "report_sha256": "8c4fd91236fe25c2138e4fa4b4442d8047eb1c8b917aa0446509daaab37af06f",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-reviews/zen3-weight-layout-and-sparse-frontiers-20261125/review.json",
+    "review_sha256": "762bb3519cd5ad6f9ff3a43cf340d2478254509493a8f194025667bcc9c7a13d",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": false,
+    "finding": "Detailed bytes, decode-cost and caller analysis; rejects bitplanes as a load-reduction route and bounds two alternatives. It adds lossless layout analysis beyond prior scheduling, lookup and affine-U4 reports. Qualify the 110 B arithmetic: this report attributes it to an indexed predecessor without a direct source citation.",
+    "limitation": "No build, codegen, timing, DRAM counter or bit-exact oracle; logical byte counts do not establish traffic or speed. External layout methods are analogies, not GGML compatibility or license evidence.",
+    "consumer": "Retrieve for IQ3_S Zen 3 Gate/Up lossless layout tradeoffs, byte break-even, interleaving, bitplanes and row-reuse decode; exclude from IQ3_XXS lookup and quantizer-change decisions.",
+    "prerequisite": "Before testing a candidate, verify block arithmetic against pinned GGML source and license; then check exact decode and rounding, caller-inclusive codegen, and warm/streaming timings at 1, 2 and 4 rows.",
+    "source_correction": "On the pinned source, third_party/ggml/ggml-common.h:414-422 establishes 110 bytes per 256 weights for IQ3_S (2 + 13*8 + 4). That verifies the packed block arithmetic; it does not verify a layout speedup."
+  },
+  "heterogeneous-sparse-frontier-cost-models-20261125": {
+    "classification": "knowledge_collection",
+    "stage": "reviewed",
+    "source_commit": "0f188bed305085744025099caa31c9f25f10fc39",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/heterogeneous-sparse-frontier-cost-models-20261125/report.md",
+    "report_sha256": "392262d144798f674bcee095dd4d9b7b3dd7a57140358aeba2d5c70a3ebaf6ea",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-reviews/zen3-weight-layout-and-sparse-frontiers-20261125/review.json",
+    "review_sha256": "762bb3519cd5ad6f9ff3a43cf340d2478254509493a8f194025667bcc9c7a13d",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": false,
+    "finding": "Strong mapping of three methods across graph traversal and sparse linear algebra to the layer flow, with skew counterexamples and an overlap-proof design. Distinct from prior placement and worker-scheduling notes. Consider adding a direct Beamer citation for the original push/pull claim.",
+    "limitation": "Transferable methods only: cited platform results do not predict Battlemage/SYCL. Caller-wall windows do not show device service, overlap or saturation; flow and evidence claims were not independently rechecked in this review.",
+    "consumer": "Retrieve on: frontier-density switching/push-pull; CSR-k row bucketing; segmented reduction/CPU repair; work-weighted layer partitioning; CPU/device interval overlap; shared-DRAM contention.",
+    "prerequisite": "Revisit when a fixed-route native trace provides per-layer CPU/GPU intervals, event and copy timing, work/bytes, queue waits and combine cost; use held-out routing to assess whether thresholds generalize."
   }
 }
