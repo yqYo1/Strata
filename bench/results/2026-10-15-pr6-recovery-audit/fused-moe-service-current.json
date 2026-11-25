@@ -683148,5 +683148,35 @@
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "dflash2_width_closed_capture_retirement": {
+    "stage": "prepared",
+    "inputs": [
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-width-generation-v1",
+        "files": 71,
+        "bytes": 14462518,
+        "sha256": "5c1ad93fa6e207ec91d2f1a0ecbdceda03c293beab9f5711963e26818165ea45"
+      },
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-width-generation-v2",
+        "files": 73,
+        "bytes": 14495746,
+        "sha256": "80c864651b0f51b1a2c8cfdd7708c136b154ae7b750a4f01da8d7a60c6d543ab"
+      },
+      {
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-width-generation-v3",
+        "files": 9,
+        "bytes": 133457,
+        "sha256": "0cfded8e964dfb072bf3de1c23dbbe22e3f240e19c7a1c358b18d5c2060748b6"
+      }
+    ],
+    "evidence": [
+      "22a7d484bcba16e219fbc1484149a33ad1a8c049",
+      "ae25f8272459495f3502e492cfdd2c08a16c769a",
+      "0f850f489",
+      "775a1ecf9"
+    ],
+    "reason": "V1 startup and V2 reader failure evidence are committed. The V2 replay consumer has closed. V3 has no GPU execution. V4 consumes the committed history and its own generated plans."
   }
 }
