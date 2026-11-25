@@ -321,6 +321,27 @@ The reader now recovers that tracked input from the original capture's
 source revision and requires its hash to match both the recorded profile and
 the working repository's profile. The original capture and hashes stay fixed.
 
+The replay at `e3d371974` verifies 4,668,262 original stock CPU jobs.
+Training uses the first 3,242 verifier windows and evaluation uses the
+remaining 3,243. All arms preserve the same protected members, 1,256 slot
+widths and loan extent. The simulated global loader requests 968 maximum-size
+slots and stops after the exact 1,256-slot budget.
+
+| Held-out map | CPU unique jobs | CPU routed entries | Logical packed bytes visited |
+| --- | ---: | ---: | ---: |
+| Stock | 2,581,636 | 3,359,952 | 5,266,123,776,000 |
+| Within-layer rerank | 2,013,072 | 2,475,778 | 4,086,496,000,000 |
+| Across equal-size layers | 1,967,341 | 2,409,104 | 3,999,896,140,800 |
+
+The cross-layer map lowers CPU jobs by 23.79% against stock and 2.27%
+against the within-layer control. Its logical bytes fall by 24.04% and
+2.12% respectively, passing the prospective replay gate. Its layer quotas
+range from 16 to 45. The packed rank-order identities are `07362e5b275d`
+for stock, `f731c6a0fd04` for within-layer and `2863acb7b313` for cross-layer
+(SHA-256 prefixes). The measured workload supplied both halves. Check the
+exact stock global layout and prefill/RESTORE control first, then use separate
+workloads to measure whether the change reduces decode time.
+
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
 96-swap and 197,913,600-byte caps. Compare early distinct jobs, routed rows
