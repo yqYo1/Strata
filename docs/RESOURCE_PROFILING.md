@@ -408,7 +408,13 @@ generation, resolve retention for the older snapshot and coherent build:
 the current primary admission still reads their executables and fixtures
 through `primary.references` and `coherent_original_reuse.verify_original`.
 Those are live dependencies until their readers are reconciled. The
-artifact-free plan at `3a1fee123` accepts the exact measured primary
+[historical snapshot recovery](../bench/sycl/dflash2_snapshot_source_recovery.py)
+passes at `416c66058`: the two archived projections reconstruct all 1,171
+source files and the exact recipe without retaining duplicate sources.
+All 279 project compiler inputs match the original census. The source
+manifest SHA-256 is `e28ba38869c135026faf009c516b7042390e9493341ae200c2db24efdd57cd07`
+and the recipe hash is `f81ab214ebe8f896a93362bfa72327cc6baf7a375dfee6a757a10942b869a429`.
+The artifact-free plan at `3a1fee123` accepts the exact measured primary
 binary and reports four native paths and 12 build targets. The proposed
 native files match the syntax-checked revision `88215efa1`. No new build
 generation has been created. Native link and callback validation remain
