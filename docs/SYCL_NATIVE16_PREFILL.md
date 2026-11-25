@@ -7973,6 +7973,21 @@ do not waive the answer gate or assume sampling caused the previous failure.
 
 ## Decode and resource evidence
 
+The clean width-five Q6 device comparison closes at `f282d174d`. Three
+independent processes contribute 180 eligible graph batches. The full head's
+median time per replay is 13.458 ms on generic MMVQ and 5.067 ms on canonical
+DPAS. Four larger dense projections also win every process. The 2560×512
+projection takes 1.238 times the reference time and keeps its generic route.
+Both arms use the same Q6 weights. Each process passes numerical and buffer
+checks and closes without a fresh Xe fault. The initial clean gate stopped
+before kernels because it expected the diagnostic preload's loader mapping.
+The direct Level Zero adapter and driver identities pass the corrected gate.
+Use the head-only arm first for a matched width-five model comparison. Keep
+the dense projections as separate factors and use width four as the model
+reference for deciding whether the wider verifier pays off. The component
+samples leave sustained TG and model adoption open.
+[Performance CSV](../bench/performance-records.csv).
+
 Keep prefill and decode kernels, placement, scheduling and selectors independent.
 The completed 05a9 comparison changes only its decode selector. Required
 adoption evidence still includes both observed MTP-strong
