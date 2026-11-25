@@ -11256,6 +11256,20 @@ processes is 66,713,600 bytes, about 11 ms at the separate large-copy
 reference. Measuring cache seeding and fixed first-use costs requires its
 own comparison. The held-out predictions await both blocks.
 
+The [primary driver cache comparison](../bench/dflash2_primary_driver_cache.py)
+reuses the older NEO inventory, private copy, readiness and counter readers.
+It selects the closed 102,401-token primary process as the only permitted
+seed donor. Keep that private original through this comparison. Compare
+empty and whole seeded NEO directories, including the driver metadata,
+using the original bodies and the exact binary, providers and route. Verify
+first-long hits and misses in two diagnostic processes before collecting
+three reversed pairs with statistics disabled. Keep readiness, short warm-up,
+prompt time, client TTFT and seed preparation costs separate. At this length
+the original first prefill needs to fall by 5.674 seconds to reach 1,000 tok/s.
+The older 117,489-token campaign established the hit mechanism on its own
+build and stopped before a full clean comparison. A disk seed does not
+isolate in-process compilation, module creation or expert page-in.
+
 The [primary continuation plan](../bench/dflash2_primary_continuation.py)
 uses the same retained binary and KV selection for three independent
 `bench.sh --long-generation-only --long-generation-input-case split-v1-96k`
