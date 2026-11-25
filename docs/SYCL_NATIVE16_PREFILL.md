@@ -11127,6 +11127,18 @@ files and 3,493,419 bytes had inventory SHA-256
 over sorted relative paths, sizes and file hashes. The compact receipt and
 three engine builds serve the upcoming model checks.
 
+The closed standalone physical-context captures are ready for retirement.
+Keep `record.json` in each directory and the original `137fb933f` and
+`321c5776a` results. The live restore and width-four attribution readers
+consume those proofs without the standalone logs or generated token files.
+Recheck identities and ownership before removing these paths under the tuning
+state root.
+
+| Directory | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-primary-physical-context-v1` | 119 | 26523236 | `8e083c4d34dd8c5af69d9a97a6cce2728683289f70d17f172972535a5b06b6f7` |
+| `dflash2-snapshot-physical-context-v1` | 119 | 26398509 | `0b493c82bffe52dccd3a4119ea7e8b9ab0cd935b6e22b7611bf3f867aed429e5` |
+
 For the subsequent length curve, the measured source at `ad8652973`
 requires 81921–131072 actual prefill rows in `make_long_prefill_scratch`.
 The earlier suggested 32768, 65536 and 81920 rows therefore cannot use the
