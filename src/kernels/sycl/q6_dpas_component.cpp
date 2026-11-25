@@ -187,7 +187,7 @@ struct Q6DpasColumns {
 template <bool Canonical, int Columns = 4>
 void launch(const void* weights, const void* q8, float* output,
             int k, int n, int columns, void* stream) {
-    static_assert(Columns == 4 || (Canonical && Columns == 5));
+    static_assert(Columns == 4 || Columns == 5);
     if (columns != Columns || !q6_dpas_matrix_shape(k, n) || !stream ||
         (reinterpret_cast<uintptr_t>(weights) & 1))
         throw std::invalid_argument(Columns == 4 ? "Q6 DPAS needs explicit queue and eligible C4 shape" :
@@ -205,7 +205,8 @@ void launch(const void* weights, const void* q8, float* output,
     const size_t items = (size_t(n) + 15) / 16;
     const sycl::nd_range<1> range(((items + 3) / 4) * 4, 4);
     using C4Kernel = std::conditional_t<Canonical, Q6DpasC4Canonical, Q6DpasC4>;
-    using Kernel = std::conditional_t<Columns == 4, C4Kernel, Q6DpasCanonicalColumns<Columns>>;
+    using C5Kernel = std::conditional_t<Canonical, Q6DpasCanonicalColumns<5>, Q6DpasColumns<5>>;
+    using Kernel = std::conditional_t<Columns == 4, C4Kernel, C5Kernel>;
     const auto event = q.parallel_for(range,
         Kernel{static_cast<const uint16_t*>(weights), static_cast<const uint8_t*>(q8), output, k, n});
     finish(stream, event);
@@ -224,6 +225,11 @@ void q6_dpas_c4_canonical(const void* canonical, const void* q8, float* output,
 void q6_dpas_c5_canonical(const void* canonical, const void* q8, float* output,
                          int k, int n, int columns, void* stream) {
     launch<true, 5>(canonical, q8, output, k, n, columns, stream);
+}
+
+void q6_dpas_c5_packed(const uint16_t* packed, const void* q8, float* output,
+                       int k, int n, int columns, void* stream) {
+    launch<false, 5>(packed, q8, output, k, n, columns, stream);
 }
 
 template <int Columns>

@@ -7995,6 +7995,37 @@ width-five median from 14.235 to 14.734 tok/s at identical work. The build
 remains local to the verification branch while the independent projection
 and broader model checks are open. Keep width four as the model reference.
 
+The measured 122,881-input throughput route uses the sole-packed head and
+the checked cache loan. The loan-off 82-input width comparison reports
+64.0/69.9 MiB verifier arenas at widths four/five. This is about 5.9 MiB of
+arena growth on that route, before graph and placement costs. Three independent
+guards matter for reusing the throughput route: the cache-loan selector, the
+target head-release selector and idle verifier check, and the sole-packed head's
+1–4-column consumer. Removing one guard cannot enable the composition safely.
+
+The first component comparison keeps both sides at five columns and changes
+only the target head weight layout, using the existing canonical DPAS result
+at `f282d174d` as the basis. The packed entry reuses the owned interleave and
+DPAS tile. At 2560×248320 each layout occupies 521,472,000 weight bytes. The
+fixture allocates both for comparison and checks both inputs for mutation;
+a sole-packed model owner would allocate the packed extent only. Keep existing
+model dispatch and release admission while this component is unqualified.
+
+Use the retained C5 component recipe and a fresh fixture, verifying its
+source, toolchain, actual executable and providers before running. Run
+`--host-packed-c5`, then `--check-packed-c5-small` and `--check-packed-c5`
+for two seeds, exact five-column spans, unchanged canaries and inputs, and the
+shared scalar-oracle envelope. Check the unpadded 17- and 33-row tails as well
+as the actual full head. Run `--time-packed-c5 0`, `1` and `2` in three
+fresh processes, with five batches of 256 completion-checked graph launches
+per arm after warmup. Candidate-first in the middle process, canonical-first
+in the others. Exclude setup and use the 10 ms and 300 timer-stamp floor.
+Require both numerical checks, normal closure with no fresh Xe fault, and
+a lower packed median in each process to advance on speed. A pass only
+qualifies the five-column head component. The later head and cache retirement
+checks need separate width-five controls and admission, including the refill,
+lazy graph recapture, actual memory fit and sustained decode and prefill timing.
+
 The next independent projection trial selects only the exact Q6 2560×10240
 calls in width-five decode windows. The component medians are 0.604 ms for
 generic MMVQ and 0.203 ms for canonical DPAS. The short probe records 22

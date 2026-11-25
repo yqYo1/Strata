@@ -73,4 +73,9 @@ void q6_dpas_c4_canonical(const void* canonical, const void* q8, float* output,
 // Five live columns with the same canonical allocation contract as C4.
 void q6_dpas_c5_canonical(const void* canonical, const void* q8, float* output,
                          int k, int n, int columns, void* stream);
+
+// Five live columns reading the same interleave used by the sole-packed head.
+// This component has its own check; the serving head still admits 1..4 columns.
+void q6_dpas_c5_packed(const uint16_t* packed, const void* q8, float* output,
+                       int k, int n, int columns, void* stream);
 } // namespace strata::kernels::component
