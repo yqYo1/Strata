@@ -11144,6 +11144,15 @@ is `fe1dd0c57f1b93a4b18e3517be775f01af1852ff055a0a398000bddc23cb0785`.
 This identifies first-use cache activity. A matched cache-seed trial would
 be needed to measure its effect on TTFT.
 
+The closed timing run's `host` and numbered directories `0`–`5` under
+`dflash2-primary-prefill-speed-v1` are selected for retirement. The inventory
+contains 430 files and 75,234,805 bytes with SHA-256
+`7e3b056f8cc5906a9f246433f471792060d6601af742db9373f5771631b22e6e`
+over the compact JSON list of sorted relative paths, byte counts and file
+hashes. Keep `record.json` and both referenced engine generations. The
+curve reads the committed timing results, and RESTORE has an independent
+plan. Neither consumes these temporary logs, benchmarks or driver caches.
+
 [Primary build](../bench/sycl/dflash2_primary_prefill_build.py) and
 [fixture sequence](../bench/dflash2_primary_checks.py).
 
