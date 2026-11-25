@@ -681133,7 +681133,29 @@
         "cpu_entries": 13020,
         "decode_ms_whole_observed": 2521,
         "route": "dpas",
-        "model_stderr_sha256": "1b6d8257da99262295a5d97c37ade07f957f712cad490d0d5ee76df62f3c1bd1"
+        "model_stderr_sha256": "1b6d8257da99262295a5d97c37ade07f957f712cad490d0d5ee76df62f3c1bd1",
+        "dense_dpas_calls_per_capture": [
+          {
+            "n_in": 6144,
+            "n_out": 2560,
+            "calls": 40
+          },
+          {
+            "n_in": 2560,
+            "n_out": 6144,
+            "calls": 14
+          },
+          {
+            "n_in": 2560,
+            "n_out": 10240,
+            "calls": 22
+          },
+          {
+            "n_in": 2560,
+            "n_out": 12288,
+            "calls": 5
+          }
+        ]
       },
       "5": {
         "verifier_windows": 8,
@@ -681142,7 +681164,29 @@
         "cpu_entries": 14210,
         "decode_ms_whole_observed": 2494,
         "route": "q6-reference",
-        "model_stderr_sha256": "db29bb07ed69c0d148246565f8def4c671c92b9b0fe277d456075a827bedc3ba"
+        "model_stderr_sha256": "db29bb07ed69c0d148246565f8def4c671c92b9b0fe277d456075a827bedc3ba",
+        "dense_dpas_calls_per_capture": [
+          {
+            "n_in": 6144,
+            "n_out": 2560,
+            "calls": 0
+          },
+          {
+            "n_in": 2560,
+            "n_out": 6144,
+            "calls": 0
+          },
+          {
+            "n_in": 2560,
+            "n_out": 10240,
+            "calls": 0
+          },
+          {
+            "n_in": 2560,
+            "n_out": 12288,
+            "calls": 0
+          }
+        ]
       }
     },
     "same_emitted_ids": true,
@@ -681153,5 +681197,28 @@
     "inference_adopted": false,
     "performance_qualified": false,
     "scope": "Independent cold, traced request in each arm. Native output cap trims accepted tails; decoded target rows and CPU work differ."
+  },
+  "dflash2_width_probe_retirement": {
+    "stage": "prepared",
+    "roots": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-width-admission-v1": {
+        "files": 10,
+        "bytes": 96207,
+        "manifest_sha256": "f41d51b7f9dbc8053c624f2c9a5adf7a187155f2451618d47b0a5d16ef8dc980"
+      },
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-width-admission-v2": {
+        "files": 15,
+        "bytes": 4976096,
+        "manifest_sha256": "23e436b5eca5ece4266e72ccb7a08689d00916ad12868ad7cafaf062b6ae7b6a"
+      },
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-width-admission-v3": {
+        "files": 94,
+        "bytes": 22766351,
+        "manifest_sha256": "972c259c448f4d1184fed5eb09e17311824057d48a39e3feed1163480bf61108"
+      }
+    },
+    "anchor": "66810f1301de259d53839d597b68389a7acb9712",
+    "reason": "Both rejected startup cases and the positive comparison are closed. Exact geometry, routes, checks, errors and hashes are in Git. The follow-up benchmark consumes the committed reports and existing builds.",
+    "includes_native_builds": false
   }
 }
