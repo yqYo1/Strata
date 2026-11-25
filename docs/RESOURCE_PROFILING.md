@@ -393,8 +393,22 @@ worktree and replace `-o OBJECT -c` with `-fsyntax-only`. Retain the other
 flags, external dependencies and environment from the primary recipe.
 At `88215efa1`, the five Python reader tests and pinned oneAPI SYCL
 syntax-only compile both pass. This checks the actual serving translation
-unit's C++ and SYCL declarations. The native link and model callback
-validation remain pending.
+unit's C++ and SYCL declarations.
+
+The [route-census build controller](../bench/sycl/dflash2_decode_route_census_build.py)
+reuses the retained primary CMake, compiler flags, oneMKL, AOT finalization
+and actual compiler/link input checks. Use its read-only `plan` to verify
+the original retained executable against `0ab86d36b`, the exact allowed
+native source delta, and the relocated recipe. Subsequent
+`prepare`, `configure` and `compile` use a separate candidate directory
+and the standard owned measurement lock. The only new build target is
+the standalone host fixture. This avoids a partial relink and preserves
+the existing measurements and both phase references. Before creating a
+generation, resolve retention for the older snapshot and coherent build:
+the current primary admission still reads their executables and fixtures
+through `primary.references` and `coherent_original_reuse.verify_original`.
+Those are live dependencies until their readers are reconciled. The
+native link and model callback validation remain pending.
 
 Compare the native first 256 verifier windows of offered rows and check a
 following short request, cancellation and RESTORE. Keep route, output,
