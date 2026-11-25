@@ -26,16 +26,22 @@ def baseline():
     row = wait.baseline()
     root = leaves.speed.build.DFLASH2_KV_ROOT
     record = bank.previous.read(root / 'record.json')
-    require(record['binaries']['strata'] == row['binary'] and REQUESTS * OUTPUT_CAP < INTERVAL,
+    require(record['binaries']['strata'] == row['binary']
+            and bank.signature(bank.builder.compact(record)) == row['native_build_sha256']
+            and REQUESTS * OUTPUT_CAP < INTERVAL,
             'bind the measured engine and the process-wide no-refill bound')
+    # wait.baseline() verifies the original projection, including overlays, by
+    # reconstructing the retained engine's source and matching its build inputs.
     compiled = {}
     for name in PRODUCERS:
-        value = bank.sha(root / 'source' / name)
-        require(value == record['source_files'][name], 'retained count producer changed')
-        raw = basis.validation.git('show', row['native_source_commit'] + ':' + name)
-        require(raw == (root / 'source' / name).read_bytes(), 'count producer is outside its build revision')
+        producer = root / 'source' / name
+        value = bank.sha(producer)
+        require(value == record['source_files'][name]
+                == record['actual_inputs']['compiled'][str(producer)],
+                'retained count producer was not compiled from the checked projection')
         compiled[name] = value
-    return dict(row, residency_count_producers=compiled)
+    return dict(row, residency_count_producers=compiled,
+                residency_count_projection=record['projection']['dflash2_kv_source'])
 
 
 def configuration(row, plan):
@@ -107,6 +113,9 @@ def experiment():
     ctx.evidence_reader.decide = decision
     ctx.protocol = dict(order=list(ORDER), workload=leaves.WORKLOAD, adaptive_interval=INTERVAL,
         proposed_output_bound=REQUESTS * OUTPUT_CAP, paired_overhead_factor=OVERHEAD_FACTOR,
+        prior_prelaunch_refusal=dict(source='395aee434cea05c3ffe7bc50bf4aac1ec69b5b10',
+            failed_producer='src/program/generate.cpp', native_execution_attempted=False,
+            reason='The original reader compared the projected producer against the nominal source commit.'),
         unit='Hold the effective adaptive interval and trace fixed. Toggle only routed-row counting before exec.',
         evidence='Use the retained regular-code body and its four warmups. Keep exact native work, output and route. '
                  'Require zero adaptive submits or commits and normal GPU/owner closure in every process.',
