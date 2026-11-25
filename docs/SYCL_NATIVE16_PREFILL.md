@@ -11105,9 +11105,15 @@ streams, safety environment and byte-identical primary expert ranking. At
 `7339ae8e4`, the 16,385-input case keeps all 16,384 batched BF16 rows on the
 GPU, passes the KV placement and DFlash2 tail gates, and emits four fixture
 IDs matching the previous build. The process closes without a fresh Xe
-fault. Use the paired 262,144-input case for the physical final-slot check.
-Whole-model tap parity on the direct writer and live RESTORE each have a
-separate gate. [Physical-context runner](../bench/dflash2_primary_context.py).
+fault. At `137fb933f`, the same copy-writer diagnostic processes all 262,144
+inputs. It batches 262,143 rows with 122,880 BF16 rows in VRAM and 139,263
+in host memory, then verifies the last physical slot and emits zero tokens.
+The process closes normally with no fresh Xe fault. All 15 model assets pass
+final full hashing. The native GEN restore runner repeats both parked prefix
+lengths and the unchanged continuation on this build. It reads the committed
+physical-context evidence. Direct-writer payload parity and clean speed have
+separate gates. [Physical-context runner](../bench/dflash2_primary_context.py)
+and [live restore runner](../bench/dflash2_primary_restore.py).
 
 Use the same primary binary in both long-prefill arms, changing only
 `STRATA_SYCL_PREFILL_KEEP_KV_STAGE` before execution.
