@@ -190,17 +190,12 @@ in [SYCL_NATIVE16_PREFILL.md](SYCL_NATIVE16_PREFILL.md) and the single
 and its old speed figures remain in [their original document revision](https://github.com/yqYo1/Strata/blob/0820688a4ff14947b659d96bff112ed293559ca8/docs/UPSTREAM_INTEGRATION.md);
 they do not describe the current selected engines.
 
-Default-branch promotion remains pending through PR 180. Main ruleset `24638744`
-permits only squash PR merges. The normal squash attempt for `fbe45f1b1` on
-November 14 UTC is refused by the active update restriction
-(`update_allows_fetch_and_merge=false`). PR 180 remains open; no administrative
-bypass is authorized. All 172 CSV source/evidence references are verified on the
-pushed permanent primary. Before merging, verify that every original
-source/evidence commit referenced by the performance CSV remains an ancestor
-of the pushed, permanent `feature/sycl`, and keep automatic head deletion
-disabled. Under the project workflow, the default may receive the PR content
-snapshot while the primary retains those original identities; merge the updated
-default back into the primary normally and verify reachability again. This changes no protection
-or measured source history. The last verified default before that operation is
-`05069aeedea43f778b97dce30c729739cb3bce5c`; do not claim integration until its
-remote ref and clean ghq mirror are verified.
+The fork's verified default is `cc464282e`, published through PR 242.
+The next promotion is open in PR 243. Four revisions referenced by the
+new DFlash2 performance rows are currently reachable through the pushed
+verification branch. Integrate the measured work into `feature/sycl` and
+verify those original revisions on the pushed primary before promotion or
+retirement of the verification branch. Keep automatic head deletion disabled.
+When the protected default publishes a squash snapshot, merge the updated
+default back into the primary, verify reachability again and pull the clean
+ghq mirror. [Fork PR 243](https://github.com/yqYo1/Strata/pull/243).
