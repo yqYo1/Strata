@@ -41758,5 +41758,30 @@
     "correction": "The code and methods-dossier baselines have high conditional acceptance. Keep accepted/offered, accepted/native output, and server-inserted output separate. The pinned runner does not expose the last count.",
     "consumer": "Freeze prompt seeds, bytes, answer keys, native launch and validators. Resolve server token accounting and available answer room, then screen one request per workload at fixed DFlash2 settings before repeated comparisons.",
     "retention": "Keep the report and short review until the workload selection decision. Preserve the digest and provenance in Git."
+  },
+  "zen3-dflash2-dram-counter-feasibility-20261126": {
+    "classification": "decision_support",
+    "source_revision": "96832af6f7119631a78e16f066129860faf0a619",
+    "main_policy_revision": "3c01a989b38c88a8d2508a45680af8dcb2754af0",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zen3-dflash2-dram-counter-feasibility-20261126/report.md",
+    "report_sha256": "1566152151f9389c254237eb098f8a00c79e8d11cf2764c1bea48f50e1684f15",
+    "report_bytes": 12493,
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-zen3-dflash2-dram-counter-feasibility-20261126-retry/review.json",
+    "review_sha256": "83c34f09b1de45b55de0a17d987acf3b46c7ab3071d3f8d2cbcb7c16496e1bf8",
+    "stage": "reviewed",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "worker_read_only": true,
+    "worker_message_report_hash_matches": true,
+    "worker_message_filesystem_proof_hash_matches": true,
+    "worker_side_orca_reachable": true,
+    "worker_message_omitted_orca_status_sha256": true,
+    "prior_review_exit_code": 124,
+    "schedulable_now": false,
+    "finding": "Family 19h model 21h is the applicable processor scope. The host exposes IBS but no DF or UMC PMU. Physical DRAM traffic is unmeasured.",
+    "correction": "Main confirmed the local PMU enumeration after publication. IBS access remains unverified under the current perf policy. The short review did not independently reacquire the cited primary sources.",
+    "consumer": "If profiling capability becomes relevant, check bounded IBS activation and use fixed-work scaling for attribution. Revisit physical DF bytes only after local exposure and the exact processor event semantics are verified.",
+    "retention": "Keep the report for the named counter-capability question. Preserve the verified limitation and review outcome in Git."
   }
 }
