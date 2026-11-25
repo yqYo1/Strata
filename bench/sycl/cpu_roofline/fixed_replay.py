@@ -291,9 +291,9 @@ def summaries(row, text, mode, cores, timed, *, claim_group=None):
     need(0 < timer['query_s'] < timer['fastest_pass_s'] * .001, 'timer overhead admission')
     byte_count = fixture['logical_bytes' if mode == 'pool' else 'unique_bytes']
     visits = fixture['jobs'] if mode == 'pool' else 1
+    expected_mode = 'replay-gu-groups' if claim_group is not None else ('replay' if mode == 'pool' else 'scan')
     for rep, sample in enumerate(samples):
         repeats = sample['iterations']
-        expected_mode = 'replay-gu-groups' if claim_group is not None else ('replay' if mode == 'pool' else 'scan')
         need(sample['mode'] == expected_mode and sample['threads'] == cores
              and (claim_group is None or sample['claim_group'] == claim_group)
              and sample['rep'] == rep and sample['attempt'] == 0 and 0 < repeats < 1000000
@@ -302,6 +302,9 @@ def summaries(row, text, mode, cores, timed, *, claim_group=None):
              and math.isfinite(sample['cpu_s'])
              and 0 <= sample['host_cpu_s'] <= sample['cpu_s'] + .005
              and sample['host_cpu_s'] <= sample['wall_s'] + .005, 'replay timing or work admission')
+        if claim_group is not None:
+            need(sample['gu_claims'] == repeats * actual['gu_claims_per_pass'],
+                 'timed Gate/Up claim count differs from its validated replay')
         if mode == 'pool':
             phases = [sample[k] for k in ('gu_s', 'q_s', 'down_s')]
             need(all(math.isfinite(v) and v >= 0 for v in phases) and sum(phases) <= sample['wall_s'] + .001,

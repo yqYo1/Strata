@@ -359,8 +359,9 @@ DFlash2 route. The hot case repeats its first batch and the rotating case
 covers more than 64 MiB of actual packed weights. Check exact output bits,
 buffer guards, actual claims and affinity before and after timing. Run three
 cyclic independent process rounds with five batches of at least one second
-per arm. Advance a format and group only if all three rotating comparisons
-improve both Gate/Up time and total pass time. The four-claim arm can leave
+per arm. Reconcile completed claims with the iteration count in every timed
+batch. Advance a format and group only if all three rotating comparisons
+improve both Gate/Up time and total pass time. The group of four can leave
 one worker idle at the start, so its reduced claim count must also pass the
 end-to-end comparison.
 

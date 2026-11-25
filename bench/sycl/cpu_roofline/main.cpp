@@ -190,7 +190,8 @@ struct Inputs {
     }
 };
 template<class F> void measure(F pass, uint64_t bytes, uint64_t visits, const std::string& fields,
-                              cpu::ExpertPool* pool = nullptr, bool audit_host = false) {
+                              cpu::ExpertPool* pool = nullptr, bool audit_host = false,
+                              [[maybe_unused]] uint64_t expected_gu_claims = 0) {
     pass();
     double fastest=1e9;
     for(int i=0;i<5;++i) { const auto t=Clock::now(); pass(); fastest=std::min(fastest,seconds(t)); }
@@ -204,6 +205,9 @@ template<class F> void measure(F pass, uint64_t bytes, uint64_t visits, const st
     for(int r=0;r<reps;++r) {
         const double gu=pool?pool->ms_multi_gu:0, q=pool?pool->ms_multi_q:0, down=pool?pool->ms_multi_down:0;
         const auto pool_bytes = pool ? pool->multi_bytes : 0;
+#ifdef STRATA_BENCH_DECODE_GU_TASK_GROUPS
+        const uint64_t claims_before = expected_gu_claims ? pool->decode_gu_claims() : 0;
+#endif
         const auto h0 = audit_host ? cpu_seconds(RUSAGE_THREAD) : 0;
         const auto c0=cpu_seconds(); const auto t0=Clock::now();
         uint64_t iterations=0; double elapsed;
@@ -214,11 +218,19 @@ template<class F> void measure(F pass, uint64_t bytes, uint64_t visits, const st
         if (audit_host && pool)
             require(static_cast<uint64_t>(pool->multi_bytes - pool_bytes) == bytes * iterations,
                     "expert replay byte accounting");
+#ifdef STRATA_BENCH_DECODE_GU_TASK_GROUPS
+        const uint64_t actual_claims = expected_gu_claims ? pool->decode_gu_claims() - claims_before : 0;
+        if (expected_gu_claims)
+            require(actual_claims == expected_gu_claims * iterations, "timed GU claims differ");
+#endif
         std::cout<<"{\"kind\":\"sample\","<<fields<<",\"attempt\":0,\"rep\":"<<r
             <<",\"iterations\":"<<iterations<<",\"visits\":"<<visits*iterations
             <<",\"requested_bytes\":"<<bytes*iterations<<",\"wall_s\":"<<wall<<",\"cpu_s\":"<<process_cpu;
         if(pool) std::cout<<",\"gu_s\":"<<(pool->ms_multi_gu-gu)*.001<<",\"q_s\":"<<(pool->ms_multi_q-q)*.001<<",\"down_s\":"<<(pool->ms_multi_down-down)*.001;
         if (audit_host) std::cout << ",\"host_cpu_s\":" << host_cpu;
+#ifdef STRATA_BENCH_DECODE_GU_TASK_GROUPS
+        if (expected_gu_claims) std::cout << ",\"gu_claims\":" << actual_claims;
+#endif
         std::cout<<"}"<<std::endl;
     }
 }
@@ -498,10 +510,10 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
     std::cout << ",\"serial_output_equal\":true,\"verified_affinity\":true}" << std::endl;
     if (timing) {
         const std::string fields = grouped
-            ? "\"mode\":\"replay-gu-groups\",\"claim_group\":" + std::to_string(claim_group) + ",\"threads\":5"
+            ? "\"mode\":\"replay-gu-groups\",\"claim_group\":" + std::to_string(claim_group) + ",\"threads\":" + std::to_string(threads)
             : "\"mode\":\"replay\",\"threads\":" + std::to_string(threads);
         measure([&] { for (auto& batch : batches) batch.run(pool); }, visits, jobs,
-                fields, &pool, true);
+                fields, &pool, true, gu_claims);
         validate();
     }
 }
