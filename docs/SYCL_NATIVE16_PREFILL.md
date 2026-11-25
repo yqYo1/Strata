@@ -11389,6 +11389,11 @@ counterbalanced demand/batched order. Each actual request is checked
 before the next one continues. A closed experiment evaluates three
 paired median warm times and keeps separate first and subsequent TTFT.
 The reconciled 24-token handoff is the decode check for this comparison.
+Run the three host controls in `bench/test_dflash2_mode16_batch_model.py`
+with the qualified interpreter and measurement lock. They check saved
+stage commits, matched launch settings and the warm-gain rule. The
+launch-settings control reuses the closed reference build as an offline
+stand-in until the candidate engine exists.
 
 The [primary driver cache comparison](../bench/dflash2_primary_driver_cache.py)
 reuses the older NEO inventory, private copy, readiness and counter readers.
