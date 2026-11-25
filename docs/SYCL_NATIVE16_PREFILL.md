@@ -7990,6 +7990,10 @@ probe at `dfc260d23` observes seven width-five verifier windows in each arm,
 with the Q6 head using its intended kernel, matched draft work and no new Xe
 fault. `758de922c` freezes the three independent process pairs at fixed
 width. The frontend admission passes at `a39df7aea`.
+The six-process result closes at `b71522878`. The isolated head raises the
+width-five median from 14.235 to 14.734 tok/s at identical work. The build
+remains local to the verification branch while the independent projection
+and broader model checks are open. Keep width four as the model reference.
 
 The next independent projection trial selects only the exact Q6 2560×10240
 calls in width-five decode windows. The component medians are 0.604 ms for
@@ -8089,28 +8093,37 @@ workload and check its overlap with GPU work in the model before choosing a
 worker setting. The scan bounds this read pattern only. Physical DRAM traffic,
 model-level overlap and the effect on sustained decode remain unmeasured.
 
-The next fixed-work comparison at `d8fd00bf4` exercises the production
+The fixed-work comparison planned at `d8fd00bf4` exercises the production
 IQ3_S single-token gate/up entry with five workers and a reserved caller.
 Of the 81 IQ3_S single-token expert jobs, the current pool partition leaves
 36 as complete 640-row calls. Only those calls can select the paired AVX2
 kernel. The exact generated descriptor and packed slices match `cd60b5041`.
-Check both phase outputs and every timed route in three ordered pairs before
-considering a model comparison. The new source and plan are committed, with
-the coherent CPU build and all native checks pending after the active Arc job.
-[Comparison plan](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-iq3s-full-replay-current.json).
+Two phase checks and all 30 timed batches pass numerical and actual dispatch
+admission. At `0e82f3e38`, the paired kernel takes 1.78%, 0.57% and 0.75%
+more gate/up time in the three pairs. Whole-pool time increases by 0.64%
+geometric mean. The full-row candidate fails this workload's advancement
+gate. Its temporary production selector and replay mode are retired. The
+original source `fc0272d67` stays reachable with the measurement.
+[Comparison result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-iq3s-full-replay-current.json).
 
-The closed scaling build has no current binary consumer. Its final executable,
-209 project and 1,376 dependency inputs, 633 actual compiler inputs and 22
-external linker inputs match the original committed source and recipe. Retire
-that auxiliary build and its raw outputs at the first serialized boundary
-before compiling the new replay. Keep the held-out routing capture for the
-model cache and fixed-work decisions that still use it.
-The planned deletion is the external state directory
-`cpu-fixed-expert-replay-v1` only. It contains 158 files totaling 16,587,180
+Retired the closed external state directory `cpu-fixed-expert-replay-v1`
+before compiling the new replay on 2026-11-25 JST. The executable, 209 project
+and 1,376 dependency inputs, 633 actual compiler inputs and 22 external linker
+inputs match the original committed source and recipe. The directory contained
+158 files totaling 16,587,180
 bytes, with SHA-256
 `17b057f245eec966db5529605c339ef47bc72561afc9deedbc9afec7be85a4e4` of the
-sorted relative paths, sizes and content hashes in compact JSON. The
-closed result and source are reachable from the pushed feature branch.
+sorted relative paths, sizes and content hashes in compact JSON. The closed
+result and source are reachable from the pushed feature branch. The holdout
+routing capture remains available for the model cache and fixed-work decisions.
+
+The rejected full-row candidate used the external state directory
+`cpu-fixed-iq3s-full-replay-v1`. Its 94 files total 16,419,704 bytes.
+SHA-256 of the sorted relative paths, sizes and content hashes in compact
+JSON is `5618e95a090a619306736442c09ff0826356ea592bb7854b6d526ab748952b6c`.
+Verified the original source and recipe against its final executable, 633
+compiler inputs and 22 external linker inputs. Retire this directory once
+the exact result commit is reachable on the pushed primary.
 
 The quiet DFlash2 process 2 at `94f7eb2b0` uses native source `96832af6f`
 and reports a filled 1,256-slot cache at 2.40 GiB. The manifest and the
@@ -10943,7 +10956,10 @@ direct writes in one coherent build for the same fresh requests at
 exact tail, checked ingestion, independent target/cache state and normal
 closure. At 122881 inputs the producer supplies 2046 rows beginning at
 120834. The direct control may change only the attention output writer.
-Keep the diagnostic switch off when collecting speed samples.
+The host reader accepts the matched 82/122881/82 fixtures, reports the
+changed layer in a mismatched payload, and refuses eight invalid receipts.
+Native observer execution remains pending. Keep the diagnostic switch off
+when collecting speed samples.
 [Tap comparison reader](../bench/sycl/dflash2_tap_payloads.py).
 
 For the subsequent length curve, the measured source at `ad8652973`
