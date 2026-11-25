@@ -6973,6 +6973,16 @@ int main(int argc, char** argv) {
 #ifdef STRATA_ENABLE_SYCL
             auto route_counts = route_counts_file ? std::make_unique<DecodeRouteCensus>() : nullptr;
             Dflash2DecodeRouteTap route_tap{drive, route_counts.get()};
+            const bool compare_route_trace = route_counts && drive.routing;
+            if (compare_route_trace) {
+                const long begin = std::ftell(drive.routing);
+                if (!trace || begin < 0 || std::ferror(drive.routing)) {
+                    std::printf("ERR DFlash2 route comparison requires STRATA_TRACE and a valid trace offset\n");
+                    return 1;
+                }
+                std::fprintf(stderr, "strata DFlash2 route census: begin %llu %ld %lld\n",
+                             (unsigned long long)census_request, begin, (long long)n);
+            }
 #endif
             const Clock::time_point d0 = Clock::now();
             // STRATA_DECODE_TIMING=1: where a request's decode time goes (one line per request)
@@ -7181,6 +7191,15 @@ int main(int argc, char** argv) {
             if (route_counts && !route_counts->write(route_counts_file.get(), census_request)) {
                 std::printf("ERR invalid or incomplete DFlash2 decode route census\n");
                 return 1;
+            }
+            if (compare_route_trace) {
+                const long end = std::ftell(drive.routing);
+                if (end < 0 || std::ferror(drive.routing) || std::fflush(drive.routing) != 0) {
+                    std::printf("ERR DFlash2 route trace write failed\n");
+                    return 1;
+                }
+                std::fprintf(stderr, "strata DFlash2 route census: end %llu %ld\n",
+                             (unsigned long long)census_request, end);
             }
 #endif
 #ifdef STRATA_CPU_SERVICE_PROFILE

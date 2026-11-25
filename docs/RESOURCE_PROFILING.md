@@ -368,12 +368,35 @@ passes with executable SHA-256
 `8421b1fe35b34012f23023db5c441899889d4ab52798af6cc0aee9143897618a`.
 The disposable test executable was removed after the run.
 
-After the host fixture, validate the exact serving callback with an
-independent routing capture on the same build and request. Compare the
-first 256 windows of offered rows and check a following short request,
-cancellation and RESTORE. Keep route, output, verifier work and slot map
-matched. Run timing separately with raw route tracing off and account for
-the request-end diagnostic write in client timing. A positive count gate
+For the serving correctness check, enable the private census and the
+existing `--dump-routing` and `STRATA_TRACE=1` on the same process. The
+census supplies exact begin/end offsets in the independent trace; the
+window log supplies positions and offered widths. The
+[comparison reader](../bench/dflash2_verify_route_census.py) compares every
+uint32 cell against the trace prefix and rejects missing records, trace
+overlap, wrong widths and count discrepancies. Prompt rows can occupy
+gaps between guarded decode spans. On a complete owned run use the
+recorded stderr, routing dump and census file as its three arguments.
+Use Python 3.12.3 from the qualified strata-sycl venv with `-B`. Verify the
+reader via `-m unittest discover -s bench -p test_dflash2_verify_route_census.py`.
+The generated fixture covers a 257-window request, a fresh short
+near-context-limit request, a zero-window request and invalid captures.
+
+Before building the native candidate, do a syntax-only compile of the
+serving entrypoint using the retained primary `compile_commands.json`
+SHA-256 `660138a4f65f93f17485225cad35b3155ba262644b14dca894013d1d8e1e5e4b`
+and compiler `/opt/intel/oneapi/compiler/2026.2/bin/icpx` SHA-256
+`59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213`.
+Select exactly `CMakeFiles/strata.dir/src/program/generate.cpp.o`;
+redirect primary source and include operands to the committed validation
+worktree and replace `-o OBJECT -c` with `-fsyntax-only`. Retain the other
+flags, external dependencies and environment from the primary recipe.
+This check produces no linked executable or GPU result.
+
+Compare the native first 256 verifier windows of offered rows and check a
+following short request, cancellation and RESTORE. Keep route, output,
+verifier work and slot map matched. Time separately with raw route tracing
+off and account for the request-end diagnostic write in client timing. A positive count gate
 does not authorize expert publication. A later placement test needs a
 separate preregistered transfer, restoration and end-to-end comparison.
 
