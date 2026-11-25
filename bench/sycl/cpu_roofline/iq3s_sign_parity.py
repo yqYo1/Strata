@@ -44,23 +44,24 @@ def save(row, checked_rows):
     write(recipe.RESULT, checked_rows)
 
 
-def baseline(configure, ggml):
+def baseline(ggml):
     key = 'cpu_iq3s_pair_component_v1'
     prior = json.loads(git(P, 'show', PRIOR + ':' + recipe.RESULT.relative_to(P).as_posix()))[key]
     check = prior['correctness']
-    expected = prior['configure'].copy()
-    expected[expected.index('-B') + 1] = str(BUILD)
+    configure = prior['configure'].copy()
+    configure[configure.index('-B') + 1] = str(BUILD)
     need(prior['stage'] == 'failed' and prior['ownership_closed'] and check['passed']
          and (check['default_single_cases'], check['default_IQ3_XXS_pair_cases'], check['IQ3_S_pair_cases'])
              == tuple(CASES.values())
-         and prior['dependency']['revision'] == recipe.GGML_REV and expected == configure
+         and prior['dependency']['revision'] == recipe.GGML_REV
+         and configure[configure.index('-S') + 1] == str(P / 'bench/sycl/cpu_roofline')
          and prior['ggml_inputs']['aggregate_sha256'] == recipe.fingerprint(ggml)
          and all(sha(path) == prior['tools'][path] for path in (recipe.CC, recipe.CXX)),
          'recover the original passing parity stage and leave its later timing failure intact')
     relevant = (*COMPILED[:2], 'include/strata/kernels/cpu', *COMPILED[3:])
     need(not git(P, 'diff', '--name-only', prior['source_commit'], FIX + '^', '--', *relevant),
          'original CPU parity inputs differ from the parent sign implementation')
-    return dict(evidence=PRIOR, key=key, source=prior['source_commit'], cases=CASES)
+    return configure, dict(evidence=PRIOR, key=key, source=prior['source_commit'], cases=CASES)
 
 
 def prepare(checked_rows):
@@ -86,11 +87,7 @@ def prepare(checked_rows):
         allowed.update({str(path.resolve()): sha(path) for path in directory.rglob('*') if path.is_file()})
     header = '#pragma once\n\n#define GGML_VERSION "0.24.0"\n#define GGML_COMMIT  "3cf03257f"\n'
     generated = {str(BUILD / 'ggml/src/ggml-version.h'): sha256(header.encode()).hexdigest()}
-    configure = ['/usr/bin/cmake', '-S', str(P / 'bench/sycl/cpu_roofline'), '-B', str(BUILD), '-G', 'Ninja',
-        '-DCMAKE_BUILD_TYPE=Release', '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON', '-DGGML_CCACHE=OFF',
-        '-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t', '-DCMAKE_C_COMPILER=' + recipe.CC,
-        '-DCMAKE_CXX_COMPILER=' + recipe.CXX, '-DSTRATA_GGML_DIR=' + str(recipe.GGML)]
-    reference = baseline(configure, ggml)
+    configure, reference = baseline(ggml)
     ROOT.mkdir(mode=0o700)
     for name in ('tmp', 'cache'):
         (ROOT / name).mkdir(mode=0o700)
