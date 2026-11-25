@@ -11306,6 +11306,12 @@ prefill medians are 97.4284 and 97.4758 s. Seven of ten processes have
 completed. The first-use difference at 118,785 tokens is much larger than
 at this length, and the subsequent intervals at both lengths remain close.
 
+The reverse 126,977-token process at `f3fada00a` validates all three routes
+and closes with no fresh Xe fault. First prefill is 964.6 tok/s with 131.838 s
+TTFT. Later prefill is 1,055.7 and 1,053.8 tok/s with 120.479 and 120.696 s
+TTFT. The tightest observed allocation leaves 65,571,840 bytes above the
+fixed budget including reserve. Eight of ten processes have completed.
+
 The next prefill scheduling candidate is batched issue on the current
 32-slot bank. Earlier 128-slot comparisons at `982211f5c` and `297adab4d`
 reduce paired warm prompt time by 2.55% and 1.00% respectively. The
