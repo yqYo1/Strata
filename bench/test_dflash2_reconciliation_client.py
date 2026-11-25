@@ -2,6 +2,7 @@ import json
 import unittest
 
 import dflash2_reconciliation_client as reconciliation
+import dflash2_scheduling_model as scheduling
 
 
 class ReconciliationAccounting(unittest.TestCase):
@@ -51,3 +52,34 @@ class ReconciliationAccounting(unittest.TestCase):
         after = {'requests': [{'id': 'other'}, {'id': 'ours'}, {'id': 'old'}]}
         with self.assertRaisesRegex(ValueError, 'exactly one completed request'):
             reconciliation.history_row(before, after)
+
+    def test_explicit_scheduling_packet_uses_its_counts_and_oracle(self):
+        case = scheduling.CASE
+        fixture, body = reconciliation.request_body(case)
+        self.assertEqual(body['chat_template_kwargs']['enable_thinking'], True)
+        self.assertEqual(body['max_tokens'], reconciliation.OUTPUT_CAP)
+        delta = case.input_tokens - reconciliation.INPUT
+        self.raw.update(request_sha256=case.wire_sha256,
+                        text='Handover.\n\x60\x60\x60json\n' + json.dumps(fixture['expected'])
+                             + '\n\x60\x60\x60')
+        self.raw['usage']['prompt_tokens'] = self.raw['timings']['prompt_n'] = case.input_tokens
+        self.history['prompt_total'] = self.history['prompt_read'] = case.input_tokens
+        self.segments[0]['prompt'] = self.segments[0]['read'] = case.input_tokens
+        self.segments[1]['prompt'] += delta
+        self.segments[1]['reused'] += delta
+        score = reconciliation.account(self.raw, self.history, self.segments,
+                                       context=262144, expected=fixture['expected'], workload=case)
+        self.assertTrue(score['answer_correct'])
+        self.assertTrue(score['weak_drafts_observed'])
+        scored = scheduling.decision([{'evidence': {'observation': score, 'samples': [score['sample']]}}])
+        self.assertAlmostEqual(scored['draft_offers_per_native_output'], 800 / 1202)
+        with self.assertRaisesRegex(ValueError, 'pinned fresh input'):
+            self.score()
+
+    def test_new_controller_uses_the_scheduling_entrypoint(self):
+        context = scheduling.model.experiment(scheduling.CASE, source=scheduling.THIS,
+                                              protocol=scheduling.PLAN, decide=scheduling.decision)
+        self.assertEqual(context.KEY, 'dflash2_scheduling_model_v1')
+        self.assertEqual(context.WORKLOAD_ID, 'dflash2_scheduling')
+        self.assertTrue(context.command({'root': '/unused', 'port': 18800})[1].endswith(
+            '/bench/dflash2_scheduling_model.py'))

@@ -1,5 +1,8 @@
-"""Measure the pinned reconciliation prompt through an owned Strata server."""
+"""Measure a pinned long request through an owned Strata server."""
 
+from collections.abc import Callable
+from dataclasses import dataclass
+from functools import partial
 import hashlib
 import json
 import math
@@ -26,16 +29,30 @@ FOOTER = re.compile(
 FIELDS = ('prompt', 'reused', 'read', 'prompt_ms_rounded', 'generated', 'decode_ms_rounded', 'accepted', 'offered')
 
 
+@dataclass(frozen=True)
+class Workload:
+    name: str
+    input_tokens: int
+    wire_sha256: str
+    fixture_source: str
+    build: Callable[[], dict]
+    validate_answer: Callable[[str, dict], None]
+
+
+RECONCILIATION = Workload('reconciliation', INPUT, WIRE_SHA256,
+                         'bench/dflash2_reconciliation_fixture.py', partial(build, 54), validate_answer)
+
+
 def require(condition, reason):
     if not condition:
         raise ValueError(reason)
 
 
-def request_body():
-    fixture = build(54)
+def request_body(workload=RECONCILIATION):
+    fixture = workload.build()
     body = client.chat_body(fixture['messages'], OUTPUT_CAP, True)
-    require(hashlib.sha256(json.dumps(body).encode()).hexdigest() == WIRE_SHA256,
-            'the generated reconciliation wire body changed')
+    require(hashlib.sha256(json.dumps(body).encode()).hexdigest() == workload.wire_sha256,
+            'the generated workload wire body changed')
     return fixture, body
 
 
@@ -54,20 +71,22 @@ def native_segments(log):
             yield dict(zip(FIELDS, map(int, match.groups()), strict=True))
 
 
-def account(raw, history, segments, *, context, expected):
+def account(raw, history, segments, *, context, expected, workload=RECONCILIATION):
+    input_tokens = workload.input_tokens
     sample = client.digest(raw)
     eligibility = client.long_generation.sample_eligibility(raw, sample, maximum=OUTPUT_CAP, context=context)
-    require(raw['request_sha256'] == WIRE_SHA256 and sample['prompt_tokens'] == INPUT
-            and sample['reused_tokens'] == 0 and sample['read_tokens'] == INPUT,
+    require(raw['request_sha256'] == workload.wire_sha256 and sample['prompt_tokens'] == input_tokens
+            and sample['reused_tokens'] == 0 and sample['read_tokens'] == input_tokens,
             'completed request differs from the pinned fresh input')
-    require(segments and (segments[0]['prompt'], segments[0]['reused'], segments[0]['read']) == (INPUT, 0, INPUT)
+    require(segments and (segments[0]['prompt'], segments[0]['reused'], segments[0]['read'])
+            == (input_tokens, 0, input_tokens)
             and all(s['read'] + s['reused'] == s['prompt'] <= context
                     and 0 <= s['accepted'] <= s['offered'] for s in segments),
             'native segments do not form fully accounted requests')
     generated, accepted, offered = (sum(s[k] for s in segments) for k in ('generated', 'accepted', 'offered'))
     require((history['prompt_total'], history['prompt_read'], history['reused'], history['output_tokens'],
              history['engine_generated'], history['drafts_accepted'], history['drafts_offered']) ==
-            (INPUT, INPUT, 0, sample['generated_tokens'], generated, accepted, offered)
+            (input_tokens, input_tokens, 0, sample['generated_tokens'], generated, accepted, offered)
             and (sample['drafts_accepted'], sample['drafts_offered']) == (accepted, offered)
             and sample['finish_reason'] == history['finish'], 'SSE, history and native request counters disagree')
     for field in ('prompt_ms', 'decode_ms'):
@@ -78,7 +97,7 @@ def account(raw, history, segments, *, context, expected):
                 and sample[field] == round(exact, 1), 'SSE, history and rounded native clocks disagree: ' + field)
 
     try:
-        validate_answer(raw['text'], expected)
+        workload.validate_answer(raw['text'], expected)
     except ValueError as error:
         answer_ok, answer_error = False, str(error)
     else:
@@ -96,13 +115,14 @@ def account(raw, history, segments, *, context, expected):
                 thinking_sha256=hashlib.sha256(raw['reasoning_text'].encode()).hexdigest())
 
 
-def collect(base, key, native_stderr, *, context):
+def collect(base, key, native_stderr, *, context, workload=RECONCILIATION):
     """Send one request. The caller owns the server and its finite job budget."""
-    fixture, body = request_body()
-    require(type(context) is int and INPUT + OUTPUT_CAP + client.long_generation.CONTEXT_RESERVE <= context,
+    fixture, body = request_body(workload)
+    require(type(context) is int
+            and workload.input_tokens + OUTPUT_CAP + client.long_generation.CONTEXT_RESERVE <= context,
             'the server context cannot hold this request')
-    require(client.count_chat_body_tokens(base, key, body, timeout=30) == INPUT,
-            'live tokenization differs from the pinned reconciliation extent')
+    require(client.count_chat_body_tokens(base, key, body, timeout=30) == workload.input_tokens,
+            'live tokenization differs from the pinned workload extent')
     before = client.http_json(base, '/metrics?requests=all', key)
     with Path(native_stderr).open('rb') as native:
         native.seek(0, 2)
@@ -113,9 +133,9 @@ def collect(base, key, native_stderr, *, context):
         for _ in range(20):
             native.seek(start)
             log = native.read((1 << 20) + 1)
-            require(len(log) <= 1 << 20, 'reconciliation footer capture exceeded its budget')
+            require(len(log) <= 1 << 20, 'workload footer capture exceeded its budget')
             segments = list(native_segments(log.rpartition(b'\n')[0].decode()))
             if segments and sum(s['generated'] for s in segments) == history['engine_generated']:
                 break
             time.sleep(.1)
-    return account(raw, history, segments, context=context, expected=fixture['expected'])
+    return account(raw, history, segments, context=context, expected=fixture['expected'], workload=workload)

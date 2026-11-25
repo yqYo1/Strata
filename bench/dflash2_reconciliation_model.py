@@ -1,5 +1,6 @@
-"""Screen one reconciliation request on the retained DFlash2 server."""
+"""Screen one pinned request on the retained DFlash2 server."""
 
+from functools import partial
 import os
 from pathlib import Path
 import re
@@ -14,10 +15,7 @@ from engine_once import native_environment
 bank, basis, require = primary.bank, primary.basis, primary.require
 clock, footer = primary.clock, primary.footer
 client = reconciliation.client
-KEY = 'dflash2_reconciliation_model_v1'
-ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-WORKLOAD = 'dflash2_reconciliation'
 CONTEXT = 262144
 ORDER = ('dflash2',)
 PLAN = dict(order=list(ORDER), input_tokens=reconciliation.INPUT, context=CONTEXT, thinking=True,
@@ -31,37 +29,40 @@ PLAN = dict(order=list(ORDER), input_tokens=reconciliation.INPUT, context=CONTEX
             'The official agent, prefills and sustained generation cohorts remain separate.')
 
 
-def command(plan):
-    return [basis.reference.model.PYTHON, str(bank.P / THIS), 'client', plan['root'], str(plan['port'])]
+def command(plan, *, source=THIS):
+    return [basis.reference.model.PYTHON, str(bank.P / source), 'client', plan['root'], str(plan['port'])]
 
 
-def collect(root, port):
-    require(root == ROOT / '0' and root == Path(os.environ['STRATA_MEASUREMENT_ROOT'])
-            and 1024 <= port <= 65535 and not (root / 'reconciliation.json').exists(),
-            'run the reconciliation client through the owned model controller')
+def collect(root, port, *, case=reconciliation.RECONCILIATION):
+    expected_root = bank.B / f'dflash2-{case.name}-model-v1' / '0'
+    result_path = root / f'{case.name}.json'
+    require(root == expected_root and root == Path(os.environ['STRATA_MEASUREMENT_ROOT'])
+            and 1024 <= port <= 65535 and not result_path.exists(),
+            'run the workload client through the owned model controller')
     config = root / 'config.json'
     key = bank.previous.read(config).get('api_key') or ''
     address = client.server_base('127.0.0.1', port)
     require(not client.is_strata(address, key), 'the selected private port is already in use')
     server = client.start_server(config, port, None, root / 'server.log')
     try:
-        require(client.wait_ready(address, key, server, 600), 'owned reconciliation server did not become ready')
-        print('Running the suite (one reconciliation request) ...', flush=True)
-        observation = reconciliation.collect(address, key, root / 'engine.stderr', context=CONTEXT)
-        bank.stage.write(root / 'reconciliation.json', dict(workload=WORKLOAD, observation=observation))
-        print('Reconciliation request completed', flush=True)
+        require(client.wait_ready(address, key, server, 600), 'owned workload server did not become ready')
+        print(f'Running the suite (one {case.name} request) ...', flush=True)
+        observation = reconciliation.collect(address, key, root / 'engine.stderr', context=CONTEXT, workload=case)
+        bank.stage.write(result_path, dict(workload=f'dflash2_{case.name}', observation=observation))
+        print(f'{case.name.capitalize()} request completed', flush=True)
     finally:
         client.stop_server(server)
 
 
-def read_result(root, workload):
-    result = bank.previous.read(root / 'reconciliation.json')
-    require(result['workload'] == workload == WORKLOAD, 'the owned client did not record the expected workload')
+def read_result(root, workload, *, case=reconciliation.RECONCILIATION):
+    result = bank.previous.read(root / f'{case.name}.json')
+    require(result['workload'] == workload == f'dflash2_{case.name}',
+            'the owned client did not record the expected workload')
     observation = result['observation']
     sample = observation['sample']
-    require(sample['request_sha256'] == reconciliation.WIRE_SHA256
-            and sample['read_tokens'] == sample['prompt_tokens'] == reconciliation.INPUT
-            and sample['reused_tokens'] == 0, 'the observed reconciliation input changed')
+    require(sample['request_sha256'] == case.wire_sha256
+            and sample['read_tokens'] == sample['prompt_tokens'] == case.input_tokens
+            and sample['reused_tokens'] == 0, 'the observed workload input changed')
     basis.comparison.require_valid_client_ttft(sample)
     return dict(samples=[dict(sample, native_segments=observation['native_segments'])],
                 observation={k: v for k, v in observation.items() if k not in ('sample', 'native_segments')})
@@ -94,7 +95,7 @@ def decision(processes):
                 sustained_70_observed=observation['native_generation_long_enough'] and observation['native_tg'] >= 70)
 
 
-def live_proof(runtime, python_runtime, root, plan, row, env, providers, manifest, entry):
+def live_proof(runtime, python_runtime, root, plan, row, env, providers, manifest, entry, *, source=THIS):
     actual = bank.previous.read(root / 'engine-start.json')['native']
     proc = Path('/proc', str(actual['pid']))
     live = runtime.supervision.identity(actual['pid'])
@@ -112,32 +113,38 @@ def live_proof(runtime, python_runtime, root, plan, row, env, providers, manifes
             and {probe['loader']['path'], probe['library']['path'], env['ZE_ENABLE_ALT_DRIVERS']} <= mapped,
             'native providers differ')
     allowed = {v['realpath'] for v in manifest['inventory']['files'].values()}
-    python_runtime.check_running(entry['pid'], bank.P / THIS, manifest['selected'],
+    python_runtime.check_running(entry['pid'], bank.P / source, manifest['selected'],
                                  env, allowed, plan['command'][2:])
     return actual
 
 
-def experiment():
+def experiment(case=reconciliation.RECONCILIATION, *, source=THIS, protocol=PLAN, decide=decision):
+    require(protocol['input_tokens'] == case.input_tokens and protocol['wire_sha256'] == case.wire_sha256
+            and protocol['context'] == CONTEXT and protocol['output_cap'] == reconciliation.OUTPUT_CAP
+            and protocol['thinking'] is True, 'workload and frozen protocol differ')
     ctx = primary.experiment()
     original_pins = ctx.pins
-    ctx.ROOT, ctx.KEY, ctx.THIS, ctx.ORDER = ROOT, KEY, THIS, ORDER
-    ctx.command, ctx.WORKLOAD_ID, ctx.routes, ctx.protocol = command, WORKLOAD, routes, PLAN
-    ctx.evidence_reader = SimpleNamespace(read_complete_suite=read_result, decide=decision)
+    ctx.KEY = f'dflash2_{case.name}_model_v1'
+    ctx.ROOT, ctx.THIS, ctx.ORDER = bank.B / ctx.KEY.replace('_', '-'), source, ORDER
+    ctx.command = partial(command, source=source)
+    ctx.WORKLOAD_ID, ctx.routes, ctx.protocol = f'dflash2_{case.name}', routes, protocol
+    ctx.evidence_reader = SimpleNamespace(read_complete_suite=partial(read_result, case=case), decide=decide)
     official = ctx.official
     ctx.official = SimpleNamespace(**vars(official))
 
     def native_live(root, plan, row, env, providers, manifest, entry):
         return live_proof(official.m.runtime, official.d.python_runtime,
-                          root, plan, row, env, providers, manifest, entry)
+                          root, plan, row, env, providers, manifest, entry, source=source)
 
     def pins(revision):
         values = original_pins(revision)
-        for name in (THIS, 'bench/dflash2_reconciliation_client.py', 'bench/dflash2_reconciliation_fixture.py'):
+        for name in dict.fromkeys((source, THIS, 'bench/dflash2_reconciliation_client.py',
+                                   reconciliation.RECONCILIATION.fixture_source, case.fixture_source)):
             path = bank.P / name
             require(path.read_bytes() == basis.validation.git('show', revision + ':' + name),
-                    'commit exact reconciliation input: ' + name)
+                    'commit exact workload input: ' + name)
             values[name] = bank.sha(path)
-        reconciliation.request_body()
+        reconciliation.request_body(case)
         return values
 
     ctx.official.native_live, ctx.pins = native_live, pins
