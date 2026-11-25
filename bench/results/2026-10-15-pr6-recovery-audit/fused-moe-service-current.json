@@ -682953,7 +682953,7 @@
       "tokens": 18,
       "token_ids_sha256": "8c13ee65ac1092fe69103cea638d02cdcc10e33e0ac0ce4277b654545a66c074"
     },
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "3aede249e3aa3f0df2c9a94430c95b4c9a150403",
     "host_passed": true,
     "ownership_closed": true,
@@ -683110,7 +683110,211 @@
         "environment_sha256": "688ea7e43bb9e805be32f9d6d7dc9b511992e123612371a77b8f2c3b9e376657"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "arm": "4",
+        "complete": true,
+        "host_probe_accepted": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-target-snapshot-native-v2/build/strata",
+          "sha256": "405bea1ac1628c88e78fea245350cd7ce2f0cab8a8a53b44262e483b8d5d5cf7",
+          "bytes": 26550352
+        },
+        "native_source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+        "native_identity": {
+          "pid": 2193473,
+          "start_ticks": 391785308,
+          "sid": 2193411
+        },
+        "evidence": {
+          "samples": [
+            {
+              "prompt_tokens": 74,
+              "read_tokens": 74,
+              "reused_tokens": 0,
+              "generated_tokens": 24,
+              "drafts_offered": 21,
+              "drafts_accepted": 19,
+              "request_sha256": "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+              "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "reasoning_sha256": "8e053119e57f03adfc04f8cb9262afbd88c9a5db275b76f48485bdb9a5c2e5ed",
+              "phase": "warm-up/chat",
+              "run": null,
+              "turn": null,
+              "decode_ms": 2272.0,
+              "prompt_ms": 26130.7,
+              "ttft_s": 26.319
+            },
+            {
+              "prompt_tokens": 257,
+              "read_tokens": 257,
+              "reused_tokens": 0,
+              "generated_tokens": 1,
+              "drafts_offered": 0,
+              "drafts_accepted": 0,
+              "request_sha256": "7c23b93c39240351a355a0b7193ad8fe30027c20e2d7c17c26b17d64626353c8",
+              "output_sha256": "b344d80e24a3679999fa964450b34bc24d1578a35509f934c1418b0a20d21a67",
+              "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "phase": "calibration",
+              "run": 200,
+              "turn": null,
+              "decode_ms": 87.8,
+              "prompt_ms": 17869.9,
+              "ttft_s": 17.959
+            },
+            {
+              "prompt_tokens": 903,
+              "read_tokens": 903,
+              "reused_tokens": 0,
+              "generated_tokens": 1,
+              "drafts_offered": 0,
+              "drafts_accepted": 0,
+              "request_sha256": "d0044867653d47151aed3803b2d0740aff7879046d7875ae78152590e6218487",
+              "output_sha256": "b344d80e24a3679999fa964450b34bc24d1578a35509f934c1418b0a20d21a67",
+              "reasoning_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "phase": "calibration",
+              "run": 800,
+              "turn": null,
+              "decode_ms": 96.2,
+              "prompt_ms": 7783.7,
+              "ttft_s": 7.881
+            },
+            {
+              "prompt_tokens": 1068,
+              "read_tokens": 1068,
+              "reused_tokens": 0,
+              "generated_tokens": 8,
+              "drafts_offered": 9,
+              "drafts_accepted": 5,
+              "request_sha256": "5bfbe662a340000044f832b1c766d95073683f7b9dfcc7e44ee6d63af2458613",
+              "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "reasoning_sha256": "66cb010328920c2eb17ba87f47c743dffeeff81062a6c3807dbf5ccb03e71444",
+              "phase": "warm-up/prompt",
+              "run": null,
+              "turn": null,
+              "decode_ms": 608.9,
+              "prompt_ms": 12183.0,
+              "ttft_s": 12.28
+            },
+            {
+              "prompt_tokens": 33217,
+              "read_tokens": 33217,
+              "reused_tokens": 0,
+              "generated_tokens": 3101,
+              "drafts_offered": 2760,
+              "drafts_accepted": 2182,
+              "request_sha256": "4391123df8617cb8f73dd1e74bd6c95c33d22e0374145e5cb5cb7cf863018f9d",
+              "output_sha256": "99ceca676fbc02b8d8ba5ba58310339f19d54d2898d5c3ed477eda65220515bf",
+              "reasoning_sha256": "d962bc5d2d7cd690af50654d3dc37be8ace20772c8aa8520993c1fd9487d9773",
+              "phase": "long-generation/regular-code",
+              "run": 0,
+              "turn": null,
+              "decode_ms": 196182.7,
+              "prompt_ms": 212918.5,
+              "ttft_s": 213.043,
+              "decode_tps": 15.8,
+              "decode_tps_source": "engine"
+            }
+          ],
+          "journal": {
+            "valid": true,
+            "complete": true,
+            "complete_prefix_rows": 11,
+            "last_sha256": "5c35078b8d5c717fa5087eb3f4361743918e51cf2fc8568e29b97342d448aa5d",
+            "pending": [],
+            "pending_gates": [],
+            "failed_gates": [],
+            "errors": []
+          },
+          "decode_rates": {
+            "regular-code": 15.806694474079517
+          }
+        },
+        "routes": {
+          "generation": {
+            "segments": [
+              {
+                "prompt_tokens": 33217,
+                "reused_tokens": 0,
+                "read_tokens": 33217,
+                "prompt_ms": 212918,
+                "generated_tokens": 3101,
+                "decode_ms": 196183,
+                "drafts_accepted": 2182,
+                "drafts_offered": 2760,
+                "checkpoints": 0,
+                "server_inserted_before": 0
+              }
+            ],
+            "native_generated_tokens": 3101,
+            "server_inserted_tokens": 0,
+            "api_generated_tokens": 3101,
+            "decode_ms": 196182.7,
+            "exact_native_decode_tps": 15.806694474079517,
+            "clock_binding": {
+              "absolute_differences_ms": {
+                "prompt_ms": 0.5,
+                "decode_ms": 0.29999999998835847
+              },
+              "rounding_bound_ms": 0.55
+            },
+            "scope": "One owned API interval; native work and inserted tokens separated. Segment clocks are service accounting, not physical traffic or saturation."
+          },
+          "verifier_work": [
+            {
+              "windows": 921,
+              "target_rows": 3681,
+              "unissued_outputs_at_end": 2
+            }
+          ],
+          "expert_work": [
+            {
+              "cpu_unique_misses": 1247573,
+              "cpu_entries": 1601793
+            }
+          ],
+          "prefill_placement": [
+            {
+              "strategy": "ttft",
+              "chunk": 1024,
+              "batched_rows": 33216,
+              "scratch_bytes": 457700608,
+              "shared_bytes": 221739776
+            }
+          ],
+          "effective_width": 4,
+          "cache_slots": 1024,
+          "verifier_buffer_mib": 64.0
+        },
+        "validation": {
+          "pid": 2193473,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_exit_code": 0,
+        "postconditions_complete": true,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
     "budgets": {
       "wall": 5400,
       "cpu": 21600,
