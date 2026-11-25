@@ -253,6 +253,26 @@ time. Replacing the sum of the first two intervals with their maximum at
 fixed work gives a sensitivity estimate of 30.17 tok/s. Dependency limits
 and additional overlap work affect what can actually be achieved.
 
+For a fixed-work test of earlier CPU result publication, the original
+`cd60b5041` replay has four T4 layer slices with committed route-derived
+expert job lists. Splitting the four tokens into two consecutive pairs
+gives the following job dependencies.
+
+| Window / layer | First pair only | Both pairs | Second pair only | Resident routed rows |
+| --- | ---: | ---: | ---: | ---: |
+| 2769 / 0 | 16 | 3 | 17 | 1 |
+| 2769 / 17 | 18 | 2 | 15 | 0 |
+| 5799 / 0 | 15 | 3 | 17 | 1 |
+| 5799 / 17 | 15 | 2 | 14 | 2 |
+
+Preserve the 137 original CPU jobs and publish each token pair only after
+its complete set of contributions is ready. Independently running the two
+pairs would duplicate ten jobs and charge 22,374,400 extra bytes against
+308,249,600 bytes of logical packed work unless the shared jobs are kept
+grouped. Use these slices with the existing mapped-combine parity fixture
+to validate the barrier control. Their data establish routing dependencies.
+Actual GPU completion and the benefit of early publication need measurement.
+
 The event-query process at `65f0f927c` repeats the same work at 16.443 tok/s.
 The two resident wrappers each run 64,560 times without query or clock
 errors. Their wall times are 224.99 and 314.64 ms, totaling 0.216% of the
