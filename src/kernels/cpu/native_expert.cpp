@@ -32,6 +32,7 @@ struct alignas(64) GuAuditSlot {
     std::atomic<uint64_t> iq3_nt1{0}, iq3_pair{0};
     std::atomic<int> cpu{-1};
     std::atomic<bool> pinned{false};
+    std::atomic<uint64_t> iq3s_full{0}, iq3s_pair{0};
 };
 GuAuditSlot gu_audit_slots[64];
 std::atomic<unsigned> gu_audit_size{0};
@@ -56,6 +57,7 @@ struct GuAuditScope {
     GuAuditSlot* slot=nullptr;
     uint64_t rows=0, ops=0, nt1=0, iq3_nt1=0;
     bool paired=false, iq3_paired=false;
+    bool iq3s_full=false, iq3s_paired=false;
     GuAuditScope(const NativeFmt& f,int nt,int r0,int r1) noexcept {
         if(!iq2_gu_audit_enabled()&&!iq3_gu_audit_enabled())return;
         if(nt<1||nt>8||r0<0||r1<r0||r1>640){gu_audit_overflow.store(true);return;}
@@ -83,6 +85,8 @@ struct GuAuditScope {
         slot->pair.fetch_add(paired?rows:0,std::memory_order_relaxed);
         slot->iq3_nt1.fetch_add(iq3_nt1,std::memory_order_relaxed);
         slot->iq3_pair.fetch_add(iq3_paired?rows:0,std::memory_order_relaxed);
+        if (iq3s_full) slot->iq3s_full.fetch_add(rows, std::memory_order_relaxed);
+        if (iq3s_paired) slot->iq3s_pair.fetch_add(rows, std::memory_order_relaxed);
     }
 };
 
@@ -121,6 +125,8 @@ Iq3GuAudit iq3_gu_audit_snapshot() noexcept {
         out.calls+=slot.calls.load(std::memory_order_relaxed);
         out.nt1_rows+=slot.iq3_nt1.load(std::memory_order_relaxed);
         out.pair_rows+=slot.iq3_pair.load(std::memory_order_relaxed);
+        out.iq3s_full_rows += slot.iq3s_full.load(std::memory_order_relaxed);
+        out.iq3s_pair_rows += slot.iq3s_pair.load(std::memory_order_relaxed);
     }
     return out;
 }
@@ -237,6 +243,20 @@ void native_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* const* 
     if (phase == NativeGuPhase::Decode && single_exact && avx2 && !cpu512 && nt == 1 &&
         iq256_single_gu_rows(f.gu_type, blob, f.gu_row, f.up_off, (int) f.n_embd, act[0], ff[0], r0, r1))
         return;
+    // The paired IQ3_S result qualifies a full 640-row GU call. Pool
+    // fragments keep the existing selection and rounding order.
+    if (phase == NativeGuPhase::Decode && f.gu_type == 21 && nt == 1 &&
+        f.n_embd == 2560 && f.n_ff == 640 && r0 == 0 && r1 == 640 && avx2 && !cpu512) {
+        audit.iq3s_full = true;
+        static const bool iq3s_pair_full = [] {
+            const char* value = std::getenv("STRATA_IQ3S_PAIR_FULL");
+            return value && value[0] == '1' && value[1] == '\0';
+        }();
+        if (iq3s_pair_full && iq3s_pair_gu_rows(f, blob, act[0], ff[0], r0, r1)) {
+            audit.iq3s_paired = true;
+            return;
+        }
+    }
     const ggml_vec_dot_t dot = traits(f.gu_type)->vec_dot;
     const int n = (int) f.n_embd;
     for (int r = r0; r < r1; ++r) {
