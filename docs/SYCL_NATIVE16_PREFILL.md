@@ -11522,6 +11522,18 @@ span 0.080 seconds. The code case confirms strong draft agreement at
 case limit. The long-prefill handoff check passes. The 70 tok/s goal and
 weak-case qualification remain open.
 
+These native footers also bound the needed decode latency at the observed
+spec4 yield. Each window emits one target token plus its accepted drafts.
+The final window can leave up to three committed positions unreported after
+EOS or the output cap. The three matched code processes therefore have
+1,022–1,025 windows and require 44.53–44.66 ms of whole decode per window
+at 70 tok/s, against 190.94–192.36 ms from their decode clocks. Prose has
+5,176–5,179 windows, a 23.77–23.79 ms budget and 143.51–144.94 ms observed.
+This estimate covers whole decode at fixed yield. Before selecting a
+component, measure actual window counts, verifier critical path, CPU expert
+service and draft clocks on the same route.
+[Exact sustained result](https://github.com/yqYo1/Strata/commit/9261c4b44).
+
 The three matched code requests at `9261c4b44` request the same
 41,499,571,200 bytes of expert-bank H2D copies. The difference between
 client TTFT and the native prompt interval is 1.337–1.377 seconds, a spread
