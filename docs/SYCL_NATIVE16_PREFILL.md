@@ -11469,25 +11469,24 @@ that a changed physical-context proof fails admission. Both pass at
 `d50febe07`: the replacement baseline exactly matches the old result while
 opens and stats on all 14 original reference executables are rejected.
 The three model processes are prepared at `c6e52edf8`. Both frontend
-probes pass at `a87131dfe`. The first native process exits normally with
-quiet validation and no fresh Xe fault. Both requests use mode16 with all
-batched BF16 rows on the GPU, the private 32-slot demand bank, direct
-attention stores and the selected KV policy.
+probes pass at `a87131dfe`. All three native processes exit normally with
+quiet validation, an unchanged driver, no fresh Xe faults and verified
+final hashes for all 15 model assets. Each process uses the same request,
+output and reasoning hashes and native work counts for each workload.
+Both workloads use mode16 with all batched BF16 rows on the GPU, the
+private 32-slot demand bank, direct attention stores and KV stage retention.
 
-| First process workload | Fresh input | Output with thinking | Prefill tok/s | Client TTFT | Decode tok/s | Drafts accepted |
+| Workload across three processes | Fresh input | Output with thinking | Prefill median and range (tok/s) | Client TTFT median and range (s) | Decode median and range (tok/s) | Drafts accepted per request |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Code, first long request | 96,204 | 3,195 | 915.8 | 106.426 s | 16.286 | 2,173 / 2,248 |
-| Prose, subsequent request | 96,274 | 8,618 | 1,039.6 | 92.793 s | 11.487 | 3,442 / 4,864 |
+| Code, first long request | 96,204 | 3,195 | 915.8 (774.2–940.2) | 106.426 (103.660–125.611) | 16.286 (16.252–16.325) | 2,173 / 2,248 |
+| Prose, subsequent request | 96,274 | 8,618 | 1,039.6 (1,039.3–1,040.2) | 92.793 (92.740–92.821) | 11.574 (11.487–11.595) | 3,442 / 4,864 |
 
-Both samples qualify for the planned workload and speed accounting. The
-prose result has 70.8% draft acceptance, above the weak-case limit. The
-second independent process preserves both request hashes, all generation and
-draft counts, and both routes. It closes normally with no fresh Xe fault.
-Its first code prefill takes 124.259 s with 125.611 s client TTFT. The
-subsequent prose prefill takes 92.634 s with 92.821 s client TTFT.
-Decode rates are 16.325 and 11.595 tok/s, respectively. The same-request
-repeats differ by 19.210 s for first prefill and 0.024 s for subsequent
-prefill so far. One independent process remains.
+All six requests qualify for the planned speed accounting. The first
+prefill intervals span 21.936 seconds and the subsequent prefill intervals
+span 0.080 seconds. The code case confirms strong draft agreement at
+96.7 percent. Prose has 70.8 percent acceptance, above the 40 percent weak
+case limit. The long-prefill handoff check passes. The 70 tok/s goal and
+weak-case qualification remain open.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
@@ -11517,7 +11516,7 @@ workload as a weak case only if the first screen generates at least 1,024
 native tokens, passes the answer check and accepts at most 40% of offered
 drafts. Retain the compact observation and retire the closed raw output after
 the next workload decision. Host admission and actual model execution are
-pending while the continuation cohort uses the serialized measurement slot.
+next on the serialized measurement slot.
 
 Retired the six numbered directories and `host` under state
 `dflash2-prefill-kv-stage-speed-v4` covering 430 files and 74709297 bytes.
