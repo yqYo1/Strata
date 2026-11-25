@@ -192,11 +192,10 @@ they do not describe the current selected engines.
 
 The fork's verified default is `cc464282e`, published through PR 242.
 The next promotion is open in PR 243. The selected DFlash2 source and closed
-performance rows retain their original revisions through `321c5776a` in
-the primary history. The verification branch still owns the width-four
-decode attribution. Keep it until that comparison closes and its needed
-source and evidence are reachable from the pushed primary. Keep automatic
-head deletion disabled.
+performance rows retain their original revisions in the primary history,
+including the closed width-four decode attribution at `e0cb8fc25`. Check
+that the remaining model comparisons can resolve their pinned inputs before
+retiring the verification worktree. Keep automatic head deletion disabled.
 When the protected default publishes a squash snapshot, merge the updated
 default back into the primary, verify reachability again and pull the clean
 ghq mirror. [Fork PR 243](https://github.com/yqYo1/Strata/pull/243).

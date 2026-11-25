@@ -208,8 +208,6 @@ The earlier default-route query observation at `55265f9e3` covers
 208.368 s of decode. The resident pool-return query consumes 354.338 ms of
 wrapper wall time, or 0.170% of decode. Its partner at launch adds 150.074 ms.
 This puts the two resident queries at 0.242% on that measured route.
-The current DFlash2 width-four route needs its own measurement before
-prioritizing any query change.
 
 The width-four controller at `14f102cdb` uses the retained 16.694 tok/s
 incumbent with two clean processes bracketing separate caller-ledger and
@@ -246,8 +244,15 @@ The event-query process at `65f0f927c` repeats the same work at 16.443 tok/s.
 The two resident wrappers each run 64,560 times without query or clock
 errors. Their wall times are 224.99 and 314.64 ms, totaling 0.216% of the
 250.02-second decode. The pool-return wrapper alone accounts for 0.126%.
-The observed request takes 1.54% longer than the first clean control. The
-second clean control is pending before the final overhead decision.
+The second clean control at `e0cb8fc25` closes the bracket at 16.666 tok/s.
+All four processes match the original work, including 4,111 emitted tokens
+and 2,767 accepted drafts out of 2,863 offered, and close without fresh Xe
+faults. The two clean controls have a median of 16.681 tok/s. Caller-ledger
+latency increases by 0.10–0.28% and event-query latency by 1.36–1.54% against
+those controls. Both observations pass their 10% overhead gate. Prioritize
+the CPU expert work and the GPU dependency chain over the resident query
+wrappers. The measured intervals still leave physical memory traffic and
+GPU resource saturation unresolved.
 
 ### Decode worker instrumentation on the a347 build
 
