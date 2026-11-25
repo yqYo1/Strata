@@ -7,6 +7,7 @@ import sys
 
 sys.dont_write_bytecode = True
 import dflash2_primary_prefill_curve as curve
+import dflash2_primary_retained as retained
 import prefill_split_continuation as continuation
 
 speed, bank, basis, require = curve.speed, curve.bank, curve.basis, curve.require
@@ -117,19 +118,14 @@ def experiment():
     ctx.ROOT, ctx.KEY, ctx.THIS, ctx.ORDER = ROOT, KEY, THIS, ORDER
     ctx.WORKLOAD_ID = continuation.WORKLOAD_ID
     ctx.configuration, ctx.environment, ctx.command = speed.generation.configuration, curve.environment, continuation.command
-    ctx.routes, ctx.protocol = routes, PLAN
+    ctx.routes, ctx.protocol, ctx.baseline = routes, PLAN, retained.baseline
     ctx.evidence_reader.read_complete_suite, ctx.evidence_reader.decide = continuation.read_complete_suite, decision
     base_pins = speed.experiment().pins
-
-    def baseline():
-        row = curve.baseline()
-        require(row['selected_arm'] == 'retain', 'recover the selected KV retention route')
-        return row
 
     def pins(revision):
         values = base_pins(revision)
         profile = continuation.standard.profiles
-        for name in (THIS, curve.THIS, clock.THIS, continuation.THIS, continuation.standard.THIS,
+        for name in (THIS, retained.THIS, curve.THIS, clock.THIS, continuation.THIS, continuation.standard.THIS,
                      profile.THIS, *profile.profile.SOURCES):
             file = bank.P / name
             require(file.read_bytes() == basis.validation.git('show', revision + ':' + name),
@@ -137,7 +133,7 @@ def experiment():
             values[name] = bank.sha(file)
         return values
 
-    ctx.baseline, ctx.pins = baseline, pins
+    ctx.pins = pins
     return ctx
 
 

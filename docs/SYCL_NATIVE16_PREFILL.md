@@ -11419,6 +11419,18 @@ At `a151628bd`, the route reader agrees with the three archived ragged
 bytes. The same check rejects a substituted mode10 marker. This checks the
 reader using existing logs. The new sustained processes remain pending.
 
+The [retained primary reader](../bench/dflash2_primary_retained.py) binds
+the continuation to the closed primary build, timing and physical-context
+receipts. It recovers the original source and checks actual compiler and
+link inputs, all same-build fixtures, providers and model assets directly.
+The historical executable identities remain in the committed evidence.
+The continuation now verifies the selected executable directly. Run the
+two host controls in `bench/test_dflash2_primary_retained.py` under the named
+interpreter and measurement lock before preparing the suite. The controls
+compare the original baseline with legacy executable access denied and check
+that a changed physical-context proof fails admission. The active length
+curve still needs the legacy readers through its final process.
+
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
 The host count through the production chat renderer and tokenizer is
