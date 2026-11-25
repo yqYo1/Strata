@@ -22,6 +22,7 @@
 #include <numeric>
 #include <random>
 #include <sched.h>
+#include <span>
 #include <stdexcept>
 #include <string_view>
 #include <sys/resource.h>
@@ -310,12 +311,13 @@ struct ReplayLayer {
 
     ~ReplayLayer() { if (fd >= 0) close(fd); }
 
-    void open_source(std::istream& in) {
+    void open_source(std::istream& in, bool grouped) {
         int gu = 0, down = 0;
         uint64_t bytes = 0;
         std::string path, error;
         in >> gu >> down >> bytes >> offsets[0] >> offsets[1] >> offsets[2] >> std::quoted(path);
-        require(in.good() && (gu == 18 || gu == 21) && down == 20 && path.starts_with('/'),
+        require(in.good() && (gu == 18 || gu == 21 || (grouped && gu == 22)) &&
+                down == 20 && path.starts_with('/'),
                 "replay layer schema");
         require(cpu::native_fmt(gu, down, cpu::H, cpu::FF, format, error), error.c_str());
         require(format.bytes == bytes &&
@@ -347,7 +349,7 @@ struct ReplayBatch {
     std::vector<cpu::ExpertJobMulti> jobs;
     const cpu::NativeFmt* format = nullptr;
 
-    void read(std::istream& in, std::array<ReplayLayer, 2>& layers) {
+    void read(std::istream& in, std::span<ReplayLayer> layers, bool grouped) {
         int window = 0, width = 0, layer_index = 0, count = 0;
         in >> window >> width >> layer_index >> count;
         require(in.good() && window >= 0 && window < 262144 && width >= 1 && width <= replay_rows &&
@@ -371,7 +373,7 @@ struct ReplayBatch {
             cpu::ExpertJobMulti job;
             in >> expert >> job.nt;
             require(in.good() && expert >= 0 && expert < replay_experts && !seen[expert] &&
-                    job.nt > 0 && job.nt <= width, "replay job geometry");
+                    job.nt > 0 && job.nt <= width && (!grouped || job.nt == 1), "replay job geometry");
             seen[expert] = true;
             job.blob = layer.weight(expert);
             auto out = std::make_unique<Buffer>(job.nt * cpu::H * sizeof(float));
@@ -395,7 +397,7 @@ struct ReplayBatch {
                                     cpu::NativeGuPhase::Decode);
     }
 
-    void validate(cpu::ExpertPool& pool) {
+    void validate(cpu::ExpertPool& pool, bool grouped) {
         for (const auto& job : jobs)
             for (int t = 0; t < job.nt; ++t)
                 std::fill_n(job.out[t], cpu::H, std::numeric_limits<float>::quiet_NaN());
@@ -421,6 +423,9 @@ struct ReplayBatch {
                 for (int row = 0; row < cpu::H; ++row)
                     require(std::isfinite(expected[t][row]) && job.out[t][row] == expected[t][row],
                             "replay pool differs from serial native output");
+                if (grouped)
+                    require(std::memcmp(job.out[t], expected[t].data(), cpu::H * sizeof(float)) == 0,
+                            "grouped replay differs at the bit level");
             }
         }
         for (const auto& in : acts) if (in) in->check();
@@ -428,20 +433,28 @@ struct ReplayBatch {
     }
 };
 
-void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int threads, bool timing) {
+void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int threads, bool timing,
+                  int claim_group = 0) {
     const bool host_works = threads == 6;
     const int workers = threads - static_cast<int>(host_works);
     cpu::ExpertPool pool(workers, true, host_works);
     require(pool.workers() == workers && pool.host_works() == host_works, "replay pool topology");
+    const bool grouped = claim_group > 0;
+#ifdef STRATA_BENCH_DECODE_GU_TASK_GROUPS
+    if (grouped) pool.set_decode_gu_task_group(claim_group);
+#else
+    require(!grouped, "decode GU task grouping requires the benchmark build option");
+#endif
     pin(topo.host_core);
     std::ifstream in(descriptor);
     std::string version;
     in >> version;
-    require(in.good() && version == "strata-expert-replay-v1", "replay descriptor version");
-    std::array<ReplayLayer, 2> layers;
-    for (auto& layer : layers) layer.open_source(in);
+    require(in.good() && version == (grouped ? "strata-gu-group-replay-v1" : "strata-expert-replay-v1"),
+            "replay descriptor version");
+    std::vector<ReplayLayer> layers(grouped ? 1 : 2);
+    for (auto& layer : layers) layer.open_source(in, grouped);
     std::array<ReplayBatch, 8> batches;
-    for (auto& batch : batches) batch.read(in, layers);
+    for (auto& batch : batches) batch.read(in, layers, grouped);
     in >> std::ws;
     require(in.eof(), "trailing replay instructions");
 
@@ -455,8 +468,20 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
         for (const auto& blob : layer.weights)
             if (blob) { ++unique_blobs; unique_bytes += blob->bytes; }
     const std::vector<int> worker_cores(topo.worker_cores.begin(), topo.worker_cores.begin() + workers);
+    uint64_t gu_claims = 0;
     auto validate = [&] {
-        for (auto& batch : batches) batch.validate(pool);
+#ifdef STRATA_BENCH_DECODE_GU_TASK_GROUPS
+        const uint64_t before = pool.decode_gu_claims();
+#endif
+        for (auto& batch : batches) batch.validate(pool, grouped);
+#ifdef STRATA_BENCH_DECODE_GU_TASK_GROUPS
+        if (grouped) {
+            gu_claims = pool.decode_gu_claims() - before;
+            const int original_tasks = 3 * threads;
+            require(gu_claims == batches.size() * ((original_tasks + claim_group - 1) / claim_group),
+                    "actual GU claim groups differ");
+        }
+#endif
         for (const auto& layer : layers)
             for (const auto& blob : layer.weights) if (blob) blob->check();
         verify_placement(topo.host_core, worker_cores);
@@ -466,11 +491,17 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
     std::cout << "{\"kind\":\"replay_input\",\"batches\":" << batches.size() << ",\"jobs\":" << jobs
               << ",\"entries\":" << entries << ",\"logical_bytes\":" << visits
               << ",\"unique_blobs\":" << unique_blobs << ",\"unique_bytes\":" << unique_bytes
-              << ",\"threads\":" << threads << ",\"host_works\":" << (host_works ? "true" : "false")
-              << ",\"serial_output_equal\":true,\"verified_affinity\":true}" << std::endl;
+              << ",\"threads\":" << threads << ",\"host_works\":" << (host_works ? "true" : "false");
+    if (grouped)
+        std::cout << ",\"gu\":" << layers[0].format.gu_type << ",\"claim_group\":" << claim_group
+                  << ",\"gu_claims_per_pass\":" << gu_claims << ",\"bitwise_output_equal\":true";
+    std::cout << ",\"serial_output_equal\":true,\"verified_affinity\":true}" << std::endl;
     if (timing) {
+        const std::string fields = grouped
+            ? "\"mode\":\"replay-gu-groups\",\"claim_group\":" + std::to_string(claim_group) + ",\"threads\":5"
+            : "\"mode\":\"replay\",\"threads\":" + std::to_string(threads);
         measure([&] { for (auto& batch : batches) batch.run(pool); }, visits, jobs,
-                "\"mode\":\"replay\",\"threads\":" + std::to_string(threads), &pool, true);
+                fields, &pool, true);
         validate();
     }
 }
@@ -484,6 +515,11 @@ int main(int argc,char** argv) try {
         const std::string_view mode(argv[4]);
         require(threads >= 1 && threads <= 6 && (mode == "measure" || mode == "check"), "replay arm");
         route_replay(argv[2], topo, threads, mode == "measure");
+    } else if (argc == 5 && std::string_view(argv[1]) == "replay-gu-groups") {
+        const std::string_view group(argv[3]), mode(argv[4]);
+        require((group == "1" || group == "2" || group == "4") && (mode == "check" || mode == "measure"),
+                "decode GU replay arm");
+        route_replay(argv[2], topo, 5, mode == "measure", group.front() - '0');
     } else if (argc == 5 && std::string_view(argv[1]) == "replay-scan") {
         const int threads = std::stoi(argv[2]);
         const auto bytes = std::stoull(argv[3]);

@@ -25,6 +25,10 @@ add_library(expert_cpu STATIC
   ${CPU}/iq_single_avx2.cpp ${CPU}/iq2_pair_avx2.cpp ${CPU}/kq_avx2.cpp)
 target_include_directories(expert_cpu PUBLIC "${STRATA_ROOT}/include" PRIVATE "${STRATA_ROOT}/third_party/ggml")
 target_compile_definitions(expert_cpu PUBLIC STRATA_NATIVE_EXPERTS=1 STRATA_CPU_SERVICE_PROFILE=1)
+option(STRATA_BENCH_DECODE_GU_TASK_GROUPS "Compare decode Gate/Up claim groups in the CPU replay" OFF)
+if(STRATA_BENCH_DECODE_GU_TASK_GROUPS)
+  target_compile_definitions(expert_cpu PUBLIC STRATA_BENCH_DECODE_GU_TASK_GROUPS=1)
+endif()
 target_compile_options(expert_cpu PRIVATE -march=znver3 -mtune=znver3)
 set_source_files_properties(${CPU}/expert.cpp ${CPU}/iq_avx512.cpp PROPERTIES
   COMPILE_OPTIONS "-mavx512f;-mavx512bw;-mavx512vl;-mavx512dq;-mavx512vnni;-mavx512vbmi;-mf16c;-mfma")

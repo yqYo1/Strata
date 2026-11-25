@@ -130,6 +130,11 @@ public:
     ExpertPool& operator=(const ExpertPool&) = delete;
 
     int workers() const { return n_; }
+#ifdef STRATA_BENCH_DECODE_GU_TASK_GROUPS
+    /// The replay calls this on the dispatch thread before its first batch.
+    void set_decode_gu_task_group(int group);
+    uint64_t decode_gu_claims() const { return decode_gu_claims_; }
+#endif
     /// Whether the host thread also drains.  Reported at startup, because "the engine adapts to the machine it
     /// is on" is only true if the engine says which adaptation it took.
     bool host_works() const { return host_works_; }
@@ -278,6 +283,11 @@ private:
     };
     const NativeFmt* nfmt_ = nullptr;
     NativeGuPhase native_gu_phase_ = NativeGuPhase::Prefill;
+#ifdef STRATA_BENCH_DECODE_GU_TASK_GROUPS
+    int decode_gu_task_group_ = 1;
+    int native_phase_task_group_ = 1;
+    uint64_t decode_gu_claims_ = 0;
+#endif
     std::vector<SplitBufMulti> split_multi_;
     PoolAffinity affinity_ = PoolAffinity::All;
     CpuTopology topo_;

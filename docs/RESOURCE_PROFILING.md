@@ -342,6 +342,28 @@ for stock, `f731c6a0fd04` for within-layer and `2863acb7b313` for cross-layer
 exact stock global layout and prefill/RESTORE control first, then use separate
 workloads to measure whether the change reduces decode time.
 
+### Decode Gate/Up task claims
+
+The reviewed Zen 3 report recommends trying coarser work claims with
+unchanged packed arithmetic. The [CPU replay](../bench/sycl/cpu_roofline/decode_gu_groups.py)
+keeps fifteen logical row partitions and five pinned worker cores with the
+caller reserved. A claim handles one, two or four existing partitions in
+order. The existing epoch, retirement and per-phase barriers remain in use.
+There are 15, 8 or 4 Gate/Up claims per submission. Hidden quantization and
+Down retain their original scheduling. The selector is compiled only in the
+explicit CPU fixture target build.
+
+Replay IQ3_XXS, IQ3_S and IQ2_S Gate/Up with IQ4_NL Down. Use eight single-row
+expert jobs per batch and eight submissions per pass from the held-out
+DFlash2 route. The hot case repeats its first batch and the rotating case
+covers more than 64 MiB of actual packed weights. Check exact output bits,
+buffer guards, actual claims and affinity before and after timing. Run three
+cyclic independent process rounds with five batches of at least one second
+per arm. Advance a format and group only if all three rotating comparisons
+improve both Gate/Up time and total pass time. The four-claim arm can leave
+one worker idle at the start, so its reduced claim count must also pass the
+end-to-end comparison.
+
 The [stock admission controller](../bench/dflash2_decode_stock_global_restore.py)
 uses the retained primary executable and recovers the original restore plans
 from `3d75f7e91`. It generates only the stock global profile. Both loaders

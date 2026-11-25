@@ -171,51 +171,56 @@ def weights(fixture):
     return dict(shards=identities, sha256=digest.hexdigest(), bytes=total)
 
 
-def prepare():
-    need(not ROOT.exists() and not RESULT.exists(), 'one fresh replay plan')
-    revision = git(P, 'rev-parse', 'HEAD').decode().strip()
+def build_plan(root, revision, *, project_scope=PROJECT, definitions=()):
+    build_root = root / 'build'
     need(git(recipe.GGML, 'rev-parse', 'HEAD').decode().strip() == recipe.GGML_REV, 'pinned GGML source')
-    project = recipe.pins(P, revision, PROJECT)
+    project = recipe.pins(P, revision, project_scope)
     ggml = recipe.pins(recipe.GGML, recipe.GGML_REV, ('ggml',))
-    fixture = fixture_from_capture()
-    weight_pin = weights(fixture)
     need(sha(recipe.SDK) == recipe.SDK_SHA, 'pinned SDK manifest changed')
     allowed = json.loads(recipe.SDK.read_text())
     need(len(allowed) == 10945 and all(sha(p) == h for p, h in allowed.items()), 'SDK input drift')
     env = dict(PATH='/usr/bin:/bin', HOME='/home/yayoi', LANG='C.UTF-8', LC_ALL='C.UTF-8',
                LD_LIBRARY_PATH='/opt/intel/oneapi/compiler/2026.2/lib', OMP_NUM_THREADS='1',
                STRATA_IQ_SINGLE_EXACT='0', STRATA_IQ3_PAIR='0', STRATA_CPU_SERVICE='0',
-               TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
+               TMPDIR=str(root / 'tmp'), XDG_CACHE_HOME=str(root / 'cache'))
     allowed.update(recipe.host_inventory(env)['files'])
     tools = {str(Path(p).resolve()): sha(p) for p in
              (recipe.CC, recipe.CXX, '/usr/bin/cmake', '/usr/bin/ninja', '/usr/bin/ldd', sys.executable)}
     allowed.update(tools)
     for directory in Path('/usr/share').glob('cmake-*/Modules'):
         allowed.update({str(p.resolve()): sha(p) for p in directory.rglob('*') if p.is_file()})
-    ROOT.mkdir(mode=0o700)
+    root.mkdir(mode=0o700)
     for name in ('cache', 'tmp'):
-        (ROOT / name).mkdir()
-    external = ROOT / 'external-inputs.json'
+        (root / name).mkdir()
+    external = root / 'external-inputs.json'
     atomic_json(external, allowed)
-    target = ROOT / 'replay.txt'
-    target.write_text(native_descriptor(fixture))
     header = '#pragma once\n\n#define GGML_VERSION "0.24.0"\n#define GGML_COMMIT  "3cf03257f"\n'
-    row = dict(stage='prepared', source_commit=revision, project_inputs=project, ggml_inputs=ggml,
-               machine=calibration.machine(), tools=tools, environment=env, fixture=fixture, weights=weight_pin,
-               metadata_sha256=sha(calibration.METADATA), ggml_revision=recipe.GGML_REV, protocol=PROTOCOL,
-               replay_input_sha256=sha(target), order=[list(c) for c in ORDER],
-               check_order=[list(c) for c in CHECK_ORDER],
+    return dict(stage='prepared', source_commit=revision, project_inputs=project, ggml_inputs=ggml,
+               machine=calibration.machine(), tools=tools, environment=env,
+               metadata_sha256=sha(calibration.METADATA), ggml_revision=recipe.GGML_REV,
                external_inputs=dict(path=str(external), sha256=sha(external), files=len(allowed)),
-               generated_expected={str(BUILD / 'ggml/src/ggml-version.h'): hashlib.sha256(header.encode()).hexdigest()},
-               configure=['/usr/bin/cmake', '-S', str(P / 'bench/sycl/cpu_roofline'), '-B', str(BUILD),
+               generated_expected={str(build_root / 'ggml/src/ggml-version.h'): hashlib.sha256(header.encode()).hexdigest()},
+               configure=['/usr/bin/cmake', '-S', str(P / 'bench/sycl/cpu_roofline'), '-B', str(build_root),
                           '-G', 'Ninja', '-DCMAKE_BUILD_TYPE=Release', '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON',
                           '-DCMAKE_C_COMPILER=' + recipe.CC, '-DCMAKE_CXX_COMPILER=' + recipe.CXX,
                           '-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t', '-DGGML_CCACHE=OFF',
-                          '-DSTRATA_GGML_DIR=' + str(recipe.GGML)],
-               build=['/usr/bin/cmake', '--build', str(BUILD), '--target', 'cpu_roofline', '--parallel', '4'],
+                          '-DSTRATA_GGML_DIR=' + str(recipe.GGML), *definitions],
+               build=['/usr/bin/cmake', '--build', str(build_root), '--target', 'cpu_roofline', '--parallel', '4'],
                budgets=dict(build_wall=300, run_wall=45, build_rss=8 << 30, run_rss=2 << 30,
                             text=4 << 20, file=64 << 20, total=384 << 20),
                processes=[], active=False, ownership_closed=True, gpu_executed=False)
+
+
+def prepare():
+    need(not ROOT.exists() and not RESULT.exists(), 'one fresh replay plan')
+    revision = git(P, 'rev-parse', 'HEAD').decode().strip()
+    fixture = fixture_from_capture()
+    weight_pin = weights(fixture)
+    row = build_plan(ROOT, revision)
+    target = ROOT / 'replay.txt'
+    target.write_text(native_descriptor(fixture))
+    row.update(fixture=fixture, weights=weight_pin, protocol=PROTOCOL, replay_input_sha256=sha(target),
+               order=[list(c) for c in ORDER], check_order=[list(c) for c in CHECK_ORDER])
     save(row)
     print('Prepared fixed CPU replay; commit the plan before compiling.', flush=True)
 
@@ -252,7 +257,7 @@ def verify_binary(row):
          'route descriptor or model shard identity changed')
 
 
-def summaries(row, text, mode, cores, timed):
+def summaries(row, text, mode, cores, timed, *, claim_group=None):
     rows = [json.loads(line) for line in text.splitlines()]
     by_kind = {kind: [v for v in rows if v['kind'] == kind]
                for kind in ('replay_placement', 'replay_input', 'timer_check', 'sample', 'closed')}
@@ -270,6 +275,10 @@ def summaries(row, text, mode, cores, timed):
         need(all(actual[k] == fixture[k] for k in ('jobs', 'entries', 'logical_bytes', 'unique_blobs', 'unique_bytes'))
              and actual['batches'] == 8 and actual['threads'] == cores and actual['host_works'] == (cores == 6)
              and actual['serial_output_equal'] and actual['verified_affinity'], 'pool replay conservation or numerics')
+        if claim_group is not None:
+            need(actual['gu'] == fixture['layers'][0]['gu'] and actual['claim_group'] == claim_group
+                 and actual['gu_claims_per_pass'] == fixture['batches'] * ((3 * cores + claim_group - 1) // claim_group)
+                 and actual['bitwise_output_equal'], 'actual grouped Gate/Up work or bitwise parity differs')
     else:
         need(not by_kind['replay_input'], 'unexpected expert work in the read control')
     result = dict(mode=mode, cores=cores, placement=placement)
@@ -284,7 +293,9 @@ def summaries(row, text, mode, cores, timed):
     visits = fixture['jobs'] if mode == 'pool' else 1
     for rep, sample in enumerate(samples):
         repeats = sample['iterations']
-        need(sample['mode'] == ('replay' if mode == 'pool' else 'scan') and sample['threads'] == cores
+        expected_mode = 'replay-gu-groups' if claim_group is not None else ('replay' if mode == 'pool' else 'scan')
+        need(sample['mode'] == expected_mode and sample['threads'] == cores
+             and (claim_group is None or sample['claim_group'] == claim_group)
              and sample['rep'] == rep and sample['attempt'] == 0 and 0 < repeats < 1000000
              and sample['requested_bytes'] == repeats * byte_count and sample['visits'] == repeats * visits
              and math.isfinite(sample['wall_s']) and sample['wall_s'] >= 1
@@ -297,6 +308,22 @@ def summaries(row, text, mode, cores, timed):
                  'bounded disjoint pool stage times')
     return dict(result, samples=samples, timer=timer,
                 median_s_per_pass=statistics.median(v['wall_s'] / v['iterations'] for v in samples))
+
+
+def build_fixture(row, scope, run, build_root):
+    allowed = recipe.input_map(row)
+    run('configure', row['configure'], build=True)
+    run('compile', row['build'], build=True)
+    run('deps', ['/usr/bin/ninja', '-C', str(build_root), '-t', 'deps'])
+    row['build_evidence'] = recipe.build_check(row, scope, build_root=build_root, required_units=REQUIRED)
+    binary = build_root / 'cpu_roofline'
+    row['binary'] = dict(path=str(binary), bytes=binary.stat().st_size, sha256=sha(binary))
+    _, out, _ = run('runtime', ['/usr/bin/ldd', str(binary)])
+    info = out.read_text()
+    row['runtime_inputs'] = {str(Path(p).resolve()): sha(Path(p).resolve()) for p in re.findall(r'(/[^\s]+)', info)}
+    need('not found' not in info and row['runtime_inputs']
+         and not re.search(r'sycl|libze_|libur_|cuda|amdhip', info, re.I)
+         and all(allowed.get(p) == h for p, h in row['runtime_inputs'].items()), 'unpinned CPU runtime')
 
 
 def execute(stage):
@@ -325,20 +352,7 @@ def execute(stage):
 
     try:
         if stage == 'build':
-            allowed = recipe.input_map(row)
-            run('configure', row['configure'], build=True)
-            run('compile', row['build'], build=True)
-            run('deps', ['/usr/bin/ninja', '-C', str(BUILD), '-t', 'deps'])
-            row['build_evidence'] = recipe.build_check(row, scope, build_root=BUILD, required_units=REQUIRED)
-            binary = BUILD / 'cpu_roofline'
-            row['binary'] = dict(path=str(binary), bytes=binary.stat().st_size, sha256=sha(binary))
-            _, out, _ = run('runtime', ['/usr/bin/ldd', str(binary)])
-            info = out.read_text()
-            row['runtime_inputs'] = {str(Path(p).resolve()): sha(Path(p).resolve())
-                                     for p in re.findall(r'(/[^\s]+)', info)}
-            need('not found' not in info and row['runtime_inputs'] and
-                 not re.search(r'sycl|libze_|libur_|cuda|amdhip', info, re.I)
-                 and all(allowed.get(p) == h for p, h in row['runtime_inputs'].items()), 'unpinned CPU runtime')
+            build_fixture(row, scope, run, BUILD)
             row['stage'] = 'built'
         else:
             verify_binary(row)
