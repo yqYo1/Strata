@@ -264,6 +264,30 @@ The earlier code-only static rank saves just 0.046% of jobs on the separate
 prose request, and its traced cache-loan check at `489ac7c6c` raises CPU jobs
 by 7.57–8.19% on the six synthetic requests. Keep the stock static rank.
 
+The projection-granular replay at `c40be6f89`, run after the 126,977-token
+process closed, conserves the original full-request stock counters. It uses
+the same prose windows, first-half distinct-job rank and per-layer byte caps.
+The table scores the held-out half. Intermediate readback counts the extra
+requested 640-element FP32 transfer for each split row.
+
+| Placement | CPU Gate/Up jobs | CPU Down jobs | Logical CPU weight bytes (TB) | Extra intermediate readback (GiB) |
+| --- | ---: | ---: | ---: | ---: |
+| Stock full experts | 2,581,636 | 2,581,636 | 5.266 | 0 |
+| Ranked full experts | 1,928,873 | 1,928,873 | 3.924 | 0 |
+| Three quarters of slots reserved for full experts | 1,868,217 | 2,046,398 | 3.951 | 0.552 |
+| Half of slots reserved for full experts | 1,818,197 | 2,169,439 | 3.995 | 1.102 |
+| One quarter of slots reserved for full experts | 1,764,723 | 2,392,635 | 4.120 | 2.040 |
+| Gate/Up only | 1,716,822 | 2,736,969 | 4.352 | 3.523 |
+
+Maximizing training logical weight bytes saved selects full experts in
+all 48 layers. Gate/Up-only residence removes a further 11.0% of CPU
+Gate/Up jobs relative to ranked full residence, but adds 41.9% more CPU
+Down jobs and 10.9% more logical CPU weight visits. Give the bounded
+full-expert counting and placement comparison priority. Revisit the split
+only with an execution design and measurements that can price the Down
+handoff, synchronization and GPU work. Physical DRAM and PCIe traffic and
+model latency are unmeasured in this replay.
+
 The earlier `f6e3af5fa` replay offers the smaller runtime comparison. After
 256 windows it projects a 3.27% suffix CPU-job reduction with 96 in-layer
 swaps and 197,913,600 requested bytes in each direction. Use the same

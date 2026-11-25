@@ -11236,6 +11236,15 @@ gates with no fresh Xe fault. First-use prefill is 935.794 tok/s and the two
 subsequent requests give 1,047.211 and 1,045.446 tok/s. Client TTFT is 100.851,
 90.148 and 90.296 seconds, respectively. Each run uses 576 direct pieces.
 
+The first 126,977-token process at `9b8810146` passes all three route gates
+and closes with no fresh Xe fault. First-use prefill is 968.865 tok/s and
+the subsequent requests give 1,055.113 and 1,054.066 tok/s. Client TTFT is
+131.261, 120.545 and 120.668 seconds, respectively. Each request keeps all
+126,976 BF16 residual rows in VRAM and observes 768 direct pieces. At the
+tightest admission, 4,237,041,664 available bytes exceed the fixed budget
+including the reserve by 65,575,936 bytes. Three of the ten independent
+processes are complete. The held-out predictions await both blocks.
+
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
 The host count through the production chat renderer and tokenizer is
