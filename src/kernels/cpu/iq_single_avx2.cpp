@@ -379,7 +379,7 @@ __attribute__((noinline)) void iq3s_dot(int n, float * GGML_RESTRICT s, size_t b
         const float d = GGML_CPU_FP16_TO_FP32(x[i].d) * y[i].d;
         const uint8_t * GGML_RESTRICT qs = x[i].qs;
         const uint8_t * GGML_RESTRICT qh = x[i].qh;
-        const uint16_t * GGML_RESTRICT signs = (const uint16_t *)x[i].signs;
+        const uint8_t * GGML_RESTRICT signs = x[i].signs;
         const int8_t  * GGML_RESTRICT q8 = y[i].qs;
         __m256i sumi1 = _mm256_setzero_si256();
         __m256i sumi2 = _mm256_setzero_si256();
@@ -405,17 +405,20 @@ __attribute__((noinline)) void iq3s_dot(int n, float * GGML_RESTRICT s, size_t b
                 iq3s_grid[qs[9] | (((qh[ib32+1] >> 1) & 1) << 8)],
                 iq3s_grid[qs[8] | (((qh[ib32+1] >> 0) & 1) << 8)]);
             qs += 16;
-            __m256i aux256 = _mm256_set1_epi32(signs[0] | (signs[1] << 16));
+            // Each 32-weight group has four packed sign bytes. Read both
+            // groups as bytes without aliasing the array as integer objects.
+            int32_t sign_words[2];
+            std::memcpy(sign_words, signs, sizeof sign_words);
+            signs += sizeof sign_words;
+            __m256i aux256 = _mm256_set1_epi32(sign_words[0]);
             aux256 = _mm256_and_si256(_mm256_shuffle_epi8(aux256,mask1), mask2);
             const __m256i s2_1 = _mm256_cmpeq_epi8(aux256, mask2);
             const __m256i q8s_1 = _mm256_sub_epi8(_mm256_xor_si256(s2_1, q8_1), s2_1);
 
-            aux256 = _mm256_set1_epi32(signs[2] | (signs[3] << 16));
+            aux256 = _mm256_set1_epi32(sign_words[1]);
             aux256 = _mm256_and_si256(_mm256_shuffle_epi8(aux256,mask1), mask2);
             const __m256i s2_2 = _mm256_cmpeq_epi8(aux256, mask2);
             const __m256i q8s_2 = _mm256_sub_epi8(_mm256_xor_si256(s2_2, q8_2), s2_2);
-
-            signs += 4;
 
             const __m256i dot1  = _mm256_maddubs_epi16(q2_1, q8s_1);
             const __m256i dot2  = _mm256_maddubs_epi16(q2_2, q8s_2);

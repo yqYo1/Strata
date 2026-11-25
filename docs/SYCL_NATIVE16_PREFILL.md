@@ -8122,6 +8122,21 @@ gate. Its temporary production selector and replay mode are retired. The
 original source `fc0272d67` stays reachable with the measurement.
 [Comparison result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-iq3s-full-replay-current.json).
 
+The follow-up lossless-layout audit uses the actual IQ3_S block fields.
+The packed block carries 110 bytes for 256 weights. Signed four-bit code
+planes would carry 128 bytes of codes plus six bytes of scales, a 21.8%
+payload increase. The existing AVX2 multi-token path already decodes each
+32-weight group once outside the token loop. Keep the compact format.
+Gate/Up interleaving at the same byte size remains a locality hypothesis
+until a production-shaped caller comparison shows a gain.
+
+The independent Zen 3 IQ3_S single-token path now reads each eight-byte
+sign group with a fixed-size byte copy into two 32-bit words. It preserves
+the same x86 mask bits, integer lanes and floating-point reduction order.
+Run the existing linked GGML parity fixture and a matched caller comparison
+before assigning any performance effect. This affects the opt-in decode
+path; the frozen width-five measurement uses its original executable.
+
 Retired the closed external state directory `cpu-fixed-expert-replay-v1`
 before compiling the new replay on 2026-11-25 JST. The executable, 209 project
 and 1,376 dependency inputs, 633 actual compiler inputs and 22 external linker

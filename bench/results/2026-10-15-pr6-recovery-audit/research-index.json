@@ -41621,7 +41621,7 @@
     "limitation": "No build, codegen, timing, DRAM counter or bit-exact oracle; logical byte counts do not establish traffic or speed. External layout methods are analogies, not GGML compatibility or license evidence.",
     "consumer": "Retrieve for IQ3_S Zen 3 Gate/Up lossless layout tradeoffs, byte break-even, interleaving, bitplanes and row-reuse decode; exclude from IQ3_XXS lookup and quantizer-change decisions.",
     "prerequisite": "Before testing a candidate, verify block arithmetic against pinned GGML source and license; then check exact decode and rounding, caller-inclusive codegen, and warm/streaming timings at 1, 2 and 4 rows.",
-    "source_correction": "On the pinned source, third_party/ggml/ggml-common.h:414-422 establishes 110 bytes per 256 weights for IQ3_S (2 + 13*8 + 4). That verifies the packed block arithmetic; it does not verify a layout speedup."
+    "source_correction": "The pinned ggml-common.h:414-422 has 2 scale, 64 low-index, 8 high-index, 32 sign and 4 subscale bytes. IQ3_S is 0.4296875 B/weight (3.4375 bits), and signed 4-bit code planes plus the existing scales would occupy 134 B/block. iq_avx2.cpp already decodes a weight group once outside the token loop for NT>=2. Use the original report as layout decision support with these corrections."
   },
   "heterogeneous-sparse-frontier-cost-models-20261125": {
     "classification": "knowledge_collection",
