@@ -41231,9 +41231,26 @@
     "review_sha256": "f31ec18e542b4da7e9b195fd958e0420ba872e73222800c68231a0402fa881cd",
     "reviewer": "native Codex gpt-6-luna max",
     "finding": "The report identifies realistic untested workloads and preserves visible output. Classify each eligible request separately with at least 256 offered drafts and at most 0.40 acceptance. Apply the same rule to held-out requests.",
-    "consumer": "Correct the gate to require each eligible request to have ≥256 offers and ≤0.40 acceptance; then freeze a named deployment corpus and validate it in the native benchmark, with held-out requests checked per request.",
+    "consumer": "Use the existing per-request classification with at least 256 offers and at most 0.40 acceptance. Build the reviewed scheduling candidate with exact task and oracle inputs before a native screen.",
     "schedulable_now": false,
-    "owners_closed": true
+    "owners_closed": true,
+    "review_after_quality_screens": {
+      "source_revision": "968e71988953dca3d98037d3b3fec9f903bdfd6f",
+      "main_policy_revision": "d442fe1da1d5a0621b87f9749f92d67143a28e12",
+      "reconciliation_evidence": "c5ffe8f77",
+      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-weak-opportunity-after-quality-screens-20261126/report.md",
+      "report_sha256": "2b9cbf9da3dc543af08bd6c4c33a76d50d5039e389e85d60e6e01eda5a43d460",
+      "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-weak-opportunity-after-quality-screens-20261126/native-luna-max-review.md",
+      "review_sha256": "6cce807885182560683947399f4af5eb112d4effbde7ae48b960fe1f4cd4f6c6",
+      "reviewer": "Native Codex gpt-6-luna max",
+      "dispatch": "ctx_95ce3f97b42c",
+      "worker_task_completed": true,
+      "worker_terminal_last_observed": "live",
+      "schedulable_now": false,
+      "finding": "A constrained scheduling task can use an independent exact solver for feasibility, objective and tie breaks. Constraints across the full 32K packet must affect the solution. Repeated record and answer syntax may still yield high agreement.",
+      "prerequisite": "Commit the packet, seed, independently computed oracle and fixed native configuration. Verify live token counts and thinking. Record offered-to-output coverage separately and apply the existing per-request low-acceptance rule.",
+      "retention": "Use for preparation of the next low-acceptance workload. Revisit after its first observed classification."
+    }
   },
   "dflash2-t4-t5-dispatch-bounds-20261125": {
     "classification": "decision_support",
