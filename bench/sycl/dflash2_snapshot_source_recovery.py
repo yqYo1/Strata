@@ -30,7 +30,7 @@ def recover():
     row = bank.previous.read(ROOT / 'record.json')
     measured = bank.previous.historic(primary.PREFILL, 'dflash2_snapshot_direct_prefill_v1')
     frozen = measured['snapshot_reference']
-    require(row['stage'] == 'built' and row['passed'] and row['ownership_closed']
+    require(row['stage'] == 'built' and row['passed'] and row['complete'] and row['ownership_closed']
             and not row['active'] and row['native_source_commit'] == frozen['source'] == REVISION
             and row['binaries']['strata'] == frozen['binary']
             and bank.signature(builder.compact(row)) == frozen['native_build_sha256'],
@@ -51,7 +51,7 @@ def recover():
     return dict(native_source_commit=REVISION, measured_reference_commit=primary.PREFILL,
                 recovered_source_files=len(hashes), source_manifest_sha256=bank.signature(hashes),
                 recipe_sha256=bank.signature(recipe), compiled_project_files=len(compiled),
-                original_binary_sha256=frozen['binary']['sha256'], wrote_artifacts=False)
+                original_binary_sha256=frozen['binary']['sha256'], retained_artifacts=False)
 
 
 if __name__ == '__main__':
