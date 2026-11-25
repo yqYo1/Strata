@@ -11335,11 +11335,12 @@ The compact command ledger SHA-256 is
 `4a50ca54cfaffbc31a6c2f121464bbc88ee2d2a83d0561335b01afba9942dfca`.
 The model comparison requires its own coherent candidate engine.
 
-The component has completed its only device test. Retain the compact
-record under `dflash2-mode16-batch-fixture-v1` and retire its
+The component completed its device test. The compact
+record remains under `dflash2-mode16-batch-fixture-v1`. Retired its
 `cache`, `expert_bank.o`, `owned`, `sycl_expert_bank_test`, `tmp`
-and `validation.log` paths after verifying the committed inputs and
-closure. These paths hold 9 files and 974,941 bytes, with inventory
+and `validation.log` paths after verifying Git source, exact commands,
+executable identity and ownership closure. These paths held 9 files
+and 974,941 bytes, with inventory
 SHA-256 `5f58aafc0b476a05a52c9369b318f282a4fe8ec3a722ae3d8fe1c6476edc0ebd`
 over sorted relative paths, byte counts and file hashes.
 
