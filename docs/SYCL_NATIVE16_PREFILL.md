@@ -11593,6 +11593,16 @@ seconds. The answer-room continuation rereads all 48,221 tokens in
 It exceeds the 40 percent weak-case limit. The continuation clock is
 also usable evidence for the separately scoped request-prefix handoff.
 
+The cache-off reconciliation launch explicitly sets `--prompt-cache 0`,
+which disables live target reuse on this build. The staged
+[answer-room reuse screen](../bench/dflash2_answer_room_reuse.py) uses the
+same committed model, native binary, request body and oracle with live
+reuse enabled. Periodic, turn, root and parked checkpoints stay disabled.
+Require the full first prefill, at most 64 fresh tokens on the continuation,
+the live DFlash2 prefix and a correct answer with sustained generation.
+Compare the continuation clock with the archived 53.314 s observation.
+The screen precedes a repeated timing comparison and any production change.
+
 The next weak-case candidate is the
 [maintenance-window scheduling fixture](../bench/dflash2_scheduling_fixture.py)
 at `3590c990f`. The fixed seed produces 2,016 scored choices for 36 required

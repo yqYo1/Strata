@@ -1,6 +1,7 @@
 import json
 import unittest
 
+import dflash2_answer_room_reuse as live
 import dflash2_reconciliation_client as reconciliation
 import dflash2_scheduling_model as scheduling
 
@@ -83,3 +84,29 @@ class ReconciliationAccounting(unittest.TestCase):
         self.assertEqual(context.WORKLOAD_ID, 'dflash2_scheduling')
         self.assertTrue(context.command({'root': '/unused', 'port': 18800})[1].endswith(
             '/bench/dflash2_scheduling_model.py'))
+
+    def test_live_cache_args_leave_checkpointing_disabled(self):
+        original = dict(args=['--prompt-cache', '0', '--turn-token', '-1', '--conversation-cache-mib', '0'],
+                        user_args=['--spec', '4', '--prompt-cache', '0', '--prompt-cache-every', '0'])
+        config = live.set_live_cache(original)
+        self.assertEqual(config['args'], ['--prompt-cache', '1', '--turn-token', '-1', '--conversation-cache-mib', '0',
+                                         '--prompt-cache-every', '0', '--prompt-cache-root', '0'])
+        self.assertEqual(config['user_args'], ['--spec', '4', '--prompt-cache', '1', '--prompt-cache-every', '0'])
+        self.assertEqual(original['args'][1], '0')
+        self.assertEqual(original['user_args'][3], '0')
+
+    def test_continuation_needs_target_and_drafter_reuse(self):
+        score = self.score()
+        self.assertTrue(score['eligibility']['speed_eligible'])
+        sample = dict(score['sample'], native_segments=self.segments)
+        process = dict(evidence=dict(observation=score, samples=[sample]),
+                       routes=dict(drafter_cold_prefix=[False, False], layer_major_rows=[reconciliation.INPUT - 1]))
+        result = live.decision([process])
+        self.assertEqual(result['continuation_read_tokens'], 2)
+        self.assertTrue(result['eligible_for_repeated_comparison'])
+        process['routes']['drafter_cold_prefix'][1] = True
+        result = live.decision([process])
+        self.assertTrue(result['target_prefix_reused'])
+        self.assertFalse(result['eligible_for_repeated_comparison'])
+        self.segments[1]['read'], self.segments[1]['reused'] = self.segments[1]['prompt'], 0
+        self.assertFalse(live.decision([process])['target_prefix_reused'])
