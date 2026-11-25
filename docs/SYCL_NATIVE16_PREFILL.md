@@ -11170,6 +11170,15 @@ verifier replay counts and placement. The processes close with no fresh
 Xe faults. The same-binary sustained comparison is frozen at `19f40a065`
 with six independent processes on the 33,217-input regular-code workload.
 
+The first pair at `dff0160a8` and `d90e9d7c9` uses identical input bytes,
+closes normally and checks the intended capture counts without a fresh Xe
+fault. Reference and dense give 14.782 and 15.420 tok/s, with 3,039 and
+3,203 emitted tokens across 760 and 788 verifier windows. Window time is
+270.52 and 263.60 ms, and useful yield is 3.999 and 4.065 tokens per window.
+CPU expert misses also change from 1,213,944 to 1,247,119. Both samples pass
+process admission. The pair lacks matched work for the projection gate.
+Use the remaining frozen repetitions to establish within-arm work stability.
+
 Even at five emitted tokens per verifier window, 70 tok/s allows only
 71.43 ms for a complete window. The older regular-code clock bracket at
 `e26315def2` observes 110.29 ms of CPU-pool caller time and 106.11 ms of GPU
