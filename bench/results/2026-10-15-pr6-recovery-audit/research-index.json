@@ -41300,5 +41300,38 @@
     "schedulable_now": false,
     "finding": "Collects expert, projection and row/column placement methods for H2560/FF640. Its transfer floor uses large-copy bandwidth; small intermediate transfers, parity and partial-placement speed are unmeasured.",
     "consumer": "Retrieve the split arithmetic and sparse-GEMM methods if shared expert service and transfer attribution establish a specific partial-placement comparison."
+  },
+  "zen3-dflash2-ram-attribution-20261125": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "source_commit": "a5e7da50128b1c8614af8a221884971fc4a97b23",
+    "native_source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zen3-dflash2-ram-attribution-20261125/report.md",
+    "report_sha256": "66c4edba34a6a2f7e7fe1cd372db7c7e896fd044ff9d9dcc7e0f0c8d0452e373",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-ram-prefix-short-20261125/review.json",
+    "review_sha256": "d495ec91caebb93688b9780f45cc346416d594097bf8f840c4fcaceb9e11350a",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": true,
+    "finding": "The conclusions fit the supplied evidence: the 39.3035 GB/s stream reference and CPU/wait times do not prove DFlash2 DRAM saturation. The protocol appropriately treats a matched scaling plateau as suggestive, not proof. Clarify that the streaming control must sweep worker counts alongside expert work; “fixed thread count” conflicts with the proposed worker-count plateau comparison.",
+    "consumer": "A bounded primary-source follow-up can check family 19h/model 21h DF event support and encodings in the applicable AMD PPR. The packet supplies the exact processor model; this would narrow counter feasibility without claiming local exposure or collecting measurements.",
+    "prerequisite": "Exact 5600X family/model and live PMU inventory in the source view. The current output-token budget and continuous-read reference support a fixed-work worker sweep."
+  },
+  "dflash2-same-request-prefix-reuse-20261125": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "source_commit": "a5e7da50128b1c8614af8a221884971fc4a97b23",
+    "native_source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-same-request-prefix-reuse-20261125/report.md",
+    "report_sha256": "b0409f818eb221b448ccd422db1bbeba42fb8ab27bbf02f3012de14f9ce46e82",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-prefix-single-20261125/review.json",
+    "review_sha256": "86f39f3e7eb15ede793f574c6efc8e9b91eb97d2115739b01a8a85432cdf2dae",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": true,
+    "finding": "Raw evidence establishes only that leg two reread 57,933 tokens with zero reuse; it does not prove a cause or fix. Checked-in scope identifies live resume and snapshot paths, but does not establish that the engine remains owned by this request between legs. Require a request-bound lease or fail cold; do not assume seriality.",
+    "consumer": "Trace the continuation dispatch into the native resume path. Check whether a request ID can guard the live prefix through leg two and whether physical skipped-prefix extent is reported; then verify unrelated requests remain cold and counts stay 16,366 + 18 = 16,384.",
+    "prerequisite": "The two-leg replay at 226e2d78c and confirmed default answer-room behavior. Both legs run inside the serial API FIFO in the pinned frontend. Native live resume and continuation validity are separate checks.",
+    "startup_proof": "Orca identity verified from the startup receipt. The completion message includes the report hash."
   }
 }
