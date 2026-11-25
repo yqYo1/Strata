@@ -11312,8 +11312,14 @@ Use the primary pinned `icpx` SHA-256
 and recipe environment with private temporary/cache paths. Substitute this
 committed worktree for the primary materialized source paths and replace
 `-o OBJECT -c` with `-fsyntax-only`. Both translation units pass at
-`2a4e040bf`. The hardware fixture and model admission require a separate
-coherent candidate build.
+`2a4e040bf`. The [hardware fixture runner](../bench/dflash2_mode16_batch_fixture.py)
+builds the one changed test translation unit against the verified primary
+headers, support object and SYCL runtime archive. The native change is
+confined to a prefill implementation file outside those fixture inputs.
+It checks the normal and cancelled upload paths under Level Zero tracing
+and parameter validation, against the same trusted runtime and driver.
+The transient component build serves this check. The model comparison
+requires its own coherent candidate engine.
 
 On one candidate binary compare demand against batched with three
 opposite-order 102,401-token pairs. Hold the cache state, KV retention,
