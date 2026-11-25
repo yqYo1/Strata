@@ -11199,11 +11199,17 @@ recovers 35 of those 41 as exact reachable Git blobs at their logical paths.
 The remaining six are the generated QSA probability fixture,
 `cmake/sycl_backend.cmake`, `src/prefill/layer_major.inc`,
 `src/prefill/moe_window.inc`, `src/prefill/prefill.cpp` and
-`src/program/generate.cpp`. Recover those bytes via the archived DFlash2
-KV and target snapshot projections at `4b4ac554c`. The old executables
-still have admission readers. Keep them until a tested reader can use
-the exact historical proof where appropriate and the live consumers
-are resolved. No build or source was deleted in this audit.
+`src/program/generate.cpp`. The archived DFlash2 KV and target snapshot
+projections at `4b4ac554c` now recover all 1,171 files, including those six,
+with the [recovery controller](https://github.com/yqYo1/Strata/blob/416c66058/bench/sycl/dflash2_snapshot_source_recovery.py).
+All 279 project inputs in the compiler census match. The complete source
+manifest SHA-256 is `e28ba38869c135026faf009c516b7042390e9493341ae200c2db24efdd57cd07`
+and the configure/build recipe hash is
+`f81ab214ebe8f896a93362bfa72327cc6baf7a375dfee6a757a10942b869a429`.
+The records and original measured engine identity match the committed
+`ad8652973` reference. The old executables still have admission readers;
+retirement needs the scoped reader migration and post-change admission
+checks. No build or source was deleted in this audit.
 
 The `host`, `taps` and `restore` captures under `dflash2-primary-checks-v1`
 were removed after verifying ownership and the committed proof. The 20
@@ -11326,6 +11332,9 @@ Its first and subsequent prefill are 108.8540 and 97.4229 s (940.719 and
 subsequent-prefill time ratios are 0.99419 and 1.00038. Readiness spans
 54.881–54.966 s empty and 42.568–42.653 s seeded. Seed directory preparation
 takes 0.206 s. Collect the reverse-order pair before deciding repeatability.
+Its seeded process at `c76deeef0` closes with the required work and no
+new Xe fault. First and subsequent prefill take 106.7133 and 97.3427 s;
+first TTFT is 106.899 s. The matched reverse-order empty process follows.
 
 The [primary continuation plan](../bench/dflash2_primary_continuation.py)
 uses the same retained binary and KV selection for three independent
