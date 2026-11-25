@@ -169,17 +169,48 @@ pending work, model observer overhead or inference performance. Requalify the
 current collector/provider inputs before execution, preserve the owned launcher's
 `ZES_ENABLE_SYSMAN=0` policy, and serialize this work after the frozen model cohort.
 
-The retained V2 DFlash2 binary exposes a lighter request-level diagnostic.
-[dflash2_v2_decode_clocks.py](../bench/sycl/dflash2_v2_decode_clocks.py) uses
-the original 32K-plus code request in three fresh processes. It runs two
-unobserved controls around the rounded verifier clocks and conserved caller
-ledger. Active verifier rows equal the window count plus the offered drafts.
-The first window has width one, and confidence can limit later windows to
-two or three rows. The reader checks this work against the native footer
-and the client journal. It separates caller CPU in completion waits from
-wall time in the expert pool wrapper. Worker arithmetic, physical traffic
-and device utilization need their own evidence. The host reader controls
-pass at `96628562e`. Model execution and the paired overhead check are pending.
+### DFlash2 decode time budget
+
+The closed V2 request-clock bracket at `e26315def2` has two unobserved
+controls and one observed process using the same 33,217-token code prompt.
+The [request-clock controller](../bench/sycl/dflash2_v2_decode_clocks.py)
+checks the native footer against the client journal.
+The caller ledger conserves the observed request wall time. Its 4,111 outputs
+use 1,345 verifier windows, or 3.057 outputs per window. The caller spends
+152.19 of its 327.28 CPU seconds inside native completion waits (46.50%).
+
+| Disjoint caller wall interval | ms per window |
+| --- | ---: |
+| GPU layer completion | 106.115 |
+| Expert pool wrapper | 110.293 |
+| All other caller intervals | 35.370 |
+| Total | 251.778 |
+
+At this yield, 70 tok/s gives the whole window 43.664 ms. A sensitivity
+calculation replaces the sum of the first two intervals with their maximum,
+keeping their durations fixed. Perfect overlap at the recorded yield gives
+20.98 tok/s with the other intervals unchanged and 27.71 tok/s with those
+intervals entirely removed. The calculation assumes overlap even for intervals
+whose dependencies may forbid it. Use it to prioritize cutting service time
+and increasing useful verifier yield together.
+
+The independent worker-leaf bracket at `6bbd3e3e1` uses native source
+`96832af6f` with the same request, output, reasoning and draft counts. Its two
+observed runs use 156.12 and 156.24 CPU ms per emitted token across six expert
+threads. Gate/Up accounts for 105.29 and 105.34 CPU ms. Six fully available
+cores provide 85.71 CPU ms per token at 70 tok/s. Holding work and the other
+CPU leaf times fixed would require reducing total leaf time by about 45%,
+or making Gate/Up alone 3.02 to 3.03 times faster. This budget gives zero
+extra CPU time to scheduling or work outside the measured leaves. Keep it
+separate from the V2 caller-wall budget. Both apply to their measured routes.
+
+After the isolated width-five projection comparison, verify the selected
+route's output yield and disjoint caller intervals, then measure worker leaf
+cost with its own clean brackets. Use observed job reductions and the actual
+affected format bins to size placement and kernel candidates. Physical RAM
+traffic, GPU saturation and the attainable overlap remain unmeasured.
+
+### Decode worker instrumentation on the a347 build
 
 The current a347 engine, built from `221e95e9ad890383deb418d0a865ee32c99168b6`,
 already has `STRATA_CPU_SERVICE_PROFILE:BOOL=ON`. Its compiled `pool.cpp` and
