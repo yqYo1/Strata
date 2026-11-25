@@ -59,14 +59,13 @@ public:
 void native_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* const* act, int nt, float* const* ff,
                     int r0, int r1, NativeGuPhase phase = NativeGuPhase::Decode);
 
-// Optional dispatch evidence fixed before exec with STRATA_IQ3_PAIR_AUDIT=1.
-// Snapshot after the synchronous pool drains. calls covers all GU entries.
-// nt1_rows/pair_rows cover IQ3_XXS; the IQ3_S fields cover full decode calls.
+// Optional IQ3_XXS dispatch evidence, fixed before exec with
+// STRATA_IQ3_PAIR_AUDIT=1. Snapshot only after the synchronous pool drains.
+// calls covers all GU entries; nt1_rows/pair_rows cover IQ3_XXS only.
 struct Iq3GuAudit {
     bool enabled = false, overflow = false;
     unsigned threads = 0;
     uint64_t calls = 0, nt1_rows = 0, pair_rows = 0;
-    uint64_t iq3s_full_rows = 0, iq3s_pair_rows = 0;
 };
 Iq3GuAudit iq3_gu_audit_snapshot() noexcept;
 

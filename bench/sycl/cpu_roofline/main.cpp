@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <array>
 #include <barrier>
-#include <bit>
 #include <chrono>
 #include <cmath>
 #include <cstdlib>
@@ -190,8 +189,7 @@ struct Inputs {
     }
 };
 template<class F> void measure(F pass, uint64_t bytes, uint64_t visits, const std::string& fields,
-                              cpu::ExpertPool* pool = nullptr, bool audit_host = false,
-                              bool audit_iq3s = false) {
+                              cpu::ExpertPool* pool = nullptr, bool audit_host = false) {
     pass();
     double fastest=1e9;
     for(int i=0;i<5;++i) { const auto t=Clock::now(); pass(); fastest=std::min(fastest,seconds(t)); }
@@ -205,7 +203,6 @@ template<class F> void measure(F pass, uint64_t bytes, uint64_t visits, const st
     for(int r=0;r<reps;++r) {
         const double gu=pool?pool->ms_multi_gu:0, q=pool?pool->ms_multi_q:0, down=pool?pool->ms_multi_down:0;
         const auto pool_bytes = pool ? pool->multi_bytes : 0;
-        const auto route_before = audit_iq3s ? cpu::iq3_gu_audit_snapshot() : cpu::Iq3GuAudit{};
         const auto h0 = audit_host ? cpu_seconds(RUSAGE_THREAD) : 0;
         const auto c0=cpu_seconds(); const auto t0=Clock::now();
         uint64_t iterations=0; double elapsed;
@@ -221,13 +218,6 @@ template<class F> void measure(F pass, uint64_t bytes, uint64_t visits, const st
             <<",\"requested_bytes\":"<<bytes*iterations<<",\"wall_s\":"<<wall<<",\"cpu_s\":"<<process_cpu;
         if(pool) std::cout<<",\"gu_s\":"<<(pool->ms_multi_gu-gu)*.001<<",\"q_s\":"<<(pool->ms_multi_q-q)*.001<<",\"down_s\":"<<(pool->ms_multi_down-down)*.001;
         if (audit_host) std::cout << ",\"host_cpu_s\":" << host_cpu;
-        if (audit_iq3s) {
-            const auto route = cpu::iq3_gu_audit_snapshot();
-            require(route.enabled && !route.overflow && route.iq3s_full_rows >= route_before.iq3s_full_rows &&
-                    route.iq3s_pair_rows >= route_before.iq3s_pair_rows, "IQ3_S audit counters");
-            std::cout << ",\"iq3s_full_rows\":" << route.iq3s_full_rows - route_before.iq3s_full_rows
-                      << ",\"iq3s_pair_rows\":" << route.iq3s_pair_rows - route_before.iq3s_pair_rows;
-        }
         std::cout<<"}"<<std::endl;
     }
 }
@@ -400,15 +390,16 @@ struct ReplayBatch {
     }
 
     // The pool borrows these buffers until its synchronous retirement.
-    void run(cpu::ExpertPool& pool, cpu::NativeGuPhase phase = cpu::NativeGuPhase::Decode) noexcept {
-        pool.run_split_multi_native(*format, jobs.data(), static_cast<int>(jobs.size()), phase);
+    void run(cpu::ExpertPool& pool) noexcept {
+        pool.run_split_multi_native(*format, jobs.data(), static_cast<int>(jobs.size()),
+                                    cpu::NativeGuPhase::Decode);
     }
 
-    void validate(cpu::ExpertPool& pool, cpu::NativeGuPhase phase = cpu::NativeGuPhase::Decode) {
+    void validate(cpu::ExpertPool& pool) {
         for (const auto& job : jobs)
             for (int t = 0; t < job.nt; ++t)
                 std::fill_n(job.out[t], cpu::H, std::numeric_limits<float>::quiet_NaN());
-        run(pool, phase);
+        run(pool);
         for (const auto& job : jobs) {
             std::array<std::array<float, cpu::FF>, replay_rows> hidden;
             std::array<std::array<float, cpu::H>, replay_rows> expected;
@@ -421,7 +412,7 @@ struct ReplayBatch {
                 quant[t] = std::make_unique<Buffer>(format->h_bytes);
                 quant_rows[t] = quant[t]->data();
             }
-            cpu::native_gu_rows(*format, job.blob, job.nact, job.nt, hidden_rows.data(), 0, cpu::FF, phase);
+            cpu::native_gu_rows(*format, job.blob, job.nact, job.nt, hidden_rows.data(), 0, cpu::FF);
             for (int t = 0; t < job.nt; ++t)
                 cpu::native_quant_h(*format, hidden_rows[t], quant[t]->data());
             cpu::native_down_rows(*format, job.blob, quant_rows.data(), job.nt, expected_rows.data(), 0, cpu::H);
@@ -437,8 +428,7 @@ struct ReplayBatch {
     }
 };
 
-void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int threads, bool timing,
-                  bool audit_iq3s) {
+void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int threads, bool timing) {
     const bool host_works = threads == 6;
     const int workers = threads - static_cast<int>(host_works);
     cpu::ExpertPool pool(workers, true, host_works);
@@ -465,37 +455,13 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
         for (const auto& blob : layer.weights)
             if (blob) { ++unique_blobs; unique_bytes += blob->bytes; }
     const std::vector<int> worker_cores(topo.worker_cores.begin(), topo.worker_cores.begin() + workers);
-    auto validate = [&](cpu::NativeGuPhase phase) {
-        for (auto& batch : batches) batch.validate(pool, phase);
+    auto validate = [&] {
+        for (auto& batch : batches) batch.validate(pool);
         for (const auto& layer : layers)
             for (const auto& blob : layer.weights) if (blob) blob->check();
         verify_placement(topo.host_core, worker_cores);
     };
-    auto output_fingerprint = [&] {
-        uint64_t fingerprint = 14695981039346656037ull;
-        for (const auto& batch : batches)
-            for (const auto& job : batch.jobs)
-                for (int t = 0; t < job.nt; ++t)
-                    for (int row = 0; row < cpu::H; ++row)
-                        fingerprint = (fingerprint ^ std::bit_cast<uint32_t>(job.out[t][row])) * 1099511628211ull;
-        return fingerprint;
-    };
-    if (audit_iq3s) {
-        validate(cpu::NativeGuPhase::Prefill);
-        const auto route = cpu::iq3_gu_audit_snapshot();
-        require(route.enabled && !route.overflow && route.iq3s_full_rows == 0 &&
-                route.iq3s_pair_rows == 0, "IQ3_S selector must preserve prefill");
-        std::cout << "{\"kind\":\"iq3s_prefill\",\"output\":\"" << output_fingerprint() << "\"}" << std::endl;
-    }
-    validate(cpu::NativeGuPhase::Decode);
-    const auto decode_output = audit_iq3s ? output_fingerprint() : 0;
-    if (audit_iq3s) {
-        const auto route = cpu::iq3_gu_audit_snapshot();
-        require(route.enabled && !route.overflow, "IQ3_S audit must be enabled");
-        std::cout << "{\"kind\":\"iq3s_decode\",\"output\":\"" << decode_output
-                  << "\",\"full_rows\":" << route.iq3s_full_rows
-                  << ",\"pair_rows\":" << route.iq3s_pair_rows << "}" << std::endl;
-    }
+    validate();
     report_placement(topo.host_core, worker_cores, host_works);
     std::cout << "{\"kind\":\"replay_input\",\"batches\":" << batches.size() << ",\"jobs\":" << jobs
               << ",\"entries\":" << entries << ",\"logical_bytes\":" << visits
@@ -504,9 +470,8 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
               << ",\"serial_output_equal\":true,\"verified_affinity\":true}" << std::endl;
     if (timing) {
         measure([&] { for (auto& batch : batches) batch.run(pool); }, visits, jobs,
-                "\"mode\":\"replay\",\"threads\":" + std::to_string(threads), &pool, true, audit_iq3s);
-        validate(cpu::NativeGuPhase::Decode);
-        require(!audit_iq3s || output_fingerprint() == decode_output, "IQ3_S decode output changed after timing");
+                "\"mode\":\"replay\",\"threads\":" + std::to_string(threads), &pool, true);
+        validate();
     }
 }
 
@@ -514,13 +479,11 @@ int main(int argc,char** argv) try {
     std::cout<<std::setprecision(12);
     const auto topo=cpu::detect_cpu_topology(true);
     require(topo.host_core>=0 && topo.worker_cores.size()>=5,"six physical CPUs required");
-    if (argc == 5 && (std::string_view(argv[1]) == "replay" ||
-                      std::string_view(argv[1]) == "replay-iq3s-full")) {
+    if (argc == 5 && std::string_view(argv[1]) == "replay") {
         const int threads = std::stoi(argv[3]);
         const std::string_view mode(argv[4]);
         require(threads >= 1 && threads <= 6 && (mode == "measure" || mode == "check"), "replay arm");
-        route_replay(argv[2], topo, threads, mode == "measure",
-                     std::string_view(argv[1]) == "replay-iq3s-full");
+        route_replay(argv[2], topo, threads, mode == "measure");
     } else if (argc == 5 && std::string_view(argv[1]) == "replay-scan") {
         const int threads = std::stoi(argv[2]);
         const auto bytes = std::stoull(argv[3]);

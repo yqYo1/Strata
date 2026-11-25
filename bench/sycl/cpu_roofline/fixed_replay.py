@@ -46,32 +46,7 @@ CHECK_ORDER = [(0, cores, mode) for cores in (1, 6) for mode in ('pool', 'scan')
 ORDER = [(round_id, cores, mode)
          for round_id, counts in enumerate((range(1, 7), range(6, 0, -1), (3, 6, 1, 5, 2, 4)))
          for cores in counts for mode in (('scan', 'pool') if round_id == 1 else ('pool', 'scan'))]
-IQ3S_FULL = False
-IQ3S_FLAG = 'STRATA_IQ3S_PAIR_FULL'
-FIXED_REPLAY_EVIDENCE = 'cd60b5041c7655a56c111a995f7d74348b81d8da'
-IQ3S_PROTOCOL = (
-    'Compare the existing full-row IQ3_S NT1 GU and the paired GU in the actual five-worker decode pool. '
-    'Change only STRATA_IQ3S_PAIR_FULL before exec, with identical compiled inputs and common audit. '
-    'Use the qualified fixed expert replay and reserve the caller. Each of three independent pairs '
-    'has five eligible batches per arm. Require identical prefill and decode output fingerprints, '
-    'no prefill selection, exact full-row coverage and correct selector in every batch. '
-    'Advance only when all three paired GU median times improve and the geometric mean of '
-    'the paired full-pool wall-time ratios is below one. Stop at the first failed gate. '
-    'This is an audited CPU component comparison.'
-)
 need, sha, git = recipe.need, owned.sha, recipe.git
-
-
-def select_iq3s_full():
-    global IQ3S_FULL, ROOT, BUILD, RESULT, PROTOCOL, CHECK_ORDER, ORDER
-    IQ3S_FULL = True
-    ROOT = B / 'cpu-fixed-iq3s-full-replay-v1'
-    BUILD = ROOT / 'build'
-    RESULT = RESULT.with_name('cpu-fixed-iq3s-full-replay-current.json')
-    PROTOCOL = IQ3S_PROTOCOL
-    CHECK_ORDER = [(0, 5, arm) for arm in ('reference', 'pair')]
-    ORDER = [(r, 5, arm) for r in range(3) for arm in
-             (('pair', 'reference') if r == 1 else ('reference', 'pair'))]
 
 
 def atomic_json(path, data):
@@ -204,12 +179,6 @@ def prepare():
     ggml = recipe.pins(recipe.GGML, recipe.GGML_REV, ('ggml',))
     fixture = fixture_from_capture()
     weight_pin = weights(fixture)
-    if IQ3S_FULL:
-        previous = json.loads(git(P, 'show', FIXED_REPLAY_EVIDENCE + ':' + str(
-            RESULT.with_name('cpu-fixed-expert-replay-current.json').relative_to(P))))
-        need(previous['stage'] == 'closed' and previous['ownership_closed'] and
-             previous['fixture'] == fixture and previous['weights'] == weight_pin,
-             'require the exact qualified fixed replay')
     need(sha(recipe.SDK) == recipe.SDK_SHA, 'pinned SDK manifest changed')
     allowed = json.loads(recipe.SDK.read_text())
     need(len(allowed) == 10945 and all(sha(p) == h for p, h in allowed.items()), 'SDK input drift')
@@ -217,8 +186,6 @@ def prepare():
                LD_LIBRARY_PATH='/opt/intel/oneapi/compiler/2026.2/lib', OMP_NUM_THREADS='1',
                STRATA_IQ_SINGLE_EXACT='0', STRATA_IQ3_PAIR='0', STRATA_CPU_SERVICE='0',
                TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
-    if IQ3S_FULL:
-        env.update(STRATA_IQ3_PAIR_AUDIT='1')
     allowed.update(recipe.host_inventory(env)['files'])
     tools = {str(Path(p).resolve()): sha(p) for p in
              (recipe.CC, recipe.CXX, '/usr/bin/cmake', '/usr/bin/ninja', '/usr/bin/ldd', sys.executable)}
@@ -249,8 +216,6 @@ def prepare():
                budgets=dict(build_wall=300, run_wall=45, build_rss=8 << 30, run_rss=2 << 30,
                             text=4 << 20, file=64 << 20, total=384 << 20),
                processes=[], active=False, ownership_closed=True, gpu_executed=False)
-    if IQ3S_FULL:
-        row['fixed_replay_evidence'] = FIXED_REPLAY_EVIDENCE
     save(row)
     print('Prepared fixed CPU replay; commit the plan before compiling.', flush=True)
 
@@ -273,10 +238,6 @@ def load():
     need(sha(target) == row['replay_input_sha256'] and target.read_text() == native_descriptor(row['fixture'])
          and row['check_order'] == [list(c) for c in CHECK_ORDER]
          and row['order'] == [list(c) for c in ORDER] and row['protocol'] == PROTOCOL, 'replay input or plan drift')
-    if IQ3S_FULL:
-        need(row['fixed_replay_evidence'] == FIXED_REPLAY_EVIDENCE and
-             row['environment']['STRATA_IQ3_PAIR_AUDIT'] == '1' and IQ3S_FLAG not in row['environment'],
-             'fixed evidence and common IQ3 audit required')
     return row
 
 
@@ -338,51 +299,6 @@ def summaries(row, text, mode, cores, timed):
                 median_s_per_pass=statistics.median(v['wall_s'] / v['iterations'] for v in samples))
 
 
-def iq3s_summary(row, text, arm, timed):
-    rows = [json.loads(line) for line in text.splitlines()]
-    prefill, = [v for v in rows if v['kind'] == 'iq3s_prefill']
-    decode, = [v for v in rows if v['kind'] == 'iq3s_decode']
-    data = summaries(row, '\n'.join(json.dumps(v) for v in rows
-                                   if v['kind'] not in ('iq3s_prefill', 'iq3s_decode')), 'pool', 5, timed)
-    # The partition uses 15 equal intervals of flattened GU rows. Count
-    # complete experts within each interval and keep only IQ3_S NT1.
-    full = serial = 0
-    for block in json.loads(row['fixture']['blocks']):
-        if block['fmt'][0] != 21:
-            continue
-        sizes = [len(rows) for _, rows in block['jobs']]
-        serial += sizes.count(1)
-        total = len(sizes) * 640
-        for task in range(15):
-            start, stop = total * task // 15, total * (task + 1) // 15
-            full += sizes[(start + 639) // 640:stop // 640].count(1)
-    check_rows = (full + serial) * 640
-    pair = int(arm == 'pair')
-    need(full == 36 and serial == 81 and decode['full_rows'] == check_rows and decode['pair_rows'] == check_rows * pair
-         and all(re.fullmatch(r'\d{1,20}', v['output']) for v in (prefill, decode)), 'IQ3_S untimed route or output')
-    for sample in data.get('samples', ()):
-        rows = sample['iterations'] * full * 640
-        need(sample['iq3s_full_rows'] == rows and sample['iq3s_pair_rows'] == rows * pair,
-             'IQ3_S timed route differs from the fixed pool partition')
-    return dict(data, arm=arm, outputs=dict(prefill=prefill['output'], decode=decode['output']),
-                warm_check_rows=check_rows)
-
-
-def iq3s_decision(measured):
-    def phase_median(process, key):
-        return statistics.median(v[key] / v['iterations'] for v in process['samples'])
-
-    pairs = []
-    for a, b in zip(measured[::2], measured[1::2], strict=True):
-        reference, candidate = (a, b) if a['arm'] == 'reference' else (b, a)
-        need(reference['arm'] == 'reference' and candidate['arm'] == 'pair', 'fixed pair order')
-        pairs.append(dict(gu_ratio=phase_median(candidate, 'gu_s') / phase_median(reference, 'gu_s'),
-                          pool_ratio=candidate['median_s_per_pass'] / reference['median_s_per_pass']))
-    pool_geomean = statistics.geometric_mean(p['pool_ratio'] for p in pairs)
-    return dict(pairs=pairs, pool_geomean=pool_geomean,
-                advances=all(p['gu_ratio'] < 1 for p in pairs) and pool_geomean < 1, adopted=False)
-
-
 def execute(stage):
     row = load()
     expected = dict(build='prepared', check='built', measure='checked')
@@ -397,8 +313,8 @@ def execute(stage):
 
     owner = owned.Owner(scope, persist=persist)
 
-    def run(label, argv, *, build=False, environment=None):
-        entry, out, err = owner.run(label, argv, row['environment'] if environment is None else environment, ROOT,
+    def run(label, argv, *, build=False):
+        entry, out, err = owner.run(label, argv, row['environment'], ROOT,
             wall=row['budgets']['build_wall' if build else 'run_wall'],
             rss_cap=row['budgets']['build_rss' if build else 'run_rss'],
             cpu=1200 if build else 180, text_cap=row['budgets']['text'],
@@ -430,21 +346,11 @@ def execute(stage):
             cases = CHECK_ORDER if stage == 'check' else ORDER
             for i, (round_id, cores, mode) in enumerate(cases):
                 verify_binary(row)
-                if IQ3S_FULL:
-                    args = ['replay-iq3s-full', str(ROOT / 'replay.txt'), str(cores), stage]
-                    env = dict(row['environment'], **{IQ3S_FLAG: str(int(mode == 'pair'))})
-                else:
-                    args = (['replay', str(ROOT / 'replay.txt'), str(cores), stage] if mode == 'pool'
-                            else ['replay-scan', str(cores), str(row['fixture']['unique_bytes']), stage])
-                    env = row['environment']
-                entry, out, err = run(f'case-{i}', [row['binary']['path'], *args], environment=env)
+                args = (['replay', str(ROOT / 'replay.txt'), str(cores), stage] if mode == 'pool'
+                        else ['replay-scan', str(cores), str(row['fixture']['unique_bytes']), stage])
+                entry, out, err = run(f'case-{i}', [row['binary']['path'], *args])
                 need(err.stat().st_size == 0, 'replay emitted stderr')
-                if IQ3S_FULL:
-                    data = iq3s_summary(row, out.read_text(), mode, stage == 'measure')
-                    need(not row['processes'] or data['outputs'] == row['processes'][0]['outputs'],
-                         'IQ3_S prefill or decode output differs between selectors')
-                else:
-                    data = summaries(row, out.read_text(), mode, cores, stage == 'measure')
+                data = summaries(row, out.read_text(), mode, cores, stage == 'measure')
                 row['processes'].append(dict(round=round_id, **data, owner=recipe.receipt(entry)))
             need(weights(row['fixture']) == row['weights'], 'expert weight slices changed during replay')
             if stage == 'check':
@@ -453,13 +359,10 @@ def execute(stage):
                 measured = row['processes'][len(CHECK_ORDER):]
                 need(len({(x['owner']['pid'], x['owner']['direct_identity']['start_ticks'])
                           for x in measured}) == len(ORDER), 'independent replay process count')
-                if IQ3S_FULL:
-                    row['decision'] = iq3s_decision(measured)
-                else:
-                    row['medians_s_per_pass'] = {mode: {
-                        str(cores): statistics.median(x['median_s_per_pass'] for x in measured
-                                                       if x['mode'] == mode and x['cores'] == cores)
-                        for cores in range(1, 7)} for mode in ('pool', 'scan')}
+                row['medians_s_per_pass'] = {mode: {
+                    str(cores): statistics.median(x['median_s_per_pass'] for x in measured
+                                                   if x['mode'] == mode and x['cores'] == cores)
+                    for cores in range(1, 7)} for mode in ('pool', 'scan')}
                 row['stage'] = 'closed'
     except BaseException as error:
         row.update(stage='failed', error=repr(error))
@@ -471,17 +374,12 @@ def execute(stage):
 
 
 if __name__ == '__main__':
-    steps = sys.argv[1:]
-    if steps[:1] == ['--iq3s-full']:
-        select_iq3s_full()
-        steps = steps[1:]
-    need(sys.executable == '/home/yayoi/.local/share/strata-sycl/venv/bin/python3' and len(steps) == 1
-         and steps[0] in ('prepare', 'build', 'check', 'measure'),
-         'pinned Python and [--iq3s-full] prepare|build|check|measure required')
+    need(sys.executable == '/home/yayoi/.local/share/strata-sycl/venv/bin/python3' and len(sys.argv) == 2
+         and sys.argv[1] in ('prepare', 'build', 'check', 'measure'), 'pinned Python and prepare|build|check|measure required')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])
-        if steps[0] == 'prepare':
+        if sys.argv[1] == 'prepare':
             prepare()
         else:
-            execute(steps[0])
+            execute(sys.argv[1])
