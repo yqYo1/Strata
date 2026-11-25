@@ -8073,7 +8073,9 @@ pins those slices, the prepared descriptor, build and runtime inputs. Its
 compatibility mode checks both ends of the worker-count range, then it scores
 three independent processes per core count and workload. The first five pool
 arms reserve the caller for dispatch and hidden quantization. The six-core arm
-also lets the caller run expert work. The elapsed GU, hidden quantization and
+also lets the caller run expert work. The scan uses the corresponding caller
+and worker affinities and gives the caller read work only in the six-core arm.
+The elapsed GU, hidden quantization and
 Down phases, process CPU time and caller CPU time are recorded separately.
 
 The quiet DFlash2 process 2 at `94f7eb2b0` uses native source `96832af6f`

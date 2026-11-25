@@ -252,42 +252,49 @@ void verify_placement(int host, std::vector<int> workers) {
     require(found_host && workers == observed, "replay worker affinity differs");
 }
 
-void report_placement(int host, const std::vector<int>& workers) {
+void report_placement(int host, const std::vector<int>& workers, bool caller_computes) {
     std::cout << "{\"kind\":\"replay_placement\",\"host_cpu\":" << host << ",\"workers\":[";
     for (size_t i = 0; i < workers.size(); ++i)
         std::cout << (i ? "," : "") << workers[i];
-    std::cout << "]}" << std::endl;
+    std::cout << "],\"caller_computes\":" << (caller_computes ? "true" : "false") << "}" << std::endl;
 }
 
-void ram_scan(const std::vector<int>& cores, size_t bytes = 256ull << 20, bool replay = false) {
+void ram_scan(const std::vector<int>& cores, size_t bytes = 256ull << 20, int caller_core = -1,
+              bool timing = true) {
     require(bytes >= 32 && bytes % 32 == 0, "scan layout");
+    const bool replay = caller_core >= 0;
+    const int host = replay ? caller_core : cores.front();
+    const bool caller_reads = host == cores.front();
+    const size_t first_worker = caller_reads ? 1 : 0;
     const size_t words = bytes / sizeof(uint64_t);
     std::vector<uint64_t> data(words); uint64_t expected=0;
     for(size_t i=0;i<words;++i) { data[i]=i*6364136223846793005ull+1442695040888963407ull; expected+=data[i]; }
-    std::barrier phase(static_cast<ptrdiff_t>(cores.size()));
+    std::barrier phase(static_cast<ptrdiff_t>(cores.size() + !caller_reads));
     std::atomic<bool> stop{false}; std::vector<uint64_t> sums(cores.size()); std::vector<std::thread> workers;
     auto work=[&](size_t id) {
         pin(cores[id]);
         const size_t b=(words/4*id/cores.size())*4,e=(words/4*(id+1)/cores.size())*4;
         for(;;) { phase.arrive_and_wait(); if(stop.load()) break; sums[id]=scan(data.data()+b,e-b); phase.arrive_and_wait(); }
     };
-    for(size_t i=1;i<cores.size();++i) workers.emplace_back(work,i);
-    pin(cores[0]);
+    for(size_t i=first_worker;i<cores.size();++i) workers.emplace_back(work,i);
+    pin(host);
     auto pass=[&] {
         phase.arrive_and_wait(); const size_t end=(words/4/cores.size())*4;
-        sums[0]=scan(data.data(),end); phase.arrive_and_wait();
+        if (caller_reads) sums[0] = scan(data.data(), end);
+        phase.arrive_and_wait();
         require(std::accumulate(sums.begin(),sums.end(),uint64_t(0))==expected,"RAM checksum");
     };
     try {
+        const std::vector<int> worker_cores(cores.begin() + first_worker, cores.end());
         if (replay) {
             pass();
-            const std::vector<int> workers(cores.begin() + 1, cores.end());
-            verify_placement(cores[0], workers);
-            report_placement(cores[0], workers);
+            verify_placement(host, worker_cores);
+            report_placement(host, worker_cores, caller_reads);
         }
-        measure(pass, bytes, 1, "\"mode\":\"scan\",\"threads\":" + std::to_string(cores.size()),
-                nullptr, replay);
-        if (replay) verify_placement(cores[0], {cores.begin() + 1, cores.end()});
+        if (timing)
+            measure(pass, bytes, 1, "\"mode\":\"scan\",\"threads\":" + std::to_string(cores.size()),
+                    nullptr, replay);
+        if (replay) verify_placement(host, worker_cores);
     }
     catch(...) { stop=true; phase.arrive_and_wait(); for(auto& t:workers)t.join(); throw; }
     stop=true; phase.arrive_and_wait(); for(auto& t:workers)t.join();
@@ -455,7 +462,7 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
         verify_placement(topo.host_core, worker_cores);
     };
     validate();
-    report_placement(topo.host_core, worker_cores);
+    report_placement(topo.host_core, worker_cores, host_works);
     std::cout << "{\"kind\":\"replay_input\",\"batches\":" << batches.size() << ",\"jobs\":" << jobs
               << ",\"entries\":" << entries << ",\"logical_bytes\":" << visits
               << ",\"unique_blobs\":" << unique_blobs << ",\"unique_bytes\":" << unique_bytes
@@ -477,15 +484,17 @@ int main(int argc,char** argv) try {
         const std::string_view mode(argv[4]);
         require(threads >= 1 && threads <= 6 && (mode == "measure" || mode == "check"), "replay arm");
         route_replay(argv[2], topo, threads, mode == "measure");
-    } else if (argc == 4 && std::string_view(argv[1]) == "replay-scan") {
+    } else if (argc == 5 && std::string_view(argv[1]) == "replay-scan") {
         const int threads = std::stoi(argv[2]);
         const auto bytes = std::stoull(argv[3]);
-        require(threads >= 1 && threads <= 6 && bytes <= (512ull << 20), "replay scan arm");
+        const std::string_view mode(argv[4]);
+        require(threads >= 1 && threads <= 6 && bytes <= (512ull << 20) &&
+                (mode == "measure" || mode == "check"), "replay scan arm");
         const int workers = threads == 6 ? 5 : threads;
         std::vector<int> cores(topo.worker_cores.begin(), topo.worker_cores.begin() + workers);
         if (threads == 6) cores.insert(cores.begin(), topo.host_core);
         pin(topo.host_core);
-        ram_scan(cores, static_cast<size_t>(bytes), true);
+        ram_scan(cores, static_cast<size_t>(bytes), topo.host_core, mode == "measure");
     } else if(argc==3 && std::string(argv[1])=="scan") {
         std::vector<int> ids; std::string s=argv[2]; size_t at=0;
         while(at<s.size()) { size_t end=s.find(',',at); ids.push_back(std::stoi(s.substr(at,end-at))); if(end==std::string::npos)break; at=end+1; }

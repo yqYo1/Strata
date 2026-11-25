@@ -33,7 +33,7 @@ PROTOCOL = (
     'Six physical-core counts, with the caller participating only in the six-core pool arm. '
     'Use the same real expert weights, seeded native activations and ordered jobs throughout. '
     'The scan reads an independent contiguous buffer equal to the unique weight footprint. '
-    'Use matching compute cores and reserve the same caller core for first touch. '
+    'Match worker cores, caller placement, first touch and caller participation between workloads. '
     'Three independent process rounds per cell, five scored batches per process. '
     'Hashing, allocation, quantizing initial activations, output validation and warmup precede timing. '
     'Production pool scheduling, GU, hidden quantization and Down are timed. '
@@ -42,6 +42,7 @@ PROTOCOL = (
 REQUIRED = ('bench/sycl/cpu_roofline/main.cpp', 'src/kernels/cpu/pool.cpp',
             'src/kernels/cpu/native_expert.cpp', 'src/kernels/cpu/iq_avx2.cpp')
 PROJECT = (*recipe.PROJECT, 'tools/sycl/cpu_roofline.py', 'tools/sycl/cpu_work_census.py')
+CHECK_ORDER = [(0, cores, mode) for cores in (1, 6) for mode in ('pool', 'scan')]
 ORDER = [(round_id, cores, mode)
          for round_id, counts in enumerate((range(1, 7), range(6, 0, -1), (3, 6, 1, 5, 2, 4)))
          for cores in counts for mode in (('scan', 'pool') if round_id == 1 else ('pool', 'scan'))]
@@ -203,6 +204,7 @@ def prepare():
                machine=calibration.machine(), tools=tools, environment=env, fixture=fixture, weights=weight_pin,
                metadata_sha256=sha(calibration.METADATA), ggml_revision=recipe.GGML_REV, protocol=PROTOCOL,
                replay_input_sha256=sha(target), order=[list(c) for c in ORDER],
+               check_order=[list(c) for c in CHECK_ORDER],
                external_inputs=dict(path=str(external), sha256=sha(external), files=len(allowed)),
                generated_expected={str(BUILD / 'ggml/src/ggml-version.h'): hashlib.sha256(header.encode()).hexdigest()},
                configure=['/usr/bin/cmake', '-S', str(P / 'bench/sycl/cpu_roofline'), '-B', str(BUILD),
@@ -234,6 +236,7 @@ def load():
          and row['metadata_sha256'] == sha(calibration.METADATA), 'machine, tool or model manifest changed')
     target = ROOT / 'replay.txt'
     need(sha(target) == row['replay_input_sha256'] and target.read_text() == native_descriptor(row['fixture'])
+         and row['check_order'] == [list(c) for c in CHECK_ORDER]
          and row['order'] == [list(c) for c in ORDER] and row['protocol'] == PROTOCOL, 'replay input or plan drift')
     return row
 
@@ -259,17 +262,16 @@ def summaries(row, text, mode, cores, timed):
     fixture = row['fixture']
     host, *available = row['machine']['physical_cpus']
     workers = available[:min(cores, 5)]
-    compute = [host, *workers] if cores == 6 else workers
     placement, = by_kind['replay_placement']
+    need(placement['host_cpu'] == host and placement['workers'] == workers
+         and placement['caller_computes'] == (cores == 6), 'replay caller and worker placement')
     if mode == 'pool':
-        need(placement['host_cpu'] == host and placement['workers'] == workers, 'pool placement')
         actual, = by_kind['replay_input']
         need(all(actual[k] == fixture[k] for k in ('jobs', 'entries', 'logical_bytes', 'unique_blobs', 'unique_bytes'))
              and actual['batches'] == 8 and actual['threads'] == cores and actual['host_works'] == (cores == 6)
              and actual['serial_output_equal'] and actual['verified_affinity'], 'pool replay conservation or numerics')
     else:
-        need(placement['host_cpu'] == compute[0] and placement['workers'] == compute[1:]
-             and not by_kind['replay_input'], 'read control placement')
+        need(not by_kind['replay_input'], 'unexpected expert work in the read control')
     result = dict(mode=mode, cores=cores, placement=placement)
     samples = by_kind['sample']
     need(len(samples) == (5 if timed else 0), 'scored replay sample count')
@@ -302,7 +304,7 @@ def execute(stage):
     expected = dict(build='prepared', check='built', measure='checked')
     need(row['stage'] == expected[stage] and not row['active'] and row['ownership_closed'],
          'close and commit the preceding stage before advancing')
-    need(len(row['processes']) == (2 if stage == 'measure' else 0), 'unexpected prior replay cases')
+    need(len(row['processes']) == (len(CHECK_ORDER) if stage == 'measure' else 0), 'unexpected prior replay cases')
     scope = ROOT / ('owned-' + stage)
     need(not scope.exists(), 'inspect the prior owned stage; no retry')
 
@@ -341,11 +343,11 @@ def execute(stage):
         else:
             verify_binary(row)
             need(weights(row['fixture']) == row['weights'], 'original model weight slices changed')
-            cases = [(0, n, 'pool') for n in (1, 6)] if stage == 'check' else ORDER
+            cases = CHECK_ORDER if stage == 'check' else ORDER
             for i, (round_id, cores, mode) in enumerate(cases):
                 verify_binary(row)
                 args = (['replay', str(ROOT / 'replay.txt'), str(cores), stage] if mode == 'pool'
-                        else ['replay-scan', str(cores), str(row['fixture']['unique_bytes'])])
+                        else ['replay-scan', str(cores), str(row['fixture']['unique_bytes']), stage])
                 entry, out, err = run(f'case-{i}', [row['binary']['path'], *args])
                 need(err.stat().st_size == 0, 'replay emitted stderr')
                 data = summaries(row, out.read_text(), mode, cores, stage == 'measure')
@@ -354,10 +356,11 @@ def execute(stage):
             if stage == 'check':
                 row['stage'] = 'checked'
             else:
+                measured = row['processes'][len(CHECK_ORDER):]
                 need(len({(x['owner']['pid'], x['owner']['direct_identity']['start_ticks'])
-                          for x in row['processes'][2:]}) == 36, 'independent replay process count')
+                          for x in measured}) == len(ORDER), 'independent replay process count')
                 row['medians_s_per_pass'] = {mode: {
-                    str(cores): statistics.median(x['median_s_per_pass'] for x in row['processes'][2:]
+                    str(cores): statistics.median(x['median_s_per_pass'] for x in measured
                                                    if x['mode'] == mode and x['cores'] == cores)
                     for cores in range(1, 7)} for mode in ('pool', 'scan')}
                 row['stage'] = 'closed'
