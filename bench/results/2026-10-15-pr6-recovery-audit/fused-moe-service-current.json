@@ -682547,5 +682547,43 @@
       }
     },
     "decision": "Keep the V2 campaign failed. Replay its first process with a committed slot-aware reader before collecting a fresh pair."
+  },
+  "dflash2_width_generation_v2_reader_replay": {
+    "source_commit": "44d381fe1882fc2dd1024a0f00119cd1c1416ae2",
+    "original": "ae25f8272459495f3502e492cfdd2c08a16c769a",
+    "capture_sha256": "990a0c838576b70e05e805c980870baa6e7064aaf104d9611361c0c329f3ac22",
+    "fresh_gpu_execution": false,
+    "original_campaign_remains_failed": true,
+    "native_output_tokens": 3101,
+    "exact_native_decode_tps": 15.632427734679236,
+    "verifier_work": [
+      {
+        "windows": 921,
+        "target_rows": 3681,
+        "unissued_outputs_at_end": 2
+      }
+    ],
+    "expert_work": [
+      {
+        "cpu_unique_misses": 1247573,
+        "cpu_entries": 1601793
+      }
+    ],
+    "prefill_placement": [
+      {
+        "strategy": "ttft",
+        "chunk": 1024,
+        "batched_rows": 33216,
+        "scratch_bytes": 457700608,
+        "shared_bytes": 221739776
+      }
+    ],
+    "negative_controls": [
+      "wrong cache slots",
+      "wrong per-layer slots",
+      "wrong verifier width"
+    ],
+    "original_1256_slot_default_control": true,
+    "passed": true
   }
 }
