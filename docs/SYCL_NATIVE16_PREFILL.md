@@ -11070,11 +11070,13 @@ ownership through refill and publication. The head kernel is another unit.
 Keep these checks separate from the original spec4 long-prefill comparison.
 
 The first loan-off width-four process exits during canonical DPAS
-initialization because it also disabled the independent head-release
-setting. The owner reaps the child, its session empties and Xe records
-no fresh fault. Preserve that failed run at `7a79943bd`. The replacement
-plan selects the required head setting for both widths with cache scratch
-borrowing disabled. Recheck the frozen host plan before either GPU arm.
+initialization with the independent head-release setting disabled
+(`7a79943bd`). The replacement initializes the canonical head and all
+1,024 expert slots, then stops because the loan audit requires profiled
+borrowing (`e0134492b`). Both children are reaped with empty sessions and
+no fresh Xe fault. The current plan pairs the canonical DPAS head with
+its required head-release setting and disables both cache borrowing and
+its audit. Recheck the frozen host plan before either GPU arm.
 
 Even at five emitted tokens per verifier window, 70 tok/s allows only
 71.43 ms for a complete window. The older regular-code clock bracket at
