@@ -11098,15 +11098,21 @@ at draft confidence zero. [Performance CSV](../bench/performance-records.csv).
 In the repeated width-five sample, decode takes 279.45 ms per window at
 3,039 outputs across 760 windows. Matching 15.8067 tok/s with that same yield
 allows 252.97 ms per window. If the full 8.39 ms standalone Q6 head saving
-carried into all 759 width-five model windows, the resulting estimate would
-be 14.75 tok/s. Retain the head as an isolated experiment and measure its
-actual effect. The dense shapes and CPU expert service each need their own
-comparisons. `b06064ead` records the independent decode selector. The
-projection at `29b741815` preserves the target-snapshot build's prefill and
-changes five source inputs for the Q6 head and its host controls. Start with
-the parameter-validated 82-token probe, then hold the same width and workload
-in the sustained comparison. Full-context and RESTORE coverage of the new
-model build remains pending.
+carried into all 759 width-five model windows, the estimate was 14.75 tok/s.
+The isolated head comparison closes at `b71522878`. All six processes
+read 33,217 fresh tokens and generate 3,039 tokens with identical outputs,
+2,279 of 3,036 accepted drafts, 760 windows and matched verifier and CPU
+expert work. TG goes from 14.344 to 14.734, 14.235 to 14.679 and 12.840 to
+14.796 tok/s in the three matched pairs. All processes exit normally with
+no fresh Xe faults. The 14.734 tok/s candidate median qualifies an isolated
+width-five head gain and leaves width four as the model reference. Keep
+the slower third control in the reported spread.
+[Performance CSV](../bench/performance-records.csv).
+
+Compare the 2560×10240 dense projection as the next separate GPU unit,
+holding the head switch fixed. The CPU expert service experiment has its
+own control. The weak-draft, agent-session, physical-context and RESTORE
+checks remain open for the new composition.
 
 Even at five emitted tokens per verifier window, 70 tok/s allows only
 71.43 ms for a complete window. The older regular-code clock bracket at
