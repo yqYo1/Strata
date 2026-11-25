@@ -11301,7 +11301,12 @@ In the first clean pair, the empty-cache process at `22f34df33` completes
 with no fresh Xe fault. Its first and subsequent prefill are 109.4903 and
 97.3855 s (935.252 and 1,051.502 tok/s), with first client TTFT 109.672 s.
 Both requests have the planned placement and work. The paired seeded
-process uses the same statistics-disabled protocol.
+process at `c87be1f29` completes with the same work and no new Xe fault.
+Its first and subsequent prefill are 108.8540 and 97.4229 s (940.719 and
+1,051.098 tok/s), with first client TTFT 109.043 s. The first-prefill and
+subsequent-prefill time ratios are 0.99419 and 1.00038. Readiness spans
+54.881–54.966 s empty and 42.568–42.653 s seeded. Seed directory preparation
+takes 0.206 s. Collect the reverse-order pair before deciding repeatability.
 
 The [primary continuation plan](../bench/dflash2_primary_continuation.py)
 uses the same retained binary and KV selection for three independent
