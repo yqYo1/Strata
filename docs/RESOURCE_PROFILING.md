@@ -234,6 +234,16 @@ For context, the prior six-thread 256 MiB checksum-read calibration reached
 and reuse evidence before selecting a residency, work-reduction or kernel
 change for the width-four path.
 
+The first caller-observed process at `7340714a9` matches the clean work and
+emits 4,111 tokens at 16.649 tok/s. The 1,345 windows average 83.67 ms in the
+CPU expert-pool wrapper, 82.26 ms in layer and final GPU completion intervals,
+and 17.66 ms elsewhere. Native waits account for 46.36% of caller thread CPU
+time. Replacing the sum of the first two intervals with their maximum at
+fixed work gives a sensitivity estimate of 30.17 tok/s. Dependency limits
+and additional overlap work affect what can actually be achieved. Complete
+the separate event-query observation and second clean control before
+qualifying these attribution results.
+
 ### Decode worker instrumentation on the a347 build
 
 The current a347 engine, built from `221e95e9ad890383deb418d0a865ee32c99168b6`,
