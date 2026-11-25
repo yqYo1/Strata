@@ -21,6 +21,7 @@ ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 NATIVE = ('CMakeLists.txt', 'cmake', 'src', 'include', 'third_party', 'tests')
 CHANGES = ('src/prefill/layer_major.inc', 'tests/sycl/expert_bank.cpp')
+REQUIRED_SOURCES = (*primary.REQUIRED_SOURCES, *CHANGES)
 
 
 def references():
@@ -51,31 +52,55 @@ def recipe(build):
                 environment={k: v.replace(str(BASE), str(ROOT)) for k, v in original['environment'].items()})
 
 
-def plan():
+def plan(revision=None):
     git = bank.basis.validation.git
-    revision = git('rev-parse', 'HEAD').decode().strip()
+    head = git('rev-parse', 'HEAD').decode().strip()
+    revision = head if revision is None else revision
     dirty = subprocess.check_output(['git', 'status', '--porcelain=v1'], cwd=bank.P, timeout=15)
-    require(not dirty and tuple(git('diff', '--name-only', BASE_SOURCE, revision, '--', *NATIVE)
+    require(not dirty and not git('diff', '--name-only', revision, head, '--', *primary.PREFIXES)
+            and tuple(git('diff', '--name-only', BASE_SOURCE, revision, '--', *NATIVE)
             .decode().splitlines()) == CHANGES
             and not git('diff', '--name-only', DEVICE_FIXTURE, revision, '--', *NATIVE),
-            'commit only the two device-checked native changes for this candidate')
+            'preserve the frozen build sources and the two device-checked native changes')
     build, controls = references()
     return dict(source_commit=revision, phase_references=controls, native_changes=list(CHANGES), recipe=recipe(build))
 
 
+def activate():
+    primary.ROOT, primary.KEY, primary.THIS = ROOT, KEY, THIS
+    primary.references, primary.recipe = references, recipe
+    primary.foundation_reader = foundation.historical_foundation
+    primary.REQUIRED_SOURCES = REQUIRED_SOURCES
+
+
+def recorded_plan(record):
+    frozen = plan(record['native_source_commit'])
+    require(record['mode16_batch_plan'] == frozen, 'candidate build plan changed')
+    return frozen
+
+
+def admitted_build():
+    record = bank.previous.read(ROOT / 'record.json')
+    require(record['stage'] == 'built' and record['passed'] and record['complete']
+            and record['ownership_closed'] and not record['active'], 'finish the coherent candidate build')
+    recorded_plan(record)
+    activate()
+    primary.check(record)
+    return record
+
+
 def main(action):
     require(action in ('plan', 'prepare', 'configure', 'compile'), 'use plan|prepare|configure|compile')
-    frozen = plan()
     if action == 'plan':
-        print(json.dumps(dict(frozen, produces_artifacts=False), indent=2))
+        print(json.dumps(dict(plan(), produces_artifacts=False), indent=2))
         return
     if action == 'prepare':
+        frozen = plan()
         legacy_roots = (primary.SNAPSHOT_ROOT, foundation.ORIGINAL.ROOT)
         require(not any((root / 'build' / 'strata').exists() for root in legacy_roots),
                 'close the live legacy build consumers before adding the candidate generation')
     else:
-        record = bank.previous.read(ROOT / 'record.json')
-        require(record['mode16_batch_plan'] == frozen, 'candidate build plan changed')
+        frozen = recorded_plan(bank.previous.read(ROOT / 'record.json'))
     save = primary.save
 
     def publish(record):
@@ -84,10 +109,8 @@ def main(action):
         record['retention'] = 'Retire the candidate after the comparison closes or a qualification gate fails.'
         save(record)
 
-    primary.ROOT, primary.KEY, primary.THIS = ROOT, KEY, THIS
-    primary.references, primary.recipe, primary.PREFILL = references, recipe, PREFILL
-    primary.foundation_reader = foundation.historical_foundation
-    primary.REQUIRED_SOURCES = (*primary.REQUIRED_SOURCES, *CHANGES)
+    activate()
+    primary.PREFILL = PREFILL
     primary.save = publish
     primary.main(action)
 

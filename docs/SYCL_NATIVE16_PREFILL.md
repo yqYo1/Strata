@@ -11344,6 +11344,9 @@ live toolchain and runtime inputs. Use the artifact-free `plan` first.
 At `de4494888`, the plan verifies both live phase executables, reports
 the two expected native source paths and 11 primary targets, and leaves
 the candidate output root absent.
+After preparation, each stage checks the original source commit in the
+receipt. It allows later result and documentation commits outside the
+build inputs and refuses changes within the pinned source scope.
 Before `prepare`, resolve the live consumers of the old coherent and
 snapshot builds. Retire this candidate at the first failed gate or
 after the comparison when its consumers close.
@@ -11379,6 +11382,13 @@ placement. The replay uses the exact retained demand log from curve
 process 3 and exercises the parser before launching the model candidate.
 At `de4494888` all three archived demand and three synthetic batch
 frames pass. The reader rejects all 15 intentional mismatches.
+The [benchmark controller](../bench/dflash2_mode16_batch_model.py)
+uses the normal owned `bench.sh` launch and exit checks, the exact
+original three request bodies, private caches for each process and the
+counterbalanced demand/batched order. Each actual request is checked
+before the next one continues. A closed experiment evaluates three
+paired median warm times and keeps separate first and subsequent TTFT.
+The reconciled 24-token handoff is the decode check for this comparison.
 
 The [primary driver cache comparison](../bench/dflash2_primary_driver_cache.py)
 reuses the older NEO inventory, private copy, readiness and counter readers.
