@@ -653648,7 +653648,7 @@
     }
   },
   "cpu_iq3s_sign_parity_v1": {
-    "stage": "built",
+    "stage": "closed",
     "source_commit": "49135e918d64977979659ae7dd6cfe476140af5b",
     "fix": "200ce45c3",
     "ggml_revision": "3cf03257f219afbe7334045ff7c6a06ac68c627d",
@@ -653747,8 +653747,8 @@
     },
     "active": false,
     "ownership_closed": true,
-    "complete": false,
-    "passed": false,
+    "complete": true,
+    "passed": true,
     "GPU_executed": false,
     "build_evidence": {
       "compiler_inputs": {
@@ -653809,7 +653809,21 @@
           "direct_child_reaped": true,
           "session_empty": true
         }
+      ],
+      "check": [
+        {
+          "label": "parity",
+          "exit_code": 0,
+          "direct_child_reaped": true,
+          "session_empty": true
+        }
       ]
+    },
+    "test_exit": 0,
+    "cases": {
+      "single": 384,
+      "IQ3_XXS_pair": 80,
+      "IQ3_S_pair": 80
     },
     "project_inputs": {
       "files": 208,
