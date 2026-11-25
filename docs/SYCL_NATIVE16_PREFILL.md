@@ -11134,11 +11134,11 @@ the post-generation extent and preserves the earlier failure.
 [live restore runner](../bench/dflash2_primary_restore.py) and
 [tap payload comparison](../bench/dflash2_primary_tap_payload.py).
 
-The three closed diagnostic roots below have no subsequent raw-output
-consumer. The curve reads the committed timing reference. Preserve the
-validated model and build assets. Remove these exact private state roots
-after the result is reachable from the pushed primary. Inventory SHA-256
-uses compact JSON of sorted relative paths, file byte counts and file hashes.
+Retired the three closed diagnostic roots below after verifying their inventories,
+process closure and exact results in pushed commit `63c0c6353`. This removed 332
+files and 73,583,611 bytes. The curve reads the committed timing reference, and
+the validated model and build assets remain available. Inventory SHA-256 uses
+compact JSON of sorted relative paths, file byte counts and file hashes.
 
 | Diagnostic root | Files | Bytes | Inventory SHA-256 |
 | --- | ---: | ---: | --- |
