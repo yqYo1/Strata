@@ -11311,8 +11311,9 @@ Use the primary pinned `icpx` SHA-256
 `59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213`
 and recipe environment with private temporary/cache paths. Substitute this
 committed worktree for the primary materialized source paths and replace
-`-o OBJECT -c` with `-fsyntax-only`. The hardware fixture and model
-admission require a separate coherent candidate build.
+`-o OBJECT -c` with `-fsyntax-only`. Both translation units pass at
+`2a4e040bf`. The hardware fixture and model admission require a separate
+coherent candidate build.
 
 On one candidate binary compare demand against batched with three
 opposite-order 102,401-token pairs. Hold the cache state, KV retention,
