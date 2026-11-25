@@ -11170,14 +11170,35 @@ verifier replay counts and placement. The processes close with no fresh
 Xe faults. The same-binary sustained comparison is frozen at `19f40a065`
 with six independent processes on the 33,217-input regular-code workload.
 
-The first pair at `dff0160a8` and `d90e9d7c9` uses identical input bytes,
-closes normally and checks the intended capture counts without a fresh Xe
-fault. Reference and dense give 14.782 and 15.420 tok/s, with 3,039 and
-3,203 emitted tokens across 760 and 788 verifier windows. Window time is
-270.52 and 263.60 ms, and useful yield is 3.999 and 4.065 tokens per window.
-CPU expert misses also change from 1,213,944 to 1,247,119. Both samples pass
-process admission. The pair lacks matched work for the projection gate.
-Use the remaining frozen repetitions to establish within-arm work stability.
+The closed six-process result at `7360c14ac` has normal exit, confirmed
+ownership closure and zero fresh Xe faults in every process. The three clean
+reference rates are 14.782/14.793/14.696 tok/s. Dense gives
+15.420/15.470/15.519 tok/s. Each arm repeats its own output and expert work:
+3,039 vs. 3,203 outputs, 760 vs. 788 verifier windows, and 1,213,944 vs.
+1,247,119 CPU expert misses. The candidate rate is higher in every pair.
+All three differ in verifier and expert work and fail the predefined projection
+gain gate. Median decode duration is 205.59 s for the reference and 207.05 s
+for dense. Median TTFT is 213.083/213.020 s. Retain the width-four decode
+selection and use the measured 122,881-input route for direct-writer
+qualification. `dff0160a8` and `d90e9d7c9` retain the original first pair.
+
+The closed dense generation has no live executable consumer. The next
+direct-write tap qualification uses the target-snapshot generation and the
+width-four speed reference remains separate. The dense source recovery
+against `b5814ddd5` and `700e3b74c` matches 1,171 native sources, the
+configured recipe, 138 graph objects, 1,475 compiler inputs, 30 external
+link inputs and all 13 executables. The measured engine SHA-256 is
+`da3268e6e9ddab025c85aab61b4b7c6447f574667038ffff80a3de5a6b635783`.
+
+Retire the following state paths after preserving the committed result.
+The scopes exclude each root's compact `record.json`. Hashes cover sorted
+relative paths, sizes and content hashes in compact JSON.
+
+| Scope | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-c5-dense-native-v1` | 1,374 | 196,655,720 | `a8c85e3c401425f2fbc344ec5d94777f5f51707f2eef4a40ac38391948fe3968` |
+| `dflash2-c5-dense-generation-v1` | 376 | 86,176,666 | `97fa5309bc4b5718fb65095f33ce8f6e3ae535d25345f5dc73242a8f295aac34` |
+| `dflash2-c5-dense-admission-v1` | 92 | 22,889,200 | `253db90a13b2ca5f3662313c60c886641660723fda5c90f8f521a6bd5443d413` |
 
 Even at five emitted tokens per verifier window, 70 tok/s allows only
 71.43 ms for a complete window. The older regular-code clock bracket at
