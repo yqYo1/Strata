@@ -91,6 +91,15 @@ def context():
         ctx.build.check_inputs(row)
         require(row['recipe']['targets'] == row['recipe']['build_targets'] == [TARGET]
                 and 'LD_PRELOAD' not in row['recipe']['environment'], 'fixture-only build recipe required')
+        if 'binary' in row:
+            image = row['binary']
+            require(Path(image['path']).stat().st_size == image['bytes'] and sha(image['path']) == image['sha256'],
+                    'fixture executable changed')
+            actual = row['actual_inputs']
+            require(sha(actual['path']) == actual['sha256'], 'actual compiler inputs changed')
+            inputs = json.loads(Path(actual['path']).read_text())
+            require(all(sha(path) == value for name in ('compiled', 'generated', 'links')
+                        for path, value in inputs[name].items()), 'a compiled or linked input changed')
 
     ctx.current = current
     return ctx
@@ -113,6 +122,8 @@ def prepare(ctx):
         toolchain=compiler['toolchain'], external_inputs=native['external_inputs'], recipe=recipe,
         fallbacks=dict(strata=identity['engine']), selected_native=identity,
         budgets=ctx.BUDGET, commands=[], passed=False, complete=False, active=False, ownership_closed=True,
+        host_budget=dict(wall=120, cpu=120, rss_cap=1 << 30, text_cap=1 << 20,
+                         file_cap=2 << 20, total_cap=64 << 20),
         plan=dict(compile_target=TARGET, initial_native_checks=['--host', '--host-c5', '--check-c5-small'],
             scope='One fixture-only build. Match the retained DPC++ recipe. Validate device loading and five-column numerical results in a separate bounded run.',
             next='After the small guard/oracle checks, measure head and dense shapes independently in three fresh processes.'),
@@ -124,13 +135,43 @@ def prepare(ctx):
     ctx.save(row)
 
 
+def host(ctx):
+    row = json.loads((ROOT / 'record.json').read_text())
+    ctx.current(row)
+    require(row['stage'] == 'built' and row['passed'] and row['ownership_closed']
+            and 'host' not in row, 'a fresh committed fixture is required')
+    def persist():
+        ctx.write(ROOT / 'host-execution.json', dict(active=bool(owner.active), commands=owner.commands))
+
+    owner = base.ownership.Owner(ROOT / 'owned-host', persist)
+    outcomes = []
+    try:
+        for flag, expected in (('--host', 'HOST passed=1 cases=31 GPU=0'),
+                               ('--host-c5', 'HOST_C5 passed=1 cases=10 GPU=0')):
+            entry, out, _ = owner.run(flag.removeprefix('--'), [row['binary']['path'], flag],
+                                      row['recipe']['environment'], P, **row['host_budget'])
+            require(base.ownership.closed(entry) and entry['exit_code'] == 0
+                    and out.read_text().splitlines() == [expected], 'host controls differ: ' + flag)
+            outcomes.append(dict(argument=flag, exit_code=0, result=expected))
+    except BaseException as error:
+        row['host'] = dict(passed=False, error=repr(error), outcomes=outcomes)
+        raise
+    else:
+        row['host'] = dict(passed=True, outcomes=outcomes)
+    finally:
+        row['host']['ownership_closed'] = not owner.active and all(base.ownership.closed(c) for c in owner.commands)
+        ctx.save(row)
+
+
 if __name__ == '__main__':
-    require(sys.argv[1:] in (['prepare'], ['build']), 'use prepare or build')
+    require(sys.argv[1:] in (['prepare'], ['build'], ['host']), 'use prepare, build or host')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         base.feature.guards.no_model_owners([])
         ctx = context()
         if sys.argv[1] == 'prepare':
             prepare(ctx)
-        else:
+        elif sys.argv[1] == 'build':
             ctx.compile_fixture()
+        else:
+            host(ctx)
