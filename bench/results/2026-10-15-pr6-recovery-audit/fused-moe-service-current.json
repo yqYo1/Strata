@@ -687151,7 +687151,7 @@
     }
   },
   "dflash2_c5_dense_admission_v1": {
-    "stage": "prepared",
+    "stage": "partial",
     "plan": {
       "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
       "driver": {
@@ -687453,7 +687453,106 @@
       ],
       "scope": "Independent 82-input, 32-output, width-five requests with identical head settings. Move exactly 22 canonical Q6 2560x10240 calls to DPAS. Require unchanged verifier work, token hashes and placement, checked closure and zero fresh Xe faults."
     },
-    "outcomes": {},
+    "outcomes": {
+      "reference": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "requests": [
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 28,
+            "offered": 28,
+            "finish": "length"
+          }
+        ],
+        "info": {
+          "context": "262144",
+          "spec": "5",
+          "kv": "int8",
+          "kv_resident": "20480",
+          "expert_slots": "1024",
+          "lookup": "0",
+          "pool_workers": "5",
+          "pcie_frac": "0.00",
+          "spec_min_p": "0.00"
+        },
+        "native_exit_code": 0,
+        "native_identity": {
+          "pid": 3620004,
+          "start_ticks": 395630601
+        },
+        "validation": {
+          "pid": 3620004,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "window_work": {
+          "width_counts": {
+            "1": 1,
+            "5": 7
+          },
+          "accepted_prefix_counts": {
+            "0": 1,
+            "4": 7
+          },
+          "final_window": [
+            112,
+            5
+          ],
+          "final_commit": 5,
+          "commit_end": 117,
+          "committed_after_last_output": 4
+        },
+        "head_captures": [
+          {
+            "rows": 1,
+            "capture_id": 3,
+            "completed": 1,
+            "route": "q6-columns"
+          },
+          {
+            "rows": 5,
+            "capture_id": 4,
+            "completed": 7,
+            "route": "dpas"
+          }
+        ],
+        "dense_reference_calls": {
+          "2560x10240": 22,
+          "6144x2560": 40,
+          "2560x6144": 14,
+          "2560x12288": 5
+        },
+        "capture_counts": {
+          "reference": 102,
+          "columns": 0
+        },
+        "draft_vram_bytes": 845776220,
+        "verifier_buffer_mib": 69.9,
+        "dense_dpas_calls": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    },
     "complete": false,
     "passed": false,
     "ownership_closed": true
