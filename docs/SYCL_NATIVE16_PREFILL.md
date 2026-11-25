@@ -11050,8 +11050,12 @@ digests over 81 rows before ingestion, generates 32 tokens, accepts 23 of
 checks pass. The copy process at `5c89553c9` passes the complete
 82/122881/82 sequence. Both short prompts reproduce the smoke digests and
 the long prompt records 2,046 rows in each layer. The copy route records
-120,795,955,200 requested device-copy bytes. Direct-write digest equality
-is the remaining check. Keep the diagnostic switch off for speed samples.
+120,795,955,200 requested device-copy bytes. The same-build direct
+writer at `321c5776a` requests zero of those copy bytes. All five digests
+match for every prompt, as do target state, cache refill and measured work.
+Both independent processes close normally with zero fresh Xe faults.
+The observer is charged in this comparison. The clean prefill speed
+reference remains the earlier paired `ad8652973` result.
 [Tap comparison reader](../bench/sycl/dflash2_tap_payloads.py).
 
 The target-only conversation snapshot change from `7e1ad6e28` and its host
