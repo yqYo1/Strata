@@ -1,6 +1,5 @@
 """Recover the exact primary build foundation without reading old executables."""
 
-import json
 from pathlib import Path
 import sys
 
@@ -52,10 +51,9 @@ def historical_foundation(*, expected=None):
         evidence = bank.previous.historic(EVIDENCE, key)
         require(bank.signature(evidence) == digest, 'an original closed qualification changed: ' + key)
 
+    probe = row['native_validation_probe']
     for item in (row['recipe_seed'], row['external_inputs'], proof['runtime_manifest'],
-                 *row['native_validation_probe'].values()):
-        if not isinstance(item, dict) or 'path' not in item or 'sha256' not in item:
-            continue
+                 probe['loader'], probe['library']):
         require(bank.sha(item['path']) == item['sha256'], 'a live foundation input changed: ' + item['path'])
     require(all(bank.sha(p) == h for p, h in row['toolchain'].items()), 'the original toolchain changed')
     for manifest in (row['external_inputs'], proof['runtime_manifest']):
