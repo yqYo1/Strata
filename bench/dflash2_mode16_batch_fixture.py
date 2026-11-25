@@ -86,7 +86,7 @@ def main():
         for path in scratch.values():
             Path(path).mkdir(mode=0o700)
         owner = builder.ownership.Owner(ROOT / 'owned')
-        outcome = dict(source_commit=revision, primary_evidence=BASE_EVIDENCE, fixture_passed=False)
+        outcome = dict(source_commit=revision, primary_evidence=BASE_EVIDENCE, host_probe_accepted=False)
         build = primary.ROOT / 'build'
         try:
             build_env = dict(record['recipe']['environment'], **scratch)
@@ -115,15 +115,19 @@ def main():
             device.diagnostics.diagnostics(log, item['pid'])
             validation_log = ROOT / 'validation.log'
             require(lines == expected and 'urEnqueueUSMMemcpy' in log
+                    and probe['loader'] == envelope['native_validation_probe']['loader']['path']
                     and (not validation_log.exists() or validation_log.stat().st_size == 0),
                     'upload counts, payload, guards, or API validation differ')
             providers = device.loaded_providers(log, dict(envelope, environment=env))
-            outcome.update(cases=lines, validation=probe, providers=providers, fixture_passed=True)
+            outcome.update(cases=lines, validation=probe, providers=providers, host_probe_accepted=True)
         except Exception as error:
             outcome['error'] = str(error)
         finally:
             validation.finish(outcome, owner, cursor, envelope['boot'])
-            outcome['passed'] = outcome['passed'] and outcome['fixture_passed'] and outcome['driver_after'] == envelope['driver']
+            outcome['passed'] = outcome['passed'] and outcome['driver_after'] == envelope['driver']
+            outcome['commands'] = [dict(label=cmd['label'], argv=cmd['argv'],
+                environment_sha256=bank.signature(cmd['environment']), exit_code=cmd.get('exit_code'),
+                ownership_closed=builder.ownership.closed(cmd)) for cmd in owner.commands]
             bank.stage.write(ROOT / 'record.json', outcome)
         print(json.dumps({k: v for k, v in outcome.items() if k != 'commands'}), flush=True)
         require(outcome['passed'], outcome.get('error', 'fixture validation, driver or ownership failed'))
