@@ -11394,6 +11394,10 @@ with the qualified interpreter and measurement lock. They check saved
 stage commits, matched launch settings and the warm-gain rule. The
 launch-settings control reuses the closed reference build as an offline
 stand-in until the candidate engine exists.
+The initial host check at `0bfbb4fbc` exposed an inherited absolute launcher
+path into the primary worktree. Generate the configuration with the
+candidate worktree's pinned launcher and working directory, and select
+the executable from its hashed plan.
 
 The [primary driver cache comparison](../bench/dflash2_primary_driver_cache.py)
 reuses the older NEO inventory, private copy, readiness and counter readers.

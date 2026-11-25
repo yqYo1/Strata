@@ -33,7 +33,10 @@ class Mode16BatchModelTest(unittest.TestCase):
             self.assertEqual(command[command.index('--runs') + 1], '3')
             self.assertIn('--think', command)
             cfg = ctx.configuration(row, plan)
-            self.assertEqual(cfg['exe'], old_build['binaries']['strata']['path'])
+            self.assertEqual(cfg['exe'], str(model.bank.P / 'tools/sycl/engine_once.py'))
+            self.assertEqual(cfg['cwd'], str(model.bank.P))
+            self.assertEqual(model.clock.inputs(ctx, row, plan)['plan.json']['binary'],
+                             old_build['binaries']['strata'])
             self.assertEqual(cfg['args'][cfg['args'].index('--draft') + 1], 'dflash2')
             env = ctx.environment(row, plan)
             self.assertEqual(env.pop(model.UPLOAD), plan['arm'])

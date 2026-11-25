@@ -69,6 +69,11 @@ def command(plan):
     return cmd
 
 
+def configuration(row, plan):
+    owned = dict(row['configuration'], exe=str(bank.P / 'tools/sycl/engine_once.py'), cwd=str(bank.P))
+    return speed.generation.configuration(dict(row, configuration=owned), plan)
+
+
 def environment(row, plan):
     return dict(curve.environment(row, plan), **{UPLOAD: plan['arm']})
 
@@ -109,7 +114,7 @@ def experiment():
     ctx = clock.experiment()
     ctx.ROOT, ctx.KEY, ctx.THIS, ctx.ORDER = ROOT, KEY, THIS, ORDER
     ctx.baseline, ctx.protocol = baseline, PLAN
-    ctx.configuration, ctx.command, ctx.environment = speed.generation.configuration, command, environment
+    ctx.configuration, ctx.command, ctx.environment = configuration, command, environment
     original_save, original_current = ctx.save, ctx.current
     previous_pins = speed.experiment().pins
 
