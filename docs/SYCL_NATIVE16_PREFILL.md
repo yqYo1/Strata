@@ -8002,6 +8002,10 @@ such calls per width-five capture. This gives the largest sum of component
 time differences among the four audited dense shapes. The sum is a selection
 heuristic. Both routes use the same canonical weights. Compare the projection
 with its own switch and keep the head setting fixed until the combined trial.
+The four-file projection from `063ec7946` applies to the verified compiled
+C5-head source. Reversing it restores each of the four original hashes.
+Reconstruct the complete source and recipe before retiring the head
+comparison generation and making the coherent projection build.
 [Performance CSV](../bench/performance-records.csv).
 
 Keep prefill and decode kernels, placement, scheduling and selectors independent.
@@ -8117,13 +8121,13 @@ sorted relative paths, sizes and content hashes in compact JSON. The closed
 result and source are reachable from the pushed feature branch. The holdout
 routing capture remains available for the model cache and fixed-work decisions.
 
-The rejected full-row candidate used the external state directory
+Retired the rejected full-row candidate's external state directory
 `cpu-fixed-iq3s-full-replay-v1`. Its 94 files total 16,419,704 bytes.
 SHA-256 of the sorted relative paths, sizes and content hashes in compact
 JSON is `5618e95a090a619306736442c09ff0826356ea592bb7854b6d526ab748952b6c`.
 Verified the original source and recipe against its final executable, 633
-compiler inputs and 22 external linker inputs. Retire this directory once
-the exact result commit is reachable on the pushed primary.
+compiler inputs and 22 external linker inputs before deletion. The exact
+result commit is reachable on the pushed primary.
 
 The quiet DFlash2 process 2 at `94f7eb2b0` uses native source `96832af6f`
 and reports a filled 1,256-slot cache at 2.40 GiB. The manifest and the
