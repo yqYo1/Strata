@@ -403,11 +403,10 @@ native source delta, and the relocated recipe. Subsequent
 `prepare`, `configure` and `compile` use a separate candidate directory
 and the standard owned measurement lock. The only new build target is
 the standalone host fixture. This avoids a partial relink and preserves
-the existing measurements and both phase references. Before creating a
-generation, resolve retention for the older snapshot and coherent build:
-the current primary admission still reads their executables and fixtures
-through `primary.references` and `coherent_original_reuse.verify_original`.
-Those are live dependencies until their readers are reconciled. The
+the existing measurements and both phase references. The current primary
+curve and continuation readers still use the older snapshot executable and
+the coherent build fixtures. Resolve those consumers before creating the
+candidate generation. The
 [historical snapshot recovery](../bench/sycl/dflash2_snapshot_source_recovery.py)
 passes at `416c66058`: the two archived projections reconstruct all 1,171
 source files and the exact recipe without retaining duplicate sources.
@@ -419,13 +418,12 @@ committed primary receipt. The two serialized host checks at `2e2191bf8`
 pass: recovery succeeds with any open or stat of the 12 old executables
 rejected, and a changed expected recipe hash stops admission. The toolchain,
 runtime, probe and original compiler-input metadata are still checked live.
-The older snapshot references and other live readers still need reconciliation
-before retiring their builds.
-The artifact-free plan at `3a1fee123` accepts the exact measured primary
-binary and reports four native paths and 12 build targets. The proposed
-native files match the syntax-checked revision `88215efa1`. No new build
-generation has been created. Native link and callback validation remain
-pending.
+The artifact-free plan at `883309be1` verifies the selected primary prefill
+binary from `bfc0c54ae` and the separate decode binary from `d6f2b8294`.
+It reports four native paths matching the syntax-checked revision
+`88215efa1` and 12 build targets. The old target snapshot binary is
+still needed by the frozen primary readers; the census plan uses the
+current primary recipe. Native link and callback validation remain pending.
 
 Compare the native first 256 verifier windows of offered rows and check a
 following short request, cancellation and RESTORE. Keep route, output,
