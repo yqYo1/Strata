@@ -11047,8 +11047,11 @@ The coherent observer build has 137 fresh objects and passes its host gate
 at `89667ea9d`. The fresh 82-input request at `fb3d64f1d` records all five
 digests over 81 rows before ingestion, generates 32 tokens, accepts 23 of
 23 drafts and closes normally with no fresh Xe fault. The source and asset
-checks pass. The 82/122881/82 copy and direct payload comparison remains
-separate. Keep the diagnostic switch off when collecting speed samples.
+checks pass. The copy process at `5c89553c9` passes the complete
+82/122881/82 sequence. Both short prompts reproduce the smoke digests and
+the long prompt records 2,046 rows in each layer. The copy route records
+120,795,955,200 requested device-copy bytes. Direct-write digest equality
+is the remaining check. Keep the diagnostic switch off for speed samples.
 [Tap comparison reader](../bench/sycl/dflash2_tap_payloads.py).
 
 For the subsequent length curve, the measured source at `ad8652973`

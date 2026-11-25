@@ -204,10 +204,20 @@ or making Gate/Up alone 3.02 to 3.03 times faster. This budget gives zero
 extra CPU time to scheduling or work outside the measured leaves. Keep it
 separate from the V2 caller-wall budget. Both apply to their measured routes.
 
-After the isolated width-five projection comparison, verify the selected
-route's output yield and disjoint caller intervals, then measure worker leaf
-cost with its own clean brackets. Use observed job reductions and the actual
-affected format bins to size placement and kernel candidates. Physical RAM
+The earlier default-route query observation at `55265f9e3` covers
+208.368 s of decode. The resident pool-return query consumes 354.338 ms of
+wrapper wall time, or 0.170% of decode. Its partner at launch adds 150.074 ms.
+This puts the two resident queries at 0.242% on that measured route.
+The current DFlash2 width-four route needs its own measurement before
+prioritizing any query change.
+
+The width-four controller at `14f102cdb` uses the retained 16.694 tok/s
+incumbent with two clean processes bracketing separate caller-ledger and
+query observations. It checks identical serving inputs and expert work,
+binds each observer to the actual request, and records its individual
+overhead gate. Existing source and the offline control checks pass. The
+model runs remain pending. Use the larger caller intervals and observed
+format bins to choose placement and kernel candidates. Physical RAM
 traffic, GPU saturation and the attainable overlap remain unmeasured.
 
 ### Decode worker instrumentation on the a347 build
