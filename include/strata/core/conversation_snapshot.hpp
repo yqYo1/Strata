@@ -53,11 +53,13 @@ struct ConversationView {
     const std::vector<ConversationCheckpoint>& checkpoints;
     bool cvec;
 };
+// A null draft pointer selects a target-only snapshot. An MTP snapshot appends
+// its ring after the target's owned QSA layers.
 bool conversation_snapshot_bytes(const ConversationView& view, const SessionState& session,
-                                 const ModelGeometry& g, const QsaState& draft, size_t& bytes, std::string& error);
+                                 const ModelGeometry& g, const QsaState* draft, size_t& bytes, std::string& error);
 bool conversation_snapshot_capture_bytes(const ConversationKvReuse& reuse, const ConversationView& view,
                                          const SessionState& session, const ModelGeometry& g,
-                                         const QsaState& draft, size_t& bytes, std::string& error);
+                                         const QsaState* draft, size_t& bytes, std::string& error);
 // The capture estimate includes retained capacity and transient segment directories;
 // only estimate - reuse.bytes() requires additional physical RAM. Capture consumes
 // the uniquely owned reusable buffers, including on failure.
@@ -65,15 +67,15 @@ bool conversation_snapshot_capture_bytes(const ConversationKvReuse& reuse, const
 // to the RAM policy; the active session is never modified by capture.
 bool conversation_snapshot_save(SavedConversation& image, const ConversationView& view,
                                 const SessionState& session, const ModelGeometry& g,
-                                const QsaState& draft, std::string& error,
+                                const QsaState* draft, std::string& error,
                                 ConversationKvReuse reuse = {}, size_t* reused_bytes = nullptr);
 bool conversation_snapshot_validate(const SavedConversation& image, const SessionState& session,
-                                    const ModelGeometry& g, const QsaState& draft, std::string& error);
+                                    const ModelGeometry& g, const QsaState* draft, std::string& error);
 enum class ConversationRestore { restored, invalid, transfer_failed };
 // Invalid images are rejected before any CUDA call/write. Transfer failure may
 // leave partial state: caller MUST NOT continue inference from that session.
 ConversationRestore conversation_snapshot_restore(const SavedConversation& image, SessionState& session,
-                                                   const ModelGeometry& g, const QsaState& draft,
+                                                   const ModelGeometry& g, const QsaState* draft,
                                                    std::string& error);
 
 struct ConversationVerification {
@@ -86,7 +88,7 @@ struct ConversationVerification {
 // pooled rows. Never modifies the session. Does not compare generated text or
 // qualify cache-policy metadata, allocator teardown, task quality or speed.
 bool conversation_snapshot_verify(const SavedConversation& image, const SessionState& session,
-                                  const ModelGeometry& g, const QsaState& draft,
+                                  const ModelGeometry& g, const QsaState* draft,
                                   ConversationVerification& result, std::string& error);
 
 } // namespace strata::core

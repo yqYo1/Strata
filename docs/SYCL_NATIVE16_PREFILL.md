@@ -11054,6 +11054,15 @@ the long prompt records 2,046 rows in each layer. The copy route records
 is the remaining check. Keep the diagnostic switch off for speed samples.
 [Tap comparison reader](../bench/sycl/dflash2_tap_payloads.py).
 
+The target-only conversation snapshot change from `7e1ad6e28` and its host
+transfer fixture from `3a93dafd7` are ported to the primary source. DFlash2
+parks the target state and rebuilds the drafter from its captured tail.
+The MTP path supplies its existing ring. The earlier exact snapshot build
+`4b4ac554c` passed the near-capacity 262,128-token RESTORE and full copy-route
+context checks. Separately validate the primary build's host transfers,
+full-context and RESTORE behavior. Its source manifest differs from that
+measured snapshot, so the earlier throughput does not qualify this port.
+
 For the subsequent length curve, the measured source at `ad8652973`
 requires 81921–131072 actual prefill rows in `make_long_prefill_scratch`.
 The earlier suggested 32768, 65536 and 81920 rows therefore cannot use the
