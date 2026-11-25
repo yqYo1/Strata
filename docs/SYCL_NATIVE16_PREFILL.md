@@ -11466,8 +11466,20 @@ that a changed physical-context proof fails admission. Both pass at
 `d50febe07`: the replacement baseline exactly matches the old result while
 opens and stats on all 14 original reference executables are rejected.
 The three model processes are prepared at `c6e52edf8`. Both frontend
-probes pass at `a87131dfe`. The first native continuation process starts
-after the closed length comparison. Sustained generation results are pending.
+probes pass at `a87131dfe`. The first native process exits normally with
+quiet validation and no fresh Xe fault. Both requests use mode16 with all
+batched BF16 rows on the GPU, the private 32-slot demand bank, direct
+attention stores and the selected KV policy.
+
+| First process workload | Fresh input | Output with thinking | Prefill tok/s | Client TTFT | Decode tok/s | Drafts accepted |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Code, first long request | 96,204 | 3,195 | 915.8 | 106.426 s | 16.286 | 2,173 / 2,248 |
+| Prose, subsequent request | 96,274 | 8,618 | 1,039.6 | 92.793 s | 11.487 | 3,442 / 4,864 |
+
+Both samples qualify for the planned workload and speed accounting. The
+prose result has 70.8% draft acceptance and does not supply the weak case.
+The first and subsequent clocks also use different prompts. Complete the
+two remaining independent processes before comparing their variability.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
