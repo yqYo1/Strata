@@ -11318,6 +11318,10 @@ headers, support object and SYCL runtime archive. The native change is
 confined to a prefill implementation file outside those fixture inputs.
 It checks the normal and cancelled upload paths under Level Zero tracing
 and parameter validation, against the same trusted runtime and driver.
+The first attempt at `50ae05aa8` stopped during host admission while
+reading a probe field absent from the primary build receipt. Recover the
+probe from the closed same-build device qualification at `63c0c6353`
+and check both live image hashes.
 The transient component build serves this check. The model comparison
 requires its own coherent candidate engine.
 

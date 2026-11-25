@@ -20,6 +20,7 @@ OBJECT = f'CMakeFiles/{TARGET}.dir/{SOURCE}.o'
 SUPPORT = f'CMakeFiles/{TARGET}.dir/src/core/expert_cache.cpp.o'
 RUNTIME = 'libstrata_sycl_runtime.a'
 BASE_EVIDENCE = '0ab86d36b'
+PROBE_EVIDENCE = '63c0c6353737c2fb4dc5ade7b1d6aa68da59531d'
 BUILD_BUDGET = dict(wall=120, cpu=180, rss_cap=8 << 30, text_cap=4 << 20,
                     file_cap=32 << 20, total_cap=96 << 20)
 
@@ -76,7 +77,15 @@ def main():
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         builder.guards.no_model_owners([])
         record, revision, compile_argv, link, fixture = plan()
-        envelope = checks.parameters(record, record['native_validation_probe'])
+        prior = bank.previous.historic(PROBE_EVIDENCE, checks.KEY)
+        require(all(prior[k] for k in ('complete', 'passed', 'ownership_closed')) and not prior['active']
+                and prior['native_source_commit'] == record['native_source_commit'],
+                'closed primary device qualification required')
+        probe = prior['native_validation_probe']
+        envelope = checks.parameters(record, probe)
+        require(prior['build_sha256'] == envelope['build_sha256']
+                and all(bank.sha(item['path']) == item['sha256'] for item in probe.values()),
+                'primary device qualification or probe image differs')
         require(builder.guards.driver_guard() == envelope['driver'], 'fixture driver changed')
         cursor, = [line.removeprefix('-- cursor: ') for line in subprocess.check_output(
             ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'],
