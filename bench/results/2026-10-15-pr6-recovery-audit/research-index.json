@@ -41400,5 +41400,50 @@
     "finding": "Collects speculative route signals and separates host cache-line prefetch, page-cache warming and GPU DMA. The library report records lead time, validity, residency and miss-cost questions.",
     "consumer": "Use as a design reference for an offline fixed-trace opportunity screen.",
     "prerequisite": "Live frozen-route IDs, timestamps, residency and exact byte ranges, plus separate CPU, storage and DMA measurements and available-overlap evidence are still needed."
+  },
+  "zen3-fixed-expert-worker-sweep-20261125": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "source_commit": "da824fb36f9e50447753818d4b47642a526986ed",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zen3-fixed-expert-worker-sweep-20261125/report.md",
+    "report_sha256": "eadb2ad6712704c0d0a6c8518e71502d1cc2ed6f467ebfa073a1565ef479dc77",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-reviews/zen3-fixed-expert-worker-sweep-20261125/packet-review.json",
+    "review_sha256": "bd0275a6750db1567381ff4fca82c3aef79cca4360a5720c81a975ceef696d70",
+    "reviewer": "gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": false,
+    "finding": "Hold expert jobs, row intervals, packed inputs and worker topology fixed for the production and fixed-owner arms. Vary physical-core workers with a matching stream control. This design isolates a scheduling opportunity and leaves RAM saturation unproven.",
+    "consumer": "Use after a representative immutable expert slice and numerical output checks are qualified.",
+    "review_scope": "Report packet and prior findings checked for usefulness and scope. Compiled source and runtime claims have separate checks."
+  },
+  "dflash2-greedy-head-argmax-fusion-20261125": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "source_commit": "b06064eadf1331104f48883c21425a296648392e",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-greedy-head-argmax-fusion-20261125/report.md",
+    "report_sha256": "350dc67841776a4dfa52b445924ef089902b735c90c84fed08988dbb0b6dfee0",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-reviews/dflash2-greedy-head-and-zen3-locality-20261125/review.json",
+    "review_sha256": "e5066db81b803df198c26ddc3b897ff3c116e7089c0abd75170cbbdc328ec359",
+    "reviewer": "gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": false,
+    "finding": "The peak-bandwidth estimate for removing the materialized logits traffic is 26.1 microseconds per full-width head. The estimate covers memory service for that traffic. Defer fusion until the sampler or logits become a measured cost.",
+    "consumer": "Retrieve for a measured post-C5 sampler or logits hotspot.",
+    "review_scope": "Report packet and prior findings checked for usefulness and scope. Compiled source and runtime claims have separate checks."
+  },
+  "zen3-expert-job-locality-order-20261125": {
+    "classification": "knowledge_collection",
+    "stage": "reviewed",
+    "source_commit": "4b4ac554cc604a9047da692523df7b336cd3cbcb",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zen3-expert-job-locality-order-20261125/report.md",
+    "report_sha256": "0eacf8c6016c7b05cb6228afffa1e90558ad121a6d25c7e4db1c465bbada1762",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research-reviews/dflash2-greedy-head-and-zen3-locality-20261125/review.json",
+    "review_sha256": "e5066db81b803df198c26ddc3b897ff3c116e7089c0abd75170cbbdc328ec359",
+    "reviewer": "gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": false,
+    "finding": "The scheduling proposal varies task order with expert jobs, arithmetic, worker count and barriers fixed. Logical address ordering leaves page placement and physical DRAM locality open.",
+    "consumer": "Retrieve after a fixed-work replay reproduces production CPU expert service and worker waits.",
+    "review_scope": "Report packet and prior findings checked for usefulness and scope. Compiled source and runtime claims have separate checks."
   }
 }
