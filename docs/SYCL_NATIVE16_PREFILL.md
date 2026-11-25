@@ -11417,8 +11417,10 @@ match, and no fresh Xe fault appears. Batched issue increases subsequent
 prefill time by 0.184%, 0.193% and 0.165% and first prefill time by 0.076%,
 1.095% and 1.773% in pair order. Keep demand on the 32-slot route. Restore
 the exact rejected candidate and its full receipts from their original Git
-revisions if needed. The candidate build and raw outputs are pending the
-post-comparison recovery and ownership check before retirement.
+revisions if needed. The source and recipe audit matches 1,329 project
+files and 1,475 compiler inputs to the final build. After preserving the
+original commits on `feature/sycl`, retired 1,524 candidate build and source
+files and 430 measurement files. The compact result records the inventories.
 
 The [primary driver cache comparison](../bench/dflash2_primary_driver_cache.py)
 reuses the older NEO inventory, private copy, readiness and counter readers.
