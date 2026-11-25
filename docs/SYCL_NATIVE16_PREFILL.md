@@ -11256,6 +11256,19 @@ processes is 66,713,600 bytes, about 11 ms at the separate large-copy
 reference. Measuring cache seeding and fixed first-use costs requires its
 own comparison. The held-out predictions await both blocks.
 
+The [primary continuation plan](../bench/dflash2_primary_continuation.py)
+uses the same retained binary and KV selection for three independent
+`bench.sh --long-generation-only --long-generation-input-case split-v1-96k`
+processes. Both code and prose bodies use the existing count-only preflight
+and a 16,384-token output limit with thinking on. Require mode16, all-GPU BF16
+residuals, the 32-slot demand bank, KV retention, direct stores and the actual
+expert route after the handoff. Native and API counts must agree and the
+engine must emit at least 1,024 tokens in each sustained case. Record TTFT,
+PP, TG and the observed acceptance separately by workload and request order.
+Stop on a placement fallback and preserve its result. This plan exercises
+the measured long-prefill handoff. The ordinary official agent suite and
+the reconciliation task have independent purposes and evidence.
+
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
 The host count through the production chat renderer and tokenizer is
