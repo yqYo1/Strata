@@ -629938,7 +629938,7 @@
     },
     "outcomes": {
       "build": {
-        "error": "RuntimeError('compile-libstrata_ur_status.so failed: /home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp: In function ‘bool {anonymous}::capture_status_call(const xpti::function_with_args_t*, bool, uint64_t)’:\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:221:8: error: ‘UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH’ was not declared in this scope; did you mean ‘UR_FUNCTION_ENQUEUE_MEM_UNMAP’?\\n  221 |   case UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH: {\\n      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n      |        UR_FUNCTION_ENQUEUE_MEM_UNMAP\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:31: error: ‘ur_enqueue_kernel_launch_params_t’ was not declared in this scope; did you mean ‘ur_enqueue_mem_unmap_params_t’?\\n  222 |     const auto* p = arguments<ur_enqueue_kernel_launch_params_t>(data, \"urEnqueueKernelLaunch\");\\n      |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n      |                               ur_enqueue_mem_unmap_params_t\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:65: error: no matching function for call to ‘arguments<<expression error> >(const xpti::function_with_args_t*&, const char [22])’\\n  222 |     const auto* p = arguments<ur_enqueue_kernel_launch_params_t>(data, \"urEnqueueKernelLaunch\");\\n      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:175:28: note: candidate: ‘template<class T> const T* {anonymous}::arguments(const xpti::function_with_args_t*, const char*)’\\n  175 | template<class T> const T* arguments(const xpti::function_with_args_t* data, const char* name) noexcept {\\n      |                            ^~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:175:28: note:   template argument deduction/substitution failed:\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:65: error: template argument 1 is invalid\\n  222 |     const auto* p = arguments<u')",
+        "error": "RuntimeError('compile-libstrata_ur_status.so failed: /home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp: In function \u2018bool {anonymous}::capture_status_call(const xpti::function_with_args_t*, bool, uint64_t)\u2019:\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:221:8: error: \u2018UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH\u2019 was not declared in this scope; did you mean \u2018UR_FUNCTION_ENQUEUE_MEM_UNMAP\u2019?\\n  221 |   case UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH: {\\n      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n      |        UR_FUNCTION_ENQUEUE_MEM_UNMAP\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:31: error: \u2018ur_enqueue_kernel_launch_params_t\u2019 was not declared in this scope; did you mean \u2018ur_enqueue_mem_unmap_params_t\u2019?\\n  222 |     const auto* p = arguments<ur_enqueue_kernel_launch_params_t>(data, \"urEnqueueKernelLaunch\");\\n      |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n      |                               ur_enqueue_mem_unmap_params_t\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:65: error: no matching function for call to \u2018arguments<<expression error> >(const xpti::function_with_args_t*&, const char [22])\u2019\\n  222 |     const auto* p = arguments<ur_enqueue_kernel_launch_params_t>(data, \"urEnqueueKernelLaunch\");\\n      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:175:28: note: candidate: \u2018template<class T> const T* {anonymous}::arguments(const xpti::function_with_args_t*, const char*)\u2019\\n  175 | template<class T> const T* arguments(const xpti::function_with_args_t* data, const char* name) noexcept {\\n      |                            ^~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:175:28: note:   template argument deduction/substitution failed:\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:65: error: template argument 1 is invalid\\n  222 |     const auto* p = arguments<u')",
         "complete": false,
         "ownership_closed": true,
         "fresh_faults": [],
@@ -680936,7 +680936,7 @@
       },
       "scope": "Run host accounting checks, then one fresh 82-input/32-output native request per width. Use the same smaller prefill chunk and expert cache in both arms. Disable borrowing and its observer. Keep the canonical DPAS head enabled. Require true full-width replays after the first anchor, complete commits, validated head dispatch, normal child exit and no new Xe fault. Stop on first failure. Diagnostic only."
     },
-    "stage": "partial",
+    "stage": "closed",
     "outcomes": {
       "host": {
         "passed": true,
@@ -681031,10 +681031,127 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "5": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "requests": [
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 28,
+            "offered": 28,
+            "finish": "length"
+          }
+        ],
+        "info": {
+          "context": "262144",
+          "spec": "5",
+          "kv": "int8",
+          "kv_resident": "20480",
+          "expert_slots": "1024",
+          "lookup": "0",
+          "pool_workers": "5",
+          "pcie_frac": "0.00",
+          "spec_min_p": "0.00"
+        },
+        "native_exit_code": 0,
+        "native_identity": {
+          "pid": 2038423,
+          "start_ticks": 391412441
+        },
+        "validation": {
+          "pid": 2038423,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "window_work": {
+          "width_counts": {
+            "1": 1,
+            "5": 7
+          },
+          "accepted_prefix_counts": {
+            "0": 1,
+            "4": 7
+          },
+          "final_window": [
+            112,
+            5
+          ],
+          "final_commit": 5,
+          "commit_end": 117,
+          "committed_after_last_output": 4
+        },
+        "head_captures": [
+          {
+            "rows": 1,
+            "capture_id": 3,
+            "completed": 1,
+            "route": "q6-columns"
+          },
+          {
+            "rows": 5,
+            "capture_id": 4,
+            "completed": 7,
+            "route": "q6-reference"
+          }
+        ],
+        "draft_vram_bytes": 845776220,
+        "verifier_buffer_mib": 69.9,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "ownership_closed": true
+  },
+  "dflash2_width_admission_v3_diagnostic_work": {
+    "widths": {
+      "4": {
+        "verifier_windows": 9,
+        "target_rows": 33,
+        "cpu_unique_misses": 9620,
+        "cpu_entries": 13020,
+        "decode_ms_whole_observed": 2521,
+        "route": "dpas",
+        "model_stderr_sha256": "1b6d8257da99262295a5d97c37ade07f957f712cad490d0d5ee76df62f3c1bd1"
+      },
+      "5": {
+        "verifier_windows": 8,
+        "target_rows": 36,
+        "cpu_unique_misses": 9910,
+        "cpu_entries": 14210,
+        "decode_ms_whole_observed": 2494,
+        "route": "q6-reference",
+        "model_stderr_sha256": "db29bb07ed69c0d148246565f8def4c671c92b9b0fe277d456075a827bedc3ba"
+      }
+    },
+    "same_emitted_ids": true,
+    "input_tokens": 82,
+    "output_tokens": 32,
+    "configured_context": 262144,
+    "runtime_context_full_exercised": false,
+    "inference_adopted": false,
+    "performance_qualified": false,
+    "scope": "Independent cold, traced request in each arm. Native output cap trims accepted tails; decoded target rows and CPU work differ."
   }
 }

@@ -11076,7 +11076,17 @@ initialization with the independent head-release setting disabled
 borrowing (`e0134492b`). Both children are reaped with empty sessions and
 no fresh Xe fault. The current plan pairs the canonical DPAS head with
 its required head-release setting and disables both cache borrowing and
-its audit. Recheck the frozen host plan before either GPU arm.
+its audit. The corrected host controls and both bounded GPU arms pass.
+The same 82-token prompt produces identical 32 output IDs. Width four
+executes 1+8 windows, giving 33 verifier rows, 9,620 CPU expert jobs and
+13,020 CPU entries. Width five executes 1+7 windows, giving 36 verifier rows,
+9,910 CPU jobs and 14,210 entries. The 2560×248320 head uses canonical DPAS
+at width four and canonical Q6 reference at width five. Width five also
+uses the Q6 reference for the formerly DPAS-eligible dense shapes.
+The verifier buffers are 64.0 and 69.9 MiB. Both runs close with zero Xe
+fault. The cold traced request clocks are diagnostic. Width selection,
+clean sustained performance and the full-context/RESTORE gates remain open.
+See `dflash2_width_admission_v3` and its compact diagnostic work record.
 
 Even at five emitted tokens per verifier window, 70 tok/s allows only
 71.43 ms for a complete window. The older regular-code clock bracket at
