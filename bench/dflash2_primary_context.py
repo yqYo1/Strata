@@ -94,6 +94,17 @@ def experiment():
             raw = basis.validation.git('show', revision + ':' + name)
             require(raw == (bank.P / name).read_bytes(), 'changed model controller: ' + name)
             pins[name] = bank.sha(bank.P / name)
+        measured = bank.previous.historic(checks.primary.PREFILL, 'dflash2_snapshot_direct_prefill_v1')
+        profile = measured['ranking_profile']
+        path = Path(profile['old_path'])
+        name = path.relative_to(bank.P).as_posix()
+        args = list(seed['draft_arguments'])
+        index = args.index('--expert-profile') + 1
+        require(args[index] == profile['path'] and bank.sha(path) == profile['sha256']
+                and path.read_bytes() == basis.validation.git('show', revision + ':' + name),
+                'use the identical committed expert ranking from the primary tree')
+        args[index] = str(path)
+        pins[name] = profile['sha256']
         keys = ('configuration', 'environment_template', 'model_assets', 'native_validation_probe', 'driver',
                 'boot', 'runtime_manifest', 'dflash2_assets', 'draft_arguments', 'vocab_size')
         row = {k: seed[k] for k in keys}
@@ -101,7 +112,8 @@ def experiment():
                    binary=native['binaries']['strata_full_context_diagnostic'],
                    host_binary=native['binaries']['full_context_diagnostic_host_test'],
                    source_commit=revision, sources=pins, budgets=ctx.BUDGET, plan=PLAN,
-                   prior_evidence=REFERENCE, fixture_sha256=bank.signature(fixture))
+                   prior_evidence=REFERENCE, fixture_sha256=bank.signature(fixture), draft_arguments=args,
+                   ranking_paths=dict(reference=profile['path'], primary=str(path)))
         return row, prior
 
     def cases(row, prior):
@@ -110,10 +122,11 @@ def experiment():
         for old, name in zip(prior['cases'], ORDER, strict=True):
             case = make_case(launch, name)
             path = Path(case['fixture']['path'])
+            relocated = {old['fixture']['path']: str(path),
+                         row['ranking_paths']['reference']: row['ranking_paths']['primary']}
             require(old['name'] == name and case['fixture']['sha256'] == old['fixture']['sha256']
                     and path.read_bytes() == ctx.token_bytes(case['tokens'])
-                    and case['command'][1:] == [str(path) if a == old['fixture']['path'] else a
-                                                for a in old['command'][1:]]
+                    and case['command'][1:] == [relocated.get(a, a) for a in old['command'][1:]]
                     and bank.signature(environment(row, dict(case, root=old['root']))) == old['environment_sha256'],
                     'frozen standalone argument, token or runtime recipe changed')
             result.append(case)
