@@ -14,6 +14,7 @@ BASE = primary.ROOT
 BASE_KEY = primary.KEY
 BASE_EVIDENCE = '0ab86d36b'
 BASE_SOURCE = '968e71988953dca3d98037d3b3fec9f903bdfd6f'
+CHECKED_SOURCE = '88215efa1b45b1f7383cda91ce05775f76da1dba'
 BASE_BINARY = '5153182852b607e781570b606d4b2a444b143027425da90c8d05f1a31e85522e'
 KEY = 'dflash2_decode_route_census_native_v1'
 ROOT = bank.B / KEY.replace('_', '-')
@@ -44,6 +45,8 @@ def changed_sources():
     require(not status, 'commit exact build sources, recipe and fixture before any stage')
     names = bank.basis.validation.git('diff', '--name-only', BASE_SOURCE, revision, '--', *NATIVE_SCOPE)
     require(set(names.decode().splitlines()) == CHANGES, 'another native source change is bundled')
+    untested = bank.basis.validation.git('diff', '--name-only', CHECKED_SOURCE, revision, '--', *NATIVE_SCOPE)
+    require(not untested, 'the source differs from the checked native entrypoint or fixture')
     return revision
 
 

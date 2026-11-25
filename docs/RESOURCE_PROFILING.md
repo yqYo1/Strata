@@ -408,7 +408,11 @@ generation, resolve retention for the older snapshot and coherent build:
 the current primary admission still reads their executables and fixtures
 through `primary.references` and `coherent_original_reuse.verify_original`.
 Those are live dependencies until their readers are reconciled. The
-native link and model callback validation remain pending.
+artifact-free plan at `3a1fee123` accepts the exact measured primary
+binary and reports four native paths and 12 build targets. The proposed
+native files match the syntax-checked revision `88215efa1`. No new build
+generation has been created. Native link and callback validation remain
+pending.
 
 Compare the native first 256 verifier windows of offered rows and check a
 following short request, cancellation and RESTORE. Keep route, output,
