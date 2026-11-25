@@ -11281,6 +11281,30 @@ processes is 66,713,600 bytes, about 11 ms at the separate large-copy
 reference. Measuring cache seeding and fixed first-use costs requires its
 own comparison. The held-out predictions await both blocks.
 
+The next prefill scheduling candidate is batched issue on the current
+32-slot bank. Earlier 128-slot comparisons at `982211f5c` and `297adab4d`
+reduce paired warm prompt time by 2.55% and 1.00% respectively. The
+102,401-token demand control at `d01f72a19` submits 18,766 expert copies
+requesting 38,313,779,200 bytes on its first request, with no permanent hits.
+The current batch helper caps each run at 16 slots. Its caller still limits
+admission to 128 requested slots and non-relocated scratch, so setting
+`STRATA_SYCL_PREFILL_SPLIT_EXPERT_UPLOAD=batched` alone leaves this route on
+demand issue. Scope the admission change to mode16, 32 requested slots and
+the validated private bank/ordered queue. Keep the existing source and GPU
+span checks, relocated arena bounds, bank overwrite ordering and checked
+drain on success, cancellation and error.
+
+First verify 16-slot bank reuse with the relocated scratch and a partial
+chunk. On one candidate binary compare demand against batched with three
+opposite-order 102,401-token pairs. Hold the cache state, KV retention,
+input/output, kernel path, scratch, bank budget and decode placement fixed.
+Compare all 48 upload windows, expert copies, requested bytes, dequants,
+jobs and post-prefill work. The candidate must reproduce a warm gain
+in at least two pairs with a median time ratio below one. Record first
+prefill and client TTFT separately. Payload and device timing checks are
+required before broadening admission. Coalescing has its own prior failed
+incremental comparison and remains outside this test.
+
 The [primary driver cache comparison](../bench/dflash2_primary_driver_cache.py)
 reuses the older NEO inventory, private copy, readiness and counter readers.
 It selects the closed 102,401-token primary process as the only permitted
