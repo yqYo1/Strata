@@ -165,9 +165,9 @@ def request_route(text, plan, *, direct=False):
                 request_work=list(map(int, header[0])))
 
 
-def validate_model_text(text, plan):
+def validate_model_text(text, plan, *, cache_slots=1256):
     profiles = generation.v2.continuation.standard.profiles
-    profiles.check_profile_startup(text, 'original')
+    profiles.check_profile_startup(text, 'original', cache_slots=cache_slots)
     require(text.count('strata native head DPAS: ready=1 columns=4 layout=canonical') == 1
             and not re.search(r'(?m)^strata mtp: .*loaded|strata loan audit:', text)
             and not generation.suite.gen.draft_rows(text), 'unexpected target head, MTP layer or observer')

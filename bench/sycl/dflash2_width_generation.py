@@ -12,12 +12,14 @@ from decode_kv_bench import insertion_recipe, native_windows
 bank, basis, require, leaves = snapshot.bank, snapshot.basis, snapshot.require, snapshot.leaves
 gen = leaves.suite.gen
 model = snapshot.confidence.model
-KEY = "dflash2_width_generation_v2"
+KEY = "dflash2_width_generation_v3"
 ROOT = bank.B / KEY.replace("_", "-")
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 WIDTH_EVIDENCE = "66810f1301de259d53839d597b68389a7acb9712"
 REPLAY_EVIDENCE = "226e2d78cc6470312b862d60c5e4b99a20ceb57b"
 REFUSAL_EVIDENCE = "22a7d484bcba16e219fbc1484149a33ad1a8c049"
+READER_REFUSAL = "ae25f8272459495f3502e492cfdd2c08a16c769a"
+CACHE_SLOTS = 1024
 ORDER = ("4", "5", "5", "4")
 WRAP_TOKENS = 18
 CONTEXT = 262144
@@ -52,6 +54,13 @@ def baseline():
             and refusal["phase"] == "warm-up/prompt" and refusal["long_generation_requests"] == 0
             and refusal["reaped_and_session_empty"] and refusal["boot_unchanged"] and not refusal["fresh_xe_faults"],
             "recover the closed chunk8192 mixed-scratch admission refusal")
+    prior = bank.previous.historic(READER_REFUSAL, "dflash2_width_generation_v2")
+    reader = bank.previous.historic(READER_REFUSAL, "dflash2_width_generation_v2_startup_reader_refusal")
+    require(prior["stage"] == "failed" and prior["ownership_closed"] and not prior["active"]
+            and prior["snapshot_arm"] == row["snapshot_arm"]
+            and reader["native_and_bench_exit_code"] == 0 and reader["physical_profile"]["slots"] == CACHE_SLOTS
+            and reader["rejected_by"]["expected_slots"] == 1256,
+            "recover the closed run with its original startup-reader decision")
     admitted = bank.previous.historic(WIDTH_EVIDENCE, "dflash2_width_admission_v3")
     plan = admitted["plan"]
     require(admitted["stage"] == "closed" and admitted["complete"] and admitted["passed"]
@@ -89,6 +98,7 @@ def baseline():
     require(wrap == replay["wrap"] and wrap["tokens"] == WRAP_TOKENS, "checked continuation insertion differs")
     return dict(row, width_evidence=WIDTH_EVIDENCE, width_evidence_sha256=bank.signature(admitted),
                 prior_refusal=dict(commit=REFUSAL_EVIDENCE, sha256=bank.signature(refusal)),
+                reader_refusal=dict(commit=READER_REFUSAL, sha256=bank.signature(reader)),
                 checked_width_args=commands, continuation_wrap=wrap)
 
 
@@ -102,7 +112,7 @@ def configuration(row, plan):
             "recover the explicit strategy from the fixed-width launch")
     args[args.index(strategy) + 1] = "ttft"
     user_args = model.server.user_args.merge(template["user_args"],
-        ["--spec", width, "--prefill", "1024", "--expert-cache", "1024", "--no-prefill-borrow"])
+        ["--spec", width, "--prefill", "1024", "--expert-cache", str(CACHE_SLOTS), "--no-prefill-borrow"])
     cfg = dict(template, args=args, user_args=user_args)
     require(model.server.engine_args(cfg, exe=cfg["exe"], announce=False) == args,
             "the production server resolver differs from the observed native command")
@@ -144,7 +154,7 @@ def fixed_window_work(leg, width):
 
 def routes(text, samples, arm):
     width = int(arm)
-    leaves.speed.validate_model_text(text, {"arm": "clean"})
+    leaves.speed.validate_model_text(text, {"arm": "clean"}, cache_slots=CACHE_SLOTS)
     require(not any(mark in text for mark in ("strata trace:", "strata decode timing:",
                                               "strata cache loan: phase=", "strata Q6_ROUTE ")),
             "unexpected timing observer or target cache loan")
@@ -181,7 +191,7 @@ def routes(text, samples, arm):
                               scratch_bytes=int(scratch[0][2]), shared_bytes=int(scratch[0][3])))
     work = [fixed_window_work(leg, width) for leg in joined["segments"]]
     return dict(generation=joined, verifier_work=work, expert_work=expert_work, prefill_placement=placement,
-                effective_width=width, verifier_buffer_mib=float(ready[0][1]))
+                effective_width=width, cache_slots=CACHE_SLOTS, verifier_buffer_mib=float(ready[0][1]))
 
 
 def comparable_work(process):

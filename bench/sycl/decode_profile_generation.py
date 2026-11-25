@@ -83,12 +83,13 @@ def environment(row, plan):
     return dict(env, **{state.KV: '0', state.GATHER: '0'})
 
 
-def check_profile_startup(log, arm):
+def check_profile_startup(log, arm, *, cache_slots=1256):
     path = clock.PROJECT / profile.PROFILES[RANK[arm]]
+    slots_per_layer = cache_slots // 48
     require(log.splitlines().count(f'strata generate: profile {path}: 24576 ranked pairs, built for 24576 slots') == 1
             and log.count('strata generate: profile ') == 1
-            and log.count('pre-filled 1256 of 1256 slots from the profile; slot 0 verified') == 1
-            and log.count('R4.2g PER-LAYER: each layer owns 26 slots (0..25).') == 1,
+            and log.count(f'pre-filled {cache_slots} of {cache_slots} slots from the profile; slot 0 verified') == 1
+            and log.count(f'R4.2g PER-LAYER: each layer owns {slots_per_layer} slots (0..{slots_per_layer - 1}).') == 1,
             'actual startup ranking or per-layer capacity differs')
 
 
