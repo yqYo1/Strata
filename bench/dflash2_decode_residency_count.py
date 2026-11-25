@@ -48,11 +48,21 @@ def configuration(row, plan):
     requested = str(int(plan['arm'] == 'on'))
     args[args.index(SWAPS) + 1] = requested
     args.extend((EVERY, str(INTERVAL)))
-    overrides.extend((SWAPS, requested, EVERY, str(INTERVAL)))
-    out = dict(cfg, args=args, user_args=overrides)
+    out = dict(cfg, args=args)
     server = reference.confidence.model.server
     resolved = server.engine_args(out, exe=out['exe'], announce=False)
-    require(resolved == args, 'effective native arguments differ from the frozen pair')
+    require(resolved.count(SWAPS) == resolved.count(EVERY) == 1
+            and resolved[resolved.index(SWAPS) + 1] == requested
+            and resolved[resolved.index(EVERY) + 1] == str(INTERVAL),
+            'the two requested native arguments were not resolved once')
+    other = list(resolved)
+    interval_index = other.index(EVERY)
+    del other[interval_index:interval_index + 2]
+    other[other.index(SWAPS) + 1] = '0'
+    require(other == cfg['args'], 'another effective native argument differs')
+    out['args'] = resolved
+    require(server.engine_args(out, exe=out['exe'], announce=False) == resolved,
+            'the resulting launch is not idempotent')
     return out
 
 
