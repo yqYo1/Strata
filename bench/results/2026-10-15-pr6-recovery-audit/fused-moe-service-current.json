@@ -687653,5 +687653,117 @@
     "complete": true,
     "passed": true,
     "ownership_closed": true
+  },
+  "dflash2_static_expert_cache_bound_v1": {
+    "stage": "closed",
+    "source_commit": "e961023e38bfe00fac49c3b8d9dad81cac878a26",
+    "tools": {
+      "bench/sycl/dflash2_expert_rank_forecast.py": "bb1412ca4ac3c293beaa8fce3b13e73807f331c7e5ff2699fff5d5a6b5c28140",
+      "bench/sycl/dflash2_long_routing.py": "e2996f2d57c844df5ba2be085353213982194032b4b613b589e4bcc9b6ea992a",
+      "bench/sycl/dflash2_long_routing_replay.py": "e19b0d8f5ee837df1d694c4e34086f1077841a9401ba810da0d68db21a126b22",
+      "tools/make_profile.py": "7afbd361e2afedcc1aa87a0e51b026a6177462c646901f9056a3f81f2224986d",
+      "tools/sycl/cpu_work_census.py": "37038e04a8192ca3d3e1a8a1790a65db22110737630a30be43db64899ee3d1c6",
+      "tools/sycl/dflash2_expert_routing.py": "c74a0fe6952310e98ce03d696a4de2dffd9c83cd762010fcfbc208c0f416a84f",
+      "bench/sycl/dflash2_expert_cache_bound.py": "9cafef361ff40d402cab5f8b6570ef0d1f3cb1414ad2366a83c3a9a3486eb1ff"
+    },
+    "target_tg": 70,
+    "continuous_read_reference_bytes_per_second": 39303500000,
+    "workloads": {
+      "train": {
+        "inputs": {
+          "key": "dflash2_long_routing_train_v1",
+          "request_sha256": "4391123df8617cb8f73dd1e74bd6c95c33d22e0374145e5cb5cb7cf863018f9d",
+          "candidate_freeze": null,
+          "usage_sha256": "4f875eaadfefd52b98bcedf9a74ba400522cb0d5b71e833253c7323c942610bb",
+          "generated_tokens": 4111,
+          "read_tokens": 33217,
+          "accepted": 2767,
+          "offered": 2863,
+          "jobs": {
+            "cpu_jobs": 1449976,
+            "cpu_entries": 1812670,
+            "logical_job_blob_bytes": 2956400972800
+          }
+        },
+        "protected_payload_bytes": 253542400,
+        "fixed_quota_oracle_logical_bytes": 2360242176000,
+        "stock_logical_GB_per_s_at_target": 50.34007980929214,
+        "bounds": [
+          {
+            "payload_budget": 2575206400,
+            "logical_bytes_lower_bound": 2331425280000,
+            "minimum_payload_for_target": 2661364804,
+            "logical_GB_per_s_at_target": 39.69831418146436
+          },
+          {
+            "payload_budget": 4294967296,
+            "logical_bytes_lower_bound": 1926897285120,
+            "minimum_payload_for_target": 2661364804,
+            "logical_GB_per_s_at_target": 32.810218914716614
+          },
+          {
+            "payload_budget": 6442450944,
+            "logical_bytes_lower_bound": 1548587354112,
+            "minimum_payload_for_target": 2661364804,
+            "logical_GB_per_s_at_target": 26.368551395728534
+          },
+          {
+            "payload_budget": 8589934592,
+            "logical_bytes_lower_bound": 1258800604160,
+            "minimum_payload_for_target": 2661364804,
+            "logical_GB_per_s_at_target": 21.43421121167599
+          }
+        ]
+      },
+      "holdout": {
+        "inputs": {
+          "key": "dflash2_long_routing_holdout_v1",
+          "request_sha256": "4105a52cee04afa6e39ec6f3dcfea67e4f68d1af2e860ac40398c18d832b076c",
+          "candidate_freeze": "d162a13477145fc09857b2e2f6989e56450332725c4ece4ab4d435190b66fdd0",
+          "usage_sha256": "747f62afbfc126b706872fdb98bac1a8758338fd514d6b507115636b5c139262",
+          "generated_tokens": 11783,
+          "read_tokens": 33287,
+          "accepted": 5298,
+          "offered": 6902,
+          "jobs": {
+            "cpu_jobs": 4668262,
+            "cpu_entries": 5982938,
+            "logical_job_blob_bytes": 9529065216000
+          }
+        },
+        "protected_payload_bytes": 253542400,
+        "fixed_quota_oracle_logical_bytes": 6839959500800,
+        "stock_logical_GB_per_s_at_target": 56.60990962573199,
+        "bounds": [
+          {
+            "payload_budget": 2575206400,
+            "logical_bytes_lower_bound": 6656717209600,
+            "minimum_payload_for_target": 2625907868,
+            "logical_GB_per_s_at_target": 39.54597340846983
+          },
+          {
+            "payload_budget": 4294967296,
+            "logical_bytes_lower_bound": 5493507908608,
+            "minimum_payload_for_target": 2625907868,
+            "logical_GB_per_s_at_target": 32.635623661424084
+          },
+          {
+            "payload_budget": 6442450944,
+            "logical_bytes_lower_bound": 4434004826112,
+            "minimum_payload_for_target": 2625907868,
+            "logical_GB_per_s_at_target": 26.341367888300095
+          },
+          {
+            "payload_budget": 8589934592,
+            "logical_bytes_lower_bound": 3624077042688,
+            "minimum_payload_for_target": 2625907868,
+            "logical_GB_per_s_at_target": 21.5297795967207
+          }
+        ]
+      }
+    },
+    "scope": "Static perfect-future ranking. Protected slots stay. Relax per-layer quotas, slot count, and whole-expert residency. Packed visits are logical. The read reference is illustrative and ignores overlap, computation and GPU memory overhead.",
+    "GPU_executed": false,
+    "CPU_performance_measured": false
   }
 }
