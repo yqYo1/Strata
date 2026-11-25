@@ -11603,8 +11603,12 @@ reconciliation wire hash and 35,915-token input count. With the same
 thinking and output policy, they count 52,055 tokens for the scheduling
 packet and an output cap of 16,384. The scheduling request's wire SHA-256 is
 `a7b6c72e9a06280eb216d5d34340a451b5deb07b363a3d0da4b554b45cc4874b`.
-The next native screen must bind the live count and body and verify its
-visible answer, output length and per-request draft counters.
+The [scheduling model screen](../bench/dflash2_scheduling_model.py) at
+`9047ce522` uses the same tokenizer, live request, and API-to-engine
+accounting as the reconciliation screen. Six focused host tests pass,
+including the scheduling packet's count, body, answer oracle and entry
+point. The native screen still needs to verify the live count and body,
+visible answer, output length and per-request draft counters on the model.
 
 Retired the six numbered directories and `host` under state
 `dflash2-prefill-kv-stage-speed-v4` covering 430 files and 74709297 bytes.
