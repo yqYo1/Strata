@@ -11231,6 +11231,11 @@ use and 1,052.936 and 1,051.701 tok/s on subsequent requests. Client TTFT is
 672 direct pieces, 559,104 reloaded KV pages and 1,677,312 reused stage
 pages. Keep these observations outside the training lengths for the fit.
 
+The first 94,209-token process at `b0eade844` also passes the three route
+gates with no fresh Xe fault. First-use prefill is 935.794 tok/s and the two
+subsequent requests give 1,047.211 and 1,045.446 tok/s. Client TTFT is 100.851,
+90.148 and 90.296 seconds, respectively. Each run uses 576 direct pieces.
+
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
 The host count through the production chat renderer and tokenizer is
