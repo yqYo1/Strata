@@ -22,9 +22,13 @@ inline size_t q6_dpas_packed_bytes(int k, int n) {
     return size_t(bytes);
 }
 
-inline bool q6_dpas_c4_shape(int k, int n, int columns) noexcept {
-    return columns == 4 && k > 0 && k % 256 == 0 && n > 0 &&
+inline bool q6_dpas_matrix_shape(int k, int n) noexcept {
+    return k > 0 && k % 256 == 0 && n > 0 &&
         ((uint64_t(n) + 15) / 16) * 16 * (k / 256) * 210 <= std::numeric_limits<uint32_t>::max();
+}
+
+inline bool q6_dpas_c4_shape(int k, int n, int columns) noexcept {
+    return columns == 4 && q6_dpas_matrix_shape(k, n);
 }
 
 inline void q6_dpas_pack(std::span<const uint8_t> source,
@@ -65,4 +69,11 @@ void q6_dpas_columns(const uint16_t* packed, const void* q8, float* output,
 // for prospective model trials; this does not imply model/default adoption.
 void q6_dpas_c4_canonical(const void* canonical, const void* q8, float* output,
                          int k, int n, int columns, void* stream);
+
+#ifdef STRATA_Q6_CANONICAL_C5_COMPONENT
+// Standalone Arc qualification for five live columns with the same ownership
+// contract as C4. The candidate reads the canonical weights without padding.
+void q6_dpas_c5_canonical(const void* canonical, const void* q8, float* output,
+                         int k, int n, int columns, void* stream);
+#endif
 } // namespace strata::kernels::component

@@ -1,4 +1,4 @@
-// Main-authored canonical-layout C4 comparison; repository LICENSE.
+// Main-authored canonical-layout C4 and C5 comparisons. Repository LICENSE.
 // Reuse the numerical/oracle/graph harness from our f97893576704e6679c89ea6c4613d912665a0824.
 // Both arms read the same canonical allocation; no secondary weight buffer.
 #include "q6_dpas_component.hpp"
@@ -83,6 +83,25 @@ void host() {
     std::cout << "HOST passed=1 cases=" << cases << " GPU=0\n";
 }
 
+void host_c5() {
+    int cases = 0;
+    alignas(2) uint8_t weights[4]{};
+    auto queue = reinterpret_cast<void*>(uintptr_t(1));
+    for (int width : {1, 4, 6}) {
+        bool refused = false;
+        try { cp::q6_dpas_c5_canonical(weights, nullptr, nullptr, 256, 1, width, queue); }
+        catch (const std::invalid_argument&) { refused = true; }
+        need(refused, "C5 rejects the wrong column count before runtime access");
+        ++cases;
+    }
+    bool refused = false;
+    try { cp::q6_dpas_c5_canonical(weights + 1, nullptr, nullptr, 256, 1, 5, queue); }
+    catch (const std::invalid_argument&) { refused = true; }
+    need(refused, "C5 rejects unaligned weights before runtime access");
+    ++cases;
+    std::cout << "HOST_C5 passed=1 cases=" << cases << " GPU=0\n";
+}
+
 template<class T> T sentinel();
 template<> uint8_t sentinel<uint8_t>() { return 0xa5; }
 template<> float sentinel<float>() { return -731.25f; }
@@ -103,14 +122,14 @@ template<class T> struct Buffer {
 };
 
 struct Fixture {
-    std::shared_ptr<sb::Runtime> rt; int ni,no;
+    std::shared_ptr<sb::Runtime> rt; int ni,no,columns;
     std::vector<uint8_t> w,x;
     Buffer<uint8_t> dw,dx;Buffer<float> yr,yc;
     cudaStream_t stream=nullptr;cudaEvent_t completion=nullptr;
     std::array<cudaGraphExec_t,2> graphs{};uint64_t calls=0;
-    Fixture(std::shared_ptr<sb::Runtime> r,int input,int output):rt(r),ni(input),no(output),
-        w(size_t(ni/256)*no*210),x(size_t(ni/32)*36*4),
-        dw(r,w.size()),dx(r,x.size()),yr(r,size_t(no)*4),yc(r,size_t(no)*4) {
+    Fixture(std::shared_ptr<sb::Runtime> r,int input,int output,int width):rt(r),ni(input),no(output),columns(width),
+        w(size_t(ni/256)*no*210),x(size_t(ni/32)*36*columns),
+        dw(r,w.size()),dx(r,x.size()),yr(r,size_t(no)*columns),yc(r,size_t(no)*columns) {
         check(cudaStreamCreate(&stream));check(cudaEventCreateWithFlags(&completion,cudaEventDisableTiming));
         need(k::native_mmvq_multi_exact(),"production reference requires exact layout");
         fill(7);
@@ -118,7 +137,7 @@ struct Fixture {
             cudaGraph_t graph=nullptr;
             check(cudaStreamBeginCapture(stream,cudaStreamCaptureModeThreadLocal));
             try {
-                entry(arm,4);check(cudaStreamEndCapture(stream,&graph));
+                entry(arm,columns);check(cudaStreamEndCapture(stream,&graph));
                 size_t nodes=0;check(cudaGraphGetNodes(graph,nullptr,&nodes));need(nodes==1,"exact one-node graph");
                 check(cudaGraphInstantiate(&graphs[size_t(arm)],graph,0ull));check(cudaGraphDestroy(graph));
             } catch (...) {
@@ -129,10 +148,11 @@ struct Fixture {
             }
         }
         std::cout << "ADMISSION k=" << ni << " n=" << no << " canonical_bytes=" << w.size()
-            << " packed_bytes=0 additional_candidate_weight_bytes=0 device_payload_bytes=" << w.size()+x.size()+size_t(no)*32
+            << " packed_bytes=0 additional_candidate_weight_bytes=0 device_payload_bytes="
+            << w.size()+x.size()+size_t(no)*columns*2*sizeof(float)
             << " max_alloc_bytes=" << rt->device().get_info<sycl::info::device::max_mem_alloc_size>()
-            << " graphs=2 nodes_each=1 reference=" << (use_columns(ni,no,4)?"columns":"generic")
-            << " scope=prequantized-canonical-C4\n" << std::flush;
+            << " graphs=2 nodes_each=1 reference=" << (use_columns(ni,no,columns)?"columns":"generic")
+            << " scope=prequantized-canonical-C" << columns << '\n' << std::flush;
     }
     ~Fixture() {
         // Never free graph storage or allocations while either queue owns work.
@@ -143,12 +163,16 @@ struct Fixture {
         if(stream&&cudaStreamDestroy(stream)!=cudaSuccess)std::_Exit(4);
     }
     void drain() { check(cudaStreamSynchronize(stream));rt->wait(); }
-    void entry(int arm,int columns) {
+    void entry(int arm,int width) {
         if(arm==0) {
-            if(use_columns(ni,no,columns))
-                k::native_q6_k_columns_mmvq(dw.data(),dx.data(),yr.data(),ni,no,columns,stream);
-            else k::native_mmvq(14,dw.data(),dx.data(),yr.data(),ni,no,columns,stream);
-        } else cp::q6_dpas_c4_canonical(dw.data(),dx.data(),yc.data(),ni,no,columns,stream);
+            if(use_columns(ni,no,width))
+                k::native_q6_k_columns_mmvq(dw.data(),dx.data(),yr.data(),ni,no,width,stream);
+            else k::native_mmvq(14,dw.data(),dx.data(),yr.data(),ni,no,width,stream);
+        } else if (columns == 5) {
+            cp::q6_dpas_c5_canonical(dw.data(),dx.data(),yc.data(),ni,no,width,stream);
+        } else {
+            cp::q6_dpas_c4_canonical(dw.data(),dx.data(),yc.data(),ni,no,width,stream);
+        }
     }
     void fill(uint32_t seed) {
         if(stream)drain();
@@ -199,7 +223,7 @@ struct Fixture {
             const double bound=2*gamma*envelope(row)+1e-12;
             const bool selected=no<=1024||row<16||row>=no-16||row%std::max(1,no/512)==0;
             if(selected)++oracle_rows;
-            for(int c=0;c<4;++c) {
+            for(int c=0;c<columns;++c) {
                 const size_t at=size_t(c)*no+row;
                 need(std::isfinite(ref[at])&&std::isfinite(cand[at]),"finite Q6 results");
                 const double err=std::abs(double(cand[at])-ref[at]);worst=std::max(worst,err);
@@ -211,7 +235,8 @@ struct Fixture {
             }
         }
         if(immutable)need(dw.get()==w&&dx.get()==x,"input changed");
-        std::cout << "NUMERIC passed=1 k=" << ni << " n=" << no << " columns=4 outputs=" << size_t(no)*4
+        std::cout << "NUMERIC passed=1 k=" << ni << " n=" << no << " columns=" << columns
+            << " outputs=" << size_t(no)*columns
             << " oracle_rows=" << oracle_rows << " max_abs_error=" << std::setprecision(12) << worst << " guards=1\n" << std::flush;
     }
     void c1() {
@@ -232,33 +257,35 @@ std::shared_ptr<sb::Runtime> runtime() {
     // allocations,copies or kernels so Main can attest those actual mappings.
     gate("STRATA_Q6_DPAS_DEVICE_GATE");return r;
 }
-void checks(bool small,std::shared_ptr<sb::Runtime>& keep) {
+void checks(bool small,int columns,std::shared_ptr<sb::Runtime>& keep) {
     auto r=runtime();keep=r;int cases=0;
     std::vector<std::array<int,2>> shapes;
     if(small)shapes={{256,1},{256,17},{512,33},{6144,33}};
     else for(const auto& shape:production_shapes)shapes.push_back({shape.input,shape.output});
-    for(auto shape:shapes) {Fixture f(r,shape[0],shape[1]);for(uint32_t seed:{7u,19u}){
+    for(auto shape:shapes) {Fixture f(r,shape[0],shape[1],columns);for(uint32_t seed:{7u,19u}){
         f.fill(seed);for(int arm=0;arm<2;++arm){f.launch(arm);f.wait();}f.verify(true);++cases;
     }f.c1();}
-    std::cout << "CHECK passed=1 small=" << int(small) << " cases=" << cases << " route=compat_graph columns=4\n";
+    std::cout << "CHECK passed=1 small=" << int(small) << " cases=" << cases
+        << " route=compat_graph columns=" << columns << '\n';
 }
-void timing(int process,std::shared_ptr<sb::Runtime>& keep) {
+void timing(int process,int columns,std::shared_ptr<sb::Runtime>& keep) {
     auto r=runtime();keep=r;
     std::vector<int64_t> overhead;for(int i=0;i<1000;++i){const auto a=stamp(),b=stamp();overhead.push_back(b.wall-a.wall);}std::sort(overhead.begin(),overhead.end());
     const auto timer=overhead[500];std::cout << "CLOCK median_stamp_ns=" << timer << " floor_ns=10000000 process=" << process << '\n';
     int samples=0;
     for(const auto& shape:production_shapes) {
-        Fixture f(r,shape.input,shape.output);for(int arm=0;arm<2;++arm){f.launch(arm);f.wait();}f.verify();
+        Fixture f(r,shape.input,shape.output,columns);for(int arm=0;arm<2;++arm){f.launch(arm);f.wait();}f.verify();
         const int batch=shape.output<=1024?4096:(shape.output==248320?256:1024);
         for(int at=0;at<2;++at) {const int arm=process==1?1-at:at;
             for(int sample=-2;sample<5;++sample) {
                 const auto before=f.calls;const auto a=stamp();for(int i=0;i<batch;++i)f.launch(arm);const auto b=stamp();f.wait();const auto c=stamp();
                 need(f.calls-before==uint64_t(batch)&&c.wall-a.wall>=std::max<int64_t>(10000000,300*timer),"timing eligibility");
-                if(sample>=0){++samples;std::cout << "SAMPLE process=" << process << " arm=" << arm << " k=" << f.ni << " n=" << f.no << " columns=4 sample=" << sample
+                if(sample>=0){++samples;std::cout << "SAMPLE process=" << process << " arm=" << arm << " k=" << f.ni << " n=" << f.no
+                    << " columns=" << columns << " sample=" << sample
                     << " launches=" << batch << " graph_launches=" << f.calls-before << " nodes_per_graph=1 route=compat_graph wall_ns=" << c.wall-a.wall
                     << " cpu_ns=" << c.cpu-a.cpu << " submit_wall_ns=" << b.wall-a.wall << " submit_cpu_ns=" << b.cpu-a.cpu
                     << " wait_wall_ns=" << c.wall-b.wall << " wait_cpu_ns=" << c.cpu-b.cpu
-                    << " reference=" << (shape.columns?"columns":"generic") << '\n' << std::flush;}
+                    << " reference=" << (use_columns(f.ni,f.no,columns)?"columns":"generic") << '\n' << std::flush;}
             }
         }f.verify(true);
     }
@@ -269,12 +296,23 @@ void timing(int process,std::shared_ptr<sb::Runtime>& keep) {
 int main(int argc,char** argv) {
     std::cout << std::unitbuf;
     try {
-        need(argc==2||argc==3,"use --host|--check-small|--check|--time 0..2");
-        const std::string mode=argv[1];if(mode=="--host"){host();std::cout.flush();std::_Exit(0);}
+        need(argc==2||argc==3,"use --host[-c5], --check[-c5][-small], or --time[-c5] 0..2");
+        const std::string mode=argv[1];
+        if (mode=="--host" || mode=="--host-c5") {
+            if (mode=="--host") host();
+            else host_c5();
+            std::cout.flush();
+            std::_Exit(0);
+        }
         gate("STRATA_Q6_DPAS_GATE");
         std::shared_ptr<sb::Runtime> keep;
-        if(mode=="--check-small"||mode=="--check")checks(mode=="--check-small",keep);
-        else {need(mode=="--time"&&argc==3&&std::strlen(argv[2])==1&&argv[2][0]>='0'&&argv[2][0]<='2',"time process0..2");timing(argv[2][0]-'0',keep);}
+        if (mode=="--check-small" || mode=="--check") checks(mode=="--check-small",4,keep);
+        else if (mode=="--check-c5-small" || mode=="--check-c5") checks(mode=="--check-c5-small",5,keep);
+        else {
+            need((mode=="--time" || mode=="--time-c5") && argc==3 && std::strlen(argv[2])==1 &&
+                 argv[2][0]>='0' && argv[2][0]<='2',"time process 0..2");
+            timing(argv[2][0]-'0',mode=="--time-c5"?5:4,keep);
+        }
         std::cout.flush();std::cerr.flush();std::_Exit(0); // qualified retained-loader exit;ordinary provider teardown remains unqualified
     } catch(const std::exception& e) {std::cerr << "Q6 DPAS component failed: " << e.what() << '\n' << std::flush;std::_Exit(2);}
 }
