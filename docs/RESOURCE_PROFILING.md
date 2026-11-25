@@ -365,6 +365,13 @@ improve both Gate/Up time and total pass time. The group of four can leave
 one worker idle at the start, so its reduced claim count must also pass the
 end-to-end comparison.
 
+Preparation at `bed3f9f91` recovers the original route and freezes the six
+descriptors and exact shard slices. All cases have 64 single-row jobs in
+eight submissions. The hot cases use 15,769,600–18,636,800 packed bytes and
+the rotating cases use 124,185,600–142,105,600 bytes. The CPU build and its
+18 correctness and 54 timing processes remain pending. The build's consumer
+is this comparison. Retire it with its raw output after closing the decision.
+
 The [stock admission controller](../bench/dflash2_decode_stock_global_restore.py)
 uses the retained primary executable and recovers the original restore plans
 from `3d75f7e91`. It generates only the stock global profile. Both loaders
