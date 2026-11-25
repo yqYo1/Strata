@@ -240,9 +240,14 @@ CPU expert-pool wrapper, 82.26 ms in layer and final GPU completion intervals,
 and 17.66 ms elsewhere. Native waits account for 46.36% of caller thread CPU
 time. Replacing the sum of the first two intervals with their maximum at
 fixed work gives a sensitivity estimate of 30.17 tok/s. Dependency limits
-and additional overlap work affect what can actually be achieved. Complete
-the separate event-query observation and second clean control before
-qualifying these attribution results.
+and additional overlap work affect what can actually be achieved.
+
+The event-query process at `65f0f927c` repeats the same work at 16.443 tok/s.
+The two resident wrappers each run 64,560 times without query or clock
+errors. Their wall times are 224.99 and 314.64 ms, totaling 0.216% of the
+250.02-second decode. The pool-return wrapper alone accounts for 0.126%.
+The observed request takes 1.54% longer than the first clean control. The
+second clean control is pending before the final overhead decision.
 
 ### Decode worker instrumentation on the a347 build
 
