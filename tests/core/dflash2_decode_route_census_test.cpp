@@ -47,7 +47,8 @@ void check_record(std::FILE* file, uint64_t request, uint64_t windows, uint64_t 
 } // namespace
 
 int main() {
-    std::unique_ptr<std::FILE, decltype(&std::fclose)> file(std::tmpfile(), &std::fclose);
+    const auto close_file = [](std::FILE* stream) { std::fclose(stream); };
+    std::unique_ptr<std::FILE, decltype(close_file)> file(std::tmpfile(), close_file);
     require(file != nullptr, "cannot create test stream");
 
     {

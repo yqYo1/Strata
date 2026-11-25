@@ -360,7 +360,10 @@ libstdc++-13-dev 13.3.0-6ubuntu2~24.04.1, glibc 2.39-0ubuntu8.9 and binutils
 with `-std=c++20 -O2 -Wall -Wextra -Werror -Iinclude` in a temporary
 external directory using `PATH=/usr/bin:/bin LC_ALL=C`. Require exact
 per-layer counts, the cap, fresh records including zero-window requests,
-rejection of incomplete or split windows and bounds rejection.
+rejection of incomplete or split windows and bounds rejection. The first
+host compile at `227dc5826` stops on GCC's ignored-attributes warning for
+`decltype(&std::fclose)` under `-Werror`. Use a lambda deleter in both the
+fixture and native callback owner.
 
 After the host fixture, validate the exact serving callback with an
 independent routing capture on the same build and request. Compare the

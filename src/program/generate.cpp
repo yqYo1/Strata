@@ -5072,7 +5072,8 @@ int main(int argc, char** argv) {
         }
         strata::prefill::Prefill sp;
 #ifdef STRATA_ENABLE_SYCL
-        std::unique_ptr<std::FILE, decltype(&std::fclose)> route_counts_file(nullptr, &std::fclose);
+        const auto close_route_file = [](std::FILE* file) { std::fclose(file); };
+        std::unique_ptr<std::FILE, decltype(close_route_file)> route_counts_file(nullptr, close_route_file);
         if (route_counts_path) {
             if (multi_gpu || g.n_layers != DecodeRouteCensus::layers || g.n_expert != DecodeRouteCensus::experts ||
                 ss.k != DecodeRouteCensus::fanout) {
