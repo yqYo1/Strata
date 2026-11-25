@@ -651714,7 +651714,7 @@
     }
   },
   "q6_canonical_c5_component_check_v2": {
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "580aa77194aa66d5045b1041d52b05fe4af7ada8",
     "controller_sha256": "2ba31ec59f7f6a5e036d5d39dc7fcd48f29b29c8d8d35308e580c1a33435822a",
     "python": {
@@ -651780,7 +651780,102 @@
       "STRATA_Q6_DPAS_GATE": "1"
     },
     "active": false,
-    "outcomes": [],
+    "outcomes": [
+      {
+        "mode": "clean-small",
+        "provider_admission": [
+          {
+            "phase": 0,
+            "mapped_files": 9
+          },
+          {
+            "phase": 1,
+            "mapped_files": 32
+          }
+        ],
+        "host_probe_accepted": true,
+        "native_identity": {
+          "pid": 2304543,
+          "state": "S",
+          "ppid": 2303814,
+          "pgid": 2304543,
+          "sid": 2304543,
+          "start_ticks": 392070908,
+          "rss_bytes": 61100032
+        },
+        "native_exit_code": 0,
+        "numerical": [
+          {
+            "k": 256,
+            "n": 1,
+            "checked_outputs": 5,
+            "oracle_rows": 1,
+            "max_abs_error": 0.0
+          },
+          {
+            "k": 256,
+            "n": 1,
+            "checked_outputs": 5,
+            "oracle_rows": 1,
+            "max_abs_error": 0.0
+          },
+          {
+            "k": 256,
+            "n": 17,
+            "checked_outputs": 85,
+            "oracle_rows": 17,
+            "max_abs_error": 0.0
+          },
+          {
+            "k": 256,
+            "n": 17,
+            "checked_outputs": 85,
+            "oracle_rows": 17,
+            "max_abs_error": 0.0
+          },
+          {
+            "k": 512,
+            "n": 33,
+            "checked_outputs": 165,
+            "oracle_rows": 33,
+            "max_abs_error": 3.81469726562e-06
+          },
+          {
+            "k": 512,
+            "n": 33,
+            "checked_outputs": 165,
+            "oracle_rows": 33,
+            "max_abs_error": 3.81469726562e-06
+          },
+          {
+            "k": 6144,
+            "n": 33,
+            "checked_outputs": 165,
+            "oracle_rows": 33,
+            "max_abs_error": 2.28881835938e-05
+          },
+          {
+            "k": 6144,
+            "n": 33,
+            "checked_outputs": 165,
+            "oracle_rows": 33,
+            "max_abs_error": 3.0517578125e-05
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
     "plan": {
       "order": [
         "clean-small",
