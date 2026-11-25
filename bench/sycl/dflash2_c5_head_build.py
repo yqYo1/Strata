@@ -117,9 +117,12 @@ def context():
     ctx.scope = ('Compile the existing DFlash2 target-snapshot projection plus the width-five decode head and '
                  'its policy controls. Use the same prefill source, weights, placement and compiler configuration. '
                  'Rebuild every translation unit in the original targets and the added host policy fixture.')
-    ctx.retention = ('Keep the validated width-four incumbent and exact target-snapshot controls through the '
-                     'first head checks and matched width-five model trial. Review the candidate and superseded '
-                     'snapshot at the trial decision. Keep original source and decisions in Git.')
+    ctx.retention = ('Retain 96832af6f as the validated width-four speed reference and 4b4ac554c for '
+                     'the separate physical-context, RESTORE and settled fixed-width controls. The third '
+                     'comparison build is for the head probe and matched width-five trial. At that decision '
+                     'select the validated generation and retire the superseded comparison build with its '
+                     'original sources in Git. The historical 14508acbf lineage reader still consumes its '
+                     'original build inputs and carries its existing provenance hold separately.')
 
     def check(row, committed=True):
         if not committed and row['stage'] == 'prepared':

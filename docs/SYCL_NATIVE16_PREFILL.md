@@ -11084,9 +11084,29 @@ executes 1+8 windows, giving 33 verifier rows, 9,620 CPU expert jobs and
 at width four and canonical Q6 reference at width five. Width five also
 uses the Q6 reference for the formerly DPAS-eligible dense shapes.
 The verifier buffers are 64.0 and 69.9 MiB. Both runs close with zero Xe
-fault. The cold traced request clocks are diagnostic. Width selection,
-clean sustained performance and the full-context/RESTORE gates remain open.
-See `dflash2_width_admission_v3` and its compact diagnostic work record.
+fault. See `dflash2_width_admission_v3` for the traced route and work record.
+
+The sustained width comparison closes at `03e307dc1`. Each of four independent
+processes reads 33,217 fresh tokens. Width four emits 3,101 tokens in 921
+windows, with 2,182 of 2,760 drafts accepted and rates of 15.8067 and 15.8077
+tok/s. Width five emits 3,039 tokens in 760 windows, with 2,279 of 3,036 drafts
+accepted and rates of 14.2620 and 14.3093 tok/s. Both pairs miss the matched
+output-work gate. Keep width four as the reference. All four close normally
+without fresh Xe faults. The scope is the loan-off 1,024-token chunked route
+at draft confidence zero. [Performance CSV](../bench/performance-records.csv).
+
+In the repeated width-five sample, decode takes 279.45 ms per window at
+3,039 outputs across 760 windows. Matching 15.8067 tok/s with that same yield
+allows 252.97 ms per window. If the full 8.39 ms standalone Q6 head saving
+carried into all 759 width-five model windows, the resulting estimate would
+be 14.75 tok/s. Retain the head as an isolated experiment and measure its
+actual effect. The dense shapes and CPU expert service each need their own
+comparisons. `b06064ead` records the independent decode selector. The
+projection at `29b741815` preserves the target-snapshot build's prefill and
+changes five source inputs for the Q6 head and its host controls. Start with
+the parameter-validated 82-token probe, then hold the same width and workload
+in the sustained comparison. Full-context and RESTORE coverage of the new
+model build remains pending.
 
 Even at five emitted tokens per verifier window, 70 tok/s allows only
 71.43 ms for a complete window. The older regular-code clock bracket at
@@ -12093,8 +12113,8 @@ pass five focused tests. Actual server startup wiring at
 `92f7b07227bae2117087cdf270b9d03c41d5ebd8` passes eight helper/integration
 tests and is now merged into feature/sycl at `4c24b6931`;its completed child
 is retired and original commits remain reachable from the pushed primary.
-Fresh bounded model/frontend checks now pass for both fixed-width routes;
-their sustained comparison and broader model qualification remain pending.
+The fixed-width model comparison has closed. The separate C5 head trial and
+broader model qualification remain pending.
 Required tracking/recovery/alias/API/CLI imports and hardware-tuned unmodified
 upstream measurements remain incomplete. Source and evidence are published on
 `feature/sycl`. The published default before this U1round is
