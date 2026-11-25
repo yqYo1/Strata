@@ -311,6 +311,24 @@ modeled thread CPU time by six and charge both upload and restoration at
 the lower large-copy reference. The estimate excludes GPU cost, publication
 and memory contention and does not establish real break-even latency.
 
+At `4dc04715f`, the replay reproduces the previous routed-row result and all
+4,668,262 original CPU jobs. The 256-window cut follows 408 emitted tokens.
+
+| Rank input | Swaps | Requested H2D bytes per upload or restore | Suffix CPU jobs removed | Modeled leaf CPU seconds removed | Copy-only crossover after swap |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Distinct jobs | 96 | 197,811,200 | 131,382 | 61.537 | 33 outputs |
+| Routed rows | 96 | 197,913,600 | 147,795 | 69.456 | 29 outputs |
+| Format/width leaf time | 92 | 197,248,000 | 131,773 | 64.247 | 33 outputs |
+
+Routed rows also lead at the 99-, 394- and 1,589-output checks, removing
+2,449, 9,915 and 36,846 CPU jobs. On the complete held-out suffix it removes
+3.274% of jobs and 3.456% of modeled leaf work, with 303,143,424,000 logical
+CPU weight bytes avoided. The 29-output estimate charges roughly 63 ms
+for two requested full payloads at the reference rate. It is a copy-only
+sensitivity calculation. Retain the simpler routed-row score for the next
+bounded trial. A new model rate requires an independently reserved workload
+and direct timing of expert publication, GPU service, upload and restoration.
+
 The retained decode source `96832af6f` allocates the existing routed-row
 counter only when both adaptive arguments are positive. Its serve loop
 submits adaptive work only when the process-wide window count reaches a
@@ -340,7 +358,10 @@ at `02b17d4ce` closes normally without a fresh Xe fault and matches the
 workload, output, draft counts and recorded routes. It measures 16.764 tok/s
 over 245.2332 seconds of native decode with zero adaptive refills. This
 single pair has 0.752% lower decode time with the counter on. Complete the
-reverse pair before deciding the counting overhead envelope.
+reverse pair before deciding the counting overhead envelope. Its on process
+at `b43bfaf88` repeats the same work and output at 16.767 tok/s over
+245.1802 seconds. All three processes have normal closure and no fresh Xe
+fault. Keep the final off process and the original criteria.
 
 Read-only enumeration on the Ryzen 5 5600X (family 19h, model 21h), kernel
 `7.0.0-38-generic`, exposes `cpu`, `ibs_op` and `ibs_fetch` in
