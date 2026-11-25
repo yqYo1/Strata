@@ -11186,6 +11186,20 @@ has an independent plan.
 [Primary build](../bench/sycl/dflash2_primary_prefill_build.py) and
 [fixture sequence](../bench/dflash2_primary_checks.py).
 
+Before adding the decode-census candidate, rechecked the two older
+builds still read by primary admission. The coherent `14508acbf`
+reader recovers 2,361 Git project and dependency files, verifies 1,470
+compiler inputs and 12 executable identities, and matches the frozen
+primary foundation proof. The target-snapshot `4b4ac554c` build still
+matches its retained source, compiled and linked inputs and measured
+engine. Its materialized recipe has 1,171 source files. Reading the
+named Git commit alone matches 1,130 files. The other 41 include 15
+compile inputs, so recover the archived DFlash2 KV and snapshot
+projections before retiring that build. The old executables still have
+admission readers. Keep them until a tested reader can use the exact
+historical proof where appropriate and the live consumers are resolved.
+No build or source was deleted in this audit.
+
 The `host`, `taps` and `restore` captures under `dflash2-primary-checks-v1`
 were removed after verifying ownership and the committed proof. The 20
 files and 3,493,419 bytes had inventory SHA-256
