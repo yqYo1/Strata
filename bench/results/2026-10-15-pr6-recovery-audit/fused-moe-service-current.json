@@ -650990,7 +650990,7 @@
     "decision": "Freeze a separate fixture-only recipe without the unused generated prefill probe option."
   },
   "q6_canonical_c5_component_build_v2": {
-    "stage": "prepared",
+    "stage": "built",
     "toolchain": {
       "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
       "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb",
@@ -651037,8 +651037,8 @@
       "file_cap": 134217728,
       "total_cap": 536870912
     },
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "active": false,
     "ownership_closed": true,
     "host_budget": {
@@ -651060,6 +651060,37 @@
       "next": "After the small guard/oracle checks, measure head and dense shapes independently in three fresh processes."
     },
     "retention": "One standalone fixture for the immediate C5 comparison. Retire the build after the component decision and preserve its exact source and recipe.",
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-canonical-c5-component-v2/actual-inputs.json",
+      "sha256": "a74ec68cb890866745afa2f5054d874e7933722daae69b0b6ac0dea9df748d00",
+      "compiler_files": 801,
+      "owned_generated_files": 0,
+      "external_link_files": 24,
+      "uncovered": 0,
+      "translation_units": [
+        "src/sycl/runtime.cpp",
+        "src/sycl/compat.cpp",
+        "src/sycl/command_profile.cpp",
+        "src/kernels/sycl/native_mmvq.cpp",
+        "src/kernels/sycl/native_q5_head.cpp",
+        "src/kernels/sycl/native_q3_esimd.cpp",
+        "src/kernels/sycl/native_q4_esimd.cpp",
+        "src/kernels/sycl/native_q2_esimd.cpp",
+        "src/kernels/sycl/native_iq4xs_esimd.cpp",
+        "src/kernels/sycl/native_iq_esimd.cpp",
+        "src/kernels/sycl/native_mmq_xmx.cpp",
+        "src/kernels/sycl/iq.cpp",
+        "src/kernels/sycl/q6_dpas_component.cpp",
+        "bench/sycl/q6_canonical.cpp"
+      ],
+      "source_commit": "8d97e35f7be29fd76a6523fcf46719851a68e005"
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-canonical-c5-component-v2/build/sycl_q6_canonical_component",
+      "sha256": "5646e3940b13dc3aa5d59a6137abbc9a0a144e5cb141215532f07d227be92bc6",
+      "bytes": 11668216,
+      "source_commit": "8d97e35f7be29fd76a6523fcf46719851a68e005"
+    },
     "project": {
       "root": "/home/yayoi/orca/workspaces/Strata/sycl",
       "revision": "8d97e35f7be29fd76a6523fcf46719851a68e005",
@@ -651125,6 +651156,28 @@
       ]
     },
     "build_environment_sha256": "06a0013d76148a992d092687f7c054a717354decb5e5a3be49ebec099695440f",
-    "commands": []
+    "commands": [
+      {
+        "label": "configure",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "compile",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "dependencies",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      }
+    ]
   }
 }
