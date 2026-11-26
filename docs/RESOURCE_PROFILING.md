@@ -370,6 +370,12 @@ length in its own process. Keep the qualified prefill and decode references
 through this temporary third generation and retire the observer build after
 the diagnostic closes. Native build, frontend checks and GPU execution
 remain pending.
+The existing successful layer-major runs already verify that this runtime
+exposed and returned the Intel free-memory query during prefill. The
+reported bytes, per-allocation limit and physical residency are distinct.
+Follow a positive post-activation margin with a separate bounded allocation
+and completed device-page touch/readback on the same runtime before making
+a coexistence claim.
 The reviewed cache-lifetime audit confirms that existing captured hit
 readers use one cache base and a residency table. A contiguous startup
 tail keeps that representation at the cost of persistent capacity. A

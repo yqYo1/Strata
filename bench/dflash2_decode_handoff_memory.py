@@ -96,7 +96,8 @@ def baseline(build):
     base['base_physical_context_sha256'] = base.pop('physical_context_sha256')
     return dict(base, binary=native['binaries']['strata'], native_source_commit=NATIVE,
                 native_build_sha256=bank.signature(build.builder.compact(native)),
-                base_native_source_commit=base['native_source_commit'], native_context_qualified=False,
+                base_native_source_commit=base['native_source_commit'],
+                native_overlay_sha256=bank.signature(native['overlays']), native_context_qualified=False,
                 qualified_profiles={'stock': ranked.qualified_profile('stock', stock, None)},
                 stock_restore_sha256=bank.signature(stock), fixed_bodies=hashes, extra_bytes=first_cap['extra_bytes'])
 

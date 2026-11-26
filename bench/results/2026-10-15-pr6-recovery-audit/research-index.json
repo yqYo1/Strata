@@ -42170,5 +42170,28 @@
     "correction": "The startup tail uses persistent memory. A request-local second arena needs an explicit graph-visible lookup and checked retirement/publication; it is not categorically excluded.",
     "consumer": "Use with the b72ed4fb0 memory observer, while deciding the initial 256 MiB admission and whether the contiguous or request-local route preserves long-prefill admission.",
     "retention": "Keep report and review through the capacity decision. Retire control, source view and both raw reviewer logs at the next serialized cleanup."
+  },
+  "sycl-xe2-decode-free-memory-counter-20261126": {
+    "classification": "decision_support",
+    "stage": "handoff_failed_reviewed",
+    "source_revision": "bdba00c7fb75ea4426fb3b412037786b84536572",
+    "native_source_commit": "968e71988953dca3d98037d3b3fec9f903bdfd6f",
+    "worker": "Orca Codex gpt-6-luna medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "dispatch": "ctx_45d336906513",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/sycl-xe2-decode-free-memory-counter-20261126/report.md",
+    "report_bytes": 9108,
+    "report_sha256": "8b7a2c2c9366bea1198aba0deb5720f5a98c53f36a5381ba7a3b412b7d4da3ed",
+    "worker_report_hash_attested": false,
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-sycl-xe2-decode-free-memory-counter-20261126/review.json",
+    "review_sha256": "8632a691908a2a04819746cabfc56eeaf93fa7780cf203d68b97cb7065da9829",
+    "owners_closed": true,
+    "worker_terminal_end": "Orca had settled the dispatch, then its bounded scope timed out and the exact terminal reported exited.",
+    "failure": "The worker completion omitted the report digest. Main independently hashed the file at settlement for review only.",
+    "schedulable_now": false,
+    "finding": "Review confirms that reported free bytes, per-allocation limits and DRM residency accounting are separate.",
+    "correction": "Exact current-runtime prefill checks already prove a successful Intel free-memory query in that phase. Adapter v2 and Sysman settings alone do not establish the extension semantics, causality or decode allocation success.",
+    "consumer": "The existing handoff-memory diagnostic. If its observed margin justifies it, use a separate same-runtime 256 MiB allocation/touch/readback with verified retirement.",
+    "retention": "Keep the compact gate failure and review digest. Retire the report, raw control, source view and review trace after serialized cleanup; no performance evidence."
   }
 }
