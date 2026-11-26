@@ -967,8 +967,16 @@ Both cases show fewer CPU jobs per emitted token. The exact draft totals
 and first/subsequent prompt timings remain in the speed result. Two read-only
 research scopes overlapped part of the candidate process, each capped at
 30% of one logical CPU. They accounted for 26.2 and 27.3 CPU seconds before
-closure. Treat the observed code and prose gains as a first pair and finish
-the two planned repetitions before a performance decision.
+closure.
+
+The reverse-order second pair closes at `44bb81e4b` with the same two
+requests and native executable, normal exit and no fresh Xe faults. Code
+decode is 16.298 → 17.498 tok/s (+7.36%), and prose is 11.637 → 11.933
+tok/s (+2.55%), reporting stock before blend. Prefill is 938.743 → 942.207
+tok/s for code and 1037.003 → 1038.282 for prose. Client TTFT is 103.816 →
+103.437 and 93.027 → 92.910 seconds. Stock code emits 2,997 tokens in this
+process, versus 3,195 in the first pair, while both candidate processes
+emit 3,591. Finish the third pair before applying the frozen decision.
 
 Charging a full packed expert upload for each remaining CPU job would
 require at least 31.24 GB/s for code and 38.18 GB/s for prose at 70 tok/s.
@@ -995,6 +1003,31 @@ cannot worsen the static bound and that extra budget cannot increase misses.
 Use any gap above the trained rank to decide whether improved ranking or
 shorter adaptation is worth testing. The replay keeps target routes fixed and
 does not claim transfer feasibility, numerical quality or decode throughput.
+
+The CPU replay at source `44bb81e4b` closes normally and reproduces all
+4,668,262 CPU jobs in the original capture. The trace SHA-256 is
+`08dce3920dea2de8752b16cbbbaddc07e9486515dfde39264c92fa116b27926f`.
+Of 6,485 verifier windows, 3,242 train the simple rank and the remaining
+3,243 form the evaluation. That rank is specific to this capture.
+
+| Held-out placement | CPU jobs | Logical CPU weight visits (bytes) |
+| --- | ---: | ---: |
+| Observed stock | 2,581,636 | 5,266,123,776,000 |
+| First-half-trained rank | 1,967,341 | 3,999,896,140,800 |
+| One ideal profile within the current geometry | 1,775,920 | 3,601,085,465,600 |
+| Ideal free replacement in each of 13 periods | 1,509,439 | 3,051,459,174,400 |
+
+The ideal static profile removes at most 9.73% more jobs than the trained
+rank. Free replacement every 256 windows removes 23.28% more. Under the
+looser static budget, the remaining job lower bounds are 1,757,758,
+1,700,255, 1,646,221 and 1,595,032 at base, +256, +512 and +768 MiB.
+The corresponding logical byte bounds are 3,589,259,827,200,
+3,471,425,587,200, 3,361,804,380,160 and 3,258,911,867,904 bytes.
+Pursue lower CPU service per miss and lower GPU verifier cost alongside
+placement. The ideal adaptive result assumes unrestricted swaps, zero transfer
+cost and future routes already known. Use it to judge how much space remains
+above realistic replacement policies, with their actual transfer and restore
+cost charged in a separate comparison.
 
 Retired `dflash2-blend-independent-capture-v3` under the tuning state
 directory after verifying its absence. The exact scoring source and compact closed
