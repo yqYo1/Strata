@@ -29,7 +29,7 @@ PLAN = dict(order=list(ORDER), scope='One retained executable, stock global plac
                    'Clean long-generation timing, streamed KV at physical capacity and RESTORE are separate.')
 
 
-def kv_routes(text, *, cooperative):
+def kv_routes(text, *, cooperative, widths=(2, 4)):
     """Reconcile each KV dispatch with its finalized, scalar-QSA capture."""
     qsa_rows = scorer.score_routes(text, grid=False)
     calls = [KV_PLAN.fullmatch(line[len(PREFIX):]) for line in text.splitlines() if line.startswith(PREFIX)]
@@ -39,14 +39,14 @@ def kv_routes(text, *, cooperative):
         require(kv is not None, 'malformed KV capture record')
         width, use_cooperative, scalar, coalesced = map(int, kv.groups()[1:])
         phase = qsa['phase']
-        eligible = phase == 'decode' and width in (2, 4)
+        eligible = phase == 'decode' and width in widths
         layers = qsa['reference_calls']
         selected = cooperative and eligible
         require(kv[1] == phase and width == qsa['width'] and use_cooperative == int(cooperative)
                 and (scalar, coalesced) == ((0, layers) if selected else (layers, 0)),
                 'unexpected prompt, scalar fallback or cooperative KV dispatch')
         routes.append(dict(phase=phase, width=width, scalar_calls=scalar, coalesced_calls=coalesced))
-    require(any(r['phase'] == 'decode' and r['width'] in (2, 4) for r in routes),
+    require(any(r['phase'] == 'decode' and r['width'] in widths for r in routes),
             'no eligible decode KV capture')
     return routes
 
@@ -104,7 +104,16 @@ def save(row):
     bank.stage.write(bank.RESULT, data)
 
 
-def execute(row, env, request, base, arm):
+def short_routes(text, *, cooperative):
+    require(text.count('strata prefill policy: requested=throughput route=cache-window') == 1,
+            'the actual short prefill route changed')
+    routes = kv_routes(text, cooperative=cooperative)
+    require({('prompt', 1), ('decode', 1), ('decode', 4)} <= {(r['phase'], r['width']) for r in routes},
+            'the short route must validate prompt, width-one fallback and width-four decode')
+    return routes
+
+
+def execute(row, env, request, base, arm, *, read_routes=short_routes, publish=save):
     case = next(c for c in row['cases'] if c['arm'] == arm)
     root = Path(case['root'])
     binary = row['binary']
@@ -143,12 +152,9 @@ def execute(row, env, request, base, arm):
         outcome['providers'] = bank.device.loaded_providers(text, dict(
             environment=env, native_validation_probe=base['native_validation_probe'], runtime_manifest=base['runtime_manifest']))
         ranked.restore.check_loader(text, row['stock']['path'], per_layer=False)
-        require(text.count('strata prefill policy: requested=throughput route=cache-window') == 1
-                and text.count('strata DFlash2: eager, ') == 1 and outcome['request']['generated'] == row['output_cap']
-                and outcome['request']['accepted'] > 0, 'the actual short route or speculative work changed')
-        routes = kv_routes(text, cooperative=arm == 'cooperative')
-        require({('prompt', 1), ('decode', 1), ('decode', 4)} <= {(r['phase'], r['width']) for r in routes},
-                'the short route must validate prompt, width-one fallback and width-four decode')
+        require(text.count('strata DFlash2: eager, ') == 1 and outcome['request']['generated'] == row['output_cap']
+                and outcome['request']['accepted'] > 0, 'the actual DFlash2 speculative work changed')
+        routes = read_routes(text, cooperative=arm == 'cooperative')
         outcome.update(validation=proof, kv_routes=routes)
         if arm == 'cooperative':
             require(outcome['request'] == row['outcomes']['scalar']['request'], 'output IDs or draft counters differ')
@@ -162,7 +168,7 @@ def execute(row, env, request, base, arm):
         complete = outcome['passed'] and arm == ORDER[-1]
         row.update(stage='closed' if complete else 'running' if outcome['passed'] else 'failed',
                    complete=complete, passed=complete, ownership_closed=outcome['ownership_closed'])
-        save(row)
+        publish(row)
     require(outcome['passed'], outcome.get('error', 'DFlash2 cooperative KV admission failed'))
 
 
