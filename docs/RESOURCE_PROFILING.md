@@ -559,11 +559,20 @@ separate same-binary model check, with other widths and prefill fixed.
 Keep the temporary fixture build for the bounded kernel trace below.
 Review the build and its logs when the trace decision closes.
 
-The first fresh pair completes all 18 samples with quiet validation and no
-fresh Xe fault. Median launch-through-completion time for scalar and
-cooperative is 1.412 and 0.531 ms at zero misses, 3.615 and 2.821 ms at 384,
-and 5.708 and 5.014 ms at 1,539. Complete the other two pairs before the
-model trial decision.
+All three independent pairs complete their 54 timing samples with quiet
+validation and no fresh Xe fault. The table gives the median of the three
+process medians per arm and the range of paired reductions.
+
+| Missing pages | Scalar completion (ms) | Cooperative completion (ms) | Paired reduction |
+| ---: | ---: | ---: | ---: |
+| 0 | 1.412 | 0.531 | 62.39–62.43% |
+| 384 | 3.615 | 2.821 | 21.95–21.99% |
+| 1,539 | 5.709 | 5.013 | 12.16–12.24% |
+
+All nine paired ratios pass the component timing gate. Run the bounded
+trace to attribute the change between the resolver and copy kernels.
+Model throughput, actual width-three dispatch, prefill preservation and
+physical-context/RESTORE checks remain open.
 
 The model-trial source reads `STRATA_SYCL_DECODE_KV_COALESCED=3` at verifier
 initialization. It admits cooperative resolution only for the three-query

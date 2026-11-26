@@ -708742,7 +708742,7 @@
       },
       "retention": "Keep the private fixture through the bounded resolver and copy kernel trace. Retire the fixture and routine logs after the decisions and build recovery are verified. Reuse the retained runtime archive and keep the selected serving executable."
     },
-    "stage": "4",
+    "stage": "closed",
     "processes": [
       {
         "stage": "smoke",
@@ -709920,10 +709920,217 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "stage": "5",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-width3-v1/fixture-build/sycl_kv_copy_groups_bench",
+          "--planner-width3-benchmark",
+          "cooperative"
+        ],
+        "environment_sha256": "79e977fbd18cc92eb5c331f247ce50b5cefb62b698ece87682caf2ca4923ec44",
+        "arm": "cooperative",
+        "samples": [
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 0,
+            "unique_pages": 1539,
+            "cooperative": true,
+            "rep": 0,
+            "calls": 2048,
+            "elapsed_ns": 1083878928,
+            "ns_per_call": 529237.7578125,
+            "clock_pair_ns": 20.3085,
+            "timer_fraction": 0.00019186556231306305,
+            "calibration_ns": 1083388262,
+            "warmup_ns": 523610050,
+            "requested_host_payload_bytes_per_call": 0,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 0,
+            "unique_pages": 1539,
+            "cooperative": true,
+            "rep": 1,
+            "calls": 2048,
+            "elapsed_ns": 1086030828,
+            "ns_per_call": 530288.490234375,
+            "clock_pair_ns": 20.3085,
+            "timer_fraction": 0.00019148539308315102,
+            "calibration_ns": 1083388262,
+            "warmup_ns": 523610050,
+            "requested_host_payload_bytes_per_call": 0,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 0,
+            "unique_pages": 1539,
+            "cooperative": true,
+            "rep": 2,
+            "calls": 2048,
+            "elapsed_ns": 1086576202,
+            "ns_per_call": 530554.7861328125,
+            "clock_pair_ns": 20.3085,
+            "timer_fraction": 0.00019138928279233562,
+            "calibration_ns": 1083388262,
+            "warmup_ns": 523610050,
+            "requested_host_payload_bytes_per_call": 0,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 384,
+            "unique_pages": 1539,
+            "cooperative": true,
+            "rep": 0,
+            "calls": 512,
+            "elapsed_ns": 1443285735,
+            "ns_per_call": 2818917.451171875,
+            "clock_pair_ns": 20.3085,
+            "timer_fraction": 3.602180686695417e-05,
+            "calibration_ns": 1443377094,
+            "warmup_ns": 542015692,
+            "requested_host_payload_bytes_per_call": 1622016,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 384,
+            "unique_pages": 1539,
+            "cooperative": true,
+            "rep": 1,
+            "calls": 512,
+            "elapsed_ns": 1444110099,
+            "ns_per_call": 2820527.537109375,
+            "clock_pair_ns": 20.3085,
+            "timer_fraction": 3.600124397440419e-05,
+            "calibration_ns": 1443377094,
+            "warmup_ns": 542015692,
+            "requested_host_payload_bytes_per_call": 1622016,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 384,
+            "unique_pages": 1539,
+            "cooperative": true,
+            "rep": 2,
+            "calls": 512,
+            "elapsed_ns": 1444587959,
+            "ns_per_call": 2821460.857421875,
+            "clock_pair_ns": 20.3085,
+            "timer_fraction": 3.598933500455682e-05,
+            "calibration_ns": 1443377094,
+            "warmup_ns": 542015692,
+            "requested_host_payload_bytes_per_call": 1622016,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 1539,
+            "unique_pages": 1539,
+            "cooperative": true,
+            "rep": 0,
+            "calls": 256,
+            "elapsed_ns": 1282802437,
+            "ns_per_call": 5010947.01953125,
+            "clock_pair_ns": 20.3085,
+            "timer_fraction": 2.026413362668097e-05,
+            "calibration_ns": 1282765552,
+            "warmup_ns": 641650796,
+            "requested_host_payload_bytes_per_call": 6500736,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 1539,
+            "unique_pages": 1539,
+            "cooperative": true,
+            "rep": 1,
+            "calls": 256,
+            "elapsed_ns": 1283732084,
+            "ns_per_call": 5014578.453125,
+            "clock_pair_ns": 20.3085,
+            "timer_fraction": 2.024945884269104e-05,
+            "calibration_ns": 1282765552,
+            "warmup_ns": 641650796,
+            "requested_host_payload_bytes_per_call": 6500736,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 1539,
+            "unique_pages": 1539,
+            "cooperative": true,
+            "rep": 2,
+            "calls": 256,
+            "elapsed_ns": 1282867702,
+            "ns_per_call": 5011201.9609375,
+            "clock_pair_ns": 20.3085,
+            "timer_fraction": 2.0263102703009667e-05,
+            "calibration_ns": 1282765552,
+            "warmup_ns": 641650796,
+            "requested_host_payload_bytes_per_call": 6500736,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          }
+        ],
+        "provider_sha256": "78ee4b764717a824f2a6298ea138795071a4f3f8a9a24c0405b9da4e51bc67e1",
+        "host_probe_accepted": true,
+        "validation": {
+          "pid": 3689126,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_identity": {
+          "pid": 3689126,
+          "start_ticks": 406101363,
+          "sid": 3689126,
+          "pgid": 3689126
+        },
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     ],
-    "complete": false,
-    "passed": false,
+    "complete": true,
+    "passed": true,
     "ownership_closed": true,
     "model_qualified": false,
     "binary": {
@@ -709933,6 +710140,62 @@
     },
     "build_receipt_sha256": "269dd9b7419eefbd292996f45a4ab1eec39ff6487b3fb39f40c54d95b5bbd77b",
     "compiled_inputs": 672,
-    "linked_inputs": 25
+    "linked_inputs": 25,
+    "decision": {
+      "cells": [
+        {
+          "missing": 0,
+          "process_medians_ns": [
+            1411754.1533203125,
+            530936.7456054688,
+            531025.7241210938,
+            1411792.4140625,
+            1411473.7705078125,
+            530288.490234375
+          ],
+          "paired_time_ratios": [
+            0.3760830059233441,
+            0.3761358389744013,
+            0.3756984375583477
+          ],
+          "faster": true
+        },
+        {
+          "missing": 384,
+          "process_medians_ns": [
+            3614754.109375,
+            2820917.619140625,
+            2820664.40234375,
+            3615657.62109375,
+            3613604.80078125,
+            2820527.537109375
+          ],
+          "paired_time_ratios": [
+            0.7803899058650959,
+            0.7801248619028504,
+            0.7805301610457197
+          ],
+          "faster": true
+        },
+        {
+          "missing": 1539,
+          "process_medians_ns": [
+            5708018.90234375,
+            5013940.5,
+            5012873.10546875,
+            5708908.84765625,
+            5710143.9296875,
+            5011201.9609375
+          ],
+          "paired_time_ratios": [
+            0.8784029250395865,
+            0.8780790233718213,
+            0.8775964358593232
+          ],
+          "faster": true
+        }
+      ],
+      "eligible_for_model_check": true
+    }
   }
 }
