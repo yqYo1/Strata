@@ -1169,7 +1169,13 @@ checks the host lease fixture and runs the bounded SYCL ranked-refill cases
 with parameter validation. The device fixture covers
 wrong extent, changed prefix, missing or aliased slots, reader exclusion,
 payload and both tables, and fail-stop after an injected copy or publication
-failure. Proceed to the short and near-capacity RESTORE fixtures before
+failure. The standalone host precheck uses the three fixture/lease source
+files from `4757120ec` with `/usr/bin/x86_64-linux-gnu-g++-13 -std=c++20
+-O2 -Wall -Wextra -Werror -pthread -Iinclude tests/core/prefill_scratch_test.cpp`
+in a private source tree. The compiler SHA-256 is
+`1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769`.
+It requires all 40 cases and creates a temporary host executable only.
+Proceed to the short and near-capacity RESTORE fixtures before
 clean timing. Include a fresh long request, a following short request and
 another fresh long request in the same process, plus a cancelled prefill and
 the physical 262,144-token fill. Bind the actual map before each prefill
