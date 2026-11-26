@@ -1370,6 +1370,17 @@ component gate. An isolated model comparison must bind the production
 dispatch to the same format and keep prefill and expert placement fixed.
 The replay does not measure PCIe, GPU overlap or model throughput.
 
+The timed CPU fixture has no live executable consumer. Its source and results
+are reachable from `feature/sycl` at `14180e833`. The recovery check matches
+210 project inputs, 1,376 GGML inputs, all 633 actual compiler inputs, the
+external linker and runtime inputs and the final executable. The eight
+processes have closed. Retired the descendants of
+`cpu-fixed-expert-iq3s-single-v1` under the tuning state root and verified
+that only its original `record.json` remains. The 93 files total
+16,164,268 bytes. SHA-256 over
+sorted run-relative paths, byte counts and file hashes is
+`9e8274aeca70722e211780434302e3f55624a933d4ffe62989fb9bce633a6cd3`.
+
 The [closed CPU result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-expert-locality-current.json)
 at `0b7646e0c` retains all samples and the exact build recipe. Retired
 `cpu-fixed-expert-locality-v1` and verified its absence. Recovered the project and
@@ -1791,7 +1802,10 @@ The [host controls](../bench/test_dflash2_decode_ranked_refill.py) at
 both STOP/recovery sequences, mask rejection and refusal to count a late
 STOP as prefill cancellation. The timing reader also refuses missing,
 early, late and wrong-size refill events.
-The actual candidate build and device qualification remain pending.
+The isolated build is configured at `d15fe1cb6`. Its recorded inputs
+cover 1,327 project files, the six ranked-refill overlays on `968e71988`,
+the two original profile files and four generated build recipe files.
+Full compilation and device qualification are pending.
 
 After the native gates, the [timing runner](../bench/dflash2_decode_ranked_refill_speed.py)
 uses one binary and the same starting profile for three matched independent
