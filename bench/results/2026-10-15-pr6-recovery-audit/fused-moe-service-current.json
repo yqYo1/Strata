@@ -675470,7 +675470,7 @@
       "scope": "Keep the qualified global loader, slot widths, protected prefix, prefill and restore protocols. Qualify both reranked decode placements independently.",
       "gates": "Reproduce the fixed holdout ranking; bind its actual membership, loaned slots and restored bytes. Verify each arm against its own saved state, preserve prefill and context extents, and record output and work for each arm. Diagnostic only. Stop on the first failed check."
     },
-    "stage": "running",
+    "stage": "closed",
     "outcomes": {
       "host": {
         "complete": true,
@@ -676133,6 +676133,239 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "near-cross": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "GPU_executed": true,
+        "requests": [
+          {
+            "prompt": 253919,
+            "read": 253919,
+            "reused": 0,
+            "output_hash": "6d4bbfb66910386a154ce3ec0b3d4ce7909406eab7e56213f980fae1600e72ca",
+            "finish": "length",
+            "publications": [
+              8192,
+              16384,
+              24576,
+              32768,
+              40960,
+              49152,
+              57344,
+              65536,
+              73728,
+              81920,
+              90112,
+              98304,
+              106496,
+              114688,
+              122880,
+              131072,
+              139264,
+              147456,
+              155648,
+              163840,
+              172032,
+              180224,
+              188416,
+              196608,
+              204800,
+              212992,
+              221184,
+              229376,
+              237568,
+              245760,
+              253918
+            ],
+            "active_state": {
+              "L": "253919",
+              "gdn": "1c7665a20bf9fb70",
+              "ple": "57f5e744994111a5",
+              "tail": "e4f650a852f99b11",
+              "pooled": "328da75ed1ce33a0",
+              "kv": "84bc0636bbc67c82",
+              "mtp": "14650fb0739d0383",
+              "ple_prev": "4061,4062"
+            },
+            "draft_tail": {
+              "rows": 2046,
+              "cold_prefix": 0,
+              "vram_bytes": 845776220
+            },
+            "attention_store": {
+              "pieces": 720,
+              "direct": 0,
+              "copy_bytes": 120795955200,
+              "gpu_rows": 122880,
+              "host_rows": 131038,
+              "window_mode": 10,
+              "maximum_rows": 81920
+            },
+            "kv_stage": {
+              "reloaded_pages": 2856960,
+              "reused_pages": 8570880,
+              "mirror_D2H_calls": 1584,
+              "mirror_D2H_bytes": 3217648896
+            }
+          },
+          {
+            "prompt": 33,
+            "read": 33,
+            "reused": 0,
+            "output_hash": "614fcb0d009bbde79e77f822d20745611e7bdc8e9226a0c5591fbe0c292f9b51",
+            "finish": "length",
+            "publications": [
+              32
+            ],
+            "active_state": {
+              "L": "33",
+              "gdn": "7ad909ab4f9d74d7",
+              "ple": "9f417bc11288f313",
+              "tail": "c62ce9e52b4dc52f",
+              "pooled": "c19bd29566a838e4",
+              "kv": "5d69b6f94eb8b3ee",
+              "mtp": "14650fb0739d0383",
+              "ple_prev": "159,160"
+            },
+            "draft_tail": {
+              "rows": 32,
+              "cold_prefix": 0,
+              "vram_bytes": 845776220
+            },
+            "attention_store": {
+              "pieces": 0,
+              "direct": 0,
+              "copy_bytes": 0
+            }
+          },
+          {
+            "prompt": 262128,
+            "read": 8209,
+            "reused": 253919,
+            "output_hash": "f66a8a966619a7aae703ba69f26c7d0b93f5a86b91d51608f9e8b51bb4acc4c5",
+            "finish": "stop",
+            "publications": [
+              262111,
+              262127
+            ],
+            "active_state": {
+              "L": "262128",
+              "gdn": "fb2b17a6c8ed250f",
+              "ple": "823f082ceb1feff0",
+              "tail": "87dfd69246ebbfa3",
+              "pooled": "9f75a8d2198f36ce",
+              "kv": "9bb1a0eed8d2d71b",
+              "mtp": "14650fb0739d0383",
+              "ple_prev": "271,256"
+            },
+            "draft_tail": {
+              "rows": 2046,
+              "cold_prefix": 0,
+              "vram_bytes": 845776220
+            },
+            "attention_store": {
+              "pieces": 96,
+              "direct": 0,
+              "copy_bytes": 8068792320,
+              "gpu_rows": 8208,
+              "host_rows": 0,
+              "window_mode": 10,
+              "maximum_rows": 8208
+            },
+            "kv_stage": {
+              "reloaded_pages": 1548096,
+              "reused_pages": 0,
+              "mirror_D2H_calls": 480,
+              "mirror_D2H_bytes": 104011776
+            }
+          }
+        ],
+        "validation": {
+          "pid": 1652369,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "restored_tokens": 253919,
+        "restore_payload": {
+          "draft": "0000000000000000",
+          "cells": "0",
+          "mode": "0",
+          "source": "ram",
+          "resident": "0",
+          "main": "99cff7844a408146",
+          "main_layers": "12",
+          "main_bytes": "3607695360",
+          "draft_bytes": "0",
+          "running": "5ba76188beda9bf7",
+          "running_bytes": "118069304",
+          "upto": "253919",
+          "result": "PASS"
+        },
+        "loans": [
+          [
+            8192,
+            132,
+            1256,
+            2321664000,
+            2319958528,
+            1124
+          ],
+          [
+            8192,
+            132,
+            1256,
+            2321664000,
+            2319958528,
+            1124
+          ]
+        ],
+        "decode_placement": [
+          {
+            "request": 1,
+            "membership_sha256": "c54e57b84fe10686afcb162cda438369161a7f64c5e17d8d92d1e7b669f00296",
+            "cpu_jobs": 459,
+            "cpu_entries": 459,
+            "vram_entries": 21,
+            "logical_job_blob_bytes": 939648000
+          },
+          {
+            "request": 2,
+            "membership_sha256": "c54e57b84fe10686afcb162cda438369161a7f64c5e17d8d92d1e7b669f00296",
+            "cpu_jobs": 474,
+            "cpu_entries": 474,
+            "vram_entries": 6,
+            "logical_job_blob_bytes": 970700800
+          },
+          {
+            "request": 3,
+            "membership_sha256": "c54e57b84fe10686afcb162cda438369161a7f64c5e17d8d92d1e7b669f00296",
+            "cpu_jobs": 465,
+            "cpu_entries": 465,
+            "vram_entries": 15,
+            "logical_job_blob_bytes": 953011200
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     },
     "plans": [
@@ -676509,8 +676742,8 @@
         "arm": "cross"
       }
     ],
-    "complete": false,
-    "passed": false,
+    "complete": true,
+    "passed": true,
     "active": false,
     "ownership_closed": true,
     "speed_eligible": false,

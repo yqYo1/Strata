@@ -421,8 +421,13 @@ stock outputs and it uses 465, 474 and 447 CPU jobs. The near-capacity
 within-layer run also passes. It restores 253,919 parked tokens, reads 8,209
 and emits one token at 262,128. Its three output hashes match the stock
 control at this extent, the saved-state readback and both loan/refill cycles
-pass, and no fresh Xe fault occurs. Near-capacity cross-layer validation,
-sustained speed and task-quality qualification remain pending.
+pass, and no fresh Xe fault occurs. The cross-layer ranking also passes the
+same near-capacity readback, extent, membership and loan/refill gates, with
+normal exit and no fresh Xe fault. Its first two outputs match stock. The
+resumed request emits a different token and stops at 262,128. Both placement
+controls close with final model asset hashes verified. This admits the two
+profiles to the matched speed comparisons. Check numerical and task behavior
+before adopting either profile.
 
 The [ranked generation comparison](../bench/dflash2_decode_ranked_generation.py)
 keeps the global loader fixed. First compare stock with the within-layer
