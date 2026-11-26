@@ -1832,8 +1832,14 @@ verifies its own saved KV and running state, whose digests differ across
 the two placements. The first verifier window processes the last prompt
 token after handoff under the selected decode layout. All three one-token
 outputs match across arms. Both owners close with quiet validation and
-no fresh Xe fault. The near-capacity, cancellation and physical-fill
-checks remain open.
+no fresh Xe fault.
+
+The near-capacity stock case restores 253,919 tokens from RAM and reads
+8,209 fresh tokens to reach 262,128. It verifies 3,607,695,360 bytes of
+target KV across 12 layers and 118,069,304 bytes of running state at the
+parked extent. Both long segments restore the stock expert payload and map.
+The owner closes normally with an empty validation log and no fresh Xe fault.
+The near-capacity ranked case, cancellation and physical full fill remain open.
 
 Retired the closed device fixture traces after the first live pair and
 verified both original `record.json` files are unchanged. The failed V1
