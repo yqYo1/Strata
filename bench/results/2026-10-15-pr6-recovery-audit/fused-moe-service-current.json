@@ -694966,5 +694966,188 @@
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "decode_qsa_score_grid_v1": {
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "native_source_commit": "968e71988953dca3d98037d3b3fec9f903bdfd6f",
+    "native_build_sha256": "d1edcc7793ea37788da8f60b863185d35a143413626866a44e9ca31f53278c4f",
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-speed-v2/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "source_commit": "44bb81e4bd243d905d6fa69aaafe678491305af5",
+    "input_sha256": {
+      "bench/decode_qsa_score_grid.py": "1ebee40087a4d8a52f95df613c2eaabd33c45fc1e9bb291d2ce6f940995cc398",
+      "bench/sycl/decode_qsa_score_grid.cpp": "198ae6ae67db3fd59ff595e6362b1e62483d91d47b37fe3ecd2cc2cffd3a0327",
+      "bench/sycl/decode_qsa_score_grid_source.py": "561eaf0a0023b5d61727895321af7158ffbe5fd9ba6baf6be8071e8b7cde378a",
+      "bench/sycl/build_prefill_mixed_gather.py": "f434b6ad6cc3034cc718e3248ce3c6d43e03a71c8edca3a598acb30ca6951802",
+      "bench/dflash2_primary_retained.py": "d1e741407ad60f47dfe3e17f4f8baf161bdd82a5017a927a891d9a3668c1a061"
+    },
+    "overlay_sha256": {
+      "bench/sycl/decode_qsa_score_grid.cpp": "198ae6ae67db3fd59ff595e6362b1e62483d91d47b37fe3ecd2cc2cffd3a0327",
+      "decode_qsa_score_grid_kernel.cpp": "07e034eae2c809cc5cb3bd1a7aa58fe2aad5bc18772d4207ed27d9bc6e9688a5"
+    },
+    "compile_database_sha256": "660138a4f65f93f17485225cad35b3155ba262644b14dca894013d1d8e1e5e4b",
+    "parent_environment_sha256": "219f24b0aee14857ea319a4f935e82c4ea71449563bde6aacaaede56f16ecfd1",
+    "commands": [
+      [
+        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-DSTRATA_CPU_SERVICE_PROFILE=1",
+        "-DSTRATA_ENABLE_SYCL=1",
+        "-DSTRATA_VERSION=\"0.1.38\"",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/source/include",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/source/include/strata/sycl/compat",
+        "-fsycl-id-queries-range=size_t",
+        "-Wno-error=deprecated-declarations",
+        "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-MD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-qsa-score-grid-v1/fixture-build/decode_qsa_score_grid.o.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-qsa-score-grid-v1/fixture-build/decode_qsa_score_grid.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-qsa-score-grid-v1/fixture-build/bench/sycl/decode_qsa_score_grid.cpp"
+      ],
+      [
+        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-DSTRATA_CPU_SERVICE_PROFILE=1",
+        "-DSTRATA_ENABLE_SYCL=1",
+        "-DSTRATA_VERSION=\"0.1.38\"",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/source/include",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/source/include/strata/sycl/compat",
+        "-fsycl-id-queries-range=size_t",
+        "-Wno-error=deprecated-declarations",
+        "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-ffp-contract=off",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-MD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-qsa-score-grid-v1/fixture-build/decode_qsa_score_grid_kernel.o.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-qsa-score-grid-v1/fixture-build/decode_qsa_score_grid_kernel.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-qsa-score-grid-v1/fixture-build/decode_qsa_score_grid_kernel.cpp"
+      ],
+      [
+        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-v",
+        "-fsycl-id-queries-range=size_t",
+        "-Wno-error=deprecated-declarations",
+        "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+        "-O3",
+        "-DNDEBUG",
+        "-Wl,-t",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-qsa-score-grid-v1/fixture-build/decode_qsa_score_grid.o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-qsa-score-grid-v1/fixture-build/decode_qsa_score_grid_kernel.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-qsa-score-grid-v1/fixture-build/decode_qsa_score_grid",
+        "libstrata_kernels.a",
+        "libstrata_core.a",
+        "libstrata_sycl_runtime.a"
+      ]
+    ],
+    "archives": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/build/libstrata_kernels.a": "8dfb867e6eda5562b08d582eaf8d80218bb81bbdb08584037f1d00a6f7a11dfa",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/build/libstrata_core.a": "848fe0d15ef0421dc7034b508eb29aae221cd80dd7050e63bce93b5c63f20468",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/build/libstrata_sycl_runtime.a": "0f7f21d685f64f37e640c4cad3e3cfdf2c5163c8a0177aca129aed8c79dfbfd3"
+    },
+    "plan": {
+      "stages": [
+        "smoke",
+        "validate",
+        "0",
+        "1",
+        "2"
+      ],
+      "modes": [
+        "smoke",
+        "validate",
+        "forward",
+        "reverse",
+        "forward"
+      ],
+      "contexts": [
+        96204,
+        262144
+      ],
+      "widths": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "grid": 4096,
+      "replays": 512,
+      "batches": 3,
+      "budget": {
+        "wall": 300,
+        "cpu": 600,
+        "rss_cap": 4294967296,
+        "text_cap": 25165824,
+        "file_cap": 33554432,
+        "total_cap": 67108864
+      },
+      "diagnostic": {
+        "stage": "profile",
+        "after": [
+          "smoke",
+          "validate",
+          "0",
+          "1",
+          "2"
+        ],
+        "replays": 5,
+        "clock": "Outer SYCL graph end minus start. Report device ticks and wall completion in the profiled process. Preserve unsupported clocks without changing clean timing."
+      },
+      "scope": "Same retained scorer and FP32 arithmetic. Change only its decode grid. Use the production SYCL compatibility graph and the unchanged top-k. Compare scorer-only and scorer-plus-top-k replay.",
+      "gates": "Trace the short smoke first, then check exact score bits, selection IDs and guards at every tail remainder, invalid steps, ties and small→large→small replay on the same graph. Each timing batch is at least 10 ms and the empty clock is at most 1% of its completion interval.",
+      "decision": "Require an improvement in the median scorer and combined graph in all three independent processes for a shape. Report graph setup separately and the number of replays required to recover an observed extra setup cost. Model throughput and adoption require separate checks.",
+      "stop": "Stop on the first invalid input, validation, timing, owner or Xe fault. Preserve every captured result."
+    },
+    "stage": "prepared",
+    "processes": [],
+    "active": false,
+    "ownership_closed": true,
+    "complete": false,
+    "passed": false,
+    "model_speed_qualified": false
   }
 }
