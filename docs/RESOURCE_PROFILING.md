@@ -980,6 +980,31 @@ count only when it beats stock on both clocks in all three processes. The
 copy-versus-mapped contrast measures the incremental copy effect. The fixture
 and raw logs have one consumer through comparison closure.
 
+All three arms pass the traced oracle and buffer checks. The three timing
+processes each supply 126 valid batches and close with quiet validation and
+no fresh Xe fault. Median time from CPU publication to completion is shown
+per replay, aggregated across the three process medians. The last column is
+the range of the three process-level ratios.
+
+| Hits | Stock (µs) | Fused mapped (µs) | Copy and fuse (µs) | Copy and fuse / stock |
+| --- | ---: | ---: | ---: | ---: |
+| 0 | 178.919 | 174.259 | 143.045 | 0.799–0.805 |
+| 1 | 176.211 | 171.785 | 143.112 | 0.811–0.818 |
+| 2 | 173.812 | 168.862 | 143.240 | 0.821–0.824 |
+| 3 | 171.345 | 166.486 | 142.347 | 0.831–0.840 |
+| 4 | 168.383 | 163.930 | 142.596 | 0.841–0.861 |
+| 5 | 166.168 | 160.967 | 141.876 | 0.852–0.870 |
+| 10 | 152.442 | 147.781 | 141.474 | 0.926–0.935 |
+
+Both candidates beat stock at all seven exact shapes on both clocks in each
+process. Copy and fuse also beats fused mapped in all those pairs. Admit a
+scoped decode candidate for the tested hit counts. The production path needs
+an existing host publication boundary that can select the post operation
+without extra synchronization. Check reuse of the ordinary assembled slab,
+copy and completion ordering, and actual dispatch in a native run before
+comparing model throughput. Component results cover only these width-four
+shapes. The prior copy regression at 20 hits remains a separate result.
+
 The event-query process at `65f0f927c` repeats the same work at 16.443 tok/s.
 The two resident wrappers each run 64,560 times without query or clock
 errors. Their wall times are 224.99 and 314.64 ms, totaling 0.216% of the
