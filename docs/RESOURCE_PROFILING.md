@@ -366,6 +366,13 @@ physical context and RESTORE on the selected route before any default change.
 The MTP result gives a reason to test this component. DFlash2 benefit and
 interaction with the QSA grid need their own measurements.
 
+The reader reconciles all 18 finalized captures from the first clean QSA
+reference at `40c76d2f1`. A synthetic cooperative version activates seven
+eligible captures. Four malformed variants are rejected, covering prompt
+dispatch, width-one fallback, double dispatch and a missing capture. The
+prepared short pair pins the exact executable and 82-input/32-output
+request. Both native runs remain pending.
+
 ### DFlash2 expert service and placement
 
 The independent worker-leaf bracket at `6bbd3e3e1` uses native source
