@@ -325,6 +325,18 @@ prose TG from 11.636 to 11.676 tok/s (+0.35%). Code PP changes from
 changes from 1,040.19 to 1,041.07 tok/s and TTFT from 92.740 to 92.657
 seconds. Finish the third matched pair before deciding.
 
+The sixth process finishes both workloads and the native server exits 0
+without fresh Xe faults. Its code and prose clocks are 938.642 and
+1,040.725 tok/s PP, 16.263 and 11.625 tok/s TG, and 103.842 and 92.695 s
+TTFT. The original comparison ends failed at its final build-controller
+check. All 836 frozen measurement inputs match. The retained build's
+historical controller selection includes all of `bench/sycl`, and three
+CPU replay files changed during execution at `4a251fbf6`. Preserve the
+sixth receipt and its failure and do not use the cohort for adoption.
+The next cooperative-KV comparison needs a retained-build reader that
+recovers the original controls from Git and verifies the current run's
+inputs separately. It still needs the same candidate executable.
+
 Retired the raw comparison and admission output scopes below after verifying
 the closed owners and the compact committed decisions. Verified both root
 `record.json` files are unchanged. Both engine builds serve the current comparison.
