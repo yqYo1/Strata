@@ -1204,8 +1204,11 @@ and final ranked refill at each parked extent, 32,769 and 253,919 tokens.
 In each process check a fresh long prefill, an unrelated 33-token request
 and the restored prefix with an 8,209-token suffix. Bind the masked prefix,
 the full map used for the short prefill, and the final payload and map in
-order. The near-capacity request reaches 262,128 tokens. A cancelled prefill
-and the standalone 262,144-token physical fill are separate model gates.
+order. The near-capacity request reaches 262,128 tokens. The [standalone
+context runner](../bench/dflash2_decode_ranked_refill_context.py) first checks
+bounds and a 16,385-token handoff, then requires consuming the final slot of
+the 262,144-token context with zero output. A cancelled prefill remains a
+separate model gate.
 The two 96K thinking workloads need
 three matched independent process pairs. Keep the first-use and subsequent
 PP, client TTFT and TG measurements separate. Account for all final map

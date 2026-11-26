@@ -81,6 +81,20 @@ def check_trace(log, requests, digests, ranked):
                 verified_payloads=sum(line.startswith(PAYLOAD) for line in actual))
 
 
+def qualified_build():
+    native = bank.previous.read(build.ROOT / 'record.json')
+    require(build.retained.closed(native, 'built'), 'finish the ranked refill build')
+    original = build.check(native)
+    envelope = primary.physical.checks.parameters(native, original['native_validation_probe'])
+    qualification = validation.committed(bank.RESULT, (fixtures.KEY,))
+    fields = ('build_sha256', 'native_source_commit', 'boot', 'driver', 'runtime_manifest', 'native_validation_probe')
+    require(build.retained.closed(qualification, 'closed')
+            and all(qualification[k] == envelope[k] for k in fields)
+            and all(qualification['outcomes'][name]['passed'] for name in fixtures.ORDER),
+            'require the lease and payload fixtures on this exact build')
+    return native, envelope, qualification
+
+
 def experiment():
     ctx = primary.experiment()
     base_environment, base_inspect = ctx.environment, ctx.inspect
@@ -94,15 +108,7 @@ def experiment():
         return env
 
     def inputs(revision):
-        native = bank.previous.read(build.ROOT / 'record.json')
-        require(build.retained.closed(native, 'built'), 'finish the ranked refill build')
-        original = build.check(native)
-        envelope = primary.physical.checks.parameters(native, original['native_validation_probe'])
-        qualification = validation.committed(bank.RESULT, (fixtures.KEY,))
-        require(build.retained.closed(qualification, 'closed')
-                and all(qualification[k] == envelope[k] for k in ('build_sha256', 'native_source_commit', 'boot', 'driver'))
-                and all(qualification['outcomes'][name]['passed'] for name in fixtures.ORDER),
-                'require the lease and payload fixtures on this exact build')
+        native, envelope, qualification = qualified_build()
         prior = bank.previous.read(stock.ROOT / 'record.json')
         saved = validation.committed(bank.RESULT, (stock.KEY,))
         require(ctx.compact(prior) == saved and build.retained.closed(prior, 'closed')
