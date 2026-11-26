@@ -456,7 +456,11 @@ owner before release and binds the next owner after restoration. The
 five changed sources and the previously measured memory observer, then
 rebuilds all primary targets with the same recipe. Configuration passes
 with 1,327 exact source inputs, 522 controller inputs and the original 11
-targets. Compilation and the GPU comparisons remain pending.
+targets. The build verifies all 1,475 compiler inputs, 139 fresh objects
+and 11 executable identities. The `strata` SHA-256 is
+`0722edfc2fb1db9a0bc57c77ade047065cf16474de38c8fdec149c8d2f93bf23`.
+The [traced GPU fixture](../bench/dflash2_decode_indexed_head_fixture.py)
+binds the new test to this build and the retained loader and runtime.
 
 The replay at `e3d371974` verifies 4,668,262 original stock CPU jobs.
 Training uses the first 3,242 verifier windows and evaluation uses the
