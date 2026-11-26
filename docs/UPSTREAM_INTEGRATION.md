@@ -40,7 +40,10 @@ the custom Responses tool keep-alive, update resume, and chat working-folder
 preservation. The reviewed source shows that the generic tool timer can reset
 while the Responses assembler is holding back custom arguments. Adapt
 `e83de74d7` and its scripted HTTP test at the output boundary after the active
-source freeze. Check the new no-host admission separately on Arc. The
+source freeze. The retained Arc verifier uses completed GPU events and its
+host expert callback. The compiled SYCL path at `968e71988` sets the
+all-resident device planner to false. Keep this host fallback. Revisit the
+upstream `a7eb7c6c8` admission guard if an explicit no-host mode is added. The
 normalization change in `ed5bff88c` is in the root GPU source. Niko Arc
 selects `kernels.dp.cpp`, and this fork's compiler census contains its own
 `prefill/sycl/postops.cpp` implementation. Their numerical and runtime

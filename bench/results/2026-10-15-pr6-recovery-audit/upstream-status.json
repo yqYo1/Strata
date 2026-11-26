@@ -65,7 +65,7 @@
         "Review update resume and chat working-folder behavior jointly with their shared App/Control API contracts."
       ],
       "inference_component_candidates": [
-        "a7eb7c6c8: upstream SYCL no-host verifier admission with a resident host expert arena. Trace fork flags and effective settings first.",
+        "a7eb7c6c8: retain the local event-synchronized host expert fallback. Review this guard if the local SYCL verifier gains an explicit no-host mode.",
         "ed5bff88c: exact Arc source resolution selects separate SYCL implementations in upstream and this fork. Numerical parity and effective runtime dispatch remain separate comparisons.",
         "v0.2.20 Battlemage grouped prefill, GDN pairing and cold-expert component reviews remain pending."
       ],
@@ -81,6 +81,18 @@
         "fork_compiled_source": "src/prefill/sycl/postops.cpp",
         "fork_build_evidence": "0ab86d36b7ac37465a4f577a25bedbf7e66fb2b2",
         "native_runtime_dispatch_measured": false
+      },
+      "no_host_guard_resolution": {
+        "upstream_commit": "a7eb7c6c8626f4c56c14daa1c4daf663bd2b5284",
+        "retained_source": "968e71988953dca3d98037d3b3fec9f903bdfd6f",
+        "retained_build": "0ab86d36b7ac37465a4f577a25bedbf7e66fb2b2",
+        "compiled_git_sha256": {
+          "src/core/verify.cpp": "4c3b80fbadeb53a82163c4a7449763081cc0345b97a2cfc7c52723d86d843c26",
+          "src/program/generate.cpp": "0a1466333308c916504abe4e883bec0778f59db7cbf38132955d4088704a4e42"
+        },
+        "decision": "keep_host_fallback_for_retained_sycl_entry",
+        "evidence": "The configured SYCL backend compiles the verified source. Its device_plan_ is false, per-layer publication waits on a completed event, and the host pool callback serves misses.",
+        "revisit": "An explicit no-host selector or a change to the resident-only verifier dispatch."
       }
     },
     "prior_source_review": {
