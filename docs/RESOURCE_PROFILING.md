@@ -212,6 +212,26 @@ score-to-selection time and the isolated selector time. The existing shared
 dispatcher also serves prefill and the single-token layer path, so a verifier
 trial needs a phase-specific call site.
 
+The [decode scorer grid comparison](../bench/decode_qsa_score_grid.py)
+isolates the preceding score dispatch. At the 262,144-cell allocation,
+the existing scorer launches 65,538 workgroups per query. A 96,204-cell step
+uses 24,052 of those groups. The candidate uses 4,096 groups per query and
+reads the live step bounds inside the captured command. It retains the exact
+FP32 operations and work-item reduction order from the committed stock
+source. The independent fixture links the verified serving archives and
+compiles two isolated units. Serving continues to call its original scorer.
+
+The fixture replays the same graphs through short, 96K and physical-capacity
+steps, including all tail remainders, tied scores, invalid steps and a
+large-to-small transition. It checks complete score bits, ordered selected
+IDs, guards and actual completion. After the traced smoke and boundary
+checks, use three independent timing processes for widths one through four.
+Measure scorer replay and scorer-plus-existing-selection replay separately,
+with 512 dispatch/completion iterations per batch. Record graph setup and its
+amortization. Advance a shape only if both clocks improve in all three
+processes. Model speed and physical GPU traffic require separate evidence.
+Run the component at a model-comparison idle boundary.
+
 The independent worker-leaf bracket at `6bbd3e3e1` uses native source
 `96832af6f` with the same request, output, reasoning and draft counts. Its two
 observed runs use 156.12 and 156.24 CPU ms per emitted token across six expert
