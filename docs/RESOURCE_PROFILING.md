@@ -551,6 +551,16 @@ consume the changed verifier or window policy headers. In both model arms
 verify the finalized prompt and decode captures, and require actual width-three
 work before comparing the results.
 
+The [model-trial controller](../bench/dflash2_decode_kv_width3_native.py)
+reconstructs the measured QSA model source from its committed projection and
+applies only the four selector and policy-fixture files. Start its `prepare`,
+`configure`, `compile` and `policy` stages after the committed width-three
+component decision, with the applicable engine retention slot available.
+Require the same-build host policy fixture before model execution. The exact
+original QSA build receipt in Git supplies the baseline identity and recipe.
+One new executable serves both scalar and width-three arms. Retain the
+validated primary fallback through the comparison.
+
 The previous 82-input admission processed widths one, two and four. For
 width-three admission, recover the exact 33,287-input varied-prose prompt from
 `b28a9372b` and bound the output for the initial probe. The archived process
