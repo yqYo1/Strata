@@ -11645,7 +11645,12 @@ and cost remain unmeasured. The reversed phase-observed process yields
 seconds inside that loop. It records 23,121 minor faults on first use and
 3 and 0 later, with no major faults. The three requests preserve the route
 and workload, validation is quiet, and the owner exits without a fresh Xe
-fault. The final V4-only process remains the reversed pair's cost control.
+fault. The final V4-only process closes the reversed pair at
+963.2/1055.1/1055.0 tok/s. All four processes and 12 matched requests close
+normally with no fresh Xe faults and matching final model hashes. The paired
+subsequent duration ratios are 0.999623 and 1.002511, passing the observer-cost
+gate. Keep first-use ratios descriptive. The replicated layer-loop excess
+qualifies the detailed attribution experiment.
 The next observer splits the layer loop into outer preparation, the
 `run_impl` call and retirement of the pass. Set
 `STRATA_PREFILL_COLD_LAYER_PHASES=1` to collect those calling-thread clocks,
@@ -11668,8 +11673,8 @@ and enclosing interval before accepting it.
 At `fcaf1e45a`, four controller checks pass. The same parser also accepts
 the actual two-layer C++ fixture output and rejects both incomplete fixture
 outcomes. The next native projection recovers byte-identical preimages for
-both changed files from Git. It still needs the closed paired observer-cost
-decision before preparing a build.
+both changed files from Git. Its coarse reference and observer-cost decision
+are now closed. The new executable and layer-detail model runs remain pending.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.

@@ -671299,13 +671299,13 @@
     "native_base_commit": "968e71988953dca3d98037d3b3fec9f903bdfd6f",
     "native_overlay_sha256": "8dc1b04c96bfa99bcffb1efb69f29db66f611c93316f301140ac422e14159cc0",
     "native_context_qualified": false,
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "01fc7b79557ec26f9b0bfb713145419b7f6e474a",
     "host_passed": true,
     "ownership_closed": true,
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "plans": [
       {
         "index": 0,
@@ -673958,6 +673958,736 @@
         },
         "passed": true,
         "arm": "phases"
+      },
+      {
+        "index": 3,
+        "read": 118785,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cold-host-native-v1/build/strata",
+          "sha256": "7a7ec55d2c755df95888dca513c4653757210a08ab49536cb97717cdcc93895f",
+          "bytes": 26700392
+        },
+        "native_source_commit": "8a437b97ac43f59ee28559565436f9c50493df49",
+        "native_identity": {
+          "pid": 1505828,
+          "start_ticks": 400542726,
+          "sid": 1505768
+        },
+        "request_routes_checked_before_continue": 3,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1505828,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18974",
+              "jobs": "23978",
+              "source_H2D_bytes": "228065280",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "118784"
+            },
+            "uploads": {
+              "uploads": "18974",
+              "requested_H2D_bytes": "38726553600",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 645120,
+              "reused": 1935360
+            },
+            "fixed_bytes": 3902964736,
+            "free_bytes": 4320649216,
+            "direct_pieces": 720,
+            "native_request": [
+              118785,
+              0,
+              118785,
+              24,
+              13,
+              15
+            ],
+            "cpu_wait": {
+              "wall_s": 120.997161163,
+              "cpu_s": 114.889634868,
+              "wait_cpu_s": 74.942940288,
+              "wait_wall_s": 75.190697541,
+              "waits": {
+                "compute": [
+                  13,
+                  1.3466e-05,
+                  1.3353e-05
+                ],
+                "transfer": [
+                  13,
+                  1.3216e-05,
+                  1.3032e-05
+                ],
+                "event": [
+                  13,
+                  8.8076e-05,
+                  9.2011e-05
+                ],
+                "compat": [
+                  1452,
+                  74.94282553,
+                  75.190579144
+                ],
+                "direct": [
+                  0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "outside_wait": {
+                "source_copy": [
+                  3.7764e-05,
+                  3.9381e-05
+                ],
+                "host_group": [
+                  0.211174075,
+                  0.211284978
+                ],
+                "gemm_submit": [
+                  5.683139538,
+                  5.829500505
+                ],
+                "route_exchange": [
+                  0.0,
+                  0.0
+                ],
+                "upload_submit": [
+                  5.186917894,
+                  5.247327008
+                ],
+                "residual_input_host": [
+                  0.0,
+                  0.0
+                ],
+                "residual_input_device": [
+                  0.045386931,
+                  0.047306534
+                ],
+                "residual_store_host": [
+                  0.0,
+                  0.0
+                ],
+                "residual_store_device": [
+                  0.0,
+                  0.0
+                ],
+                "moe_map_upload": [
+                  0.041911438,
+                  0.042543875
+                ],
+                "moe_job_weights": [
+                  0.002805216,
+                  0.002893492
+                ],
+                "moe_dequant_gu": [
+                  1.621471166,
+                  1.656148913
+                ],
+                "moe_dequant_down": [
+                  1.638819876,
+                  1.672770164
+                ],
+                "moe_gather": [
+                  2.163806989,
+                  2.207700645
+                ],
+                "moe_swiglu": [
+                  1.48697666,
+                  1.516198211
+                ],
+                "moe_accumulate": [
+                  1.506606121,
+                  1.537529158
+                ],
+                "moe_status": [
+                  8.037372823,
+                  8.04440596
+                ]
+              },
+              "unclassified": [
+                12.320268089,
+                17.790814798
+              ],
+              "nested_status": {
+                "scopes": 48,
+                "phases": {
+                  "tag": {
+                    "count": 48,
+                    "cpu_s": 2.9022e-05,
+                    "wall_s": 2.8916e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "precheck": {
+                    "count": 96,
+                    "cpu_s": 0.000103303,
+                    "wall_s": 0.000103433,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "queue_context": {
+                    "count": 96,
+                    "cpu_s": 0.00010569,
+                    "wall_s": 0.000105719,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "enqueue": {
+                    "count": 48,
+                    "cpu_s": 8.036528026,
+                    "wall_s": 8.043528078,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "observer": {
+                    "count": 48,
+                    "cpu_s": 3.3308e-05,
+                    "wall_s": 3.6485e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "drain": {
+                    "count": 48,
+                    "cpu_s": 0.006862776,
+                    "wall_s": 0.006862473,
+                    "wait_cpu_s": 0.006791604,
+                    "wait_wall_s": 0.006786584
+                  },
+                  "postcheck": {
+                    "count": 48,
+                    "cpu_s": 3.3425e-05,
+                    "wall_s": 3.3577e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "after_drain": {
+                    "count": 48,
+                    "cpu_s": 3.3098e-05,
+                    "wall_s": 3.5629e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "branch": {
+                    "count": 48,
+                    "cpu_s": 2.8274e-05,
+                    "wall_s": 2.8524e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  }
+                },
+                "cpu_s": 8.044346496,
+                "wall_s": 8.05137505,
+                "unclassified_cpu_s": 0.000589574,
+                "unclassified_wall_s": 0.000612217
+              }
+            }
+          },
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18902",
+              "jobs": "23912",
+              "source_H2D_bytes": "228065280",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "118784"
+            },
+            "uploads": {
+              "uploads": "18902",
+              "requested_H2D_bytes": "38591923200",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 645120,
+              "reused": 1935360
+            },
+            "fixed_bytes": 3902964736,
+            "free_bytes": 4236988416,
+            "direct_pieces": 720,
+            "native_request": [
+              118785,
+              0,
+              118785,
+              24,
+              13,
+              15
+            ],
+            "cpu_wait": {
+              "wall_s": 110.178395266,
+              "cpu_s": 109.226018094,
+              "wait_cpu_s": 74.961836123,
+              "wait_wall_s": 75.236546474,
+              "waits": {
+                "compute": [
+                  13,
+                  1.3777e-05,
+                  1.3691e-05
+                ],
+                "transfer": [
+                  13,
+                  1.3424e-05,
+                  1.3251e-05
+                ],
+                "event": [
+                  14,
+                  8.5733e-05,
+                  8.8501e-05
+                ],
+                "compat": [
+                  1452,
+                  74.961723189,
+                  75.236431031
+                ],
+                "direct": [
+                  0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "outside_wait": {
+                "source_copy": [
+                  3.822e-05,
+                  3.9854e-05
+                ],
+                "host_group": [
+                  0.209228211,
+                  0.209355773
+                ],
+                "gemm_submit": [
+                  5.57805527,
+                  5.717512642
+                ],
+                "route_exchange": [
+                  0.0,
+                  0.0
+                ],
+                "upload_submit": [
+                  5.102966294,
+                  5.161211268
+                ],
+                "residual_input_host": [
+                  0.0,
+                  0.0
+                ],
+                "residual_input_device": [
+                  0.047054766,
+                  0.049033031
+                ],
+                "residual_store_host": [
+                  0.0,
+                  0.0
+                ],
+                "residual_store_device": [
+                  0.0,
+                  0.0
+                ],
+                "moe_map_upload": [
+                  0.042470501,
+                  0.043106883
+                ],
+                "moe_job_weights": [
+                  0.002752571,
+                  0.002838667
+                ],
+                "moe_dequant_gu": [
+                  1.633460024,
+                  1.66721539
+                ],
+                "moe_dequant_down": [
+                  1.638042464,
+                  1.670540872
+                ],
+                "moe_gather": [
+                  2.195185549,
+                  2.238426742
+                ],
+                "moe_swiglu": [
+                  1.453999633,
+                  1.487885186
+                ],
+                "moe_accumulate": [
+                  1.513105081,
+                  1.54236827
+                ],
+                "moe_status": [
+                  7.954328767,
+                  7.960138653
+                ]
+              },
+              "unclassified": [
+                6.89349462,
+                7.192175561
+              ],
+              "nested_status": {
+                "scopes": 48,
+                "phases": {
+                  "tag": {
+                    "count": 48,
+                    "cpu_s": 2.9167e-05,
+                    "wall_s": 2.9046e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "precheck": {
+                    "count": 96,
+                    "cpu_s": 0.000101999,
+                    "wall_s": 0.000102162,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "queue_context": {
+                    "count": 96,
+                    "cpu_s": 0.000101168,
+                    "wall_s": 0.000101181,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "enqueue": {
+                    "count": 48,
+                    "cpu_s": 7.953486096,
+                    "wall_s": 7.959263564,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "observer": {
+                    "count": 48,
+                    "cpu_s": 3.247e-05,
+                    "wall_s": 3.4356e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "drain": {
+                    "count": 48,
+                    "cpu_s": 0.007911647,
+                    "wall_s": 0.007910988,
+                    "wait_cpu_s": 0.0078347,
+                    "wait_wall_s": 0.007828988
+                  },
+                  "postcheck": {
+                    "count": 48,
+                    "cpu_s": 3.4002e-05,
+                    "wall_s": 3.4142e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "after_drain": {
+                    "count": 48,
+                    "cpu_s": 3.7527e-05,
+                    "wall_s": 3.4374e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "branch": {
+                    "count": 48,
+                    "cpu_s": 2.9836e-05,
+                    "wall_s": 2.9309e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  }
+                },
+                "cpu_s": 7.96235262,
+                "wall_s": 7.968157222,
+                "unclassified_cpu_s": 0.000588708,
+                "unclassified_wall_s": 0.0006181
+              }
+            }
+          },
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18907",
+              "jobs": "23923",
+              "source_H2D_bytes": "228065280",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "118784"
+            },
+            "uploads": {
+              "uploads": "18907",
+              "requested_H2D_bytes": "38600499200",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 645120,
+              "reused": 1935360
+            },
+            "fixed_bytes": 3902964736,
+            "free_bytes": 4236992512,
+            "direct_pieces": 720,
+            "native_request": [
+              118785,
+              0,
+              118785,
+              24,
+              13,
+              16
+            ],
+            "cpu_wait": {
+              "wall_s": 110.250758404,
+              "cpu_s": 109.353308791,
+              "wait_cpu_s": 75.048569272,
+              "wait_wall_s": 75.314615536,
+              "waits": {
+                "compute": [
+                  13,
+                  1.3195e-05,
+                  1.3123e-05
+                ],
+                "transfer": [
+                  13,
+                  1.2953e-05,
+                  1.2769e-05
+                ],
+                "event": [
+                  14,
+                  8.7203e-05,
+                  8.9726e-05
+                ],
+                "compat": [
+                  1452,
+                  75.048455921,
+                  75.314499917
+                ],
+                "direct": [
+                  0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "outside_wait": {
+                "source_copy": [
+                  5.1127e-05,
+                  5.2817e-05
+                ],
+                "host_group": [
+                  0.211079413,
+                  0.211074889
+                ],
+                "gemm_submit": [
+                  5.614395804,
+                  5.749331897
+                ],
+                "route_exchange": [
+                  0.0,
+                  0.0
+                ],
+                "upload_submit": [
+                  5.06503135,
+                  5.122266563
+                ],
+                "residual_input_host": [
+                  0.0,
+                  0.0
+                ],
+                "residual_input_device": [
+                  0.046575246,
+                  0.048515894
+                ],
+                "residual_store_host": [
+                  0.0,
+                  0.0
+                ],
+                "residual_store_device": [
+                  0.0,
+                  0.0
+                ],
+                "moe_map_upload": [
+                  0.042893293,
+                  0.043710533
+                ],
+                "moe_job_weights": [
+                  0.0027071,
+                  0.00279505
+                ],
+                "moe_dequant_gu": [
+                  1.641981394,
+                  1.676506877
+                ],
+                "moe_dequant_down": [
+                  1.63086079,
+                  1.66343795
+                ],
+                "moe_gather": [
+                  2.205959193,
+                  2.24819396
+                ],
+                "moe_swiglu": [
+                  1.469208534,
+                  1.497939425
+                ],
+                "moe_accumulate": [
+                  1.536387528,
+                  1.56504769
+                ],
+                "moe_status": [
+                  7.92419576,
+                  7.928555016
+                ]
+              },
+              "unclassified": [
+                6.913412987,
+                7.178714307
+              ],
+              "nested_status": {
+                "scopes": 48,
+                "phases": {
+                  "tag": {
+                    "count": 48,
+                    "cpu_s": 3.1429e-05,
+                    "wall_s": 2.9933e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "precheck": {
+                    "count": 96,
+                    "cpu_s": 0.000105982,
+                    "wall_s": 0.000106988,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "queue_context": {
+                    "count": 96,
+                    "cpu_s": 0.000112054,
+                    "wall_s": 0.00011413,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "enqueue": {
+                    "count": 48,
+                    "cpu_s": 7.923327779,
+                    "wall_s": 7.92765118,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "observer": {
+                    "count": 48,
+                    "cpu_s": 3.2992e-05,
+                    "wall_s": 3.4976e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "drain": {
+                    "count": 48,
+                    "cpu_s": 0.008616418,
+                    "wall_s": 0.008622557,
+                    "wait_cpu_s": 0.008543847,
+                    "wait_wall_s": 0.00854384
+                  },
+                  "postcheck": {
+                    "count": 48,
+                    "cpu_s": 3.4457e-05,
+                    "wall_s": 3.5586e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "after_drain": {
+                    "count": 48,
+                    "cpu_s": 3.3579e-05,
+                    "wall_s": 3.3885e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "branch": {
+                    "count": 48,
+                    "cpu_s": 3.0769e-05,
+                    "wall_s": 2.9455e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  }
+                },
+                "cpu_s": 7.932925313,
+                "wall_s": 7.93728489,
+                "unclassified_cpu_s": 0.000599854,
+                "unclassified_wall_s": 0.000626199
+              }
+            }
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 123324.7,
+            "prompt_tps": 963.2,
+            "ttft_s": 123.518,
+            "total_s": 125.328,
+            "generated_tokens": 24,
+            "request_sha256": "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 112581.5,
+            "prompt_tps": 1055.1,
+            "ttft_s": 112.775,
+            "total_s": 114.426,
+            "generated_tokens": 24,
+            "request_sha256": "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 112593.1,
+            "prompt_tps": 1055.0,
+            "ttft_s": 112.792,
+            "total_s": 114.437,
+            "generated_tokens": 24,
+            "request_sha256": "f952766eccc6720b841e5091c55231ae6d505e82bd53259c17062b9a19a2515f",
+            "drafts_offered": 16,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 112587.3,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "arm": "wait"
       }
     ],
     "budgets": {
@@ -673992,6 +674722,91 @@
         "passed": true
       }
     ],
+    "decision": {
+      "warm_observer_gate": true,
+      "first_overhead_qualified": false,
+      "adopted": false,
+      "phases_over_wait": [
+        {
+          "first": 0.9980682836627479,
+          "subsequent": 0.999622588227772
+        },
+        {
+          "first": 1.0002975883987555,
+          "subsequent": 1.002511384498962
+        }
+      ],
+      "first_minus_subsequent": {
+        "1": {
+          "admission": {
+            "wall_s": -0.00019192500000000013,
+            "cpu_s": -0.00019190449999999986,
+            "unclassified_wall_s": -0.00019192500000000013,
+            "unclassified_cpu_s": -0.00019190449999999986,
+            "minor_faults": 1.0,
+            "major_faults": 0.0
+          },
+          "provision": {
+            "wall_s": 0.00033238249999999886,
+            "cpu_s": -0.000286625,
+            "unclassified_wall_s": 0.0003317279999999964,
+            "unclassified_cpu_s": -0.00028729099999999985,
+            "minor_faults": 0.0,
+            "major_faults": 0.0
+          },
+          "layers": {
+            "wall_s": 10.749647156500004,
+            "cpu_s": 5.368439638500007,
+            "unclassified_wall_s": 10.680288388000001,
+            "unclassified_cpu_s": 5.349980561500001,
+            "minor_faults": 23412.5,
+            "major_faults": 0.0
+          },
+          "retire": {
+            "wall_s": 0.0017334310000000006,
+            "cpu_s": -8.019550000000009e-05,
+            "unclassified_wall_s": 0.0017219394999999985,
+            "unclassified_cpu_s": -8.750899999999994e-05,
+            "minor_faults": 0.0,
+            "major_faults": 0.0
+          }
+        },
+        "2": {
+          "admission": {
+            "wall_s": -0.0013831804999999999,
+            "cpu_s": -0.0013832490000000002,
+            "unclassified_wall_s": -0.0013831804999999999,
+            "unclassified_cpu_s": -0.0013832490000000002,
+            "minor_faults": 1.0,
+            "major_faults": 0.0
+          },
+          "provision": {
+            "wall_s": 0.00024711550000000235,
+            "cpu_s": -6.75284999999996e-05,
+            "unclassified_wall_s": 0.00024681649999999666,
+            "unclassified_cpu_s": -6.780950000000001e-05,
+            "minor_faults": 0.0,
+            "major_faults": 0.0
+          },
+          "layers": {
+            "wall_s": 10.799584248499997,
+            "cpu_s": 5.504207563500003,
+            "unclassified_wall_s": 10.769390505,
+            "unclassified_cpu_s": 5.437478523000001,
+            "minor_faults": 23119.5,
+            "major_faults": 0.0
+          },
+          "retire": {
+            "wall_s": 4.6029500000000986e-05,
+            "cpu_s": -0.0004329030000000001,
+            "unclassified_wall_s": 4.3275000000000605e-05,
+            "unclassified_cpu_s": -0.00043628500000000023,
+            "minor_faults": 0.0,
+            "major_faults": 0.0
+          }
+        }
+      }
+    },
     "source_inputs": {
       "files": 819,
       "sha256": "55c9fd6200f7b9cd9d5dd20a4d9f50ad22a6fc2115fa84ff8604bf93620c9527"
