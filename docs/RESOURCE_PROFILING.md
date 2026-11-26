@@ -371,8 +371,11 @@ through this temporary third generation and retire the observer build after
 the diagnostic closes. The isolated configuration passes with 1,327 exact
 source files and the original eleven-target recipe. Only the serving
 generator is overlaid. CMake's new compile database is pinned in
-`dflash2_decode_handoff_native_v1`. Compilation, frontend checks and GPU
-execution remain pending.
+`dflash2_decode_handoff_native_v1`. The build closes with 139 fresh objects,
+1,475 verified compiler inputs and all 11 executable identities. The
+`strata` binary SHA-256 is
+`1c7531daa1667461952eb5a808e04090eb07bf5cf51e7c2f1cc13493393e8ecc`.
+Frontend checks and GPU execution remain pending.
 The existing successful layer-major runs already verify that this runtime
 exposed and returned the Intel free-memory query during prefill. The
 reported bytes, per-allocation limit and physical residency are distinct.
