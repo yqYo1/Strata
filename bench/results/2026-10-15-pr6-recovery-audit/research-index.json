@@ -42503,5 +42503,47 @@
       "replacement": "Bound the captured output outside the native reviewer."
     },
     "retention": "Retain the report and compact verdict for the named follow-up. Lifecycle receipts are temporary."
+  },
+  "xe2-packed-group-reduction-20261126": {
+    "classification": "decision_support",
+    "source_revision": "5f05382112b2e47c0318f8d82e054340b8b66a46",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "dispatch": "ctx_48ac4b52ad8f",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/xe2-packed-group-reduction-20261126/report.md",
+    "report_bytes": 6529,
+    "report_sha256": "c3bd126824c95330d0c114e79504387b9792b9c421b61870e48b21c1a66b773e",
+    "worker_ipc_sha256": "b7deea2d3148f91e1a7945c1776970abaf6a353c2fa4d92167ac8a92bd5988d5",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-packed-qsa-and-deferred-verification-20261126/review.json",
+    "review_sha256": "9543f534b433ca36a266276cc57fafe72b91cfea14707052cc029c040ec4b710",
+    "scope": "Focused, sound on bounded-count arithmetic; novelty is incremental to earlier QSA selector work.",
+    "finding": "Carry proof holds for 0/1 lane counts with N<2^19; no performance evidence.",
+    "correction": "Since the candidate is unmeasured, make the matched run the first screen, not a test only after a loss; state fixture N and backend.",
+    "consumer": "One bounded A/B/C run on identical inputs: 3×u32, packed u64, subgroup staging; validate IDs before repeated timing and resource capture.",
+    "prerequisite": "Finish the isolated packed selector parity and replay timing first.",
+    "schedulable_now": false,
+    "owners_closed": true,
+    "retention": "Keep the report and compact review for the named question. Lifecycle output is temporary."
+  },
+  "exact-speculative-verifier-deferred-work-20261126": {
+    "classification": "knowledge_collection",
+    "source_revision": "5f05382112b2e47c0318f8d82e054340b8b66a46",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "dispatch": "ctx_8d3aaf056949",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/exact-speculative-verifier-deferred-work-20261126/report.md",
+    "report_bytes": 7588,
+    "report_sha256": "bc7dcd9681b3ccb31566bf81328fb1fc3c250c93fde5df1b23422d1ebefc7474",
+    "worker_ipc_sha256": "367b9abbf902d463bb6e2900b9a414a4cd7592406e274b93cb2ebe32e8d2bb57",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-packed-qsa-and-deferred-verification-20261126/review.json",
+    "review_sha256": "9543f534b433ca36a266276cc57fafe72b91cfea14707052cc029c040ec4b710",
+    "scope": "Focused source retrieval; contribution is locating the cancellation boundary; no performance gain is shown.",
+    "finding": "Retrieval: outputs appear after full-window target work; the caller finds the mismatch, then commit masks the suffix.",
+    "correction": "Applicability limit: source ordering cannot prove chunk feasibility or savings; launched GPU work and CPU callbacks need explicit draining and state rollback.",
+    "consumer": "Use as a chunk-boundary map for feasibility review; do not infer a port or speedup.",
+    "prerequisite": "Use when an exact verifier cancellation design has bounded state and ownership.",
+    "schedulable_now": false,
+    "owners_closed": true,
+    "retention": "Keep the report and compact review for the named question. Lifecycle output is temporary."
   }
 }
