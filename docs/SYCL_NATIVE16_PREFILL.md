@@ -11676,6 +11676,21 @@ outcomes. The next native projection recovers byte-identical preimages for
 both changed files from Git. Its coarse reference and observer-cost decision
 are now closed. The new executable and layer-detail model runs remain pending.
 
+The closed observer generation and outputs were retired after verifying all
+1,328 original source files against Git, the configure and build recipe, 139
+actual objects and all 11 executable identities. The observer build receipt
+at `591e81a55` preserves the source and recipe identities. The continuation
+reads the committed coarse and V4 evidence and uses the primary engine's
+recipe. Each retained `record.json` is byte-identical to its pre-retirement
+record. The inventories below hash sorted relative paths, logical byte counts
+and file hashes.
+
+| Root and retired paths | Evidence commit | Files | Bytes | Inventory SHA-256 |
+| --- | --- | ---: | ---: | --- |
+| `dflash2-cold-host-native-v1/{build,source,cache,tmp,owned}` | `591e81a55` | 1523 | 223564445 | `02636aa3c8e947852b007bc994c73835cdfa64f3ed2b63d4a2921d567fb70e4b` |
+| `dflash2-cold-host-phases-v1/{host,0,1,2,3}` | `62ab9e1b9` | 288 | 50302307 | `409dcfdbe588710fc200aafac43f15fc5f855ff12ad9a89824b0c40fedee951d` |
+| `dflash2-primary-prefill-cpu-wait-v1/{host,0,1,2,3}` | `b74b6b067` | 288 | 50223523 | `be8c76f4016d5361c65a4cd437185c1dcc117d50aff6e90951b7909f1cbb349d` |
+
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
 The host count through the production chat renderer and tokenizer is

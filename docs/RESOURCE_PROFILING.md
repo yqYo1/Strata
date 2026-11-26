@@ -410,7 +410,13 @@ qualification follow in separate checks.
 The host replay at `62125e84b` reproduces both held-out job and byte totals
 and both complete ranking hashes. Writing and reading the resulting profile
 files preserves every pair, the protected slots and the 1,256-slot loader
-extent. The native stock control is complete. The native reranked sessions
+extent. The within-layer ranking passes its first native case at `f4c4f9daa`.
+It restores 32,769 parked tokens and reads 8,209 more. The readback, actual
+membership, two loan/refill cycles and native teardown all pass with no fresh
+Xe fault. Its final output differs from the stock control, and its three
+single-token requests use 471, 476 and 442 CPU jobs versus 469, 469 and 414
+on stock. Keep those observations with the admission receipt. Sustained speed
+and task-quality qualification remain separate, and both near-capacity runs
 are pending.
 
 The [ranked generation comparison](../bench/dflash2_decode_ranked_generation.py)
