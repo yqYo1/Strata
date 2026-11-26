@@ -11626,6 +11626,12 @@ and requires each paired subsequent ratio to stay within five percent.
 The seven offline accounting checks pass at `196abca84`, including incomplete
 and duplicate phase records and phase and request conservation. The exact
 four-process plan is committed at `6841d6f6d` and the owned frontend probes pass.
+The V4-only control on the new executable completes all three requests with
+matched work, closed ownership and no fresh Xe fault. The first prefill takes
+123.517 seconds, followed by 112.555 and 112.663 seconds. The first
+unclassified interval is 17.978 seconds, compared with 7.179 and 7.141
+seconds later. Report the phase attribution after completing the paired
+observations.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.

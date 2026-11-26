@@ -671299,7 +671299,7 @@
     "native_base_commit": "968e71988953dca3d98037d3b3fec9f903bdfd6f",
     "native_overlay_sha256": "8dc1b04c96bfa99bcffb1efb69f29db66f611c93316f301140ac422e14159cc0",
     "native_context_qualified": false,
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "01fc7b79557ec26f9b0bfb713145419b7f6e474a",
     "host_passed": true,
     "ownership_closed": true,
@@ -671468,7 +671468,738 @@
         "kv_arm": "retain"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 118785,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cold-host-native-v1/build/strata",
+          "sha256": "7a7ec55d2c755df95888dca513c4653757210a08ab49536cb97717cdcc93895f",
+          "bytes": 26700392
+        },
+        "native_source_commit": "8a437b97ac43f59ee28559565436f9c50493df49",
+        "native_identity": {
+          "pid": 1426567,
+          "start_ticks": 400354130,
+          "sid": 1426515
+        },
+        "request_routes_checked_before_continue": 3,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1426567,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18974",
+              "jobs": "23978",
+              "source_H2D_bytes": "228065280",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "118784"
+            },
+            "uploads": {
+              "uploads": "18974",
+              "requested_H2D_bytes": "38726553600",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 645120,
+              "reused": 1935360
+            },
+            "fixed_bytes": 3902964736,
+            "free_bytes": 4320698368,
+            "direct_pieces": 720,
+            "native_request": [
+              118785,
+              0,
+              118785,
+              24,
+              13,
+              15
+            ],
+            "cpu_wait": {
+              "wall_s": 121.199220511,
+              "cpu_s": 114.683734108,
+              "wait_cpu_s": 75.004320283,
+              "wait_wall_s": 75.248240581,
+              "waits": {
+                "compute": [
+                  13,
+                  1.3936e-05,
+                  1.3833e-05
+                ],
+                "transfer": [
+                  13,
+                  1.2744e-05,
+                  1.249e-05
+                ],
+                "event": [
+                  13,
+                  8.1677e-05,
+                  8.4944e-05
+                ],
+                "compat": [
+                  1452,
+                  75.004211926,
+                  75.248129315
+                ],
+                "direct": [
+                  0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "outside_wait": {
+                "source_copy": [
+                  3.8697e-05,
+                  4.0682e-05
+                ],
+                "host_group": [
+                  0.218481942,
+                  0.224596553
+                ],
+                "gemm_submit": [
+                  5.68180107,
+                  5.895243047
+                ],
+                "route_exchange": [
+                  0.0,
+                  0.0
+                ],
+                "upload_submit": [
+                  5.162905702,
+                  5.231723403
+                ],
+                "residual_input_host": [
+                  0.0,
+                  0.0
+                ],
+                "residual_input_device": [
+                  0.046927552,
+                  0.048929899
+                ],
+                "residual_store_host": [
+                  0.0,
+                  0.0
+                ],
+                "residual_store_device": [
+                  0.0,
+                  0.0
+                ],
+                "moe_map_upload": [
+                  0.044612057,
+                  0.04917817
+                ],
+                "moe_job_weights": [
+                  0.0028946,
+                  0.003470175
+                ],
+                "moe_dequant_gu": [
+                  1.626279124,
+                  1.665976061
+                ],
+                "moe_dequant_down": [
+                  1.627107048,
+                  1.664956389
+                ],
+                "moe_gather": [
+                  2.159362787,
+                  2.205254336
+                ],
+                "moe_swiglu": [
+                  1.47135903,
+                  1.502310515
+                ],
+                "moe_accumulate": [
+                  1.53746962,
+                  1.569537865
+                ],
+                "moe_status": [
+                  7.898655718,
+                  7.912049987
+                ]
+              },
+              "unclassified": [
+                12.201518878,
+                17.977712847
+              ],
+              "nested_status": {
+                "scopes": 48,
+                "phases": {
+                  "tag": {
+                    "count": 48,
+                    "cpu_s": 2.9291e-05,
+                    "wall_s": 2.9185e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "precheck": {
+                    "count": 96,
+                    "cpu_s": 0.000103416,
+                    "wall_s": 0.000103748,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "queue_context": {
+                    "count": 96,
+                    "cpu_s": 0.000106028,
+                    "wall_s": 0.000106159,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "enqueue": {
+                    "count": 48,
+                    "cpu_s": 7.897793868,
+                    "wall_s": 7.911155133,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "observer": {
+                    "count": 48,
+                    "cpu_s": 3.4362e-05,
+                    "wall_s": 3.6455e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "drain": {
+                    "count": 48,
+                    "cpu_s": 0.007006568,
+                    "wall_s": 0.007006098,
+                    "wait_cpu_s": 0.006934004,
+                    "wait_wall_s": 0.006928965
+                  },
+                  "postcheck": {
+                    "count": 48,
+                    "cpu_s": 3.4642e-05,
+                    "wall_s": 3.4607e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "after_drain": {
+                    "count": 48,
+                    "cpu_s": 3.7397e-05,
+                    "wall_s": 3.7633e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "branch": {
+                    "count": 48,
+                    "cpu_s": 2.8653e-05,
+                    "wall_s": 2.8699e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  }
+                },
+                "cpu_s": 7.905774416,
+                "wall_s": 7.919164211,
+                "unclassified_cpu_s": 0.000600191,
+                "unclassified_wall_s": 0.000626494
+              }
+            }
+          },
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18902",
+              "jobs": "23912",
+              "source_H2D_bytes": "228065280",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "118784"
+            },
+            "uploads": {
+              "uploads": "18902",
+              "requested_H2D_bytes": "38591923200",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 645120,
+              "reused": 1935360
+            },
+            "fixed_bytes": 3902964736,
+            "free_bytes": 4237033472,
+            "direct_pieces": 720,
+            "native_request": [
+              118785,
+              0,
+              118785,
+              24,
+              13,
+              15
+            ],
+            "cpu_wait": {
+              "wall_s": 110.210146338,
+              "cpu_s": 109.298631489,
+              "wait_cpu_s": 75.04526281,
+              "wait_wall_s": 75.297377882,
+              "waits": {
+                "compute": [
+                  13,
+                  1.4005e-05,
+                  1.3912e-05
+                ],
+                "transfer": [
+                  13,
+                  1.3466e-05,
+                  1.3254e-05
+                ],
+                "event": [
+                  14,
+                  8.1752e-05,
+                  8.4416e-05
+                ],
+                "compat": [
+                  1452,
+                  75.045153587,
+                  75.297266299
+                ],
+                "direct": [
+                  0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "outside_wait": {
+                "source_copy": [
+                  3.9219e-05,
+                  4.1001e-05
+                ],
+                "host_group": [
+                  0.216098403,
+                  0.216100803
+                ],
+                "gemm_submit": [
+                  5.544462772,
+                  5.678075906
+                ],
+                "route_exchange": [
+                  0.0,
+                  0.0
+                ],
+                "upload_submit": [
+                  5.072516222,
+                  5.129065683
+                ],
+                "residual_input_host": [
+                  0.0,
+                  0.0
+                ],
+                "residual_input_device": [
+                  0.045915875,
+                  0.047853923
+                ],
+                "residual_store_host": [
+                  0.0,
+                  0.0
+                ],
+                "residual_store_device": [
+                  0.0,
+                  0.0
+                ],
+                "moe_map_upload": [
+                  0.044149245,
+                  0.044769
+                ],
+                "moe_job_weights": [
+                  0.002715805,
+                  0.002804644
+                ],
+                "moe_dequant_gu": [
+                  1.646016209,
+                  1.680021187
+                ],
+                "moe_dequant_down": [
+                  1.64752024,
+                  1.680670958
+                ],
+                "moe_gather": [
+                  2.21317589,
+                  2.256110217
+                ],
+                "moe_swiglu": [
+                  1.474085063,
+                  1.503370394
+                ],
+                "moe_accumulate": [
+                  1.507968921,
+                  1.537613093
+                ],
+                "moe_status": [
+                  7.953424614,
+                  7.957517129
+                ]
+              },
+              "unclassified": [
+                6.885280201,
+                7.178754517
+              ],
+              "nested_status": {
+                "scopes": 48,
+                "phases": {
+                  "tag": {
+                    "count": 48,
+                    "cpu_s": 2.8915e-05,
+                    "wall_s": 2.8893e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "precheck": {
+                    "count": 96,
+                    "cpu_s": 0.000102825,
+                    "wall_s": 0.000102579,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "queue_context": {
+                    "count": 96,
+                    "cpu_s": 0.000105444,
+                    "wall_s": 0.000107729,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "enqueue": {
+                    "count": 48,
+                    "cpu_s": 7.952559747,
+                    "wall_s": 7.956618766,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "observer": {
+                    "count": 48,
+                    "cpu_s": 3.5879e-05,
+                    "wall_s": 3.9854e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "drain": {
+                    "count": 48,
+                    "cpu_s": 0.008005338,
+                    "wall_s": 0.008004801,
+                    "wait_cpu_s": 0.007931122,
+                    "wait_wall_s": 0.007925221
+                  },
+                  "postcheck": {
+                    "count": 48,
+                    "cpu_s": 3.5484e-05,
+                    "wall_s": 3.5456e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "after_drain": {
+                    "count": 48,
+                    "cpu_s": 3.3652e-05,
+                    "wall_s": 3.3837e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "branch": {
+                    "count": 48,
+                    "cpu_s": 2.9283e-05,
+                    "wall_s": 2.9386e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  }
+                },
+                "cpu_s": 7.961539179,
+                "wall_s": 7.965626323,
+                "unclassified_cpu_s": 0.000602612,
+                "unclassified_wall_s": 0.000625022
+              }
+            }
+          },
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18907",
+              "jobs": "23923",
+              "source_H2D_bytes": "228065280",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "118784"
+            },
+            "uploads": {
+              "uploads": "18907",
+              "requested_H2D_bytes": "38600499200",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 645120,
+              "reused": 1935360
+            },
+            "fixed_bytes": 3902964736,
+            "free_bytes": 4237037568,
+            "direct_pieces": 720,
+            "native_request": [
+              118785,
+              0,
+              118785,
+              24,
+              13,
+              16
+            ],
+            "cpu_wait": {
+              "wall_s": 110.315578812,
+              "cpu_s": 109.424438169,
+              "wait_cpu_s": 75.049173549,
+              "wait_wall_s": 75.331769405,
+              "waits": {
+                "compute": [
+                  13,
+                  1.4755e-05,
+                  1.4572e-05
+                ],
+                "transfer": [
+                  13,
+                  1.4238e-05,
+                  1.4032e-05
+                ],
+                "event": [
+                  14,
+                  8.7634e-05,
+                  8.9796e-05
+                ],
+                "compat": [
+                  1452,
+                  75.049056922,
+                  75.331651005
+                ],
+                "direct": [
+                  0,
+                  0.0,
+                  0.0
+                ]
+              },
+              "outside_wait": {
+                "source_copy": [
+                  4.0293e-05,
+                  4.2944e-05
+                ],
+                "host_group": [
+                  0.220671838,
+                  0.220709763
+                ],
+                "gemm_submit": [
+                  5.623291024,
+                  5.759097142
+                ],
+                "route_exchange": [
+                  0.0,
+                  0.0
+                ],
+                "upload_submit": [
+                  5.074881847,
+                  5.132998813
+                ],
+                "residual_input_host": [
+                  0.0,
+                  0.0
+                ],
+                "residual_input_device": [
+                  0.046199787,
+                  0.048125213
+                ],
+                "residual_store_host": [
+                  0.0,
+                  0.0
+                ],
+                "residual_store_device": [
+                  0.0,
+                  0.0
+                ],
+                "moe_map_upload": [
+                  0.047216763,
+                  0.047863749
+                ],
+                "moe_job_weights": [
+                  0.003201099,
+                  0.003291533
+                ],
+                "moe_dequant_gu": [
+                  1.669568224,
+                  1.703898991
+                ],
+                "moe_dequant_down": [
+                  1.645771651,
+                  1.67954032
+                ],
+                "moe_gather": [
+                  2.211882327,
+                  2.256767575
+                ],
+                "moe_swiglu": [
+                  1.472762393,
+                  1.503435113
+                ],
+                "moe_accumulate": [
+                  1.53573221,
+                  1.565904158
+                ],
+                "moe_status": [
+                  7.913562027,
+                  7.920773038
+                ]
+              },
+              "unclassified": [
+                6.910483137,
+                7.141361055
+              ],
+              "nested_status": {
+                "scopes": 48,
+                "phases": {
+                  "tag": {
+                    "count": 48,
+                    "cpu_s": 2.8984e-05,
+                    "wall_s": 2.8996e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "precheck": {
+                    "count": 96,
+                    "cpu_s": 0.000100747,
+                    "wall_s": 0.000101193,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "queue_context": {
+                    "count": 96,
+                    "cpu_s": 0.000107404,
+                    "wall_s": 0.000107866,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "enqueue": {
+                    "count": 48,
+                    "cpu_s": 7.912696867,
+                    "wall_s": 7.9198765,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "observer": {
+                    "count": 48,
+                    "cpu_s": 3.4334e-05,
+                    "wall_s": 3.7007e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "drain": {
+                    "count": 48,
+                    "cpu_s": 0.008764283,
+                    "wall_s": 0.008974586,
+                    "wait_cpu_s": 0.008688354,
+                    "wait_wall_s": 0.008894333
+                  },
+                  "postcheck": {
+                    "count": 48,
+                    "cpu_s": 3.5828e-05,
+                    "wall_s": 3.5891e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "after_drain": {
+                    "count": 48,
+                    "cpu_s": 3.4217e-05,
+                    "wall_s": 3.4352e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  },
+                  "branch": {
+                    "count": 48,
+                    "cpu_s": 2.9481e-05,
+                    "wall_s": 2.9637e-05,
+                    "wait_cpu_s": 0.0,
+                    "wait_wall_s": 0.0
+                  }
+                },
+                "cpu_s": 7.922433717,
+                "wall_s": 7.929851095,
+                "unclassified_cpu_s": 0.000601572,
+                "unclassified_wall_s": 0.000625067
+              }
+            }
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 123517.1,
+            "prompt_tps": 961.7,
+            "ttft_s": 123.711,
+            "total_s": 125.519,
+            "generated_tokens": 24,
+            "request_sha256": "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 112555.2,
+            "prompt_tps": 1055.3,
+            "ttft_s": 112.754,
+            "total_s": 114.392,
+            "generated_tokens": 24,
+            "request_sha256": "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 112663.0,
+            "prompt_tps": 1054.3,
+            "ttft_s": 112.86,
+            "total_s": 114.503,
+            "generated_tokens": 24,
+            "request_sha256": "f952766eccc6720b841e5091c55231ae6d505e82bd53259c17062b9a19a2515f",
+            "drafts_offered": 16,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 112609.1,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "arm": "wait"
+      }
+    ],
     "budgets": {
       "wall": 5400,
       "cpu": 21600,
