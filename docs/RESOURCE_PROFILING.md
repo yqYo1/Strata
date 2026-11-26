@@ -947,6 +947,26 @@ Use those counts to select a comparison against the stock combine. Rows
 between the tested hit counts need their own timing evidence. The replay
 covers one captured placement and workload and collects no new GPU timing.
 
+The census at source `8bb39c78c` reconciles all 4,668,262 CPU jobs and
+5,982,938 CPU routed rows. Of 6,485 windows, 985 use width four, giving
+47,280 layer calls. The route payload remains pinned by SHA-256
+`08dce3920dea2de8752b16cbbbaddc07e9486515dfde39264c92fa116b27926f`.
+
+| GPU resident rows | Width-four layer calls | Share |
+| --- | ---: | ---: |
+| 0–3 | 33,266 | 70.360% |
+| 4–10 | 12,597 | 26.643% |
+| 11–19 | 1,372 | 2.902% |
+| 20–40 | 45 | 0.095% |
+
+The previous copy comparison advances the exact 4-hit and 10-hit shapes.
+They cover 4,051 and 528 layer calls respectively, or 9.685% together. The
+0, 1, 2, 3, 4, 5 and 10-hit shapes cover 40,594 calls (85.859%). Use these
+seven shapes for matched component comparisons of the stock sequence, fused
+mapped reduction and the same fused reduction after an ordered copy. Keep the
+20-hit result as a measured regression boundary for copying. The census does
+not establish coverage for other workloads or verifier widths.
+
 The event-query process at `65f0f927c` repeats the same work at 16.443 tok/s.
 The two resident wrappers each run 64,560 times without query or clock
 errors. Their wall times are 224.99 and 314.64 ms, totaling 0.216% of the
