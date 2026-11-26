@@ -45,8 +45,9 @@ PLAN = dict(
              'Charge all five timer calls. No API trace during timing.',
     decision='Require all three paired process medians to improve at each miss count before model dispatch work.',
     wall_seconds=WALL, limits=LIMITS,
-    retention='Retire the private fixture and routine logs after the result and build recovery are verified. '
-              'This comparison does not consume or replace another serving binary.')
+    retention='Keep the private fixture through the bounded resolver and copy kernel trace. '
+              'Retire the fixture and routine logs after the decisions and build recovery are verified. '
+              'Reuse the retained runtime archive and keep the selected serving executable.')
 
 
 def inputs(revision):

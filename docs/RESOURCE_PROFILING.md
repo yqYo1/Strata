@@ -519,8 +519,29 @@ checks. Require every paired median completion-time ratio below one for all
 three miss counts before a model trial. The fixture covers the KV input to
 attention. Validate downstream outputs and actual width-three dispatch in a
 separate same-binary model check, with other widths and prefill fixed.
-Review the temporary component build and logs when the component decision
-closes.
+Keep the temporary fixture build for the bounded kernel trace below.
+Review the build and its logs when the trace decision closes.
+
+The earlier component result at `34cbaf29c` gives a control for the
+mechanism. With zero missing pages, median launch-through-completion time
+falls from 0.965 to 0.375 ms at width two and from 1.876 to 0.699 ms at width
+four. Both arms still launch the copy kernel with zero payload. A separate
+older trial that reduced copy workgroups to 128 or 512 had all-hit K8V8
+time ratios of 0.9977 and 0.9971. It kept the scalar resolver and used
+different fixture inputs. These results support inspecting the page-table
+kernel before another change to copy geometry.
+
+Use the fixture's bounded `--planner-width3-trace ARM MISSES` after clean
+timing in a separate collector process. At each selected miss count it
+replays the same two-node graph five times and checks the full oracle after
+each launch. Begin with zero and 384 misses in both arms. Require five
+distinct resolver instances and five matching copy instances on the same
+native GPU, with successful setup, replay and exit and quiet parameter
+validation. Separate the two kernels from map resets and readbacks. Keep
+kernel service, launch gaps and wall completion separate. Reuse the pinned
+indexed UnitTrace collector only after its provider and instance checks
+pass for this fixture. Retire complete traces once the kernel split is
+recorded. No physical PCIe traffic or model TG follows from this trace.
 
 #### Width-four KV cache working set
 
