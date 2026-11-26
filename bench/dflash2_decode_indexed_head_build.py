@@ -31,7 +31,8 @@ def build_controller():
                     'retire the finished memory observer before this coherent build')
         measured = ctx.bank.basis.validation.committed(ctx.bank.RESULT, (handoff.KEY,))
         ctx.require(handoff.retained.closed(measured, 'closed')
-                    and measured['native_base_source_commit'] == base['native_source_commit']
+                    and measured['base_native_source_commit'] == recovery['native_base_commit'] == base['native_source_commit']
+                    and measured['native_source_commit'] == recovery['overlay_commit'] == handoff.NATIVE
                     and measured['binary'] == recovery['binaries']['strata']
                     and measured['decision']['observed_arithmetic_margin_bytes'] < 0,
                     'require the exact closed stock headroom experiment')
