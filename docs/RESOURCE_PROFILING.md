@@ -339,6 +339,34 @@ The tree contains 70 files and 2,524,102 bytes. Its SHA-256 over sorted
 relative paths, byte counts and file hashes is
 `8fa279557ece815396e13e9346524edbc67d268aa14a964bdfa32b617931a679`.
 
+### Cooperative KV resolution on DFlash2
+
+The earlier MTP comparison `decode_kv_speed_v1` found paired decode gains
+of 6.77% for code and 7.00% for prose. Its separate warmed 64K prefill check
+failed preservation. The retained primary DFlash2 source `968e71988` already
+contains the selectable decode resolver. The 262,144-cell K8V8 configuration
+with 20,480 resident cells gives 65,536 logical and 5,120 resident four-cell
+pages. Those dimensions match the existing gate. The gate also requires the
+two-head, 256-element, 2,051-selection shape and width two or four. It
+excludes prompt captures. The retained environment already fixes
+`STRATA_SYCL_KV_COPY_GROUPS=0`, so the experiment can switch only
+`STRATA_SYCL_DECODE_KV_COALESCED` before launch on the same executable.
+
+Keep the QSA scorer and expert placement fixed. Before timing, compare a
+bounded native request in each arm with validation enabled. Require matching
+output IDs and drafts, scalar KV in every prompt capture and verified
+cooperative calls at every intended layer of a decode width-two or width-four
+capture. Verify scalar fallback at width one. Record resident page shape and
+actual dispatch. Then compare the same 96K code and prose bodies in three
+counterbalanced process pairs against scalar KV. Report emitted tokens,
+draft acceptance, PP, client TTFT and sustained TG. Advance only on repeated
+decode gains and preserved prefill and TTFT within each workload. Test
+physical context and RESTORE on the selected route before any default change.
+The MTP result gives a reason to test this component. DFlash2 benefit and
+interaction with the QSA grid need their own measurements.
+
+### DFlash2 expert service and placement
+
 The independent worker-leaf bracket at `6bbd3e3e1` uses native source
 `96832af6f` with the same request, output, reasoning and draft counts. Its two
 observed runs use 156.12 and 156.24 CPU ms per emitted token across six expert
