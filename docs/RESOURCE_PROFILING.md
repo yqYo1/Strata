@@ -679,6 +679,17 @@ measures 941.370 PP, 103.553 s TTFT and 16.490 TG. Prose measures 1,040.008 PP,
 +0.581% code TG and −3.558% prose TG between its two independent processes.
 Compare this process with its following scalar arm for the second pair.
 
+The reverse-order scalar process closes normally with quiet validation and
+no fresh Xe fault. It matches the other processes' request, output,
+reasoning, draft and expert work. Relative to this scalar process, the
+second pair's cooperative TG is 15.505 → 16.490 for code (+6.355%) and
+11.117 → 11.340 for prose (+2.005%). Its scalar PP and TTFT are 925.623 and
+105.327 s for code, and 1,032.650 and 93.444 s for prose. Compared with the
+first scalar process, this scalar process has 5.48% lower code TG, 4.92%
+lower prose TG and 3.34–5.08% longer prefill on the four matched warm-ups.
+Preserve these observations with the second pair and complete the planned
+third pair before applying the verdict.
+
 The earlier varied-prose model capture at `b28a9372b` has 6,485 decode
 windows at 33,287 input tokens. The width counts are 2,533, 1,987, 980 and
 985 for widths one to four. Their weighted sum of 13,387 rows agrees with
