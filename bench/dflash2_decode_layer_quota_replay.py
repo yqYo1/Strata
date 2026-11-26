@@ -94,7 +94,7 @@ def rank_sha256(ranking):
     return replay.sha(b''.join(struct.pack('<HH', *pair) for pair in ranking))
 
 
-def analyze():
+def profile_study():
     revision, route, windows, stock_masks, formats, observed = replay.inputs()
     for name in (THIS, PROFILE, 'tools/make_profile.py', 'src/program/generate.cpp', 'src/core/expert_cache.cpp',
                  'include/strata/core/expert_cache.hpp', 'include/strata/core/expert_slot_sizes.hpp'):
@@ -110,11 +110,12 @@ def analyze():
     selections = dict(stock=stock,
                       within_layer=ranked_slots(stock, order, train, lambda pair: pair[0]),
                       across_equal_size_layers=ranked_slots(stock, order, train, lambda pair: sizes[pair[0]]))
-    cases = {}
+    cases, profiles = {}, {}
     for label, slots in selections.items():
         require(slots[:PROTECTED] == stock[:PROTECTED] and [sizes[layer] for layer, _ in slots] == stock_sizes,
                 'protected experts or physical slot sequence changed')
         ranking, requested = global_profile(slots, order, sizes)
+        profiles[label] = ranking
         selected = masks(slots)
         cases[label] = dict(ranking_sha256=rank_sha256(ranking),
                             requested_expert_cache=requested, effective_slots=len(slots),
@@ -126,13 +127,19 @@ def analyze():
     cross = cases['across_equal_size_layers']['holdout']
     advance = all(cross[k] < cases[case]['holdout'][k] for case in ('stock', 'within_layer')
                   for k in ('cpu_jobs', 'logical_job_blob_bytes'))
-    return dict(source_commit=revision, capture_commit=replay.CAPTURE, routing_sha256=observed['routing_sha256'],
+    result = dict(source_commit=revision, capture_commit=replay.CAPTURE, routing_sha256=observed['routing_sha256'],
                 training_windows=center, holdout_windows=len(windows) - center,
                 protected_slots=PROTECTED, cache_bytes=EXPECTED_BYTES, prefill_loan_bytes=EXPECTED_TAIL,
                 cases=cases, advance_to_admission=advance,
                 scope='Observed single-workload route replay. Global stock preserves the original '
                 'slot identities and widths. The two rankings change only membership after slot 132. '
                 'Future model checks require actual placement, the same loan/restore and independent workloads.')
+    return result, profiles
+
+
+def analyze():
+    result, _ = profile_study()
+    return result
 
 
 if __name__ == '__main__':

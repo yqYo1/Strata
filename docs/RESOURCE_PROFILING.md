@@ -379,8 +379,18 @@ run the 32,769- and 253,919-token park/restore protocols with the same short
 handoff and 8,209-token resumed suffix. Require identical active state,
 output, full loan/refill and all 48 actual membership masks. Advance reranked
 profiles only after this control passes. Run the two host protocol controls
-before either GPU arm. The generated stock profile remains a
-consumer of the next within-layer comparison only after this check passes.
+before either GPU arm. Keep the generated stock profile for the next
+placement comparison once this check passes.
+
+After stock admission, the same controller's `--ranked prepare` action
+materializes the exact within-layer and cross-layer rerankings from the
+original captured route. It checks the expected ranking digests and
+held-out counts, keeps every slot size and the first 132 members, and
+freezes the two generated profiles before launching. The global loader
+uses each profile's first 1,256 pairs as the expected membership. Both
+profiles get the same short-handoff and near-262144 restore checks, each
+against its own saved state. Native placement, clean PP/TG, and full-context
+qualification follow in separate checks.
 
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
