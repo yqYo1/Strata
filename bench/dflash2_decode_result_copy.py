@@ -1,6 +1,7 @@
-"""Measure mapped reads versus an ordered copy in the same T4 combine graph."""
+"""Compare the stock and fused T4 combines at observed resident-row counts."""
 
 import fcntl
+from itertools import permutations
 import json
 import math
 from pathlib import Path
@@ -16,30 +17,34 @@ import dflash2_primary_retained as retained
 bank, basis, require = retained.bank, retained.basis, retained.require
 sha, write = bank.sha, bank.stage.write
 PRIMARY = retained.PRIMARY.ROOT
-KEY = 'dflash2_decode_result_copy_v1'
+KEY = 'dflash2_decode_combine_stock_v1'
 ROOT = bank.B / KEY.replace('_', '-')
 BUILD = ROOT / 'fixture-build'
 TARGET = 'sycl_decode_moe_combine_test'
 FIXTURE = 'tests/sycl/decode_moe_combine.cpp'
-REVISION = 'c4bf3b970d842f9d8dedc37887812b6f20fd8c6a'
+CENSUS = '0a89cd5eb'
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 LINK_DRIVER = 'bench/sycl/build_prefill_mixed_gather.py'
 LIBRARIES = ('libstrata_kernels.a', 'libstrata_core.a', 'libstrata_sycl_runtime.a')
-ORDER = ('validate', 'time-forward', 'time-reverse', 'time-forward')
-HITS = (4, 10, 20)
-REPLAYS, BATCHES, COPY_BYTES = 512, 4, 409600
-SUMMARY = 'decode MoE combine numerical=PASS guards=PASS nodes=1/1 completed=1'
+ORDER = ('validate', 'time-forward', 'time-reverse', 'time-rotated')
+HITS = (0, 1, 2, 3, 4, 5, 10)
+ARM_ORDERS = tuple(permutations(range(3)))
+ARM_START = dict(zip(ORDER[1:], (0, 3, 2), strict=True))
+REPLAYS, COPY_BYTES = 512, 409600
+SUMMARY = 'decode MoE combine numerical=PASS guards=PASS nodes=3/1/1 completed=1'
 LIMITS = dict(wall=180, cpu=600, rss_cap=4 << 30, text_cap=24 << 20,
               file_cap=32 << 20, total_cap=64 << 20)
-PLAN = dict(order=list(ORDER), hits=list(HITS), replays=REPLAYS, paired_batches=BATCHES,
+PLAN = dict(order=list(ORDER), hits=list(HITS), replays=REPLAYS, arm_batches=len(ARM_ORDERS),
+            arms=['stock', 'fused_mapped', 'copy_fused'], arm_orders=[list(o) for o in ARM_ORDERS],
             copy_bytes_per_replay=COPY_BYTES, budgets=LIMITS,
-            scope='Same fused T4 reduction, inputs, hit map and ordered queue. Compare mapped reads '
-                  'with one complete pinned-host copy to device storage followed by the same graph.',
+            scope='Match inputs and hit maps across the stock copy/add/reduce, fused mapped reduce, '
+                  'and ordered pinned-host copy followed by fused reduce. Use an ordered queue in each arm.',
             acceptance='Bit-exact scalar oracle, guards, poisoned source and invalid destination list '
                        'before timing. Each batch must last at least 10 ms with at most 1% empty-clock cost. '
                        'Report ratios per hit count and independent process. Keep all samples.',
-            decision='Advance a hit count only if every independent process has smaller median '
-                     'completion time both from launch and from CPU publication. This is component evidence.',
+            decision='Score all three pairwise contrasts independently for every hit count. Advance each '
+                     'candidate versus stock only when all process medians improve both completion clocks. '
+                     'The copy-versus-mapped contrast separately prices the ordered copy.',
             retention='Retire this fixture build and raw output at the comparison closure; '
                       'keep the independently validated serving engine unchanged.')
 
@@ -47,9 +52,9 @@ PLAN = dict(order=list(ORDER), hits=list(HITS), replays=REPLAYS, paired_batches=
 def inputs(revision):
     selected = retained.baseline()
     parent = bank.previous.read(PRIMARY / 'record.json')
-    fixture = basis.validation.git('show', REVISION + ':' + FIXTURE)
-    require(fixture == (bank.P / FIXTURE).read_bytes()
-            == basis.validation.git('show', revision + ':' + FIXTURE), 'exact copy fixture source required')
+    basis.validation.git('merge-base', '--is-ancestor', CENSUS, revision)
+    fixture = basis.validation.git('show', revision + ':' + FIXTURE)
+    require(fixture == (bank.P / FIXTURE).read_bytes(), 'exact combine fixture source required')
     paths = (THIS, retained.THIS, 'bench/sycl', 'tools/sycl', *bank.basis.POLICIES)
     pins = bank.stage.source.pin(bank.P, paths)['source_sha256']
     official = basis.core.source.device.load_module('decode_result_copy_controls',
@@ -86,7 +91,8 @@ def inputs(revision):
     require(all(sha(p) == h for p, h in archives.items()), 'selected archive bytes changed')
     fields = {k: selected[k] for k in ('boot', 'driver', 'native_source_commit', 'native_build_sha256',
                                         'native_validation_probe', 'runtime_manifest')}
-    fields.update(source_commit=revision, source_revision=REVISION, fixture_sha256=sha(bank.P / FIXTURE),
+    fields.update(source_commit=revision, source_revision=revision, fixture_sha256=sha(bank.P / FIXTURE),
+                  hit_census_commit=basis.validation.git('rev-parse', CENSUS).decode().strip(),
                   controller_sha256=bank.signature(pins), compile_database_sha256=sha(database),
                   commands=commands, archives=archives, plan=PLAN,
                   parent_environment_sha256=bank.signature(parent['recipe']['environment']))
@@ -128,7 +134,7 @@ def build(row, parent, fixture):
     try:
         allowed = driver.build_inputs(parent, BUILD, overlay, row['commands'])
         driver.build_fixture(BUILD, TARGET, parent, overlay, row['commands'], allowed,
-                             dict(fixture_source_commit=REVISION, fixture_sha256=row['fixture_sha256']))
+                             dict(fixture_source_commit=row['source_revision'], fixture_sha256=row['fixture_sha256']))
         receipt = bank.previous.read(BUILD / 'record.json')
         require(receipt['complete'] and receipt['ownership_closed'] and receipt['commands'] == row['commands']
                 and all(receipt['linked'].get(p) == h for p, h in row['archives'].items()),
@@ -162,7 +168,7 @@ def samples(text, mode):
     if mode == 'validate':
         require(lines == [SUMMARY], 'unexpected validation output')
         return []
-    pattern = (r'decode MoE combine hits=(\d+) batch=(\d+) arm=([01]) replays=512 '
+        pattern = (r'decode MoE combine hits=(\d+) batch=(\d+) arm=([012]) replays=512 '
                r'ms=(\d+\.\d+) full_ms=(\d+\.\d+) empty_ms=(\d+\.\d+) cpu_copy_bytes_per_replay=(\d+)')
     parsed = []
     for line in lines[:-1]:
@@ -171,15 +177,14 @@ def samples(text, mode):
         hit, batch, arm = map(int, match.groups()[:3])
         elapsed, full, empty = map(float, match.groups()[3:6])
         size = int(match[7])
-        require(math.isfinite(full) and size == (COPY_BYTES if arm else 0)
+        require(math.isfinite(full) and size == (COPY_BYTES if arm == 2 else 0)
                 and full >= elapsed >= 10 and empty <= elapsed * .01,
                 'timing boundary or requested copy bytes differ')
         parsed.append(dict(hits=hit, batch=batch, arm=arm, ms=elapsed, full_ms=full,
                            empty_ms=empty, copy_bytes_per_replay=size))
-    reverse = int(mode == 'time-reverse')
-    expected = [(h, b, a) for h in HITS for b in range(BATCHES)
-                for a in (reverse ^ (b % 2), 1 ^ reverse ^ (b % 2))]
-    require([(s['hits'], s['batch'], s['arm']) for s in parsed] == expected, 'incomplete alternating timing pairs')
+    expected = [(h, b, a) for h in HITS for b in range(len(ARM_ORDERS))
+                for a in ARM_ORDERS[(ARM_START[mode] + b) % len(ARM_ORDERS)]]
+    require([(s['hits'], s['batch'], s['arm']) for s in parsed] == expected, 'incomplete counterbalanced timing batches')
     return parsed
 
 
@@ -205,7 +210,7 @@ def device_case(row, parent, index):
         ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15).splitlines()
         if line.startswith('-- cursor: ')]
     owner = bank.builder.ownership.Owner(case / 'owned', lambda: write(case / 'ownership.json', owner.commands))
-    command = [row['binary']['path'], mode, '--compare-copy']
+    command = [row['binary']['path'], mode, '--compare-stock']
     result = dict(index=index, mode=mode, command=command, environment_sha256=bank.signature(env),
                   ownership_closed=False)
     row['processes'].append(result)
@@ -246,17 +251,20 @@ def measure(row, parent, action):
             return
         owners = {(p['native_identity']['pid'], p['native_identity']['start_ticks']) for p in row['processes']}
         require(len(owners) == len(ORDER), 'fixture comparisons need independent processes')
-        ratios = {}
+        contrasts = dict(mapped_over_stock=(0, 1), copy_over_stock=(0, 2), copy_over_mapped=(1, 2))
+        ratios = {name: {} for name in contrasts}
         for hit in HITS:
-            ratios[str(hit)] = {}
-            for field in ('ms', 'full_ms'):
-                ratios[str(hit)][field] = []
-                for p in row['processes'][1:]:
-                    base, new = [statistics.median(s[field] for s in p['samples'] if s['hits'] == hit and s['arm'] == arm)
-                                 for arm in (0, 1)]
-                    ratios[str(hit)][field].append(new / base)
-        eligible = [int(h) for h, metrics in ratios.items() if all(r < 1 for r in (*metrics['ms'], *metrics['full_ms']))]
-        row.update(stage='closed', complete=True, passed=True, candidate_over_control=ratios,
+            medians = []
+            for p in row['processes'][1:]:
+                by_arm = [[s for s in p['samples'] if s['hits'] == hit and s['arm'] == arm] for arm in range(3)]
+                medians.append({field: [statistics.median(s[field] for s in arm) for arm in by_arm]
+                                for field in ('ms', 'full_ms')})
+            for name, (base, candidate) in contrasts.items():
+                ratios[name][str(hit)] = {field: [p[field][candidate] / p[field][base] for p in medians]
+                                          for field in ('ms', 'full_ms')}
+        eligible = {name: [int(h) for h, metrics in shapes.items() if all(r < 1 for r in (*metrics['ms'], *metrics['full_ms']))]
+                    for name, shapes in ratios.items()}
+        row.update(stage='closed', complete=True, passed=True, pairwise_time_ratios=ratios,
                    eligible_hit_counts=eligible, model_speed_qualified=False)
     except BaseException as error:
         row.update(stage='failed', error=repr(error))

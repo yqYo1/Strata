@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <span>
 #include <stdexcept>
 #include <string>
 #include <string_view>
@@ -33,6 +34,12 @@ constexpr int rows = tokens * experts, parts = rows * columns, outputs = tokens 
 constexpr int guard = 16, batches = 4, replays = 512;
 constexpr float sentinel = -7103.0f;
 using Clock = std::chrono::steady_clock;
+enum class Comparison { stock_to_mapped, mapped_to_copy, all_three };
+constexpr int stock_hit_counts[] = {0, 1, 2, 3, 4, 5, 10, 39, rows};
+constexpr int legacy_hit_counts[] = {0, 4, 10, 20, 39, rows};
+constexpr std::array<std::array<int, 3>, 6> three_arm_orders{{
+    {0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0},
+}};
 
 void require(bool valid, const char* message) {
     if (!valid) throw std::runtime_error(message);
@@ -48,7 +55,7 @@ void retire(cudaError_t code) noexcept {
 class Graphs {
     cudaGraph_t recording_ = nullptr;
     bool capturing_ = false;
-    std::array<cudaGraphExec_t, 2> executable_{};
+    std::array<cudaGraphExec_t, 3> executable_{};
     cudaEvent_t completion_ = nullptr;
 public:
     cudaStream_t stream = nullptr;
@@ -92,7 +99,12 @@ float weight_value(int row) {
     return float(row % 9 - 4) / 23.0f;
 }
 
-void run(std::string_view mode, bool compare_copy) {
+void run(std::string_view mode, Comparison comparison) {
+    const bool all_three = comparison == Comparison::all_three;
+    const bool mapped_to_copy = comparison == Comparison::mapped_to_copy;
+    const int arm_count = all_three ? 3 : 2;
+    const int copy_arm = all_three ? 2 : 1;
+    const bool include_copy = all_three || mapped_to_copy;
     auto runtime = runtime_for();
     Allocation host(runtime, parts * sizeof(float), MemoryKind::Host);
     Allocation gpu(runtime, parts * sizeof(float), MemoryKind::Device);
@@ -114,7 +126,7 @@ void run(std::string_view mode, bool compare_copy) {
                                            weights.as<float>(), shared.as<float>(), out, stream);
         });
     };
-    if (compare_copy) {
+    if (mapped_to_copy) {
         capture_fused(0, cpu);
     } else {
         graphs.capture(0, 3, [&](void* stream) {
@@ -123,7 +135,8 @@ void run(std::string_view mode, bool compare_copy) {
             native_moe_combine_multi(stage, weights.as<float>(), shared.as<float>(), out, columns, experts, tokens, stream);
         });
     }
-    capture_fused(1, compare_copy ? stage : cpu);
+    capture_fused(1, mapped_to_copy ? stage : cpu);
+    if (all_three) capture_fused(2, stage);
 
     std::vector<float> gpu_input(parts), shared_input(outputs), output(outputs + 2 * guard, sentinel);
     std::array<std::vector<float>, 2> cpu_inputs{std::vector<float>(parts), std::vector<float>(parts)};
@@ -137,13 +150,14 @@ void run(std::string_view mode, bool compare_copy) {
     auto replay = [&](int arm) {
         // The copy and graph share the ordered stream. Replay waits before
         // the caller overwrites the host publication for the next iteration.
-        if (compare_copy && arm == 1) upload(stage, cpu, host.size());
+        if (include_copy && arm == copy_arm) upload(stage, cpu, host.size());
         graphs.replay(arm);
     };
     upload(weights.data(), weight_input.data(), weights.size());
     upload(shared.data(), shared_input.data(), shared.size());
-    for (int count : {0, 4, 10, 20, 39, rows}) {
-        if (mode != "validate" && (count == 0 || count > 20)) continue;
+    const auto hit_counts = all_three ? std::span<const int>(stock_hit_counts) : std::span<const int>(legacy_hit_counts);
+    for (int count : hit_counts) {
+        if (mode != "validate" && ((!all_three && count == 0) || count > 20)) continue;
         metadata.fill(-1);
         metadata[0] = count;
         std::array<bool, rows> resident{};
@@ -197,14 +211,19 @@ void run(std::string_view mode, bool compare_copy) {
                         "ordered FP32 combine or row source differs");
             }
         };
-        for (int arm : {0, 1})
+        for (int arm = 0; arm < arm_count; ++arm)
             for (int version : {0, 1}) verify(arm, version);
 
         if (mode == "validate") continue;
         const int start = mode == "time-reverse" ? 1 : 0;
-        for (int batch = 0; batch < batches; ++batch) {
+        const int order_start = mode == "time-rotated" ? 2 : 3 * start;
+        const int batch_count = all_three ? static_cast<int>(three_arm_orders.size()) : batches;
+        for (int batch = 0; batch < batch_count; ++batch) {
             const int first = start ^ (batch % 2);
-            for (int arm : {first, 1 - first}) {
+            const std::array<int, 3> pair_order{first, 1 - first, 2};
+            const auto& order = all_three ? three_arm_orders[(order_start + batch) % batch_count] : pair_order;
+            for (int index = 0; index < arm_count; ++index) {
+                const int arm = order[index];
                 Clock::duration elapsed{}, full{}, empty{};
                 for (int i = 0; i < replays; ++i) {
                     const auto publish_begin = Clock::now();
@@ -225,8 +244,8 @@ void run(std::string_view mode, bool compare_copy) {
                           << " arm=" << arm << " replays=" << replays << " ms="
                           << std::fixed << std::setprecision(6) << ms << " full_ms=" << full_ms
                           << " empty_ms=" << empty_ms;
-                if (compare_copy)
-                    std::cout << " cpu_copy_bytes_per_replay=" << (arm == 1 ? host.size() : 0);
+                if (include_copy)
+                    std::cout << " cpu_copy_bytes_per_replay=" << (arm == copy_arm ? host.size() : 0);
                 std::cout << '\n';
             }
         }
@@ -238,13 +257,15 @@ void run(std::string_view mode, bool compare_copy) {
         metadata[1] = metadata[2] = 0;
         std::fill_n(cpu, parts, 1.0f);
         upload(meta.data(), metadata.data(), meta.size());
-        replay(1);
-        check(cudaMemcpyAsync(output.data(), result.data(), result.size(),
-                              cudaMemcpyDeviceToHost, graphs.stream), "malformed list readback");
-        check(cudaStreamSynchronize(graphs.stream), "malformed list completion");
-        for (int i = 0; i < outputs; ++i)
-            require(i < columns ? std::isnan(output[guard + i]) : std::isfinite(output[guard + i]),
-                    "duplicate destination was not rejected for its token");
+        for (int arm = 1; arm < arm_count; ++arm) {
+            replay(arm);
+            check(cudaMemcpyAsync(output.data(), result.data(), result.size(),
+                                  cudaMemcpyDeviceToHost, graphs.stream), "malformed list readback");
+            check(cudaStreamSynchronize(graphs.stream), "malformed list completion");
+            for (int i = 0; i < outputs; ++i)
+                require(i < columns ? std::isnan(output[guard + i]) : std::isfinite(output[guard + i]),
+                        "duplicate destination was not rejected for its token");
+        }
     }
 }
 } // namespace
@@ -252,12 +273,16 @@ void run(std::string_view mode, bool compare_copy) {
 int main(int argc, char** argv) {
     try {
         const bool compare_copy = argc == 3 && std::string_view(argv[2]) == "--compare-copy";
-        const std::string_view mode = (argc == 2 || compare_copy) ? argv[1] : "";
-        require(mode == "validate" || mode == "time-forward" || mode == "time-reverse",
-                "select validate, time-forward or time-reverse with optional --compare-copy");
-        run(mode, compare_copy);
+        const bool compare_stock = argc == 3 && std::string_view(argv[2]) == "--compare-stock";
+        const std::string_view mode = (argc == 2 || compare_copy || compare_stock) ? argv[1] : "";
+        require(mode == "validate" || mode == "time-forward" || mode == "time-reverse"
+                || (compare_stock && mode == "time-rotated"), "select a valid combine comparison and mode");
+        Comparison comparison = Comparison::stock_to_mapped;
+        if (compare_copy) comparison = Comparison::mapped_to_copy;
+        if (compare_stock) comparison = Comparison::all_three;
+        run(mode, comparison);
         std::cout << "decode MoE combine numerical=PASS guards=PASS nodes="
-                  << (compare_copy ? "1/1" : "3/1") << " completed=1\n";
+                  << (compare_stock ? "3/1/1" : compare_copy ? "1/1" : "3/1") << " completed=1\n";
     } catch (const std::exception& failure) {
         std::cerr << failure.what() << '\n';
         return 1;

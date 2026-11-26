@@ -925,8 +925,8 @@ choosing shapes for comparison with the stock combine path. Check production
 handoff dependencies and workspace cost in that comparison. Keep the mapped
 arm for the tested 20-hit shape. The fixture times exclude variable token
 widths and CPU expert work. Model throughput remains unmeasured.
-[Fixture](../tests/sycl/decode_moe_combine.cpp) ·
-[Controller](../bench/dflash2_decode_result_copy.py).
+[Original fixture](https://github.com/yqYo1/Strata/blob/4a3526351/tests/sycl/decode_moe_combine.cpp) ·
+[Original controller](https://github.com/yqYo1/Strata/blob/4a3526351/bench/dflash2_decode_result_copy.py).
 
 At `4a3526351`, the committed samples preserve all 72 timed batches. Verified
 the source recipe, actual compiler and linker inputs, and executable before
@@ -966,6 +966,19 @@ seven shapes for matched component comparisons of the stock sequence, fused
 mapped reduction and the same fused reduction after an ordered copy. Keep the
 20-hit result as a measured regression boundary for copying. The census does
 not establish coverage for other workloads or verifier widths.
+
+The [stock combine comparison](../bench/dflash2_decode_result_copy.py) keeps
+the prior production archives and rebuilds only the changed fixture source.
+Validate all three arms with the same FP32 oracle, two CPU publications and
+poisoned unused rows. Include 39 and 40 hits in correctness and invalid hit
+lists for both fused arms. Under the pinned Arc settings, collect three
+independent timing processes at the seven census shapes. Each process covers
+all six arm orders with 512 completions per arm and order. Charge the 409,600
+byte copy only to the copy-and-fuse arm. Compare the three pairs separately on
+launch and CPU-publication completion time. A candidate advances at a hit
+count only when it beats stock on both clocks in all three processes. The
+copy-versus-mapped contrast measures the incremental copy effect. The fixture
+and raw logs have one consumer through comparison closure.
 
 The event-query process at `65f0f927c` repeats the same work at 16.443 tok/s.
 The two resident wrappers each run 64,560 times without query or clock
