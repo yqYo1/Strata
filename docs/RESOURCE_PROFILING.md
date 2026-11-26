@@ -438,10 +438,21 @@ Width three adds 15.11% of windows and 21.96% of target rows. The resolver in
 `decode_kv_stream.cpp` iterates across the provided query count, while the
 verifier admission is restricted to the two measured widths. The same page
 bound below gives at most 1,542 simultaneously selected pages for three
-queries, within the stock 5,120 slots. After the current comparison, a
-separate three-query component can test the full plane, map and attention
-parity and clean completion time. Keep other widths and prefill fixed.
-These counts cover the archived 33K workload and do not predict 96K TG.
+queries, within the stock 5,120 slots. These counts cover the archived 33K
+workload and do not predict 96K TG.
+
+After the current comparison, use `--planner-width3-validate` on the existing
+[Arc fixture](../tools/sycl/kv_copy_groups_bench.cpp). Both resolvers must
+match the CPU reference for the page maps, counters, K/V and scale payloads,
+and buffer guards. Check a bounded three-query case first, then replay the
+fixed-capacity graph with shared selections, zero and partial widths, the
+last physical cell, epoch rollover and a rejected width. Use the 5,120-slot
+shape for the shared timing cases with 0, 384 and 1,539 misses.
+`--planner-width3-benchmark scalar|cooperative` uses the existing warm-up,
+calibration and timer-overhead checks. Compare three counterbalanced
+process pairs. This fixture covers the KV input to attention. Validate
+downstream outputs and actual width-three dispatch in a separate same-binary
+model check after a component pass. Keep other widths and prefill fixed.
 
 #### Width-four KV cache working set
 
