@@ -30,55 +30,34 @@ int main() try {
          !decode_verify_qsa_score_grid(true, VerifyInput::decode, 4, 8'194),
          "QSA score grid escaped the selected phase or allocation");
 
-    using strata::core::DecodeKvPlanner;
-    using strata::core::decode_kv_planner_from_text;
-    using strata::core::decode_verify_coalesced_kv;
-    need(decode_kv_planner_from_text(nullptr) == DecodeKvPlanner::scalar &&
-         decode_kv_planner_from_text("0") == DecodeKvPlanner::scalar &&
-         decode_kv_planner_from_text("1") == DecodeKvPlanner::cooperative_widths_2_4 &&
-         decode_kv_planner_from_text("3") == DecodeKvPlanner::cooperative_width_3,
-         "KV planner option mapping changed");
-    for (const char* text : {"", "2", "4", "03", "31", " 3", "true"})
-        need(decode_kv_planner_from_text(text) == DecodeKvPlanner::invalid, "bad KV planner option accepted");
-
-    // The two cooperative policies select disjoint decode widths; the
-    // width-three trial also requires the DFlash2 target owner.
+    // The measured KV set must stay separate from prompt, non-streamed or
+    // differently sized caches, and every unmeasured target width.
     const strata::core::VerifyKvShape kv{4,65536,5120,4,2,256,2051,true};
     int kv_selected = 0;
-    for (auto planner : {DecodeKvPlanner::scalar, DecodeKvPlanner::cooperative_widths_2_4,
-                         DecodeKvPlanner::cooperative_width_3, DecodeKvPlanner::invalid})
-        for (bool dflash2 : {false, true})
-            for (auto phase : {VerifyInput::prompt, VerifyInput::decode, static_cast<VerifyInput>(255)})
-                for (int queries = 0; queries <= 9; ++queries) {
-                    auto shape = kv;
-                    shape.queries = queries;
-                    const bool expected = phase == VerifyInput::decode &&
-                        ((planner == DecodeKvPlanner::cooperative_widths_2_4 && (queries == 2 || queries == 4)) ||
-                         (planner == DecodeKvPlanner::cooperative_width_3 && dflash2 && queries == 3));
-                    need(decode_verify_coalesced_kv(planner, phase, dflash2, shape) == expected,
-                         "KV planner escaped its owner, phase or width");
-                    kv_selected += expected;
-                }
-    need(kv_selected == 5, "wrong KV width selection count");
-    for (auto planner : {DecodeKvPlanner::cooperative_widths_2_4, DecodeKvPlanner::cooperative_width_3}) {
-        auto eligible = kv;
-        eligible.queries = planner == DecodeKvPlanner::cooperative_width_3 ? 3 : 4;
-        for (auto member : {&strata::core::VerifyKvShape::logical_pages,
-                            &strata::core::VerifyKvShape::resident_pages,
-                            &strata::core::VerifyKvShape::page_size,
-                            &strata::core::VerifyKvShape::kv_heads,
-                            &strata::core::VerifyKvShape::head_dim,
-                            &strata::core::VerifyKvShape::selection_capacity})
-            for (int delta : {-1, 1}) {
-                auto shape = eligible;
-                shape.*member += delta;
-                need(!decode_verify_coalesced_kv(planner, VerifyInput::decode, true, shape),
-                     "unmeasured KV geometry selected");
+    for (bool enabled : {false,true})
+        for (auto phase : {VerifyInput::prompt,VerifyInput::decode,static_cast<VerifyInput>(255)})
+            for (int queries=0;queries<=9;++queries) {
+                auto shape=kv;shape.queries=queries;
+                const bool expected=enabled && phase==VerifyInput::decode && (queries==2||queries==4);
+                need(strata::core::decode_verify_coalesced_kv(enabled,phase,shape)==expected,
+                    "KV planner escaped measured phase/window set");
+                kv_selected+=expected;
             }
-        eligible.streamed_int8 = false;
-        need(!decode_verify_coalesced_kv(planner, VerifyInput::decode, true, eligible),
-             "KV planner selected a non-streamed or other-format cache");
-    }
+    need(kv_selected==2,"wrong measured KV width count");
+    for (auto member : {&strata::core::VerifyKvShape::logical_pages,
+                        &strata::core::VerifyKvShape::resident_pages,
+                        &strata::core::VerifyKvShape::page_size,
+                        &strata::core::VerifyKvShape::kv_heads,
+                        &strata::core::VerifyKvShape::head_dim,
+                        &strata::core::VerifyKvShape::selection_capacity})
+        for (int delta : {-1,1}) {
+            auto shape=kv;shape.*member+=delta;
+            need(!strata::core::decode_verify_coalesced_kv(true,VerifyInput::decode,shape),
+                "unmeasured KV geometry selected");
+        }
+    auto nonstreamed=kv;nonstreamed.streamed_int8=false;
+    need(!strata::core::decode_verify_coalesced_kv(true,VerifyInput::decode,nonstreamed),
+        "KV planner selected a non-streamed/other-format cache");
     for (bool opt_in_c5 : {false, true}) {
         int dpas_selected = 0;
         for (bool ready : {false, true}) for (bool exact : {false, true})
