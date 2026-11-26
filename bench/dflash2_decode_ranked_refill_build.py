@@ -53,17 +53,9 @@ def overlay(payload):
     return projected
 
 
-def inputs(revision):
+def retained_build_inputs(revision, controllers):
     reference = retained.baseline()
     base = bank.previous.read(primary.ROOT / 'record.json')
-    evidence = bank.previous.historic(PLACEMENT, PLACEMENT_KEY)
-    require(evidence == validation.committed(bank.RESULT, (PLACEMENT_KEY,)) and retained.closed(evidence, 'closed')
-            and evidence['binary'] == reference['binary'] and evidence['native_source_commit'] == BASE
-            and evidence['decision']['sustained_gain_screen'] and not evidence['decision']['prefill_preserved'],
-            'require the repeated decode gain and its original prefill decision')
-    profiles = evidence['qualified_profiles']
-    require(all(bank.sha(p['path']) == p['sha256'] for p in profiles.values()), 'the measured profile inputs changed')
-
     foundation = base['foundation']
     original_path = builder.original.ROOT / 'record.json'
     require(bank.sha(original_path) == foundation['original_record_sha256'], 'the retained dependency recipe changed')
@@ -75,12 +67,24 @@ def inputs(revision):
         root, files = Path(dependency['root']), dependency['source_sha256']
         require(bank.stage.hashed(dict(source.blobs(root, dependency['revision'], files))) == files
                 and all(bank.sha(root / p) == h for p, h in files.items()), 'retained dependency changed: ' + str(root))
-    controls = source.pin(bank.P, CONTROLLERS)['source_sha256']
+    controls = source.pin(bank.P, controllers)['source_sha256']
     require(bank.stage.hashed(dict(source.blobs(bank.P, revision, controls))) == controls,
             'commit the exact controller and build helpers')
 
     payload = dict(source.blobs(bank.P, BASE, base['source_files']))
     require(bank.stage.hashed(payload) == base['source_files'], 'the retained engine source changed')
+    return reference, base, original, payload, controls
+
+
+def inputs(revision):
+    reference, base, original, payload, controls = retained_build_inputs(revision, CONTROLLERS)
+    evidence = bank.previous.historic(PLACEMENT, PLACEMENT_KEY)
+    require(evidence == validation.committed(bank.RESULT, (PLACEMENT_KEY,)) and retained.closed(evidence, 'closed')
+            and evidence['binary'] == reference['binary'] and evidence['native_source_commit'] == BASE
+            and evidence['decision']['sustained_gain_screen'] and not evidence['decision']['prefill_preserved'],
+            'require the repeated decode gain and its original prefill decision')
+    profiles = evidence['qualified_profiles']
+    require(all(bank.sha(p['path']) == p['sha256'] for p in profiles.values()), 'the measured profile inputs changed')
     changed = overlay(payload)
     payload.update(changed)
     recipe = base['recipe']
@@ -93,7 +97,7 @@ def inputs(revision):
                   baseline_placement_sha256=bank.signature(evidence), profiles=profiles,
                   recipe=dict(configure=configure, targets=TARGETS,
                               environment={k: v.replace(original_root, new_root) for k, v in recipe['environment'].items()}),
-                  foundation=foundation, external_inputs=base['external_inputs'], driver=reference['driver'],
+                  foundation=base['foundation'], external_inputs=base['external_inputs'], driver=reference['driver'],
                   build_tools=base['build_tools'], base_binary=reference['binary'],
                   base_build_sha256=reference['native_build_sha256'])
     return fields, payload, original, base

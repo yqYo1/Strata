@@ -444,7 +444,12 @@ slots. The four synthetic queries select 2,056 different pages, including
 full pages, tied cutoffs and partial tails. Replay the same selections and
 then switch the full pages while retaining the tails. Check actual selection
 IDs, the four K/V and scale planes, inverse map, guard cells and hit/miss
-counters before testing the real model. Build and device results are pending.
+counters before testing the real model.
+The [isolated build](../bench/dflash2_decode_small_kv_build.py) applies the
+four-file change at `08f852e85` to `968e71988`. It retains the original
+compiler, dependencies and recipes and adds the same-build KV fixture.
+The projection matches the committed bytes and excludes the separate
+ranked-refill implementation. Build and device results are pending.
 
 ### DFlash2 expert service and placement
 
