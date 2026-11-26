@@ -73,7 +73,7 @@ def inputs(revision):
         require((bank.P / name).read_bytes() == validation.git('show', revision + ':' + name),
                 'commit the exact grid admission input: ' + name)
         pins[name] = bank.sha(bank.P / name)
-    cfg = ranked.configuration(dict(base, qualified_profiles={'stock': profile}), dict(arm='stock'))
+    cfg = ranked.configuration(dict(base, qualified_profiles={'stock': profile}), dict(arm='stock', root=str(ROOT)))
     pack = request_ids(Path(cfg['tokenizer']))
     ids, output = pack['ids'], 32
     require(1 <= len(ids) <= 128 and pack['wire_sha256'] == sha256(wire(ids, output)).hexdigest(),
