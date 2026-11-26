@@ -12,6 +12,7 @@ import json
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from serve import responses  # noqa: E402
@@ -616,6 +617,55 @@ class ToolRoundTrip(Server):
                                           "output": "2"}]})
         self.assertEqual([c["function"]["name"] for c in msgs[1]["tool_calls"]],
                          ["multi_agent_v1.spawn_agent", "apply_patch"])
+
+
+class ResponsesKeepAlive(Server):
+    body = "\n".join(f"Line {i} of a long tool argument." for i in range(11))
+
+    def stream(self, tools, script):
+        self.engine.scripts = [self.tok.encode(script + "<|im_end|>", parse_special=True)]
+        self.engine.script = self.engine.scripts[0]
+        req = {"model": "m", "input": "go", "stream": True, "tools": tools, "store": False}
+        with contextlib.closing(http.client.HTTPConnection("127.0.0.1", self.port, timeout=15)) as conn:
+            conn.request("POST", "/v1/responses", json.dumps(req), {"Content-Type": "application/json"})
+            response = conn.getresponse()
+            self.assertEqual(response.status, 200)
+            lines = response.read().decode().splitlines()
+        return lines, [json.loads(line[6:]) for line in lines if line.startswith("data: ")]
+
+    def slow_argument(self, name, arg):
+        self.engine.delay = 0.01
+        return (f"</think>\n\n<tool_call>\n<function={name}>\n<parameter={arg}>\n"
+                f"{self.body}\n</parameter>\n</function>\n</tool_call>")
+
+    def test_held_custom_input_sends_keepalives_and_arrives_whole(self):
+        tools = [{"type": "custom", "name": "apply_patch", "description": "Edit files."}]
+        with patch("serve.server.KEEPALIVE_S", 0.5):
+            lines, events = self.stream(tools, self.slow_argument("apply_patch", "input"))
+        start = next(i for i, line in enumerate(lines) if line.startswith("data: ")
+                     and (event := json.loads(line[6:]))["type"] == "response.output_item.added"
+                     and event["item"]["type"] == "custom_tool_call")
+        stop = lines.index("event: response.custom_tool_call_input.delta")
+        self.assertGreaterEqual(lines[start:stop].count(": keep-alive"), 2)
+        self.assertEqual([e["delta"] for e in events if e["type"] == "response.custom_tool_call_input.delta"],
+                         [self.body])
+        self.assertEqual(events[-1]["type"], "response.completed")
+
+    def test_function_arguments_continue_streaming(self):
+        tools = [{"type": "function", "name": "write_file", "description": "Write a file.",
+                  "parameters": {"type": "object", "properties": {"content": {"type": "string"}}}}]
+        with patch("serve.server.KEEPALIVE_S", 0.5):
+            _, events = self.stream(tools, self.slow_argument("write_file", "content"))
+        deltas = [e["delta"] for e in events if e["type"] == "response.function_call_arguments.delta"]
+        self.assertGreater(len(deltas), 1)
+        self.assertEqual(json.loads("".join(deltas)), {"content": self.body})
+        self.assertEqual(events[-1]["type"], "response.completed")
+
+    def test_short_answer_needs_no_keepalive(self):
+        with patch("serve.server.KEEPALIVE_S", 0.5):
+            lines, events = self.stream([], "ok")
+        self.assertNotIn(": keep-alive", lines)
+        self.assertEqual(events[-1]["type"], "response.completed")
 
 
 class JsonFormatWithTools(Server):
