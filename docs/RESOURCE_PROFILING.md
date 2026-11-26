@@ -683,6 +683,26 @@ finalized prefill dispatch and work agree across arms. These clocks
 leave the cause of the spread unresolved. The compact result retains
 all six samples under `dflash2_decode_kv_width3_speed_v1`.
 
+The candidate build and the six closed timing processes have no remaining
+qualification consumer. Retire the descendants below, except the two
+original `record.json` receipts. The comparison is reachable at `0944ce4dd`
+on `feature/sycl`. The recovery audit matches 1,327 original project files,
+522 committed build control inputs, the original compiler and link inputs,
+140 fresh objects and all 12 executable identities. It also matches the
+six terminal process receipts to the committed outcomes. Inventory hashes
+cover sorted state-relative paths, byte counts and SHA-256 values.
+
+| Scope under tuning state | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-decode-kv-width3-native-v1` | 1,528 | 223,893,554 | `0eefd91b0d0c473331639f0f5284b0169d0b668835628d98343b256fe018c708` |
+| `dflash2-decode-kv-width3-speed-v1` | 439 | 90,973,435 | `9a415fa3562d2393eca72f94f1b8ba2da4298f04bf179e6ee6c69ae838d99746` |
+
+The two retained engine references are the primary prefill build and the
+independent expert-service build. Review the separate width-three component
+fixture and both short admission directories at the next cleanup boundary.
+Their evidence is closed. Check source recovery for the component fixture
+and retain the original failed admission outcome before selecting files.
+
 The earlier varied-prose model capture at `b28a9372b` has 6,485 decode
 windows at 33,287 input tokens. The width counts are 2,533, 1,987, 980 and
 985 for widths one to four. Their weighted sum of 13,387 rows agrees with
