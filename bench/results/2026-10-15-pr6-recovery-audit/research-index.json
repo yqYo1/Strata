@@ -42314,5 +42314,22 @@
     "consumer": "Measure A/B/C per width, charge mask preparation, and keep T4 evidence within its measured shapes.",
     "prerequisite": "Require native dispatch, source span and hit-row audits for the lower widths and a frozen stock baseline before implementation.",
     "schedulable_now": false
+  },
+  "zen3-expert-working-set-isolation-20261126": {
+    "classification": "decision_support",
+    "source_commit": "c2c078b226f40559fb8cae20d0dadd9dac1966dd",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zen3-expert-working-set-isolation-20261126/report.md",
+    "report_sha256": "e44a94a6a5a45d62be36839c626da1ab8a7ec177d277a11b6dd81dce984552a8",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-zen3-expert-working-set-isolation-20261126/review.json",
+    "review_sha256": "f28781ea716f3f9cd9dc8811086ba5c6f80d69c2b0d4bc70a46a941e82851ade",
+    "worker": "Orca gpt-6-luna medium, ctx_e6143df53dde",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "stage": "reviewed",
+    "owners_closed": true,
+    "finding": "Novel vs worker-count/claim-group sweeps: fixed five-core work and queue with shared vs disjoint packed footprints probes locality. Prior scaling and flat scan do not establish DRAM traffic.",
+    "correction": "Interpret a change as address/locality sensitivity, not LLC causation. Verify realized per-worker counts and tails under dynamic claims; nominal equality may not ensure it.",
+    "consumer": "Require held-out DFlash2 route/descriptor proof; otherwise use hot/rotating fixture only. Pair GU/full-pass timing with worker tails and fixed first-touch/cache-state controls.",
+    "prerequisite": "A fixed held-out descriptor with realizable per-worker work/tail controls is required before the locality fixture run.",
+    "schedulable_now": false
   }
 }
