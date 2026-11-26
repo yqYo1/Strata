@@ -15,6 +15,7 @@
 #include <cmath>
 #include <atomic>
 #include <cstdlib>
+#include <cstring>
 #include <mutex>
 #if defined(__linux__)
 #include <sched.h>
@@ -36,6 +37,9 @@ struct alignas(64) GuAuditSlot {
 GuAuditSlot gu_audit_slots[64];
 std::atomic<unsigned> gu_audit_size{0};
 std::atomic<bool> gu_audit_overflow{false};
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+std::atomic<uint64_t> iq3s_single_rows{0};
+#endif
 bool iq2_gu_audit_enabled() noexcept {
 #if defined(__linux__)
     static const bool enabled=[] {const char* v=std::getenv("STRATA_IQ2_PAIR_AUDIT");return v&&v[0]=='1'&&v[1]=='\0';}();
@@ -124,6 +128,12 @@ Iq3GuAudit iq3_gu_audit_snapshot() noexcept {
     }
     return out;
 }
+
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+uint64_t iq3s_single_audit_rows() noexcept {
+    return iq3s_single_rows.load(std::memory_order_relaxed);
+}
+#endif
 
 bool native_experts_available() noexcept { return true; }
 
@@ -230,13 +240,21 @@ void native_gu_rows(const NativeFmt& f, const uint8_t* blob, const void* const* 
     // Opt-in Zen 3 single-token kernels retain GGML's float reduction order.
     // Select them only for decode; prefill keeps its independent dispatch.
     // Multi-token selection above and STRATA_NO_IQ256 keep their existing roles.
-    static const bool single_exact = [] {
+    static const int single_exact_format = [] {
         const char* v = std::getenv("STRATA_IQ_SINGLE_EXACT");
-        return v && std::atoi(v) != 0;
+        if (!v) return 0;
+        if (std::strcmp(v, "iq3s") == 0) return 21;
+        return std::atoi(v) != 0 ? -1 : 0;
     }();
-    if (phase == NativeGuPhase::Decode && single_exact && avx2 && !cpu512 && nt == 1 &&
-        iq256_single_gu_rows(f.gu_type, blob, f.gu_row, f.up_off, (int) f.n_embd, act[0], ff[0], r0, r1))
+    if (phase == NativeGuPhase::Decode && single_exact_format != 0 &&
+        (single_exact_format == -1 || single_exact_format == f.gu_type) && avx2 && !cpu512 && nt == 1 &&
+        iq256_single_gu_rows(f.gu_type, blob, f.gu_row, f.up_off, (int) f.n_embd, act[0], ff[0], r0, r1)) {
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+        if (f.gu_type == 21 && iq3_gu_audit_enabled())
+            iq3s_single_rows.fetch_add(static_cast<uint64_t>(r1 - r0), std::memory_order_relaxed);
+#endif
         return;
+    }
     const ggml_vec_dot_t dot = traits(f.gu_type)->vec_dot;
     const int n = (int) f.n_embd;
     for (int r = r0; r < r1; ++r) {

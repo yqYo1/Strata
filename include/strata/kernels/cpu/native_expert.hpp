@@ -68,6 +68,9 @@ struct Iq3GuAudit {
     uint64_t calls = 0, nt1_rows = 0, pair_rows = 0;
 };
 Iq3GuAudit iq3_gu_audit_snapshot() noexcept;
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+uint64_t iq3s_single_audit_rows() noexcept;
+#endif
 
 /// out[t][r] = down_r . hq[t] for rows r in [r0, r1).
 void native_down_rows(const NativeFmt& f, const uint8_t* blob, const void* const* hq, int nt, float* const* out,

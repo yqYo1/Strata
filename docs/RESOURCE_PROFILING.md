@@ -1149,6 +1149,19 @@ separate observed runs. Keep reducing routed CPU work and measuring verifier
 service before choosing a larger locality rewrite. Physical DRAM traffic, the
 last worker's completion latency and model speed need separate evidence.
 
+The [fixed replay](../bench/sycl/cpu_roofline/fixed_replay.py) also compares
+`STRATA_IQ_SINGLE_EXACT=0` and `iq3s` through `--iq3s-single`. The latter
+selects the already parity-tested native single-token IQ3_S Gate/Up entry
+only in decode. Keep the original eight batches, five worker cores, packed
+weights, IQ3_XXS pairing and multi-token dispatch. Of the captured jobs, 81
+are single-token IQ3_S. Verify exactly 103,680 candidate GU rows in a
+separate audited control, from the pool and its serial check, and compare
+the guarded output digests across every process. Use three independent
+counterbalanced, unobserved pairs with five eligible samples per process.
+Require lower GU and total pool medians in all three pairs. This compares
+the exact single-stream entry with GGML through the production row-split
+pool, separate from the prior paired IQ3_S experiment.
+
 The [closed CPU result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-expert-locality-current.json)
 at `0b7646e0c` retains all samples and the exact build recipe. Retired
 `cpu-fixed-expert-locality-v1` and verified its absence. Recovered the project and

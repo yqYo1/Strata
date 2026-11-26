@@ -64,6 +64,8 @@ SCHEDULE_ARMS = ('split', 'by-expert')
 SCHEDULE_SHAPES = ((0, 0), (18, 2), (18, 4), (21, 2), (21, 4))
 SCHEDULE_MODE = False
 PUBLICATION_MODE = False
+IQ3S_SINGLE_MODE = False
+IQ3S_SINGLE_ARMS = ('reference', 'iq3s')
 SCHEDULE_PROTOCOL = (
     'Replay the same eight held-out width-two and width-four batches with six physical cores and the '
     'DFlash2 decode IQ3 pair selection. Use the same compiled expert arithmetic, inputs, weights and '
@@ -122,6 +124,25 @@ def select_publication():
     )
     CHECK_ORDER = [(0, 5, 'publication')]
     ORDER = []
+
+
+def select_iq3s_single():
+    global IQ3S_SINGLE_MODE, ROOT, BUILD, RESULT, PROTOCOL, CHECK_ORDER, ORDER
+    IQ3S_SINGLE_MODE = True
+    ROOT = B / 'cpu-fixed-expert-iq3s-single-v1'
+    BUILD = ROOT / 'build'
+    RESULT = recipe.RESULT.with_name('cpu-fixed-expert-iq3s-single-current.json')
+    PROTOCOL = (
+        'Replay all eight original captured batches with five pinned workers. Use the production row-split '
+        'schedule in both arms and change only the decode IQ3_S single-token Gate/Up entry. Keep stock IQ3_XXS '
+        'pairing, all multi-token routes, and the original packed weights. Check the candidate predicate with '
+        'a separate dispatch audit in each arm. Require identical guarded output digests across all runs. '
+        'Measure each arm without counters in three counterbalanced process pairs and five eligible batches '
+        'per process. Advance only if all pairs improve both Gate/Up and whole-pool time.'
+    )
+    CHECK_ORDER = [(0, 5, arm) for arm in IQ3S_SINGLE_ARMS]
+    ORDER = [(index, 5, arm) for index, pair in enumerate(
+        (IQ3S_SINGLE_ARMS, IQ3S_SINGLE_ARMS[::-1], IQ3S_SINGLE_ARMS)) for arm in pair]
 
 
 def atomic_json(path, data):
@@ -265,7 +286,7 @@ def prepare():
                LD_LIBRARY_PATH='/opt/intel/oneapi/compiler/2026.2/lib', OMP_NUM_THREADS='1',
                STRATA_IQ_SINGLE_EXACT='0', STRATA_IQ3_PAIR='0', STRATA_CPU_SERVICE='0',
                TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
-    if SCHEDULE_MODE:
+    if SCHEDULE_MODE or IQ3S_SINGLE_MODE:
         env['STRATA_IQ3_PAIR'] = '1'
     allowed.update(recipe.host_inventory(env)['files'])
     tools = {str(Path(p).resolve()): sha(p) for p in
@@ -299,8 +320,9 @@ def prepare():
                processes=[], active=False, ownership_closed=True, gpu_executed=False)
     if LOCALITY_MODE:
         row['observer_environment'] = dict(env, STRATA_CPU_SERVICE='1')
-    if SCHEDULE_MODE:
+    if SCHEDULE_MODE or IQ3S_SINGLE_MODE:
         row['configure'].append('-DSTRATA_CPU_EXPERT_SCHEDULE_TEST=ON')
+    if SCHEDULE_MODE:
         row['schedule_shapes'] = [list(shape) for shape in scheduling_shapes(fixture)]
     save(row)
     print('Prepared fixed CPU replay; commit the plan before compiling.', flush=True)
@@ -334,6 +356,10 @@ def load():
              and row['configure'][-1] == '-DSTRATA_CPU_EXPERT_SCHEDULE_TEST=ON'
              and row['schedule_shapes'] == [list(shape) for shape in scheduling_shapes(row['fixture'])]
              and row['budgets']['run_wall'] == 60, 'fixed decode scheduling inputs')
+    if IQ3S_SINGLE_MODE:
+        need(row['environment']['STRATA_IQ3_PAIR'] == '1'
+             and row['environment']['STRATA_IQ_SINGLE_EXACT'] == row['environment']['STRATA_CPU_SERVICE'] == '0'
+             and row['configure'][-1] == '-DSTRATA_CPU_EXPERT_SCHEDULE_TEST=ON', 'fixed IQ3_S single replay inputs')
     return row
 
 
@@ -394,7 +420,7 @@ def summaries(row, text, mode, cores, timed):
     rows = [json.loads(line) for line in text.splitlines()]
     by_kind = {kind: [v for v in rows if v['kind'] == kind]
                for kind in ('replay_placement', 'replay_input', 'timer_check', 'sample', 'closed',
-                            'locality_input', 'locality_workers')}
+                            'locality_input', 'locality_workers', 'iq3s_single')}
     need(sum(map(len, by_kind.values())) == len(rows) and
          by_kind['closed'] == [dict(kind='closed', passed=True)] and rows[-1] == by_kind['closed'][0],
          'complete CPU replay output required')
@@ -405,6 +431,20 @@ def summaries(row, text, mode, cores, timed):
     need(placement['host_cpu'] == host and placement['workers'] == workers
          and placement['caller_computes'] == (cores == 6), 'replay caller and worker placement')
     result = dict(mode=mode, cores=cores, placement=placement)
+    if IQ3S_SINGLE_MODE:
+        proof, = by_kind['iq3s_single']
+        nt1 = sum(len(tokens) == 1 for batch in json.loads(fixture['blocks']) if batch['fmt'][0] == 21
+                  for _, tokens in batch['jobs'])
+        # The check runs the pool and the serial comparison once. Timed
+        # processes keep dispatch counters disabled for every replay.
+        need(mode in IQ3S_SINGLE_ARMS and cores == 5 and nt1 == 81 and proof['audit'] is (not timed)
+             and type(proof['output_fnv64']) is int and 0 <= proof['output_fnv64'] < 1 << 64
+             and proof['single_rows'] == (2 * nt1 * 640 if not timed and mode == 'iq3s' else 0),
+             'actual IQ3_S single-token dispatch or output proof differs')
+        result.update(arm=mode, output_fnv64=proof['output_fnv64'], audit_rows=proof['single_rows'])
+        mode = 'pool'
+    else:
+        need(not by_kind['iq3s_single'], 'unexpected IQ3_S single report')
     schedule = mode in SCHEDULE_ARMS
     if schedule:
         need(cores == 6 and all(v.get('schedule') == mode for v in
@@ -501,8 +541,8 @@ def execute(stage):
 
     owner = owned.Owner(scope, persist=persist)
 
-    def run(label, argv, *, build=False, observe=False):
-        env = row['observer_environment'] if observe else row['environment']
+    def run(label, argv, *, build=False, observe=False, environment=None):
+        env = environment if environment is not None else (row['observer_environment'] if observe else row['environment'])
         entry, out, err = owner.run(label, argv, env, ROOT,
             wall=row['budgets']['build_wall' if build else 'run_wall'],
             rss_cap=row['budgets']['build_rss' if build else 'run_rss'],
@@ -535,8 +575,13 @@ def execute(stage):
             cases = CHECK_ORDER if stage == 'check' else ORDER
             for i, (round_id, cores, mode) in enumerate(cases):
                 verify_binary(row)
+                environment = None
                 if PUBLICATION_MODE:
                     args = ['replay-publication-check', str(ROOT / 'replay.txt')]
+                elif IQ3S_SINGLE_MODE:
+                    args = ['replay-iq3s-single', str(ROOT / 'replay.txt'), stage]
+                    environment = dict(row['environment'], STRATA_IQ_SINGLE_EXACT='iq3s' if mode == 'iq3s' else '0',
+                                       STRATA_IQ3_PAIR_AUDIT='1' if stage == 'check' else '0')
                 elif mode in LOCALITY_ARMS:
                     layout, batch = LOCALITY_ARMS[mode]
                     args = ['replay-locality', str(ROOT / 'replay.txt'), str(batch), layout, stage]
@@ -546,11 +591,16 @@ def execute(stage):
                     args = ['replay', str(ROOT / 'replay.txt'), str(cores), stage]
                 else:
                     args = ['replay-scan', str(cores), str(row['fixture']['unique_bytes']), stage]
-                entry, out, err = run(f'case-{i}', [row['binary']['path'], *args], observe=LOCALITY_MODE and stage == 'check')
+                entry, out, err = run(f'case-{i}', [row['binary']['path'], *args],
+                                      observe=LOCALITY_MODE and stage == 'check', environment=environment)
                 need(err.stat().st_size == 0, 'replay emitted stderr')
                 data = (publication_summary(row, out.read_text()) if PUBLICATION_MODE
                         else summaries(row, out.read_text(), mode, cores, stage == 'measure'))
+                if environment is not None:
+                    data['environment_sha256'] = recipe.fingerprint(environment)
                 row['processes'].append(dict(round=round_id, **data, owner=recipe.receipt(entry)))
+            if IQ3S_SINGLE_MODE:
+                need(len({p['output_fnv64'] for p in row['processes']}) == 1, 'IQ3_S arms differ in replay output')
             need(weights(row['fixture']) == row['weights'], 'expert weight slices changed during replay')
             if stage == 'check':
                 if PUBLICATION_MODE:
@@ -565,6 +615,8 @@ def execute(stage):
                     row['locality_pairs'] = locality_pairs(measured)
                 elif SCHEDULE_MODE:
                     row['schedule_result'] = schedule_result(measured)
+                elif IQ3S_SINGLE_MODE:
+                    row['iq3s_single_result'] = iq3s_single_result(measured)
                 else:
                     row['medians_s_per_pass'] = {mode: {
                         str(cores): statistics.median(x['median_s_per_pass'] for x in measured
@@ -577,8 +629,9 @@ def execute(stage):
     finally:
         row.update(active=bool(owner.active), ownership_closed=not owner.active and all(owned.closed(e) for e in owner.commands))
         save(row)
-    print(row['stage'], row.get('locality_pairs', row.get('schedule_result', row.get('medians_s_per_pass', {}))),
-          flush=True)
+    summary = next((row[k] for k in ('locality_pairs', 'schedule_result', 'iq3s_single_result', 'medians_s_per_pass')
+                    if k in row), {})
+    print(row['stage'], summary, flush=True)
 
 
 def locality_pairs(measured):
@@ -615,6 +668,20 @@ def schedule_result(measured):
                 eligible=all(cell['eligible'] for cell in cells), shapes=cells[1:])
 
 
+def iq3s_single_result(measured):
+    pairs = []
+    for a, b in zip(measured[::2], measured[1::2], strict=True):
+        arms = {p['arm']: p for p in (a, b)}
+        need(a['round'] == b['round'] and set(arms) == set(IQ3S_SINGLE_ARMS), 'unpaired IQ3_S single timing')
+        control, candidate = (arms[k] for k in IQ3S_SINGLE_ARMS)
+        gu = [statistics.median(s['gu_s'] / s['iterations'] for s in p['samples']) for p in (control, candidate)]
+        need(min(gu) > 0, 'missing IQ3_S Gate/Up timing')
+        pairs.append(dict(gu_ratio=gu[1] / gu[0],
+                          pool_ratio=candidate['median_s_per_pass'] / control['median_s_per_pass']))
+    need(len(pairs) == 3, 'three independent IQ3_S single pairs required')
+    return dict(pairs=pairs, eligible=all(max(p.values()) < 1 for p in pairs), model_qualified=False)
+
+
 if __name__ == '__main__':
     if sys.argv[1:2] == ['--locality']:
         sys.argv.pop(1)
@@ -625,6 +692,9 @@ if __name__ == '__main__':
     elif sys.argv[1:2] == ['--publication']:
         sys.argv.pop(1)
         select_publication()
+    elif sys.argv[1:2] == ['--iq3s-single']:
+        sys.argv.pop(1)
+        select_iq3s_single()
     stages = ('prepare', 'build', 'check') if PUBLICATION_MODE else ('prepare', 'build', 'check', 'measure')
     need(sys.executable == '/home/yayoi/.local/share/strata-sycl/venv/bin/python3' and len(sys.argv) == 2
          and sys.argv[1] in stages, 'pinned Python and one declared CPU replay stage required')
