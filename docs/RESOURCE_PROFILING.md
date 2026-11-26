@@ -274,9 +274,9 @@ combined graph's median device interval is 0.591 → 0.509 ms at 96K and
 with profiling enabled. They locate the reduction inside the graph in
 that test. Arithmetic occupancy and physical memory traffic remain open.
 
-The component's raw runs and fixture have no remaining consumer. They are
-eligible for retirement from `decode-qsa-score-grid-v1` under the tuning
-state directory. The recovery check reproduces the recipe and generated
+Retired the component's raw runs and fixture from `decode-qsa-score-grid-v1`
+under the tuning state directory and verified the path is absent. The
+recovery check reproduces the recipe and generated
 sources from `44bb81e4b`, all 693 compiler inputs and 27 link inputs,
 and the exact fixture SHA-256
 `dd309b0d35a51a389ac401417e3e7a3c63c9f15eaf19a0690348c0c2db9d6013`.
