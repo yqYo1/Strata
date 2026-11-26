@@ -463,7 +463,12 @@ The [traced GPU fixture](../bench/dflash2_decode_indexed_head_fixture.py)
 binds the new test to this build and the retained loader and runtime.
 All 14 cases pass bitwise parity, invalid-row and output-canary checks.
 The traced native process exits normally, ownership closes and validation
-reports no fresh Xe fault.
+reports no fresh Xe fault. The model admission reads the committed fixture
+result. Retire `dflash2-decode-indexed-head-fixture-v1/indexed` after
+inventory verification and keep its root receipt. The six files occupy
+4,348,547 bytes and hash to
+`13a6b856107cba6163b4e5b16c5358ad88925fc7d3febe9a55634d1fd3b90e0d`
+over the sorted state-relative path, byte-count and SHA-256 tuples.
 
 The [indexed head memory comparison](../bench/dflash2_decode_indexed_head_memory.py)
 uses the same executable, stock expert arena and two exact 126,977-token
@@ -473,7 +478,9 @@ indexed arm uses a fresh process. The allocation-probe gate requires matching
 recorded work, positive free-memory deltas at both decode boundaries and
 enough reported room for the existing 268,211,200-byte candidate. A separate
 device allocation and touch/readback will test physical capacity. Use a
-separate sustained comparison to judge throughput.
+separate sustained comparison to judge throughput. Both current-source
+frontend probes pass with the pinned 823 controller inputs and exact
+request bodies.
 
 The replay at `e3d371974` verifies 4,668,262 original stock CPU jobs.
 Training uses the first 3,242 verifier windows and evaluation uses the
