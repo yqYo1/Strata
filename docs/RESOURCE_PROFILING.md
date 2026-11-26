@@ -359,6 +359,25 @@ values. No current reader uses those output directories.
 | `dflash2-decode-qsa-grid-admission-v1/{host,reference,grid}` | `22ae164ed` | 95 | 23090175 | `af84718cb8856aefc04661263fcbe113d9bc491ea1a277c426c0119ea8ce3b30` |
 | `dflash2-decode-qsa-grid-speed-v1/{host,0,1,2,3,4,5}` | `eb99d69fb` | 436 | 90839294 | `ee1f2723cef99b759ffff0b3c5ced4a4aeef30ebd007183bc0c5bbb2d0f8e350` |
 
+The closed cooperative KV comparison at `7017faf91` ends the QSA
+candidate executable's last named use. The width-three model build
+recovers its source and recipe from the compact record at `4ea51e5bc`
+and applies the four committed width-three files. The pre-retirement
+audit matches 1,327 original project files, 520 Git-pinned build controls,
+1,476 compiler inputs, 30 link inputs, 140 objects and all 12 executable
+identities, including the measured `strata` executable. The QSA admission,
+QSA timing, KV admission and KV timing owners have all closed. Preserve their
+original outcomes, including the failed QSA timing postcheck.
+
+The retirement selection is every descendant of
+`dflash2-decode-qsa-grid-native-v1` under the tuning state root except its
+original `record.json`. It contains 1,525 regular files and 223,866,799
+bytes, with SHA-256
+`7e74fb0de99e62cc51ec4cabb9bf19a382530e94c1b322e75c4ce920271813c9`
+over the compact JSON array of sorted state-relative paths, byte counts
+and file hashes. Recheck this inventory and the primary fallback under
+the measurement lock before deleting. This check is pending.
+
 Retired the component's raw runs and fixture from `decode-qsa-score-grid-v1`
 under the tuning state directory and verified the path is absent. The
 recovery check reproduces the recipe and generated
