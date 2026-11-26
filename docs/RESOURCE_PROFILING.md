@@ -606,8 +606,11 @@ the same fused reduction. The control reads the mapped host rows. The
 candidate first queues one 409,600-byte copy to device storage on the
 ordered stream. Time the copy and synchronized graph together and keep the
 existing scalar oracle, poisoned source and output-guard checks. This tests
-the copy-once boundary before changing publication order. Its native build
-and measurements are pending. [Fixture](../tests/sycl/decode_moe_combine.cpp)
+the copy-once boundary before changing publication order. Source `c4bf3b970`
+passes the SYCL fixture's C++20 `-fsyntax-only` check with oneAPI 2026.2
+`icpx` and its verified CMake compiler arguments. The compiler command
+database SHA-256 is `30db253a89e4ddb66374934fcec2f79d3df27ce63fb5150c83998184b9546e67`.
+Linking, device parity and timing remain pending. [Fixture](../tests/sycl/decode_moe_combine.cpp)
 
 The event-query process at `65f0f927c` repeats the same work at 16.443 tok/s.
 The two resident wrappers each run 64,560 times without query or clock
