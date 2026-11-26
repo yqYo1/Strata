@@ -1834,12 +1834,15 @@ token after handoff under the selected decode layout. All three one-token
 outputs match across arms. Both owners close with quiet validation and
 no fresh Xe fault.
 
-The near-capacity stock case restores 253,919 tokens from RAM and reads
-8,209 fresh tokens to reach 262,128. It verifies 3,607,695,360 bytes of
-target KV across 12 layers and 118,069,304 bytes of running state at the
-parked extent. Both long segments restore the stock expert payload and map.
-The owner closes normally with an empty validation log and no fresh Xe fault.
-The near-capacity ranked case, cancellation and physical full fill remain open.
+Both near-capacity cases restore 253,919 tokens from RAM and read 8,209
+fresh tokens to reach 262,128. Each verifies 3,607,695,360 bytes of target
+KV across 12 layers and 118,069,304 bytes of running state at the parked
+extent. The two long segments match in prefill attention and KV-stage work.
+The ranked arm verifies both 2,321,664,000-byte payloads and the published
+ranked map. The intervening short request uses the installed map without
+refill. All three one-token outputs agree. Both owners close normally with
+empty validation logs and no fresh Xe faults. Cancellation and the physical
+full fill remain open.
 
 Retired the closed device fixture traces after the first live pair and
 verified both original `record.json` files are unchanged. The failed V1
