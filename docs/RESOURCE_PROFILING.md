@@ -981,6 +981,21 @@ Prioritize removing misses through reuse or reducing work per miss. Revisit
 streaming as a bounded subset with measured amortized bytes, GPU execution
 and transfer overlap. These are estimates for one full upload per miss.
 
+The [residency bound replay](../bench/dflash2_decode_residency_oracle.py)
+uses the retained prose trace from `b28a9372b`. First reproduce its native
+job, routed-row, format-width and logical byte counts. Compare the actual
+stock placement and a first-half-trained rank with two idealized alternatives
+on the held-out half. One profile sees the entire held-out route in advance.
+The other can replace any unprotected slot every 256 windows at zero cost.
+Both maintain the original 1,256 slots, the first 132 experts and each
+remaining slot size. Also compute a looser static bound at the original
+byte budget and at 256, 512 and 768 MiB above it by allowing fractional
+experts and selecting by benefit per byte. Prove that loosening the geometry
+cannot worsen the static bound and that extra budget cannot increase misses.
+Use any gap above the trained rank to decide whether improved ranking or
+shorter adaptation is worth testing. The replay keeps target routes fixed and
+does not claim transfer feasibility, numerical quality or decode throughput.
+
 Retired `dflash2-blend-independent-capture-v3` under the tuning state
 directory after verifying its absence. The exact scoring source and compact closed
 results remain in Git at `53f824443` and `a7c068890`. Both captured traces match
