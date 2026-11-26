@@ -11623,6 +11623,9 @@ inventory and the 11 executable identity checks. The
 checks each phase against the request interval and the nested V4 totals.
 Its counterbalanced plan records first-minus-subsequent deltas per process
 and requires each paired subsequent ratio to stay within five percent.
+The seven offline accounting checks pass at `196abca84`, including incomplete
+and duplicate phase records and phase and request conservation. The exact
+four-process plan is committed at `6841d6f6d` and the owned frontend probes pass.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
