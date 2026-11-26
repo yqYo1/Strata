@@ -13,7 +13,7 @@ import dflash2_primary_continuation as primary
 
 bank, basis, require = primary.bank, primary.basis, primary.require
 replay, quota = blend.replay, blend.quota
-KEY = 'dflash2_blend_independent_capture_v2'
+KEY = 'dflash2_blend_independent_capture_v3'
 ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 TRAINED = '03d0b3cac'
@@ -85,7 +85,18 @@ def config(original, row, plan):
     require('--dump-routing' not in args and '--no-spec-split' in args and all(
             args.count(flag) == 1 and args[args.index(flag) + 1] == value for flag, value in (
                 ('--pcie-frac', '0'), ('--adapt-swaps', '0'), ('--spec', '4'))), 'unexpected stock trace route')
-    return dict(cfg, args=[*args, '--dump-routing', str(Path(plan['root']) / TRACE)])
+    option = ['--dump-routing', str(Path(plan['root']) / TRACE)]
+    candidate = dict(cfg, user_args=[*cfg.get('user_args', ()), *option])
+    server = primary.speed.generation.model.server
+    effective = server.engine_args(candidate, exe=cfg['exe'], announce=False)
+    require(effective.count(option[0]) == 1, 'the serving resolver did not admit one trace argument')
+    offset = effective.index(option[0])
+    require(effective[offset:offset + 2] == option and effective[:offset] + effective[offset + 2:] == args,
+            'only the resolved trace argument may change')
+    candidate['args'] = effective
+    require(server.engine_args(candidate, exe=cfg['exe'], announce=False) == effective,
+            'the saved trace configuration does not reproduce its effective arguments')
+    return candidate
 
 
 def routes(text, samples, arm):

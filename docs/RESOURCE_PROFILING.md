@@ -802,6 +802,10 @@ The preparation at `2e4136098` stops before any host probe or model process.
 The ordinary suite requires matching final bodies between arms. The new
 plan keeps that rule for normal comparisons and checks matched warm-ups
 plus distinct, predeclared long bodies in this capture.
+The separate preparation at `dde46c573` also stops before launch. Its
+appended trace option moved after resolution by the serving frontend.
+The next plan uses the resolver's user option slot and checks that resolving
+the saved arguments again preserves the exact argv.
 
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
