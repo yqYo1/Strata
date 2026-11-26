@@ -392,6 +392,11 @@ profiles get the same short-handoff and near-262144 restore checks, each
 against its own saved state. Native placement, clean PP/TG, and full-context
 qualification follow in separate checks.
 
+The host replay at `62125e84b` reproduces both held-out job and byte totals
+and both complete ranking hashes. Writing and reading the resulting profile
+files preserves every pair, the protected slots and the 1,256-slot loader
+extent. The native stock and reranked sessions are still pending.
+
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
 96-swap and 197,913,600-byte caps. Compare early distinct jobs, routed rows

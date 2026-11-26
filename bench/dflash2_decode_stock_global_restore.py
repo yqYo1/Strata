@@ -25,8 +25,12 @@ RANK = '07362e5b275d174eba7a1dcb4511fca13f26825e4c328fde576f2b9ac9b04547'
 MANIFEST = 'd9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d'
 ORDER = ('host', 'short-stock', 'short-global', 'near-stock', 'near-global')
 RANKED_ORDER = ('host', 'short-within', 'short-cross', 'near-within', 'near-cross')
-RANKED_PROFILES = {'within': ('within_layer', 'f731c6a0fd04', 2013072, 4086496000000),
-                   'cross': ('across_equal_size_layers', '2863acb7b313', 1967341, 3999896140800)}
+RANKED_PROFILES = {
+    'within': ('within_layer', 'f731c6a0fd0464b8648bd6520cc29a2bef8c213eb355113f659d5b59630c9851',
+               2_013_072, 4_086_496_000_000),
+    'cross': ('across_equal_size_layers', '2863acb7b313d1e4a53a88f630842d2a188e41611e4fbeb39af55cb8aab16749',
+              1_967_341, 3_999_896_140_800),
+}
 STOCK = bank.P / quota.PROFILE
 GLOBAL = ROOT / 'stock-global.bin'
 PLAN = dict(order=list(ORDER), reference=REFERENCE, rank_sha256=RANK,
@@ -60,9 +64,9 @@ def ranked_profiles():
     result, profiles = quota.profile_study()
     require(result['advance_to_admission'], 'require the original held-out improvement')
     selected = {}
-    for arm, (label, prefix, jobs, packed_bytes) in RANKED_PROFILES.items():
+    for arm, (label, digest, jobs, packed_bytes) in RANKED_PROFILES.items():
         case = result['cases'][label]
-        require(case['ranking_sha256'].startswith(prefix) and case['requested_expert_cache'] == 968
+        require(case['ranking_sha256'] == digest and case['requested_expert_cache'] == 968
                 and case['effective_slots'] == quota.EXPECTED_SLOTS
                 and (case['holdout']['cpu_jobs'], case['holdout']['logical_job_blob_bytes'])
                 == (jobs, packed_bytes), 'the original held-out ranking or results changed')
@@ -73,7 +77,7 @@ def ranked_profiles():
 def check_ranked_profile(ranking, stock_ranking, formats, arm):
     slots = quota.EXPECTED_SLOTS
     size = [quota.replay.aligned(f[2]) for f in formats]
-    require(quota.rank_sha256(ranking).startswith(RANKED_PROFILES[arm][1])
+    require(quota.rank_sha256(ranking) == RANKED_PROFILES[arm][1]
             and ranking[:quota.PROTECTED] == stock_ranking[:quota.PROTECTED]
             and [size[layer] for layer, _ in ranking[:slots]] == [size[layer] for layer, _ in stock_ranking[:slots]]
             and quota.global_profile(ranking[:slots], quota.read_profile(STOCK), size) == (ranking, 968),
@@ -143,8 +147,8 @@ def experiment(*, ranked=False):
         row = {k: prior[k] for k in fields}
         row.update({k: actual[k] for k in ('environment_template', 'model_assets', 'runtime_manifest')})
         if ranked:
-            stock = basis.validation.committed(bank.RESULT, (KEY,))
-            require(retained.closed(stock, 'closed') and stock['binary'] == row['binary']
+            stock = basis.validation.committed(bank.RESULT).get(KEY)
+            require(stock is not None and retained.closed(stock, 'closed') and stock['binary'] == row['binary']
                     and stock['native_source_commit'] == row['native_source_commit']
                     and all(stock['outcomes'][name]['passed'] for name in ORDER),
                     'complete the identical stock global control on this build')
