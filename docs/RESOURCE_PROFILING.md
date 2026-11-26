@@ -559,6 +559,12 @@ separate same-binary model check, with other widths and prefill fixed.
 Keep the temporary fixture build for the bounded kernel trace below.
 Review the build and its logs when the trace decision closes.
 
+The first fresh pair completes all 18 samples with quiet validation and no
+fresh Xe fault. Median launch-through-completion time for scalar and
+cooperative is 1.412 and 0.531 ms at zero misses, 3.615 and 2.821 ms at 384,
+and 5.708 and 5.014 ms at 1,539. Complete the other two pairs before the
+model trial decision.
+
 The model-trial source reads `STRATA_SYCL_DECODE_KV_COALESCED=3` at verifier
 initialization. It admits cooperative resolution only for the three-query
 decode operation on the DFlash2 target, at the existing streamed K8V8
