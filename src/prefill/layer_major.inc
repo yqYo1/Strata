@@ -28,10 +28,15 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
             const char* value = std::getenv("STRATA_PREFILL_COLD_HOST_PHASES");
             return value && std::strcmp(value, "1") == 0;
         }();
+        static const bool cold_layer_phases = [] {
+            const char* value = std::getenv("STRATA_PREFILL_COLD_LAYER_PHASES");
+            return value && std::strcmp(value, "1") == 0;
+        }();
+        const bool cold_observed = cold_host_phases || cold_layer_phases;
         sycl_backend::cpu_wait_profile::Scope cpu_wait_scope(
-            cold_host_phases || (cpu_wait_switch && std::strcmp(cpu_wait_switch, "1") == 0));
+            cold_observed || (cpu_wait_switch && std::strcmp(cpu_wait_switch, "1") == 0));
         std::optional<detail::ColdHostPhases> cold;
-        if (cold_host_phases) cold.emplace(true);
+        if (cold_observed) cold.emplace(true, cold_layer_phases);
 #endif
         const bool ok = run_layer_major(tokens, n, pos0, err);
 #if defined(STRATA_ENABLE_SYCL)
@@ -1059,7 +1064,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                              "QSA tensor IO=%s, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified\n",
                      qsa16_on ? "BF16" : "FP32");
     detail::ColdHostPhases::mark(detail::ColdHostPhases::Boundary::provisioned);
+    using ColdLayer = detail::ColdHostPhases::LayerBoundary;
+    detail::ColdHostPhases::set_layers(g.n_layers);
     for (; layer < g.n_layers; ++layer) {
+        detail::ColdHostPhases::mark_layer(layer, ColdLayer::begin);
         if (profile) profile->layer = int(layer);
         if (qsa_profile) qsa_profile->layer = int(layer);
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
@@ -1281,7 +1289,9 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             }
             return true;
         };
+        detail::ColdHostPhases::mark_layer(layer, ColdLayer::run);
         if (!run_impl(tokens, n, pos0, err)) return false;
+        detail::ColdHostPhases::mark_layer(layer, ColdLayer::drain);
         if (!drain()) { err = "prefill layer-major: pass drain failed"; return false; }
         if (score_gemm_on && core::is_qsa_layer(g, layer)) {
             const auto copied = cudaMemcpyAsync(&score_status_observed, m.score_gemm.status,
@@ -1315,6 +1325,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         // checked boundary. Owners and saved caller callbacks remain leased.
         on_chunk = {}; on_stage_chunk = {}; m.on_chunk16 = {};
         if (window_context) window_context->complete_piece = {};
+        detail::ColdHostPhases::mark_layer(layer, ColdLayer::end);
     }
     detail::ColdHostPhases::mark(detail::ColdHostPhases::Boundary::layer_passes_finished);
     if (!stage_delivered || logical_chunks != 1 + (n - 1) / m.T) {

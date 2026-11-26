@@ -11641,6 +11641,16 @@ seconds over the subsequent medians. Its calling thread records 23,415
 minor faults in the layer loop, compared with 5 and 0 later. No major
 faults occur. The counts locate the change in the layer loop. Their backing
 and cost remain unmeasured. The reversed process pair remains open.
+The next observer splits the layer loop into outer preparation, the
+`run_impl` call and retirement of the pass. Set
+`STRATA_PREFILL_COLD_LAYER_PHASES=1` to collect those calling-thread clocks,
+faults and the largest unclassified interval in each category. The marks
+sample the existing disjoint V4 ledger after its nested scopes are closed.
+The output is one aggregate per request. The host fixture uses the same GCC
+command above and includes a complete two-layer loop, out-of-order marks and
+an incomplete layer count. Require the three segment totals to fit inside
+the enclosing layer interval. The native follow-up needs a separate build
+and matched observer-cost gate after the current comparison closes.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
