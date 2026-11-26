@@ -13,6 +13,8 @@ import time
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools/sycl'))
+import current_pti_admission as pti
+import decode_window_trace
 import runtime_probe
 import dflash2_primary_retained as retained
 
@@ -33,8 +35,12 @@ ARCHIVE = 'libstrata_sycl_runtime.a'
 ARMS = ('scalar', 'cooperative', 'cooperative', 'scalar', 'scalar', 'cooperative')
 MISSES = (0, 384, 1539)
 STAGES = ('smoke', 'validate', *(str(i) for i in range(len(ARMS))))
+TRACE_CASES = {'trace-scalar-0': ('scalar', 0), 'trace-cooperative-0': ('cooperative', 0),
+               'trace-cooperative-384': ('cooperative', 384), 'trace-scalar-384': ('scalar', 384)}
+TRACE_FLAGS = ('--device-timing', '--chrome-kernel-logging', '--chrome-call-logging',
+               '--chrome-event-buffer-size', '128')
 LIMITS = dict(cpu=1800, rss_cap=4 << 30, text_cap=16 << 20, file_cap=32 << 20, total_cap=64 << 20)
-WALL = dict(smoke=120, validate=600, benchmark=900)
+WALL = dict(smoke=120, validate=600, benchmark=900, trace=180)
 PLAN = dict(
     stages=list(STAGES), arms=list(ARMS), misses=list(MISSES), samples_per_arm=9,
     scope='One Arc fixture. Change only the width-three resolver for the captured resolve and copy graph. '
@@ -44,6 +50,12 @@ PLAN = dict(
     interval='Sum of isolated graph launch and completion intervals with completed map resets outside timing. '
              'Charge all five timer calls. No API trace during timing.',
     decision='Require all three paired process medians to improve at each miss count before model dispatch work.',
+    trace=dict(cases=[dict(stage=stage, arm=arm, missing=missing)
+                      for stage, (arm, missing) in TRACE_CASES.items()],
+               flags=list(TRACE_FLAGS), replays=5, clock='CLOCK_MONOTONIC_RAW',
+               criterion='Two ordered, distinct, fully contained native kernels per replay, with stable names '
+                         'and no memory copy, fill or boundary-crossing GPU events. Open collection at exec. '
+                         'Diagnostic only, independent of the clean timing decision.'),
     wall_seconds=WALL, limits=LIMITS,
     retention='Keep the private fixture through the bounded resolver and copy kernel trace. '
               'Retire the fixture and routine logs after the decisions and build recovery are verified. '
@@ -188,7 +200,70 @@ def observations(lines, stage):
     return dict(arm=arm, samples=samples)
 
 
-def device_case(row, parent, stage):
+def trace_windows(lines, stage):
+    arm, missing = TRACE_CASES[stage]
+    windows = [json.loads(line) for line in lines]
+    require(len(windows) == 6 and windows.pop() == dict(phase='planner_width3_trace',
+                replays=5, nq=3, graph_nodes=2, missing=missing, cooperative=arm == 'cooperative',
+                requested_host_payload_bytes_per_call=missing * 4224, oracle_exact=True),
+            'incomplete trace fixture or payload oracle')
+    previous = 0
+    for index, window in enumerate(windows):
+        begin, end = window['begin_raw_ns'], window['end_raw_ns']
+        require(window['phase'] == 'planner_width3_replay' and window['replay'] == index
+                and type(begin) is int and type(end) is int and previous < begin < end,
+                'five ordered, disjoint native RAW-clock replays required')
+        previous = end
+    return dict(arm=arm, missing=missing, replay_windows=windows)
+
+
+def trace_services(events, native_pid, windows, capture_begin, capture_end):
+    kernels = [event for event in events if event.get('ph') == 'X' and event.get('cat') == 'gpu_op'
+               and decode_window_trace.kind(event['name']) == 'kernel']
+    samples, identities = [], set()
+    kernel_names = None
+    for window in windows:
+        begin, end = window['begin_raw_ns'], window['end_raw_ns']
+        summary = decode_window_trace.summarize(events, native_pid=native_pid,
+            begin_ns=begin, end_ns=end, capture_begin_ns=capture_begin, capture_end_ns=capture_end)
+        counts = summary['operation_counts']
+        require(counts.get('kernel') == 2 and not counts.get('copy') and not counts.get('fill')
+                and not summary['boundary_crossing_counts'], 'unexpected device work inside graph replay')
+        first, second = sorted((event for event in kernels
+            if begin / 1000 <= event['ts'] and event['ts'] + event['dur'] <= end / 1000),
+            key=lambda event: event['ts'])
+        pair = {str(event['args']['id']) for event in (first, second)}
+        names = [event['name'].split('[SIMD', 1)[0] for event in (first, second)]
+        gap = second['ts'] - (first['ts'] + first['dur'])
+        require(len(pair) == 2 and not pair & identities and gap >= 0 and names[0] != names[1]
+                and (kernel_names is None or names == kernel_names),
+                'expected one stable ordered resolver/copy pair per replay')
+        kernel_names = names
+        identities.update(pair)
+        samples.append(dict(replay=window['replay'], native_ids=[str(event['args']['id']) for event in (first, second)],
+            resolver_us=first['dur'], copy_us=second['dur'], inter_kernel_gap_us=gap,
+            wall_us=(end - begin) / 1000))
+    return dict(kernel_names=kernel_names, samples=samples)
+
+
+def trace_provider(row):
+    evidence = pti.committed_json(pti.RESULT, bank.P)
+    tools = pti.verify_tools(evidence)
+    probe = evidence['unitrace_current_runtime_probe_v2']
+    require(probe['stage'] == 'closed' and probe['ownership_closed'] and probe['passed']
+            and probe['boot'] == row['boot'] and probe['driver'] == row['driver']
+            and probe['preload'] == row['native_validation_probe']
+            and probe['admission']['runtime_manifest']['sha256'] == row['runtime_manifest']['sha256']
+            and probe['admission']['tools']['artifacts'] == tools['artifacts']
+            and [result['label'] for result in probe['results']] == ['control', 'trace']
+            and all(result['passed'] for result in probe['results'])
+            and probe['results'][-1]['raw_clock_mapping_checked'],
+            'closed current-runtime clock and collector proof required')
+    return dict(artifacts=tools['artifacts'], source_commit=tools['collector_source_commit'],
+                probe_sha256=bank.signature(probe))
+
+
+def device_case(row, parent, stage, profile=None):
     check_binary(row)
     root = ROOT / stage
     root.mkdir(mode=0o700)
@@ -206,10 +281,19 @@ def device_case(row, parent, stage):
     if stage != 'smoke':
         env.pop('UR_LOG_TRACING', None)
         env['UR_ENABLE_LAYERS'] = 'UR_LAYER_PARAMETER_VALIDATION'
-    verb = stage if stage in ('smoke', 'validate') else 'benchmark'
+    verb = 'trace' if profile else stage if stage in ('smoke', 'validate') else 'benchmark'
     argv = [row['binary']['path'], '--planner-width3-' + verb]
     if verb == 'benchmark':
         argv.append(ARMS[int(stage)])
+    if profile:
+        arm, missing = TRACE_CASES[stage]
+        argv.extend((arm, str(missing)))
+        argv = [profile['artifacts']['unitrace']['path'], *TRACE_FLAGS, *argv]
+        (root / 'trace').mkdir(mode=0o700)
+        require(env['ZES_ENABLE_SYSMAN'] == '0' and env.get('ZET_ENABLE_METRICS', '0') != '1',
+                'trace uses the qualified provider without metrics activation')
+        env.update(STRATA_UNITRACE_TARGET_PRELOAD=env.pop('LD_PRELOAD'), UNITRACE_SystemTime='1',
+                   UNITRACE_FollowChildProcess='1', UNITRACE_TraceOutputDir=str(root / 'trace'))
     cursor, = [line.removeprefix('-- cursor: ') for line in subprocess.check_output(
         ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15).splitlines()
         if line.startswith('-- cursor: ')]
@@ -219,6 +303,12 @@ def device_case(row, parent, stage):
     providers.update({str(Path(a['path']).resolve()): a['sha256'] for a in (*probe.values(), row['binary'])})
     required = {str(Path(p).resolve()) for p in
                 (env['UR_ADAPTERS_FORCE_LOAD'], row['driver_library'], probe['loader']['path'], probe['library']['path'])}
+    required.add(str(Path(row['binary']['path']).resolve()))
+    if profile:
+        collector = profile['artifacts']['libunitrace_tool.so']
+        path = str(Path(collector['path']).resolve())
+        providers[path] = collector['sha256']
+        required.add(path)
 
     def interact(io, entry):
         deadline = time.monotonic() + WALL[verb] - 25
@@ -230,7 +320,9 @@ def device_case(row, parent, stage):
             if line == 'KV_PLAN_WAIT':
                 break
             lines.append(line)
-        result.update(observations(lines, stage))
+        result.update(trace_windows(lines, stage) if profile else observations(lines, stage))
+        require(Path(f'/proc/{entry["pid"]}/exe').resolve() == Path(row['binary']['path']).resolve(),
+                'native fixture did not exec under the owned PID')
         mapped = runtime_probe.executable_mappings(Path(f'/proc/{entry["pid"]}/maps').read_text())
         require(required <= mapped <= providers.keys() and len(mapped) >= 8 and
                 all(sha(p) == providers[p] for p in mapped), 'actual loaded fixture providers differ')
@@ -240,7 +332,9 @@ def device_case(row, parent, stage):
         io.exit(20)
 
     try:
+        capture_begin = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW) if profile else None
         entry, _, err = owner.run('fixture', argv, env, root, interaction=interact, wall=WALL[verb], **LIMITS)
+        capture_end = time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW) if profile else None
         errors = err.read_text()
         warning = root / 'validation.log'
         actual_probe = validation.preload_evidence(errors, entry['pid'])
@@ -258,6 +352,18 @@ def device_case(row, parent, stage):
                 and (not warning.exists() or warning.stat().st_size == 0)
                 and Path(actual_probe['loader']).resolve() == Path(probe['loader']['path']).resolve(),
                 'fixture completion, trace or parameter validation failed')
+        if profile:
+            require(not re.search(r'^\s*\[(?:ERROR|WARN(?:ING)?)\]|\b(?:dropped|lost)\s+\d+\s+events',
+                                  errors, re.M | re.I), 'collector reported a warning or loss')
+            require(all(sha(item['path']) == item['sha256'] for item in profile['artifacts'].values()),
+                    'collector or launcher changed during fixture profiling')
+            paths = list((root / 'trace').glob('*.json'))
+            require(len(paths) == 1 and 0 < paths[0].stat().st_size <= LIMITS['file_cap'],
+                    'one bounded completed timeline required')
+            events = json.loads(paths[0].read_bytes())['traceEvents']
+            timings = trace_services(events, entry['pid'], result['replay_windows'], capture_begin, capture_end)
+            result.update(trace_sha256=sha(paths[0]), trace_services=timings,
+                          capture_raw_ns=[capture_begin, capture_end], trace_provider=profile)
         check_binary(row)
         identity, = [item for item in entry['owners'] if item['pid'] == entry['pid']]
         result.update(host_probe_accepted=True, validation=actual_probe, native_identity=identity, native_exit_code=0)
@@ -301,6 +407,18 @@ def main(action):
             'commit the exact preceding component stage')
     fields, parent, driver, overlay = inputs(row['source_commit'])
     require(all(row[k] == v for k, v in fields.items()), 'frozen fixture inputs changed')
+    if action in TRACE_CASES:
+        traces = row.setdefault('traces', [])
+        require(row['stage'] == 'closed' and row['complete'] and row['passed']
+                and len(traces) < len(TRACE_CASES) and action == list(TRACE_CASES)[len(traces)]
+                and all(result['passed'] for result in traces), 'run only the next trace after clean closure')
+        profile = trace_provider(row)
+        result = device_case(row, parent, action, profile)
+        traces.append(result)
+        row['ownership_closed'] = result['ownership_closed']
+        save(row)
+        require(result['passed'], result.get('error', 'trace or ownership gate failed'))
+        return
     if action != 'build':
         index = len(row['processes'])
         require(index < len(STAGES) and action == STAGES[index]
@@ -328,7 +446,7 @@ def main(action):
 
 if __name__ == '__main__':
     action, = sys.argv[1:]
-    require(sys.executable == basis.reference.model.PYTHON and action in ('prepare', 'build', *STAGES),
+    require(sys.executable == basis.reference.model.PYTHON and action in ('prepare', 'build', *STAGES, *TRACE_CASES),
             'use the pinned interpreter and select the next component stage')
     with (bank.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)

@@ -543,7 +543,10 @@ to the fixture's `CLOCK_MONOTONIC_RAW` launch-through-completion bounds and
 the collector's native process flow. The fixture records these bounds in
 trace mode, between the completed map reset and oracle readback. Reuse the
 pinned indexed UnitTrace collector only after its provider and instance checks
-pass for this fixture. Retire complete traces once the kernel split is
+pass for this fixture. The controller runs `trace-scalar-0`,
+`trace-cooperative-0`, `trace-cooperative-384` and `trace-scalar-384` in that
+order and records each case separately from the unprofiled timing decision.
+Retire complete traces once the kernel split is
 recorded. No physical PCIe traffic or model TG follows from this trace.
 
 #### Width-four KV cache working set
