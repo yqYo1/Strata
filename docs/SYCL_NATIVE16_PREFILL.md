@@ -7912,7 +7912,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
 
 ## Prefill envelope and scaling
 
-The current coherent14508reference has repeated32K/64Kprocesses at evidence
+The primary DFlash2 mode16 route has a closed five-length curve at
+`71ddd9046`, under `dflash2_primary_prefill_curve_v1`. Two independent
+processes at each length cover 94,209–126,977 input tokens with the same
+4096-row tail. With `n` actual input tokens, subsequent prefill is about
+`2.580 + 0.000927125 n` seconds and subsequent client TTFT is about
+`2.717 + 0.000927646 n` seconds. The errors at the reserved 110,593-token
+length are 68 and 71 ms. First-use errors at that length are about 1.16 s.
+See [the matched curve and model comparison](#primary-dflash2-input-length-curve)
+for the first-use fits, other hypotheses and scope. Revisit the fit when
+the route, placement, chunking or scheduling changes.
+
+The older coherent14508reference has repeated32K/64Kprocesses at evidence
 `f9662f7abfebb1c5f20e7e9e4677fad8f1f5e695`. Its two distinct lengths support
 an adjacent slope only,not a fitted law. The offline
 [prefill_scaling.py](../tools/prefill_scaling.py)adapter prepares the next
@@ -7928,11 +7939,9 @@ subsequent slopes0.839074707/0.839706421ms/token. Both groups contain three
 independent processes at each of two lengths;all fitted hypotheses remain
 ineligible. Follow`prefill_scaling_analysis_v1`for source/data identities and
 the compact analysis. This is no new timing or speed improvement.
-The next current-build curve needs a separately committed matched-length/order/
-repetition plan,at least five lengths on a compatible route,and first-use,
-prefill time and client TTFT kept separate. Revisit the curve after placement,
-chunk or scheduling changes;do not combine old and new timing periods merely
-because the ELFmatches.
+Extending this older reference needs a separately committed length, order and
+repetition plan. Keep its clocks separate from the DFlash2 curve and retain
+scope and timing period even when the executable hash matches.
 
 The historical117489result and separate same-engine curve below retain their
 original source/configuration limits. That curve has one process per length
@@ -11271,7 +11280,9 @@ width-four attribution use the committed proofs.
 | `dflash2-primary-physical-context-v1` | 119 | 26523236 | `8e083c4d34dd8c5af69d9a97a6cce2728683289f70d17f172972535a5b06b6f7` |
 | `dflash2-snapshot-physical-context-v1` | 119 | 26398509 | `0b493c82bffe52dccd3a4119ea7e8b9ab0cd935b6e22b7611bf3f867aed429e5` |
 
-The subsequent length curve uses the primary native source `968e71988`.
+#### Primary DFlash2 input-length curve
+
+The length curve uses the primary native source `968e71988`.
 `make_long_prefill_scratch` accepts 81921–131072 batched rows. The bank
 planner excludes 90112 rows because the ordinary window leaves a short
 8192-row tail there. The next full-chunk point above 122880 requires
