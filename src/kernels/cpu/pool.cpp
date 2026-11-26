@@ -538,13 +538,8 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
             s2_expert_down_rows(jobs_[e].blob, split_[(size_t) e].a2, jobs_[e].out, r0, r1);
         } else if (mode_ >= 5) {
             // plan v0.3 P6: native layers, 5 = gate/up rows, 6 = down rows
-#ifdef STRATA_BENCH_DECODE_GU_TASK_GROUPS
-            const auto run_native_task = [&](uint32_t task) {
-#else
-            const uint32_t task = i;
-#endif
             const int per = mode_ == 5 ? FF : H;
-            const int64_t g0 = mrows_ * (int64_t) task / mtasks_, g1 = mrows_ * (int64_t) (task + 1) / mtasks_;
+            const int64_t g0 = mrows_ * (int64_t) i / mtasks_, g1 = mrows_ * (int64_t) (i + 1) / mtasks_;
             for (int64_t r = g0; r < g1;) {
                 const int e = (int) (r / per), r0 = (int) (r % per);
                 const int r1 = (int) std::min<int64_t>(per, r0 + (g1 - r));
@@ -582,12 +577,6 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
                 }
                 r += r1 - r0;
             }
-#ifdef STRATA_BENCH_DECODE_GU_TASK_GROUPS
-            };
-            const uint32_t first = i * native_phase_task_group_;
-            const uint32_t last = std::min<uint32_t>(first + native_phase_task_group_, mtasks_);
-            for (uint32_t task = first; task < last; ++task) run_native_task(task);
-#endif
         } else {
             // plan v0.3 P6: an equal range of the phase's rows across ALL its experts (a range may span two)
             const int per = mode_ == 3 ? FF : H;
@@ -615,35 +604,14 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
 void ExpertPool::run_phase(int mode, int n_tasks) {
     wait_parked("before a phase");
     mode_ = mode;
-#ifdef STRATA_BENCH_DECODE_GU_TASK_GROUPS
-    // Publish fewer claims with the existing epoch protocol. Each claim
-    // still invokes the original row partitions, rounding and leaf kernels.
-    const bool decode_gu = mode == 5 && native_gu_phase_ == NativeGuPhase::Decode;
-    const int group = decode_gu ? decode_gu_task_group_ : 1;
-    native_phase_task_group_ = group;
-    n_tasks = (n_tasks + group - 1) / group;
-#endif
     njobs_ = n_tasks;
     const uint32_t e = begin_batch(n_tasks);
     if (host_works_) drain(-1, host_scratch_, e);
     wait_done(n_tasks);
     wait_parked("after a phase");
-#ifdef STRATA_BENCH_DECODE_GU_TASK_GROUPS
-    if (decode_gu) decode_gu_claims_ += static_cast<uint64_t>(n_tasks);
-#endif
     hstate_.store(kIdle, std::memory_order_relaxed);
     hstate_ms_.store(now_ms(), std::memory_order_relaxed);
 }
-
-#ifdef STRATA_BENCH_DECODE_GU_TASK_GROUPS
-void ExpertPool::set_decode_gu_task_group(int group) {
-    if (group != 1 && group != 2 && group != 4) {
-        std::fprintf(stderr, "strata: expected a decode GU task group of 1, 2 or 4\n");
-        std::abort();
-    }
-    decode_gu_task_group_ = group;
-}
-#endif
 
 void ExpertPool::run_split(ExpertJob* jobs, int n) {
     if (n <= 0) return;

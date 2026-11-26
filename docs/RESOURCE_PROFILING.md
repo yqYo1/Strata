@@ -577,7 +577,7 @@ workloads to measure whether the change reduces decode time.
 ### Decode Gate/Up task claims
 
 The reviewed Zen 3 report recommends trying coarser work claims with
-unchanged packed arithmetic. The [CPU replay](../bench/sycl/cpu_roofline/decode_gu_groups.py)
+unchanged packed arithmetic. The [CPU replay](https://github.com/yqYo1/Strata/blob/bed3f9f91/bench/sycl/cpu_roofline/decode_gu_groups.py)
 keeps fifteen logical row partitions and five pinned worker cores with the
 caller reserved. A claim handles one, two or four existing partitions in
 order. The existing epoch, retirement and per-phase barriers remain in use.
@@ -618,6 +618,16 @@ counts. The results leave worker imbalance, weight traffic and arithmetic
 cost unresolved. Use the existing worker-scaling methods with fixed native
 expert work and a matched streaming control before attributing the gap to
 memory bandwidth or scheduling.
+
+The compact result at `9f19d2c6d` retains all 270 timing batches and the
+original build identity. Verified the original Git source, actual compiler
+and linker inputs and executable before retiring the build and run outputs
+under `cpu-decode-gu-task-groups-v1`. The 226 retired files occupy
+16,258,030 bytes. The sorted inventory SHA-256 is
+`501b57ad0cd4392634ed9e4edd6349cba9ec289b51fa024fdc26a49368500213`.
+The root receipt is unchanged. The grouped-claim fixture and test-only
+scheduler are retired from the active tree. The measured source remains
+recoverable at `bed3f9f91`.
 
 The [stock admission controller](../bench/dflash2_decode_stock_global_restore.py)
 uses the retained primary executable and recovers the original restore plans
