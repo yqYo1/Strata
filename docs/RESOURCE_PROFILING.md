@@ -461,6 +461,19 @@ and 11 executable identities. The `strata` SHA-256 is
 `0722edfc2fb1db9a0bc57c77ade047065cf16474de38c8fdec149c8d2f93bf23`.
 The [traced GPU fixture](../bench/dflash2_decode_indexed_head_fixture.py)
 binds the new test to this build and the retained loader and runtime.
+All 14 cases pass bitwise parity, invalid-row and output-canary checks.
+The traced native process exits normally, ownership closes and validation
+reports no fresh Xe fault.
+
+The [indexed head memory comparison](../bench/dflash2_decode_indexed_head_memory.py)
+uses the same executable, stock expert arena and two exact 126,977-token
+bodies in each arm. Each request checks its actual head path, drafter-owned
+bytes and all four memory boundaries. The gathered arm runs first and the
+indexed arm uses a fresh process. The allocation-probe gate requires matching
+recorded work, positive free-memory deltas at both decode boundaries and
+enough reported room for the existing 268,211,200-byte candidate. A separate
+device allocation and touch/readback will test physical capacity. Use a
+separate sustained comparison to judge throughput.
 
 The replay at `e3d371974` verifies 4,668,262 original stock CPU jobs.
 Training uses the first 3,242 verifier windows and evaluation uses the
