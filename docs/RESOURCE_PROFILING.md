@@ -935,6 +935,18 @@ receipt is unchanged. The 38 retired files occupy 12,751,098 bytes and hash
 to `c5c71ca26f6af02ca27009b708c793fcdcccfb40f18ca22876c7805c639e2512`
 with the sorted state-relative inventory format above.
 
+The [resident-row census](../bench/dflash2_decode_combine_hits.py) replays the
+closed 33,287-input, 11,783-output prose capture at `b28a9372b`. Verify the
+captured executable, unsplit width-four setting, zero PCIe expert fraction,
+zero adaptive swaps and original route/profile hashes before counting.
+Reconcile CPU jobs and routed CPU rows across all widths with the captured
+native totals. Count individual resident rows, including repeated expert IDs
+at different token positions, once per layer of each observed width-four
+window. Record only measured-shape coverage, broad bands and common shapes.
+Use those counts to select a comparison against the stock combine. Rows
+between the tested hit counts need their own timing evidence. The replay
+covers one captured placement and workload and collects no new GPU timing.
+
 The event-query process at `65f0f927c` repeats the same work at 16.443 tok/s.
 The two resident wrappers each run 64,560 times without query or clock
 errors. Their wall times are 224.99 and 314.64 ms, totaling 0.216% of the
