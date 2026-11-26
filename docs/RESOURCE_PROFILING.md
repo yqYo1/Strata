@@ -454,8 +454,9 @@ refuses any still-live DFlash2 owner, and the long request destroys that
 owner before release and binds the next owner after restoration. The
 [isolated build](../bench/dflash2_decode_indexed_head_build.py) overlays the
 five changed sources and the previously measured memory observer, then
-rebuilds all primary targets with the same recipe. Compilation and GPU
-comparison are pending.
+rebuilds all primary targets with the same recipe. Configuration passes
+with 1,327 exact source inputs, 522 controller inputs and the original 11
+targets. Compilation and the GPU comparisons remain pending.
 
 The replay at `e3d371974` verifies 4,668,262 original stock CPU jobs.
 Training uses the first 3,242 verifier windows and evaluation uses the
