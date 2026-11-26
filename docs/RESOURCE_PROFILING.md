@@ -1163,9 +1163,13 @@ request's output reservation. After a successful switch,
 subsequent short requests can use the now-installed decode layout.
 
 The [isolated build](../bench/dflash2_decode_ranked_refill_build.py) applies
-the six-file change through `da6ff1b5d` to the retained primary DFlash2 recipe.
-The generator projection excludes the separate memory observer. Rebuild all
-affected objects and both same-build fixtures. The [fixture runner](../bench/dflash2_decode_ranked_refill_checks.py)
+the six-file change through `ffc455c22` to the retained primary DFlash2 recipe.
+The generator projection excludes the separate memory observer. Under the
+existing cache-loan audit switch, the generator checks the CPU residency map
+and reads the GPU map at each prefill segment and after final refill. It emits
+the request, phase, span, masked-slot boundary and map digest. Keep this
+readback off for clean timing. Rebuild all affected objects and both same-build
+fixtures. The [fixture runner](../bench/dflash2_decode_ranked_refill_checks.py)
 checks the host lease fixture and runs the bounded SYCL ranked-refill cases
 with parameter validation. The device fixture covers
 wrong extent, changed prefix, missing or aliased slots, reader exclusion,
@@ -1188,10 +1192,12 @@ external inputs. This check creates no native executable.
 The first syntax invocation stopped at the compiler's unused
 `-fsycl-id-queries-range=size_t` message. Keep the original flag. Accept only
 that exact driver warning, a zero exit and a verified dependency list on
-the retry. The retry passes all six entries with one instance of that
+the retry. The retry on `da6ff1b5d` passes all six entries with one instance of that
 warning. The two generator variants check 809 and 810 inputs, the two
 ExpertCache variants check 660 each, and the host and device fixtures
-check 272 and 735 inputs. The full link and device runs remain pending.
+check 272 and 735 inputs. The updated projection matches the five unchanged files.
+Repeat the two generator checks for the audit addition. The full link and
+device runs remain pending.
 Proceed to the short and near-capacity RESTORE fixtures before
 clean timing. Include a fresh long request, a following short request and
 another fresh long request in the same process, plus a cancelled prefill and
