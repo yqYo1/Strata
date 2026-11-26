@@ -1198,11 +1198,15 @@ ExpertCache variants check 660 each, and the host and device fixtures
 check 272 and 735 inputs. The updated projection matches the five unchanged files.
 Repeat the two generator checks for the audit addition. The full link and
 device runs remain pending.
-Proceed to the short and near-capacity RESTORE fixtures before
-clean timing. Include a fresh long request, a following short request and
-another fresh long request in the same process, plus a cancelled prefill and
-the physical 262,144-token fill. Bind the actual map before each prefill
-window and after each final refill. The two 96K thinking workloads need
+The [live RESTORE runner](../bench/dflash2_decode_ranked_refill_restore.py)
+uses the previously checked request bodies on the new build. Compare stock
+and final ranked refill at each parked extent, 32,769 and 253,919 tokens.
+In each process check a fresh long prefill, an unrelated 33-token request
+and the restored prefix with an 8,209-token suffix. Bind the masked prefix,
+the full map used for the short prefill, and the final payload and map in
+order. The near-capacity request reaches 262,128 tokens. A cancelled prefill
+and the standalone 262,144-token physical fill are separate model gates.
+The two 96K thinking workloads need
 three matched independent process pairs. Keep the first-use and subsequent
 PP, client TTFT and TG measurements separate. Account for all final map
 and payload transfers, and require both workloads to keep their actual
