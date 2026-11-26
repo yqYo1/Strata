@@ -708742,8 +708742,53 @@
       },
       "retention": "Keep the private fixture through the bounded resolver and copy kernel trace. Retire the fixture and routine logs after the decisions and build recovery are verified. Reuse the retained runtime archive and keep the selected serving executable."
     },
-    "stage": "built",
-    "processes": [],
+    "stage": "smoke",
+    "processes": [
+      {
+        "stage": "smoke",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-width3-v1/fixture-build/sycl_kv_copy_groups_bench",
+          "--planner-width3-smoke"
+        ],
+        "environment_sha256": "a0b42508e6f31c77e5928977a5cdf1d864daac4115a38cc4f4e427379727ee97",
+        "direct_cases": 2,
+        "graph_replays": 2,
+        "provider_sha256": "78ee4b764717a824f2a6298ea138795071a4f3f8a9a24c0405b9da4e51bc67e1",
+        "traced_graph_replays": 2,
+        "host_probe_accepted": true,
+        "validation": {
+          "pid": 3664690,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_identity": {
+          "pid": 3664690,
+          "start_ticks": 406041405,
+          "sid": 3664690,
+          "pgid": 3664690
+        },
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
     "complete": false,
     "passed": false,
     "ownership_closed": true,
