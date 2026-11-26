@@ -656,6 +656,25 @@ requires closed same-binary admission. Bind both workloads to the previous
 and layer-major prefill in both long workloads. Require width-three and
 scalar fallback decode captures in each long request on the same binary.
 
+The earlier varied-prose model capture at `b28a9372b` has 6,485 decode
+windows at 33,287 input tokens. The width counts are 2,533, 1,987, 980 and
+985 for widths one to four. Their weighted sum of 13,387 rows agrees with
+6,902 draft offers plus 6,485 windows. Width three accounts for 15.1% of
+windows and can reach 11,760 layer calls across the 12 QSA layers. The
+source log SHA-256 is
+`6d4a4924485de26670e199318b8653cf3435da7237b3ee239e22d275430a0eb5`.
+
+Applying the fixture's 0.696–0.881 ms savings to every such call in
+series would save 8.19–10.36 seconds, or 0.71–0.90% of that capture's
+1,151.62-second decode. This sensitivity calculation assumes the fixture
+intervals transfer and every call is on the critical path. Miss density and
+overlap can change the effect. The corresponding archived 96K window and
+row totals permit at most 821 width-three windows in code and 2,432 in
+prose, using widths one to four and the recorded width-one initial window.
+Use the ongoing paired measurements for the 96K speed decision. The
+limited scope of this change keeps CPU expert work and other verifier
+widths in the optimization queue.
+
 The earlier component result at `34cbaf29c` gives a control for the
 mechanism. With zero missing pages, median launch-through-completion time
 falls from 0.965 to 0.375 ms at width two and from 1.876 to 0.699 ms at width
