@@ -1,5 +1,5 @@
 {
-  "stage": "built",
+  "stage": "checked",
   "source_commit": "c91bf7473e592e04eb551eee9c2b0bd43c010ea8",
   "machine": {
     "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
@@ -297,7 +297,428 @@
     "file": 67108864,
     "total": 402653184
   },
-  "processes": [],
+  "processes": [
+    {
+      "round": 0,
+      "mode": "hot-4",
+      "cores": 5,
+      "placement": {
+        "kind": "replay_placement",
+        "host_cpu": 0,
+        "workers": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "caller_computes": false
+      },
+      "locality": {
+        "kind": "locality_input",
+        "layout": "hot",
+        "batch": 4,
+        "gu": 18,
+        "down": 20,
+        "jobs": 8,
+        "entries": 9,
+        "logical_bytes": 69632000,
+        "allocated_bytes": 69632000,
+        "address_bytes": 17408000,
+        "serial_output_equal": true
+      },
+      "worker_census": {
+        "kind": "locality_workers",
+        "passes": 32,
+        "slots": [
+          {
+            "slot": 0,
+            "calls": 1117,
+            "rows": 652330,
+            "token_rows": 710740,
+            "wall_ns": 76927131,
+            "cpu_ns": 75805774
+          },
+          {
+            "slot": 1,
+            "calls": 1155,
+            "rows": 656013,
+            "token_rows": 740349,
+            "wall_ns": 78232057,
+            "cpu_ns": 77096112
+          },
+          {
+            "slot": 2,
+            "calls": 1140,
+            "rows": 651632,
+            "token_rows": 742606,
+            "wall_ns": 77544049,
+            "cpu_ns": 76615962
+          },
+          {
+            "slot": 3,
+            "calls": 1076,
+            "rows": 661513,
+            "token_rows": 750447,
+            "wall_ns": 77802786,
+            "cpu_ns": 76909083
+          },
+          {
+            "slot": 4,
+            "calls": 1144,
+            "rows": 655312,
+            "token_rows": 742258,
+            "wall_ns": 77688676,
+            "cpu_ns": 76741071
+          },
+          {
+            "slot": 64,
+            "calls": 1024,
+            "rows": 655360,
+            "token_rows": 737280,
+            "wall_ns": 1416873,
+            "cpu_ns": 761359
+          }
+        ]
+      },
+      "owner": {
+        "pid": 2611980,
+        "direct_identity": {
+          "pid": 2611980,
+          "state": "R",
+          "ppid": 2611829,
+          "pgid": 2611980,
+          "sid": 2611980,
+          "start_ticks": 403335570,
+          "rss_bytes": 462848
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 0.9257800714112818,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "errors": [],
+        "cleanup": [],
+        "peak_session_rss_bytes": 356311040
+      }
+    },
+    {
+      "round": 0,
+      "mode": "rotate-4",
+      "cores": 5,
+      "placement": {
+        "kind": "replay_placement",
+        "host_cpu": 0,
+        "workers": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "caller_computes": false
+      },
+      "locality": {
+        "kind": "locality_input",
+        "layout": "rotate",
+        "batch": 4,
+        "gu": 18,
+        "down": 20,
+        "jobs": 8,
+        "entries": 9,
+        "logical_bytes": 69632000,
+        "allocated_bytes": 69632000,
+        "address_bytes": 69632000,
+        "serial_output_equal": true
+      },
+      "worker_census": {
+        "kind": "locality_workers",
+        "passes": 32,
+        "slots": [
+          {
+            "slot": 0,
+            "calls": 1110,
+            "rows": 656373,
+            "token_rows": 746755,
+            "wall_ns": 79127445,
+            "cpu_ns": 78197612
+          },
+          {
+            "slot": 1,
+            "calls": 1129,
+            "rows": 654372,
+            "token_rows": 739540,
+            "wall_ns": 79225939,
+            "cpu_ns": 78290480
+          },
+          {
+            "slot": 2,
+            "calls": 1111,
+            "rows": 654014,
+            "token_rows": 729194,
+            "wall_ns": 79445048,
+            "cpu_ns": 77748096
+          },
+          {
+            "slot": 3,
+            "calls": 1138,
+            "rows": 655354,
+            "token_rows": 736328,
+            "wall_ns": 79188170,
+            "cpu_ns": 77976652
+          },
+          {
+            "slot": 4,
+            "calls": 1144,
+            "rows": 656687,
+            "token_rows": 734583,
+            "wall_ns": 79237656,
+            "cpu_ns": 78262773
+          },
+          {
+            "slot": 64,
+            "calls": 1024,
+            "rows": 655360,
+            "token_rows": 737280,
+            "wall_ns": 1379023,
+            "cpu_ns": 748444
+          }
+        ]
+      },
+      "owner": {
+        "pid": 2612022,
+        "direct_identity": {
+          "pid": 2612022,
+          "state": "R",
+          "ppid": 2611829,
+          "pgid": 2612022,
+          "sid": 2612022,
+          "start_ticks": 403335669,
+          "rss_bytes": 315392
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 0.8908663461916149,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "errors": [],
+        "cleanup": [],
+        "peak_session_rss_bytes": 373022720
+      }
+    },
+    {
+      "round": 0,
+      "mode": "hot-5",
+      "cores": 5,
+      "placement": {
+        "kind": "replay_placement",
+        "host_cpu": 0,
+        "workers": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "caller_computes": false
+      },
+      "locality": {
+        "kind": "locality_input",
+        "layout": "hot",
+        "batch": 5,
+        "gu": 21,
+        "down": 20,
+        "jobs": 8,
+        "entries": 10,
+        "logical_bytes": 74547200,
+        "allocated_bytes": 74547200,
+        "address_bytes": 18636800,
+        "serial_output_equal": true
+      },
+      "worker_census": {
+        "kind": "locality_workers",
+        "passes": 32,
+        "slots": [
+          {
+            "slot": 0,
+            "calls": 1075,
+            "rows": 624950,
+            "token_rows": 803185,
+            "wall_ns": 100596470,
+            "cpu_ns": 99171007
+          },
+          {
+            "slot": 1,
+            "calls": 1142,
+            "rows": 657738,
+            "token_rows": 800683,
+            "wall_ns": 97383604,
+            "cpu_ns": 96406776
+          },
+          {
+            "slot": 2,
+            "calls": 1088,
+            "rows": 650592,
+            "token_rows": 818860,
+            "wall_ns": 97319678,
+            "cpu_ns": 96213403
+          },
+          {
+            "slot": 3,
+            "calls": 1178,
+            "rows": 674838,
+            "token_rows": 832128,
+            "wall_ns": 96828681,
+            "cpu_ns": 95876977
+          },
+          {
+            "slot": 4,
+            "calls": 1149,
+            "rows": 668682,
+            "token_rows": 841144,
+            "wall_ns": 96225363,
+            "cpu_ns": 95288365
+          },
+          {
+            "slot": 64,
+            "calls": 1024,
+            "rows": 655360,
+            "token_rows": 819200,
+            "wall_ns": 1412154,
+            "cpu_ns": 768572
+          }
+        ]
+      },
+      "owner": {
+        "pid": 2612067,
+        "direct_identity": {
+          "pid": 2612067,
+          "state": "R",
+          "ppid": 2611829,
+          "pgid": 2612067,
+          "sid": 2612067,
+          "start_ticks": 403335767,
+          "rss_bytes": 315392
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 1.0412299940362573,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "errors": [],
+        "cleanup": [],
+        "peak_session_rss_bytes": 461852672
+      }
+    },
+    {
+      "round": 0,
+      "mode": "rotate-5",
+      "cores": 5,
+      "placement": {
+        "kind": "replay_placement",
+        "host_cpu": 0,
+        "workers": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "caller_computes": false
+      },
+      "locality": {
+        "kind": "locality_input",
+        "layout": "rotate",
+        "batch": 5,
+        "gu": 21,
+        "down": 20,
+        "jobs": 8,
+        "entries": 10,
+        "logical_bytes": 74547200,
+        "allocated_bytes": 74547200,
+        "address_bytes": 74547200,
+        "serial_output_equal": true
+      },
+      "worker_census": {
+        "kind": "locality_workers",
+        "passes": 32,
+        "slots": [
+          {
+            "slot": 0,
+            "calls": 1120,
+            "rows": 672746,
+            "token_rows": 853468,
+            "wall_ns": 100946638,
+            "cpu_ns": 99219929
+          },
+          {
+            "slot": 1,
+            "calls": 1164,
+            "rows": 675522,
+            "token_rows": 839498,
+            "wall_ns": 101090099,
+            "cpu_ns": 99517903
+          },
+          {
+            "slot": 2,
+            "calls": 1056,
+            "rows": 618824,
+            "token_rows": 769166,
+            "wall_ns": 106131624,
+            "cpu_ns": 104995075
+          },
+          {
+            "slot": 3,
+            "calls": 1172,
+            "rows": 686450,
+            "token_rows": 849457,
+            "wall_ns": 101621253,
+            "cpu_ns": 100588481
+          },
+          {
+            "slot": 4,
+            "calls": 1120,
+            "rows": 623258,
+            "token_rows": 784411,
+            "wall_ns": 105955262,
+            "cpu_ns": 104309359
+          },
+          {
+            "slot": 64,
+            "calls": 1024,
+            "rows": 655360,
+            "token_rows": 819200,
+            "wall_ns": 1707907,
+            "cpu_ns": 812593
+          }
+        ]
+      },
+      "owner": {
+        "pid": 2612103,
+        "direct_identity": {
+          "pid": 2612103,
+          "state": "R",
+          "ppid": 2611829,
+          "pgid": 2612103,
+          "sid": 2612103,
+          "start_ticks": 403335882,
+          "rss_bytes": 311296
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 1.0254183043725789,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "errors": [],
+        "cleanup": [],
+        "peak_session_rss_bytes": 326324224
+      }
+    }
+  ],
   "active": false,
   "ownership_closed": true,
   "gpu_executed": false,
