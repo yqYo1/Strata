@@ -42297,5 +42297,22 @@
     "consumer": "Retain 20,480; source-trace worst-case union per admitted width and head and handoff, then measure actual admission, residency, failures, and paired throughput.",
     "prerequisite": "Require a source-proved page-union and handoff bound for all admitted decode widths before a lower-floor admission test.",
     "schedulable_now": false
+  },
+  "sycl-low-width-decode-combine-dispatch-20261126": {
+    "classification": "decision_support",
+    "source_commit": "ed46216ce6b0d7cd5c1f10aceb5afc0e00441563",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/sycl-low-width-decode-combine-dispatch-20261126/report.md",
+    "report_sha256": "1d4f9d8be1e7bcafef0c49a12bd6709bf9ff8b418b7d691e7ff2a872f143cd9e",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-sycl-low-width-decode-combine-dispatch-20261126/review.json",
+    "review_sha256": "c4d7d1b5459811d4c20c9a008fa1902c0f40abaec46039f7baaaee5c6a0c7c25",
+    "worker": "Orca gpt-6-luna medium, ctx_10cdd3961487",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "stage": "reviewed",
+    "owners_closed": true,
+    "finding": "The review confirms scope and novelty for width 1–3 and internal consistency of proposed work counts. This is report review; the source and hardware claims still need independent checks.",
+    "correction": "Define “both clocks” as named timing metrics and state the per-arm gate.",
+    "consumer": "Measure A/B/C per width, charge mask preparation, and keep T4 evidence within its measured shapes.",
+    "prerequisite": "Require native dispatch, source span and hit-row audits for the lower widths and a frozen stock baseline before implementation.",
+    "schedulable_now": false
   }
 }
