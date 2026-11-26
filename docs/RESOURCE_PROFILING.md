@@ -1188,7 +1188,10 @@ external inputs. This check creates no native executable.
 The first syntax invocation stopped at the compiler's unused
 `-fsycl-id-queries-range=size_t` message. Keep the original flag. Accept only
 that exact driver warning, a zero exit and a verified dependency list on
-the retry.
+the retry. The retry passes all six entries with one instance of that
+warning. The two generator variants check 809 and 810 inputs, the two
+ExpertCache variants check 660 each, and the host and device fixtures
+check 272 and 735 inputs. The full link and device runs remain pending.
 Proceed to the short and near-capacity RESTORE fixtures before
 clean timing. Include a fresh long request, a following short request and
 another fresh long request in the same process, plus a cancelled prefill and
