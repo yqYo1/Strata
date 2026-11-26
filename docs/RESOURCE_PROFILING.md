@@ -577,6 +577,15 @@ grouped. Use these slices with the existing mapped-combine parity fixture
 to validate the barrier control. Their data establish routing dependencies.
 Actual GPU completion and the benefit of early publication need measurement.
 
+The selected verifier at `968e71988` can split a decode window into two
+groups for `T >= 2`. In its SYCL path the host synchronizes the current
+segment, calls the expert pool, retires copies and then submits the next
+segment. Plan publication can launch that group's shared and resident work
+while the CPU callback runs. Splitting still changes the 48 host completion
+steps to 96 and leaves next-segment submission after the callback. Use the
+planned fixed-work publication test to isolate readiness and the downstream
+interval before selecting a new split-window schedule. [Verifier](../src/core/verify.cpp)
+
 The event-query process at `65f0f927c` repeats the same work at 16.443 tok/s.
 The two resident wrappers each run 64,560 times without query or clock
 errors. Their wall times are 224.99 and 314.64 ms, totaling 0.216% of the
