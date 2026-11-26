@@ -352,13 +352,14 @@ excludes prompt captures. The retained environment already fixes
 `STRATA_SYCL_KV_COPY_GROUPS=0`, so the experiment can switch only
 `STRATA_SYCL_DECODE_KV_COALESCED` before launch on the same executable.
 
-Keep the QSA scorer and expert placement fixed. Before timing, compare a
-bounded native request in each arm with validation enabled. Require matching
+Keep the QSA scorer and expert placement fixed. The [short admission runner](../bench/dflash2_decode_kv_admission.py)
+compares a bounded native request in each arm with validation enabled. It requires matching
 output IDs and drafts, scalar KV in every prompt capture and verified
 cooperative calls at every intended layer of a decode width-two or width-four
 capture. Verify scalar fallback at width one. Record resident page shape and
-actual dispatch. Then compare the same 96K code and prose bodies in three
-counterbalanced process pairs against scalar KV. Report emitted tokens,
+actual dispatch. The [timing runner](../bench/dflash2_decode_kv_speed.py)
+then compares the same 96K code and prose bodies in three counterbalanced
+process pairs against scalar KV. Report emitted tokens,
 draft acceptance, PP, client TTFT and sustained TG. Advance only on repeated
 decode gains and preserved prefill and TTFT within each workload. Test
 physical context and RESTORE on the selected route before any default change.
@@ -1117,6 +1118,28 @@ expert jobs per emitted token fall from 354.84 to 295.48 and from 398.11 to
 code and 1.000694 for prose, so the prefill preservation gate fails. Keep
 stock placement. To revisit the decode gain, isolate cache selection from
 prefill admission and handoff, then measure under a new matched plan.
+
+The two admitted profile files at `5e75c7dbe` have the same first 132
+experts and the same aligned size in each slot. Comparing their verified
+packed manifest gives 979 changed slots, all in the 1,124-slot loan tail.
+The stock and blended tail each refill 2,321,664,000 payload bytes.
+Restoring stock first and then installing the blend would issue another
+2,010,419,200 H2D bytes. The measured bulk-copy reference puts that extra
+copy at about 0.31–0.32 s before copy scheduling or queue delays.
+
+In the serving generator, the same refill routine also runs before a
+prefill window and when a larger scratch loan replaces a smaller one.
+Only the final successful prefill handoff can select the alternate tail.
+Earlier window refills and cancellation still need a valid map for the
+ordinary request flow. Check the actual loan covers every changed slot and
+that both source and destination sizes match before issuing any alternate
+copy. The cache maintains both an internal CPU residency table and the
+published host/device table. The current adaptive replacement requires the
+cache to be ready. A refill-specific publication must complete under the
+checked lease, before admitting decode readers, and stop on partial failure.
+Charge final refill and draft activation to prompt time as the existing
+server does. Bind intermediate window work and repeated request paths to
+their actual residency before making a phase-separation claim.
 
 The first two closed blend processes also bound the benefit of draft yield
 at the current decode time. Let `e` be emitted tokens and `a` and `d`
