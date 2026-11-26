@@ -321,6 +321,15 @@ The reader now recovers that tracked input from the original capture's
 source revision and requires its hash to match both the recorded profile and
 the working repository's profile. The original capture and hashes stay fixed.
 
+The [decode-only capacity replay](../bench/dflash2_decode_extra_capacity_replay.py)
+prices hypothetical extra residency after releasing long-prefill scratch.
+Preserve all original 1,256 slots in order, then append prefixes of one
+ranking at 256, 512 and 768 MiB. Rank nonresident experts by CPU jobs per
+aligned slot byte on the captured training half. Measure job, row and
+logical weight-byte savings on the unchanged held-out half. These caps
+are hypotheses. Before a native trial, measure post-handoff headroom and
+charge added upload, GPU work and retirement before the next prefill.
+
 The replay at `e3d371974` verifies 4,668,262 original stock CPU jobs.
 Training uses the first 3,242 verifier windows and evaluation uses the
 remaining 3,243. All arms preserve the same protected members, 1,256 slot
