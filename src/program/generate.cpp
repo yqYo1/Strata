@@ -7035,13 +7035,15 @@ int main(int argc, char** argv) {
                 std::printf("ERR refilling a lent slot failed: %s\n", err.c_str());
                 return 1;
             }
-            tr("prompt done (slots refilled)");
 #ifdef STRATA_ENABLE_SYCL
             if (df2_placement_audit && !audit_df2_expert_phase(census_request,
                     cancelled ? "cancel-refill" : "decode-handoff", read_from, at, xcache.slots(), err)) {
                 std::printf("ERR %s\n", err.c_str());
                 return 1;
             }
+#endif
+            tr("prompt done (slots refilled)");
+#ifdef STRATA_ENABLE_SYCL
             if (use_df2) {
                 if (cancelled) {
                     df2_taps.release();
