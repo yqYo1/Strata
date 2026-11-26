@@ -240,6 +240,40 @@ serial stream and repeat the score and ID checks. Graph profiling can change
 graph realization. Use these samples for attribution and retain the clean
 decision separately if device timestamps are unavailable.
 
+Both correctness processes and all three timing processes close normally
+without fresh Xe faults. Across widths one to four, the same graph passes
+short, 96K and 262144-cell steps, including all four tail remainders, tied
+scores, invalid steps and large-to-small transitions. All 288 timing
+batches pass the duration and timer gates. Time ratios below are the
+geometric means of paired process medians. Every shape passes both gates
+in all three processes at `0bdc2446e`.
+
+| Verifier width | 96K scorer | 96K scorer + selector | 256K scorer | 256K scorer + selector |
+| ---: | ---: | ---: | ---: | ---: |
+| 1 | 0.8443 | 0.9635 | 0.9600 | 0.9954 |
+| 2 | 0.7700 | 0.9306 | 0.9449 | 0.9906 |
+| 3 | 0.7169 | 0.8979 | 0.9011 | 0.9793 |
+| 4 | 0.6925 | 0.8741 | 0.9059 | 0.9766 |
+
+At width four, the combined median moves from 0.65484 to 0.57247 ms
+at 96K and from 2.05994 to 2.01132 ms at capacity. One measured width-one
+setup charges extra first capture to the candidate in reverse order.
+That process would need 15,793 combined replays at 96K or 35,374 at
+capacity to recover the extra setup. Preserve separate first-request
+and later-request clocks in the model comparison. The measured 96K width-four
+difference saves about one millisecond per window if applied to all twelve
+QSA layers at that shape. Actual widths, surrounding dependencies and setup
+determine the model-level gain. Advance the decoder's verifier call site
+as a separate candidate with its own numerical and matched model checks.
+
+The separate profiled process passes 160 ordered device-interval samples
+with a 52 ns timer resolution and no fresh Xe fault. At width four the
+combined graph's median device interval is 0.591 → 0.509 ms at 96K and
+1.994 → 1.942 ms at capacity. The same process's wall medians are
+0.656 → 0.574 and 2.066 → 2.011 ms. These are outer graph timestamps
+with profiling enabled. They locate the reduction inside the graph in
+that test. Arithmetic occupancy and physical memory traffic remain open.
+
 The independent worker-leaf bracket at `6bbd3e3e1` uses native source
 `96832af6f` with the same request, output, reasoning and draft counts. Its two
 observed runs use 156.12 and 156.24 CPU ms per emitted token across six expert
