@@ -558,6 +558,21 @@ process. Code reaches 939.9 PP and 16.23 TG tok/s on 3,195 outputs; prose
 reaches 1,038.9 PP and 11.61 TG tok/s on 8,618 outputs. The final within-layer
 process is the remaining arm.
 
+The [blended rank replay](../bench/dflash2_decode_blended_rank_replay.py)
+tests whether both workloads can reduce CPU expert work at the same VRAM
+budget. Use the verified code usage reconstructed at `b28a9372b` and the
+first half of its separate prose capture. Preserve the original code run's
+parser failure and use only the closed offline reconstruction. Normalize
+distinct job counts by each workload's own stock CPU misses. Compare code
+weights of 0, 25, 50, 75 and 100 percent within the same per-layer quotas,
+protected prefix and slot widths. Select among the three blends by the
+smallest worst training ratio across jobs and logical bytes in both workloads.
+Break ties toward 50 percent, then the lower code weight. The second half of
+the prose capture cannot influence selection. Advance to a new independent
+capture only if both metrics fall against stock on both training workloads
+and the prose suffix. Code training has no holdout and the replay measures
+neither actual traffic nor throughput. Keep stock for serving.
+
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
 96-swap and 197,913,600-byte caps. Compare early distinct jobs, routed rows
