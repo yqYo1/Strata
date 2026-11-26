@@ -16,8 +16,9 @@ KEY = 'dflash2_decode_small_kv_build_v1'
 ROOT = bank.B / KEY.replace('_', '-')
 TREE = ROOT / 'source'
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-PATCH = '08f852e85a208166e73fb48165dcd1f100136d68'
-PATCH_SHA = 'f0addf0ee4eeda9791672ef6e6eb4177768a11bf901f1c4d6427c68ca90b111b'
+PATCH_PARENT = '6f7aeee9745f55659636539b15c5646bbfb0fe65'
+PATCH = '4fd9693618949554930ce30b9cf81556e816befe'
+PATCH_SHA = '96f8c2b721c27b3b8f19bd3218dd9860a389097da3727fd995889abfe34f35c0'
 GENERATOR = 'src/program/generate.cpp'
 GENERATOR_SHA = 'f83fbc369a32ac0eefbb015232964b25d868884d86ea76449059b72926acdf99'
 FILES = ('include/strata/core/layer.hpp', 'src/core/layer.cpp', GENERATOR, 'tests/sycl/kv.cpp')
@@ -27,7 +28,7 @@ CONTROLLERS = (THIS, *retained_builder.CONTROLLERS)
 
 
 def overlay(payload):
-    patch = validation.git('diff', '--binary', PATCH + '^', PATCH, '--', *FILES)
+    patch = validation.git('diff', '--binary', PATCH_PARENT, PATCH, '--', *FILES)
     require(sha256(patch).hexdigest() == PATCH_SHA, 'the committed smaller-KV delta changed')
     with TemporaryDirectory(prefix='strata-small-kv-projection-') as temp:
         root = Path(temp)

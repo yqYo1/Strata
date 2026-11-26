@@ -446,10 +446,15 @@ then switch the full pages while retaining the tails. Check actual selection
 IDs, the four K/V and scale planes, inverse map, guard cells and hit/miss
 counters before testing the real model.
 The [isolated build](../bench/dflash2_decode_small_kv_build.py) applies the
-four-file change at `08f852e85` to `968e71988`. It retains the original
+four-file change through `4fd969361` on `968e71988`. It retains the original
 compiler, dependencies and recipes and adds the same-build KV fixture.
 The projection matches the committed bytes and excludes the separate
-ranked-refill implementation. Build and device results are pending.
+ranked-refill implementation. The first [syntax check](../bench/dflash2_candidate_sycl_syntax.py),
+at controller `a17905e15` on source `08f852e85`, passed both generator
+units (809 and 810 verified inputs) and the layer unit (726 inputs).
+The fixture failed because `qsa_block_topk` had no visible declaration.
+Include its declaring header in `4fd969361` and repeat with the updated
+source projection. The full build and device check remain pending.
 
 ### DFlash2 expert service and placement
 
@@ -1273,9 +1278,11 @@ that exact driver warning, a zero exit and a verified dependency list on
 the retry. The retry on `da6ff1b5d` passes all six entries with one instance of that
 warning. The two generator variants check 809 and 810 inputs, the two
 ExpertCache variants check 660 each, and the host and device fixtures
-check 272 and 735 inputs. The updated projection matches the five unchanged files.
-Repeat the two generator checks for the audit addition. The full link and
-device runs remain pending.
+check 272 and 735 inputs. The updated projection matches the five unchanged
+files. The [repeat check](../bench/dflash2_candidate_sycl_syntax.py) at
+`a17905e15` passes both generator units for `ffc455c22`, with 809 and 810
+verified inputs and no compiler diagnostic. The full link and device runs
+remain pending.
 The [live RESTORE runner](../bench/dflash2_decode_ranked_refill_restore.py)
 uses the previously checked request bodies on the new build. Compare stock
 and final ranked refill at each parked extent, 32,769 and 253,919 tokens.
