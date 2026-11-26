@@ -385,8 +385,13 @@ then restores and reads the 8,209-token suffix to reach 40,978. Its native
 process exits normally with its holder closed and no fresh Xe fault. The
 identical global arm passes with the same request states and outputs, snapshot
 payload, placement and loan/refill. Its owner closes normally with no fresh
-Xe fault. Run both near-capacity arms next. Keep the generated profile for
-the placement comparison after native admission.
+Xe fault. The near-capacity per-layer stock arm then restores 253,919 tokens
+from RAM, reads 8,209 new tokens and emits one token at 262,128. The readback
+verifies 3,607,695,360 bytes of target KV and 118,069,304 bytes of running
+state. All three requests match the expected 48-layer placement, both loan
+and refill cycles pass, and the owner closes normally with no fresh Xe fault.
+Use this result as the control for the near-capacity global loader. Keep the
+generated profile for the placement comparison after native admission.
 
 After stock admission, the same controller's `--ranked prepare` action
 materializes the exact within-layer and cross-layer rerankings from the
