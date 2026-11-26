@@ -480,6 +480,15 @@ Prose TG is 15.94% higher in this pair. Both requests change generated work.
 Keep that distinction and complete the remaining counterbalanced pairs
 before selecting a placement.
 
+The third process completes the within-layer arm of the reversed pair with
+normal exit and no fresh Xe fault. Code repeats the preceding within-layer
+output and reasoning hashes, 3,370 outputs and 2,273 of 2,387 accepted drafts.
+It gives 941.0 PP and 15.96 TG tok/s. Prose gives 1,040.9 PP and 13.10 TG
+tok/s with 6,939 outputs and 2,679 of 3,901 accepted drafts. Its reasoning hash
+matches the preceding within-layer arm and its answer hash differs. Both
+requests keep the matched prefill dispatch and requested upload bytes. The
+next process is this pair's stock control.
+
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
 96-swap and 197,913,600-byte caps. Compare early distinct jobs, routed rows
