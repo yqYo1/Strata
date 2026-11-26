@@ -1063,12 +1063,30 @@ batch, 201 jobs and 226 routed entries in total. The weights cover IQ3_XXS
 and IQ3_S with IQ4_NL Down and the inputs exercise one to three rows per
 expert. Use five pinned workers and the caller, with the current DFlash2
 IQ3 selection. Check serial-output bits and guards in each arm. Three
-counterbalanced matched process pairs use five eligible whole-pass timing
-batches per process. Advance only when the by-expert median is faster in
-all three pairs. A gain would include any change in balance, locality and
-epoch costs. Per-stage wall times from the split scheduler do not transfer
-to the candidate's overlapping worker stages. Native serving and hardware
-throughput claims require separate evidence.
+counterbalanced pairs each time the full eight-batch pass first. Then time
+the two captured batches for each combination of Gate/Up format and width.
+Use five eligible timing samples per group in each process, with separate
+warm-up and the existing timer-overhead check. Reconcile jobs and logical
+packed bytes with the original descriptor for each group.
+
+| Gate/Up and verifier width | CPU jobs per captured batch | CPU token rows per captured batch |
+| --- | --- | --- |
+| IQ3_XXS, width two | 20 / 13 | 20 / 14 |
+| IQ3_XXS, width four | 36 / 35 | 39 / 39 |
+| IQ3_S, width two | 17 / 14 | 20 / 16 |
+| IQ3_S, width four | 35 / 31 | 40 / 38 |
+
+Require the by-expert median to be faster in all three pairs for the
+proposed scope. A broad follow-up requires the full replay and all four
+groups to pass. A group that passes independently can enter a separate
+scoped check. Earlier Down20 synthetic data included regressions and
+some mixes exceeded the width-four routing limit. These two batches per
+group are legal captured work, with seeded activations and a narrower
+repeated working set when isolated. Treat scope results as component
+evidence for those batches. A gain includes changes in balance, locality
+and epoch costs. Per-stage wall times from the split scheduler do not
+transfer to the candidate's overlapping worker stages. Native serving and
+hardware throughput claims require separate evidence.
 
 The [stock admission controller](../bench/dflash2_decode_stock_global_restore.py)
 uses the retained primary executable and recovers the original restore plans

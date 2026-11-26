@@ -61,6 +61,7 @@ LOCALITY_PROTOCOL = (
 )
 LOCALITY_MODE = False
 SCHEDULE_ARMS = ('split', 'by-expert')
+SCHEDULE_SHAPES = ((0, 0), (18, 2), (18, 4), (21, 2), (21, 4))
 SCHEDULE_MODE = False
 SCHEDULE_PROTOCOL = (
     'Replay the same eight held-out width-two and width-four batches with six physical cores and the '
@@ -68,8 +69,11 @@ SCHEDULE_PROTOCOL = (
     'pool in both arms. Compare the current row-split Gate/Up and Down phases against one complete '
     'expert per claim. The latter keeps the intermediate on the worker and retires all claims before '
     'the caller proceeds. Prove identical row outputs, guards, total work and affinity. Measure whole '
-    'passes, with five scored samples and three counterbalanced independent pairs. Advance only if '
-    'by-expert is faster in all three paired medians. This is a CPU scheduling screen.'
+    'passes, with five scored samples and three counterbalanced independent pairs. In each process, '
+    'time the full replay first, then each captured Gate/Up format and verifier width separately. '
+    'Require by-expert to be faster in all three paired medians for the proposed scope. A shape '
+    'passing alone permits a scoped follow-up. A broad follow-up requires the full replay and every '
+    'shape to pass. These are CPU scheduling screens.'
 )
 need, sha, git = recipe.need, owned.sha, recipe.git
 
@@ -270,13 +274,14 @@ def prepare():
                           '-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t', '-DGGML_CCACHE=OFF',
                           '-DSTRATA_GGML_DIR=' + str(recipe.GGML)],
                build=['/usr/bin/cmake', '--build', str(BUILD), '--target', 'cpu_roofline', '--parallel', '4'],
-               budgets=dict(build_wall=300, run_wall=45, build_rss=8 << 30, run_rss=2 << 30,
+               budgets=dict(build_wall=300, run_wall=60 if SCHEDULE_MODE else 45, build_rss=8 << 30, run_rss=2 << 30,
                             text=4 << 20, file=64 << 20, total=384 << 20),
                processes=[], active=False, ownership_closed=True, gpu_executed=False)
     if LOCALITY_MODE:
         row['observer_environment'] = dict(env, STRATA_CPU_SERVICE='1')
     if SCHEDULE_MODE:
         row['configure'].append('-DSTRATA_CPU_EXPERT_SCHEDULE_TEST=ON')
+        row['schedule_shapes'] = [list(shape) for shape in scheduling_shapes(fixture)]
     save(row)
     print('Prepared fixed CPU replay; commit the plan before compiling.', flush=True)
 
@@ -306,7 +311,9 @@ def load():
     if SCHEDULE_MODE:
         need(row['environment']['STRATA_IQ3_PAIR'] == '1'
              and row['environment']['STRATA_IQ_SINGLE_EXACT'] == row['environment']['STRATA_CPU_SERVICE'] == '0'
-             and row['configure'][-1] == '-DSTRATA_CPU_EXPERT_SCHEDULE_TEST=ON', 'fixed decode scheduling inputs')
+             and row['configure'][-1] == '-DSTRATA_CPU_EXPERT_SCHEDULE_TEST=ON'
+             and row['schedule_shapes'] == [list(shape) for shape in scheduling_shapes(row['fixture'])]
+             and row['budgets']['run_wall'] == 60, 'fixed decode scheduling inputs')
     return row
 
 
@@ -349,6 +356,20 @@ def locality_summary(fixture, mode, by_kind, timed):
     return result
 
 
+def scheduling_shapes(fixture):
+    blocks = json.loads(fixture['blocks'])
+    shapes = []
+    for gu, width in SCHEDULE_SHAPES[1:]:
+        matching = [b for b in blocks if (b['fmt'][0], b['width']) == (gu, width)]
+        need(len(matching) == 2, 'two captured batches required per scheduling shape')
+        jobs = sum(len(b['jobs']) for b in matching)
+        byte_count = sum(b['fmt'][2] * len(b['jobs']) for b in matching)
+        shapes.append((gu, width, byte_count, jobs))
+    need(sum(s[2] for s in shapes) == fixture['logical_bytes']
+         and sum(s[3] for s in shapes) == fixture['jobs'], 'shape work must cover the full schedule')
+    return [(0, 0, fixture['logical_bytes'], fixture['jobs']), *shapes]
+
+
 def summaries(row, text, mode, cores, timed):
     rows = [json.loads(line) for line in text.splitlines()]
     by_kind = {kind: [v for v in rows if v['kind'] == kind]
@@ -382,38 +403,49 @@ def summaries(row, text, mode, cores, timed):
     else:
         need(not by_kind['replay_input'], 'unexpected expert work in the read control')
     samples = by_kind['sample']
-    need(len(samples) == (5 if timed else 0), 'scored replay sample count')
+    timings = by_kind['timer_check']
     if not timed:
-        need(not by_kind['timer_check'], 'unexpected timed check')
+        need(not timings and not samples, 'unexpected timed check')
         return result
-    timer, = by_kind['timer_check']
-    need(0 < timer['query_s'] < timer['fastest_pass_s'] * .001, 'timer overhead admission')
     if mode in LOCALITY_ARMS:
         byte_count, visits, label = result['locality']['logical_bytes'], 32, 'locality'
-        need(timer['mode'] == label and timer['layout'] == LOCALITY_ARMS[mode][0], 'wrong locality timer arm')
     elif mode == 'pool' or schedule:
         byte_count, visits, label = fixture['logical_bytes'], fixture['jobs'], 'replay'
     else:
         byte_count, visits, label = fixture['unique_bytes'], 1, 'scan'
-    for rep, sample in enumerate(samples):
-        repeats = sample['iterations']
-        need(sample['mode'] == label and sample['threads'] == cores
-             and sample['rep'] == rep and sample['attempt'] == 0 and 0 < repeats < 1000000
-             and sample['requested_bytes'] == repeats * byte_count and sample['visits'] == repeats * visits
-             and math.isfinite(sample['wall_s']) and sample['wall_s'] >= 1
-             and math.isfinite(sample['cpu_s'])
-             and 0 <= sample['host_cpu_s'] <= sample['cpu_s'] + .005
-             and sample['host_cpu_s'] <= sample['wall_s'] + .005, 'replay timing or work admission')
-        if label != 'scan':
-            phases = [sample[k] for k in ('gu_s', 'q_s', 'down_s')]
-            need(all(math.isfinite(v) and v >= 0 for v in phases) and sum(phases) <= sample['wall_s'] + .001,
-                 'bounded disjoint pool stage times')
-            if mode == 'by-expert':
-                need(phases == [0, 0, 0], 'by-expert work has no disjoint stage clocks')
+    cases = row['schedule_shapes'] if schedule else [(0, 0, byte_count, visits)]
+    need(len(timings) == len(cases) and len(samples) == 5 * len(cases), 'scored replay sample count')
+    cells = []
+    for i, (gu, width, byte_count, visits) in enumerate(cases):
+        timer = timings[i]
+        cell_samples = samples[5*i:5*(i+1)]
+        need(0 < timer['query_s'] < timer['fastest_pass_s'] * .001, 'timer overhead admission')
+        if schedule:
+            need(all((v.get('gu'), v.get('width'), v.get('mode'), v.get('threads')) == (gu, width, label, cores)
+                     for v in (timer, *cell_samples)), 'wrong measured scheduling shape')
         if label == 'locality':
-            need(sample['layout'] == result['locality']['layout'], 'wrong scored locality arm')
-    return dict(result, samples=samples, timer=timer,
-                median_s_per_pass=statistics.median(v['wall_s'] / v['iterations'] for v in samples))
+            need(timer['mode'] == label and all(v['layout'] == result['locality']['layout']
+                 for v in (timer, *cell_samples)), 'wrong locality timing arm')
+        for rep, sample in enumerate(cell_samples):
+            repeats = sample['iterations']
+            need(sample['mode'] == label and sample['threads'] == cores
+                 and sample['rep'] == rep and sample['attempt'] == 0 and 0 < repeats < 1000000
+                 and sample['requested_bytes'] == repeats * byte_count and sample['visits'] == repeats * visits
+                 and math.isfinite(sample['wall_s']) and sample['wall_s'] >= 1
+                 and math.isfinite(sample['cpu_s'])
+                 and 0 <= sample['host_cpu_s'] <= sample['cpu_s'] + .005
+                 and sample['host_cpu_s'] <= sample['wall_s'] + .005, 'replay timing or work admission')
+            if label != 'scan':
+                phases = [sample[k] for k in ('gu_s', 'q_s', 'down_s')]
+                need(all(math.isfinite(v) and v >= 0 for v in phases) and sum(phases) <= sample['wall_s'] + .001,
+                     'bounded disjoint pool stage times')
+                if mode == 'by-expert':
+                    need(phases == [0, 0, 0], 'by-expert work has no disjoint stage clocks')
+        cells.append(dict(gu=gu, width=width, median_s_per_pass=statistics.median(
+            v['wall_s'] / v['iterations'] for v in cell_samples)))
+    if schedule:
+        result.update(schedule_cells=cells, shape_timers=timings[1:])
+    return dict(result, samples=samples, timer=timings[0], median_s_per_pass=cells[0]['median_s_per_pass'])
 
 
 def execute(stage):
@@ -523,14 +555,19 @@ def locality_pairs(measured):
 
 
 def schedule_result(measured):
-    ratios = []
+    ratios = {shape: [] for shape in SCHEDULE_SHAPES}
     for a, b in zip(measured[::2], measured[1::2], strict=True):
-        arms = {c['mode']: c['median_s_per_pass'] for c in (a, b)}
-        need(a['round'] == b['round'] and set(arms) == set(SCHEDULE_ARMS)
-             and min(arms.values()) > 0, 'unpaired decode expert schedule')
-        ratios.append(arms['by-expert'] / arms['split'])
-    need(len(ratios) == 3, 'expected three decode scheduling pairs')
-    return dict(by_expert_over_split=ratios, eligible=all(v < 1.0 for v in ratios))
+        arms = {p['mode']: p['schedule_cells'] for p in (a, b)}
+        need(a['round'] == b['round'] and set(arms) == set(SCHEDULE_ARMS), 'unpaired decode expert schedule')
+        for shape, control, candidate in zip(SCHEDULE_SHAPES, arms['split'], arms['by-expert'], strict=True):
+            need(all((cell['gu'], cell['width']) == shape and cell['median_s_per_pass'] > 0
+                     for cell in (control, candidate)), 'unpaired decode scheduling shape')
+            ratios[shape].append(candidate['median_s_per_pass'] / control['median_s_per_pass'])
+    need(all(len(values) == 3 for values in ratios.values()), 'expected three decode scheduling pairs')
+    cells = [dict(gu=gu, width=width, by_expert_over_split=values, eligible=all(v < 1.0 for v in values))
+             for (gu, width), values in ratios.items()]
+    return dict(by_expert_over_split=cells[0]['by_expert_over_split'],
+                eligible=all(cell['eligible'] for cell in cells), shapes=cells[1:])
 
 
 if __name__ == '__main__':

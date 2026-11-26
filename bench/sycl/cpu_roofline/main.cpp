@@ -346,9 +346,10 @@ struct ReplayBatch {
     std::vector<std::unique_ptr<Buffer>> outputs;
     std::vector<cpu::ExpertJobMulti> jobs;
     const cpu::NativeFmt* format = nullptr;
+    int width = 0;
 
     void read(std::istream& in, std::array<ReplayLayer, 2>& layers) {
-        int window = 0, width = 0, layer_index = 0, count = 0;
+        int window = 0, layer_index = 0, count = 0;
         in >> window >> width >> layer_index >> count;
         require(in.good() && window >= 0 && window < 262144 && width >= 1 && width <= replay_rows &&
                 layer_index >= 0 && layer_index < static_cast<int>(layers.size()) &&
@@ -578,8 +579,27 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
               << ",\"threads\":" << threads << ",\"host_works\":" << (host_works ? "true" : "false")
               << ",\"serial_output_equal\":true,\"verified_affinity\":true" << schedule_field << '}' << std::endl;
     if (timing) {
-        measure([&] { for (auto& batch : batches) batch.run(pool, by_expert); }, visits, jobs,
-                "\"mode\":\"replay\",\"threads\":" + std::to_string(threads) + schedule_field, &pool, true);
+        const auto fields = "\"mode\":\"replay\",\"threads\":" + std::to_string(threads) + schedule_field;
+        const auto full_fields = schedule.empty() ? fields : fields + ",\"gu\":0,\"width\":0";
+        measure([&] { for (auto& batch : batches) batch.run(pool, by_expert); },
+                visits, jobs, full_fields, &pool, true);
+        if (!schedule.empty()) {
+            for (int gu : {18, 21}) for (int width : {2, 4}) {
+                std::vector<ReplayBatch*> selected;
+                uint64_t shape_bytes = 0, shape_jobs = 0;
+                for (auto& batch : batches) {
+                    if (batch.format->gu_type != gu || batch.width != width) continue;
+                    selected.push_back(&batch);
+                    shape_jobs += batch.jobs.size();
+                    shape_bytes += batch.jobs.size() * batch.format->bytes;
+                }
+                require(selected.size() == 2, "expected two captured batches per scheduling shape");
+                const auto shape_fields = fields + ",\"gu\":" + std::to_string(gu)
+                    + ",\"width\":" + std::to_string(width);
+                measure([&] { for (auto* batch : selected) batch->run(pool, by_expert); },
+                        shape_bytes, shape_jobs, shape_fields, &pool, true);
+            }
+        }
         validate();
     }
 }
