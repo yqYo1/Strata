@@ -1207,8 +1207,15 @@ the full map used for the short prefill, and the final payload and map in
 order. The near-capacity request reaches 262,128 tokens. The [standalone
 context runner](../bench/dflash2_decode_ranked_refill_context.py) first checks
 bounds and a 16,385-token handoff, then requires consuming the final slot of
-the 262,144-token context with zero output. A cancelled prefill remains a
-separate model gate.
+the 262,144-token context with zero output.
+
+The final live case sends native `STOP` after the masked expert map and
+the first QSA KV-stage marker on a 32,769-token request. A cancelled read
+must emit zero tokens, republish the same map and payload, and admit a fresh
+33-token request through the decode cache. Repeat after a successful prefill
+has installed the blended placement. Only the successful long request may
+publish the alternate tail. Keep the native case and the physical full fill
+as separate qualification results.
 
 The offline check at `0715d2d3c` uses the retained primary build metadata
 to reproduce the four live request plans and the two standalone requests.
@@ -1218,12 +1225,15 @@ or a missing final handoff. The masked, stock and blended digests are
 `9377e60e8ad8ea63`, `9e0b070ebe90ab9b` and `68eea56314d4990b`.
 The actual candidate build and device qualification remain pending.
 
-The two 96K thinking workloads need
-three matched independent process pairs. Keep the first-use and subsequent
-PP, client TTFT and TG measurements separate. Account for all final map
-and payload transfers, and require both workloads to keep their actual
-prefill work and pass phase-preservation gates. This prototype is original
-fork code. GPU, numerical and timing evidence remain pending.
+After the native gates, the [timing runner](../bench/dflash2_decode_ranked_refill_speed.py)
+uses one binary and the same starting profile for three matched independent
+process pairs. Enable only final ranked refill in the candidate. Confirm
+both actual long handoffs and the 2,321,664,000-byte payload publication,
+and check that the short warmups leave the startup map in place. Keep the
+first-use and subsequent PP, client TTFT and TG measurements separate.
+Require both workloads to keep their actual prefill work and pass the phase
+preservation gates. This prototype is original fork code. GPU, numerical
+and timing evidence remain pending.
 
 The first two closed blend processes also bound the benefit of draft yield
 at the current decode time. Let `e` be emitted tokens and `a` and `d`
