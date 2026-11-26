@@ -345,6 +345,11 @@ bytes. These observations are taken at different boundaries. The long
 prefill destructors retire request scratch before cache refill, while the
 draft arena is loaded after refill and the prompt tap owner is then released.
 The existing loan audit observes free memory before the draft activation.
+The three closed 96K processes leave at least 525,243,808 bytes above the
+prefill plan's reserve; the 126,977-input primary run leaves 65,571,840.
+Charging the replay's first 268,211,200 bytes at startup would consume
+more than the latter margin, with other allocations fixed. A startup
+trial needs an actual route check even if its 96K admission succeeds.
 
 The stock native serve route now accepts the opt-in
 `STRATA_SYCL_DECODE_HANDOFF_MEMORY=1` observer. It records byte-precise free
@@ -354,6 +359,12 @@ decode commit completes if a window ran. Use a separate diagnostic process.
 Bind the four ordered records to the same accepted prompt, actual split-prefill
 allocation limit and unchanged stock placement. A missing query stops the
 diagnostic. The source currently awaits compilation and native validation.
+The reviewed cache-lifetime audit confirms that existing captured hit
+readers use one cache base and a residency table. A contiguous startup
+tail keeps that representation at the cost of persistent capacity. A
+request-local arena requires a graph-visible lookup for both allocations
+and checked reader retirement before unpublishing the extra slots. Measure
+the smaller 256 MiB budget first before choosing a native design.
 
 The replay at `e3d371974` verifies 4,668,262 original stock CPU jobs.
 Training uses the first 3,242 verifier windows and evaluation uses the
