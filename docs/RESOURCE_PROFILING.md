@@ -394,6 +394,20 @@ decode free-memory sample is 179,888,128 bytes (171.6 MiB), leaving an
 88,323,072-byte shortfall against the replay's first 268,211,200-byte slice.
 Keep the stock expert arena and test the head allocation reduction first.
 Keep diagnostic durations out of the speed comparison.
+
+At `212cc99cb`, recover all 1,327 build inputs and the relocated recipe
+through the exact observed executable, including its 1,475 compiler inputs,
+139 objects and all 11 executable hashes. Both model owners are closed and
+both validated phase references remain in use. Retire the two scopes below
+after inventory verification. Preserve each root's `record.json` and the
+committed memory samples. Inventories hash sorted tuples of state-relative
+path, bytes and SHA-256.
+
+| Scope | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-decode-handoff-native-v1` except `record.json` | 1523 | 223655597 | `c5cc173c8f7874a846cb11fdc4db103c46ad396784c24d8d345e32d2b108208f` |
+| `dflash2-decode-handoff-memory-v1` `host`, `0` and `1` | 146 | 25058990 | `dbbb63d8a2fc9144f43841368fdf86acedf2a0a1cd6ecf0d63c96c334eb27eb1` |
+
 The existing successful layer-major runs already verify that this runtime
 exposed and returned the Intel free-memory query during prefill. The
 reported bytes, per-allocation limit and physical residency are distinct.
