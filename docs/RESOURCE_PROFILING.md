@@ -906,7 +906,23 @@ link inputs. Run traced validation first, then three independent timing
 processes with alternating pairs at 4, 10 and 20 resident hits. Advance a
 shape only when both launch-to-completion and publication-to-completion
 medians improve in every process. The controller keeps the serving executable
-unchanged. Linking, device parity and timing remain pending.
+unchanged. The fixture links the three verified archives and passes the traced
+scalar-oracle, input-poison, invalid-list and guard checks on Arc. All three
+timing processes close normally, with quiet validation and no fresh Xe fault.
+The table reports candidate time divided by mapped-control time, using each
+independent process's median from four alternating pairs of 512 replays.
+
+| Resident hits per 40 rows | Launch through completion | CPU publication through completion | Component gate |
+| --- | --- | --- | --- |
+| 4 | 0.868 / 0.860 / 0.864 | 0.874 / 0.866 / 0.870 | Pass |
+| 10 | 0.962 / 0.959 / 0.972 | 0.964 / 0.959 / 0.974 | Pass |
+| 20 | 1.165 / 1.160 / 1.182 | 1.159 / 1.153 / 1.175 | Fail |
+
+Copying 409,600 bytes on the ordered stream helps at the two tested lower hit
+counts. Use the actual decode hit distribution, handoff dependencies and
+workspace cost to decide whether a selective path is worth a matched model
+test. Keep mapped rows for the tested 20-hit shape. The fixture times do not
+measure variable token widths, CPU expert work or model throughput.
 [Fixture](../tests/sycl/decode_moe_combine.cpp) ·
 [Controller](../bench/dflash2_decode_result_copy.py).
 

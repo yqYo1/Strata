@@ -683025,7 +683025,7 @@
       "retention": "Retire this fixture build and raw output at the comparison closure; keep the independently validated serving engine unchanged."
     },
     "parent_environment_sha256": "219f24b0aee14857ea319a4f935e82c4ea71449563bde6aacaaede56f16ecfd1",
-    "stage": "validated",
+    "stage": "closed",
     "processes": [
       {
         "index": 0,
@@ -683074,10 +683074,805 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "index": 1,
+        "mode": "time-forward",
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-result-copy-v1/fixture-build/sycl_decode_moe_combine_test",
+          "time-forward",
+          "--compare-copy"
+        ],
+        "environment_sha256": "8fc05fed4c19bd74ac46789d7527dcbc6b52b4f78607d0a9b27502b1b15b12c6",
+        "ownership_closed": true,
+        "providers": {
+          "initialized_ELFs": 33,
+          "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d",
+          "required_providers_verified": true,
+          "source": "glibc constructors;not speed or hardware utilization"
+        },
+        "samples": [
+          {
+            "hits": 4,
+            "batch": 0,
+            "arm": 0,
+            "ms": 86.265972,
+            "full_ms": 90.425564,
+            "empty_ms": 0.01022,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 4,
+            "batch": 0,
+            "arm": 1,
+            "ms": 69.596636,
+            "full_ms": 73.808698,
+            "empty_ms": 0.010464,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 4,
+            "batch": 1,
+            "arm": 1,
+            "ms": 70.642708,
+            "full_ms": 74.874613,
+            "empty_ms": 0.01043,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 4,
+            "batch": 1,
+            "arm": 0,
+            "ms": 80.058844,
+            "full_ms": 84.293013,
+            "empty_ms": 0.01023,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 4,
+            "batch": 2,
+            "arm": 0,
+            "ms": 79.785194,
+            "full_ms": 83.91763,
+            "empty_ms": 0.01022,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 4,
+            "batch": 2,
+            "arm": 1,
+            "ms": 69.183647,
+            "full_ms": 73.241576,
+            "empty_ms": 0.010421,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 4,
+            "batch": 3,
+            "arm": 1,
+            "ms": 69.223985,
+            "full_ms": 73.306082,
+            "empty_ms": 0.010432,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 4,
+            "batch": 3,
+            "arm": 0,
+            "ms": 79.943975,
+            "full_ms": 84.039691,
+            "empty_ms": 0.010496,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 10,
+            "batch": 0,
+            "arm": 0,
+            "ms": 72.197118,
+            "full_ms": 75.601241,
+            "empty_ms": 0.010164,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 10,
+            "batch": 0,
+            "arm": 1,
+            "ms": 69.41345,
+            "full_ms": 72.865823,
+            "empty_ms": 0.010388,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 10,
+            "batch": 1,
+            "arm": 1,
+            "ms": 69.487135,
+            "full_ms": 72.896851,
+            "empty_ms": 0.010453,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 10,
+            "batch": 1,
+            "arm": 0,
+            "ms": 72.368152,
+            "full_ms": 75.942863,
+            "empty_ms": 0.010243,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 10,
+            "batch": 2,
+            "arm": 0,
+            "ms": 72.161447,
+            "full_ms": 75.606168,
+            "empty_ms": 0.010138,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 10,
+            "batch": 2,
+            "arm": 1,
+            "ms": 69.908426,
+            "full_ms": 73.51526,
+            "empty_ms": 0.010395,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 10,
+            "batch": 3,
+            "arm": 1,
+            "ms": 69.348954,
+            "full_ms": 72.749317,
+            "empty_ms": 0.01036,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 10,
+            "batch": 3,
+            "arm": 0,
+            "ms": 72.210382,
+            "full_ms": 75.594775,
+            "empty_ms": 0.010242,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 20,
+            "batch": 0,
+            "arm": 0,
+            "ms": 59.834022,
+            "full_ms": 62.118367,
+            "empty_ms": 0.010232,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 20,
+            "batch": 0,
+            "arm": 1,
+            "ms": 69.426376,
+            "full_ms": 71.79849,
+            "empty_ms": 0.010432,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 20,
+            "batch": 1,
+            "arm": 1,
+            "ms": 69.577822,
+            "full_ms": 71.936161,
+            "empty_ms": 0.01039,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 20,
+            "batch": 1,
+            "arm": 0,
+            "ms": 59.779461,
+            "full_ms": 62.073544,
+            "empty_ms": 0.010175,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 20,
+            "batch": 2,
+            "arm": 0,
+            "ms": 59.838949,
+            "full_ms": 62.345371,
+            "empty_ms": 0.010147,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 20,
+            "batch": 2,
+            "arm": 1,
+            "ms": 69.78768,
+            "full_ms": 72.217158,
+            "empty_ms": 0.010507,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 20,
+            "batch": 3,
+            "arm": 1,
+            "ms": 70.110196,
+            "full_ms": 72.482508,
+            "empty_ms": 0.010378,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 20,
+            "batch": 3,
+            "arm": 0,
+            "ms": 59.903671,
+            "full_ms": 62.21418,
+            "empty_ms": 0.010184,
+            "copy_bytes_per_replay": 0
+          }
+        ],
+        "host_probe_accepted": true,
+        "validation": {
+          "pid": 2253862,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_identity": {
+          "pid": 2253862,
+          "start_ticks": 402428883,
+          "sid": 2253862,
+          "pgid": 2253862
+        },
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      },
+      {
+        "index": 2,
+        "mode": "time-reverse",
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-result-copy-v1/fixture-build/sycl_decode_moe_combine_test",
+          "time-reverse",
+          "--compare-copy"
+        ],
+        "environment_sha256": "2f41831a856e4156fb5e73dbdf5c7ffc1fa03a74fc4d2ffe89b35c8ffde80ff1",
+        "ownership_closed": true,
+        "providers": {
+          "initialized_ELFs": 33,
+          "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d",
+          "required_providers_verified": true,
+          "source": "glibc constructors;not speed or hardware utilization"
+        },
+        "samples": [
+          {
+            "hits": 4,
+            "batch": 0,
+            "arm": 1,
+            "ms": 76.593602,
+            "full_ms": 80.677413,
+            "empty_ms": 0.010238,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 4,
+            "batch": 0,
+            "arm": 0,
+            "ms": 81.733526,
+            "full_ms": 85.931718,
+            "empty_ms": 0.010364,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 4,
+            "batch": 1,
+            "arm": 0,
+            "ms": 80.982315,
+            "full_ms": 85.279832,
+            "empty_ms": 0.010583,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 4,
+            "batch": 1,
+            "arm": 1,
+            "ms": 69.225297,
+            "full_ms": 73.464888,
+            "empty_ms": 0.010333,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 4,
+            "batch": 2,
+            "arm": 1,
+            "ms": 69.112252,
+            "full_ms": 73.210253,
+            "empty_ms": 0.01036,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 4,
+            "batch": 2,
+            "arm": 0,
+            "ms": 79.842706,
+            "full_ms": 84.102656,
+            "empty_ms": 0.010317,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 4,
+            "batch": 3,
+            "arm": 0,
+            "ms": 79.439714,
+            "full_ms": 83.618871,
+            "empty_ms": 0.010239,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 4,
+            "batch": 3,
+            "arm": 1,
+            "ms": 68.936083,
+            "full_ms": 73.038592,
+            "empty_ms": 0.010241,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 10,
+            "batch": 0,
+            "arm": 1,
+            "ms": 69.048414,
+            "full_ms": 72.520076,
+            "empty_ms": 0.01021,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 10,
+            "batch": 0,
+            "arm": 0,
+            "ms": 72.102622,
+            "full_ms": 75.738716,
+            "empty_ms": 0.010232,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 10,
+            "batch": 1,
+            "arm": 0,
+            "ms": 72.060705,
+            "full_ms": 75.630632,
+            "empty_ms": 0.010254,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 10,
+            "batch": 1,
+            "arm": 1,
+            "ms": 69.195745,
+            "full_ms": 72.784232,
+            "empty_ms": 0.010188,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 10,
+            "batch": 2,
+            "arm": 1,
+            "ms": 68.967558,
+            "full_ms": 72.529954,
+            "empty_ms": 0.010185,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 10,
+            "batch": 2,
+            "arm": 0,
+            "ms": 72.598745,
+            "full_ms": 76.292712,
+            "empty_ms": 0.01024,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 10,
+            "batch": 3,
+            "arm": 0,
+            "ms": 72.00662,
+            "full_ms": 75.56811,
+            "empty_ms": 0.010127,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 10,
+            "batch": 3,
+            "arm": 1,
+            "ms": 69.163933,
+            "full_ms": 72.632039,
+            "empty_ms": 0.010206,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 20,
+            "batch": 0,
+            "arm": 1,
+            "ms": 69.445909,
+            "full_ms": 71.88817,
+            "empty_ms": 0.010178,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 20,
+            "batch": 0,
+            "arm": 0,
+            "ms": 59.916479,
+            "full_ms": 62.467496,
+            "empty_ms": 0.010296,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 20,
+            "batch": 1,
+            "arm": 0,
+            "ms": 59.537728,
+            "full_ms": 62.018158,
+            "empty_ms": 0.010212,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 20,
+            "batch": 1,
+            "arm": 1,
+            "ms": 69.286481,
+            "full_ms": 71.733529,
+            "empty_ms": 0.01023,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 20,
+            "batch": 2,
+            "arm": 1,
+            "ms": 69.364291,
+            "full_ms": 71.912025,
+            "empty_ms": 0.010199,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 20,
+            "batch": 2,
+            "arm": 0,
+            "ms": 60.070223,
+            "full_ms": 62.686315,
+            "empty_ms": 0.010227,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 20,
+            "batch": 3,
+            "arm": 0,
+            "ms": 59.764902,
+            "full_ms": 62.300429,
+            "empty_ms": 0.010209,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 20,
+            "batch": 3,
+            "arm": 1,
+            "ms": 69.628361,
+            "full_ms": 72.102574,
+            "empty_ms": 0.010267,
+            "copy_bytes_per_replay": 409600
+          }
+        ],
+        "host_probe_accepted": true,
+        "validation": {
+          "pid": 2254014,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_identity": {
+          "pid": 2254014,
+          "start_ticks": 402429308,
+          "sid": 2254014,
+          "pgid": 2254014
+        },
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      },
+      {
+        "index": 3,
+        "mode": "time-forward",
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-result-copy-v1/fixture-build/sycl_decode_moe_combine_test",
+          "time-forward",
+          "--compare-copy"
+        ],
+        "environment_sha256": "387c014e0fc2cf2cc0808e997850184e51264cd599871ea88d7527a6a423d4bd",
+        "ownership_closed": true,
+        "providers": {
+          "initialized_ELFs": 33,
+          "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d",
+          "required_providers_verified": true,
+          "source": "glibc constructors;not speed or hardware utilization"
+        },
+        "samples": [
+          {
+            "hits": 4,
+            "batch": 0,
+            "arm": 0,
+            "ms": 80.577033,
+            "full_ms": 84.768385,
+            "empty_ms": 0.010457,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 4,
+            "batch": 0,
+            "arm": 1,
+            "ms": 69.342664,
+            "full_ms": 73.554032,
+            "empty_ms": 0.010456,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 4,
+            "batch": 1,
+            "arm": 1,
+            "ms": 69.515963,
+            "full_ms": 73.789747,
+            "empty_ms": 0.01037,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 4,
+            "batch": 1,
+            "arm": 0,
+            "ms": 80.367935,
+            "full_ms": 84.559404,
+            "empty_ms": 0.010367,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 4,
+            "batch": 2,
+            "arm": 0,
+            "ms": 80.237567,
+            "full_ms": 84.637621,
+            "empty_ms": 0.010455,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 4,
+            "batch": 2,
+            "arm": 1,
+            "ms": 69.495221,
+            "full_ms": 73.722993,
+            "empty_ms": 0.010349,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 4,
+            "batch": 3,
+            "arm": 1,
+            "ms": 69.217308,
+            "full_ms": 73.430132,
+            "empty_ms": 0.014228,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 4,
+            "batch": 3,
+            "arm": 0,
+            "ms": 79.671648,
+            "full_ms": 83.891217,
+            "empty_ms": 0.010377,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 10,
+            "batch": 0,
+            "arm": 0,
+            "ms": 72.277554,
+            "full_ms": 75.876872,
+            "empty_ms": 0.010332,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 10,
+            "batch": 0,
+            "arm": 1,
+            "ms": 70.054252,
+            "full_ms": 73.71004,
+            "empty_ms": 0.010374,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 10,
+            "batch": 1,
+            "arm": 1,
+            "ms": 69.518246,
+            "full_ms": 73.063897,
+            "empty_ms": 0.0104,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 10,
+            "batch": 1,
+            "arm": 0,
+            "ms": 72.273795,
+            "full_ms": 75.918777,
+            "empty_ms": 0.010345,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 10,
+            "batch": 2,
+            "arm": 0,
+            "ms": 73.618246,
+            "full_ms": 77.437995,
+            "empty_ms": 0.010385,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 10,
+            "batch": 2,
+            "arm": 1,
+            "ms": 70.544002,
+            "full_ms": 74.295642,
+            "empty_ms": 0.010442,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 10,
+            "batch": 3,
+            "arm": 1,
+            "ms": 71.973497,
+            "full_ms": 75.878015,
+            "empty_ms": 0.01064,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 10,
+            "batch": 3,
+            "arm": 0,
+            "ms": 72.365765,
+            "full_ms": 76.001226,
+            "empty_ms": 0.01056,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 20,
+            "batch": 0,
+            "arm": 0,
+            "ms": 59.631209,
+            "full_ms": 62.139924,
+            "empty_ms": 0.010336,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 20,
+            "batch": 0,
+            "arm": 1,
+            "ms": 70.595193,
+            "full_ms": 73.168048,
+            "empty_ms": 0.010391,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 20,
+            "batch": 1,
+            "arm": 1,
+            "ms": 71.002141,
+            "full_ms": 73.662213,
+            "empty_ms": 0.010717,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 20,
+            "batch": 1,
+            "arm": 0,
+            "ms": 60.241805,
+            "full_ms": 62.691567,
+            "empty_ms": 0.010336,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 20,
+            "batch": 2,
+            "arm": 0,
+            "ms": 59.748523,
+            "full_ms": 62.390128,
+            "empty_ms": 0.010579,
+            "copy_bytes_per_replay": 0
+          },
+          {
+            "hits": 20,
+            "batch": 2,
+            "arm": 1,
+            "ms": 70.508923,
+            "full_ms": 73.175474,
+            "empty_ms": 0.010821,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 20,
+            "batch": 3,
+            "arm": 1,
+            "ms": 70.798741,
+            "full_ms": 73.425216,
+            "empty_ms": 0.010718,
+            "copy_bytes_per_replay": 409600
+          },
+          {
+            "hits": 20,
+            "batch": 3,
+            "arm": 0,
+            "ms": 59.907028,
+            "full_ms": 62.375373,
+            "empty_ms": 0.010371,
+            "copy_bytes_per_replay": 0
+          }
+        ],
+        "host_probe_accepted": true,
+        "validation": {
+          "pid": 2254158,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_identity": {
+          "pid": 2254158,
+          "start_ticks": 402429728,
+          "sid": 2254158,
+          "pgid": 2254158
+        },
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     ],
-    "complete": false,
-    "passed": false,
+    "complete": true,
+    "passed": true,
     "ownership_closed": true,
     "active": false,
     "binary": {
@@ -683087,6 +683882,49 @@
     "build_receipt_sha256": "1932c10c8a369177d99f6933833610e386c5be3cc772f53e1de164dcfa5d0aad",
     "binary_bytes": 12109776,
     "compiled_inputs": 691,
-    "linked_inputs": 27
+    "linked_inputs": 27,
+    "candidate_over_control": {
+      "4": {
+        "ms": [
+          0.8676135949829735,
+          0.8601742946453587,
+          0.8644653095383993
+        ],
+        "full_ms": [
+          0.8739524554895761,
+          0.8659404093769126,
+          0.870446894677965
+        ]
+      },
+      "10": {
+        "ms": [
+          0.961865450201686,
+          0.9587205697604357,
+          0.9720342078157098
+        ],
+        "full_ms": [
+          0.9639916123422234,
+          0.9589919948654333,
+          0.9742343277863152
+        ]
+      },
+      "20": {
+        "ms": [
+          1.164552871341349,
+          1.1598312021483108,
+          1.1816746721595892
+        ],
+        "full_ms": [
+          1.1594174050017652,
+          1.1525413683043941,
+          1.1750098290391988
+        ]
+      }
+    },
+    "eligible_hit_counts": [
+      4,
+      10
+    ],
+    "model_speed_qualified": false
   }
 }
