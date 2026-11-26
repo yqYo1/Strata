@@ -71,11 +71,14 @@ def long_route(frame, read):
                 bank_h2d_requested_bytes=int(uploads['requested_H2D_bytes']), placement_preserved=True)
 
 
-def routes(text, samples, arm):
+def routes(text, samples, arm, *, profile_check=None):
     require(arm == 'dflash2' and text.count('strata native head DPAS: ready=1 columns=4 layout=canonical') == 1
             and not re.search(r'(?m)^strata mtp: .*loaded|strata loan audit:|strata DFlash2 tap payload:|'
                               r'^strata (?:trace:|decode timing:)', text), 'unexpected DFlash2 route or observer')
-    continuation.standard.profiles.check_profile_startup(text, 'original')
+    if profile_check is None:
+        continuation.standard.profiles.check_profile_startup(text, 'original')
+    else:
+        profile_check(text)
     headers = list(re.finditer(footer.HEADER, text, re.M))
     expert = list(re.finditer(footer.COPY, text, re.M))
     require(len(headers) == len(expert) == len(samples), 'one native request and expert footer per wire request')

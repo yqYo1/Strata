@@ -397,6 +397,16 @@ and both complete ranking hashes. Writing and reading the resulting profile
 files preserves every pair, the protected slots and the 1,256-slot loader
 extent. The native stock and reranked sessions are still pending.
 
+The [ranked generation comparison](../bench/dflash2_decode_ranked_generation.py)
+keeps the global loader fixed. First compare stock with the within-layer
+ranking, then compare within-layer with cross-layer in a separate run plan.
+Each plan uses three counterbalanced process pairs and both fixed 96K
+thinking workloads. The controller verifies the generated files against the
+short and near-capacity RESTORE receipts before launch. It checks actual
+prefill dispatch and records decode rate, draft acceptance and CPU expert
+jobs per output separately. The long-form code and prose screen can advance
+a candidate to task, agent, observed-weak and physical-context qualification.
+
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
 96-swap and 197,913,600-byte caps. Compare early distinct jobs, routed rows

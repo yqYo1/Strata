@@ -84,6 +84,14 @@ def check_ranked_profile(ranking, stock_ranking, formats, arm):
             'ranked file changed the protected prefix, slot geometry or loader extent')
 
 
+def check_loader(log, path, *, per_layer):
+    require(log.splitlines().count(f'strata generate: profile {path}: 24576 ranked pairs, built for 24576 slots') == 1
+            and log.count('pre-filled 1256 of 1256 slots from the profile; slot 0 verified') == 1
+            and ('R4.2g PER-LAYER:' in log) == per_layer
+            and (per_layer or 'PROFILE, ranked by routing frequency, no eviction.' in log),
+            'the actual expert profile loader or capacity changed')
+
+
 def check_placement(log, requests, membership, formats):
     loans = [tuple(map(int, fields)) for fields in re.findall(
         r'^strata loan audit: phase=layout chunk=(\d+) first=(\d+) slots=(\d+) '
@@ -184,13 +192,8 @@ def experiment(*, ranked=False):
     def inspect(log, row, case, requests, pid):
         extent, arm = case['name'].split('-')
         out = base_inspect(log, row, dict(case, name=extent + '-copy'), requests, pid)
-        prefix = 'R4.2g PER-LAYER:'
         path = paths.get(arm, STOCK)
-        require(log.splitlines().count(f'strata generate: profile {path}: 24576 ranked pairs, built for 24576 slots') == 1
-                and log.count('pre-filled 1256 of 1256 slots from the profile; slot 0 verified') == 1
-                and (prefix in log) == (arm == 'stock')
-                and (arm == 'stock' or 'PROFILE, ranked by routing frequency, no eviction.' in log),
-                'the actual loader or allocated stock profile changed')
+        check_loader(log, path, per_layer=arm == 'stock')
         _, stock, formats = geometry(row)
         membership = quota.masks(quota.read_profile(path)[:quota.EXPECTED_SLOTS]) if ranked else stock
         out.update(check_placement(log, requests, membership, formats))
