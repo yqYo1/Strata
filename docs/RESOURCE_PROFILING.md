@@ -1822,6 +1822,19 @@ It passes all 40 host cases, replacement payload and CPU/GPU map checks,
 and both expected failure exits with decode admission blocked. All three
 device validation logs are empty and the processes close with no fresh
 Xe fault. The live RESTORE plan pins this successful fixture receipt.
+The stock and ranked 32,769-token RESTORE cases both pass on this build.
+Each parks the long state, serves an unrelated 33-token input, and reads
+8,209 fresh tokens after restoring, reaching 40,978 prompt tokens. Their
+batched segments use the same masked map and report the same work. The
+ranked arm publishes 2,321,664,000 bytes at both long handoffs. Its 33-token
+request uses the installed decode map without another refill. Each case
+verifies its own saved KV and running state, whose digests differ across
+the two placements. The first verifier window processes the last prompt
+token after handoff under the selected decode layout. All three one-token
+outputs match across arms. Both owners close with quiet validation and
+no fresh Xe fault. The near-capacity, cancellation and physical-fill
+checks remain open.
+
 The primary prefill executable supplies the ranked-refill baseline. The
 pending route-census comparison also checks that executable and the
 independent `96832af6f` decode build. Keep the two checked phase references
