@@ -274,6 +274,17 @@ combined graph's median device interval is 0.591 → 0.509 ms at 96K and
 with profiling enabled. They locate the reduction inside the graph in
 that test. Arithmetic occupancy and physical memory traffic remain open.
 
+The component's raw runs and fixture have no remaining consumer. They are
+eligible for retirement from `decode-qsa-score-grid-v1` under the tuning
+state directory. The recovery check reproduces the recipe and generated
+sources from `44bb81e4b`, all 693 compiler inputs and 27 link inputs,
+and the exact fixture SHA-256
+`dd309b0d35a51a389ac401417e3e7a3c63c9f15eaf19a0690348c0c2db9d6013`.
+The closed evidence is reachable at `a3e2a9a3d` and the CSV at `973f5697b`.
+The tree contains 70 files and 2,524,102 bytes. Its SHA-256 over sorted
+relative paths, byte counts and file hashes is
+`8fa279557ece815396e13e9346524edbc67d268aa14a964bdfa32b617931a679`.
+
 The independent worker-leaf bracket at `6bbd3e3e1` uses native source
 `96832af6f` with the same request, output, reasoning and draft counts. Its two
 observed runs use 156.12 and 156.24 CPU ms per emitted token across six expert
