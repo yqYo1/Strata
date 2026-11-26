@@ -11632,6 +11632,15 @@ matched work, closed ownership and no fresh Xe fault. The first prefill takes
 unclassified interval is 17.978 seconds, compared with 7.179 and 7.141
 seconds later. Report the phase attribution after completing the paired
 observations.
+The first phase-observed process also completes all three matched requests,
+with quiet validation, closed ownership and no fresh Xe fault. Its first
+prefill is 123.279 seconds and its subsequent median is 112.567 seconds,
+0.999623 times the paired V4-only median. Within its layer loop, the first
+request adds 10.680 unclassified wall seconds and 5.350 main-thread CPU
+seconds over the subsequent medians. Its calling thread records 23,415
+minor faults in the layer loop, compared with 5 and 0 later. No major
+faults occur. The counts locate the change in the layer loop. Their backing
+and cost remain unmeasured. The reversed process pair remains open.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
