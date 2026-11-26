@@ -168,7 +168,7 @@ def samples(text, mode):
     if mode == 'validate':
         require(lines == [SUMMARY], 'unexpected validation output')
         return []
-        pattern = (r'decode MoE combine hits=(\d+) batch=(\d+) arm=([012]) replays=512 '
+    pattern = (r'decode MoE combine hits=(\d+) batch=(\d+) arm=([012]) replays=512 '
                r'ms=(\d+\.\d+) full_ms=(\d+\.\d+) empty_ms=(\d+\.\d+) cpu_copy_bytes_per_replay=(\d+)')
     parsed = []
     for line in lines[:-1]:
