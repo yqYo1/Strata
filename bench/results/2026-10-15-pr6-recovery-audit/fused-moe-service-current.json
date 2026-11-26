@@ -680998,5 +680998,76 @@
       "partial_archive_reuse": false,
       "uncovered": 0
     }
+  },
+  "dflash2_decode_indexed_head_fixture_v1": {
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-speed-v2/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "native_source_commit": "9866bec75d379342653a82f0d21523a1ae70af13",
+    "build_sha256": "81ef55aa7b68a805f19c583da66fc5ac4f3c609025f9cae6f6db2dbc8a933192",
+    "controller_inputs": {
+      "bench/dflash2_decode_handoff_memory.py": "b2c297fb11c0d832ac2b1a5380b55410ef566fd0ffd6ba6b3a1290b9b92ece15",
+      "bench/dflash2_decode_indexed_head_build.py": "8e938bbaa92c5ec8bc46c82653b49b0c87671b69b7529e499f7c455c472d57bd",
+      "bench/dflash2_decode_indexed_head_fixture.py": "74dd2ea2af997054cc8557cacdccb66062a534ab769d7c3b1ea44e0b855dc56c",
+      "bench/dflash2_primary_checks.py": "7e6d08905c41c942fa88d4d0461317d8812ee7861093f96dc938feeb9f97839b"
+    },
+    "controller_commit": "86c6c2ecd32018c9582a5992f912c886a0b70cf2",
+    "controller_sha256": "74dd2ea2af997054cc8557cacdccb66062a534ab769d7c3b1ea44e0b855dc56c",
+    "plans": [
+      {
+        "step": "indexed",
+        "commands": [
+          {
+            "target": "sycl_dflash2_test",
+            "argv": [
+              "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-indexed-head-native-v1/build/sycl_dflash2_test",
+              "--indexed-q6-head"
+            ],
+            "binary": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-indexed-head-native-v1/build/sycl_dflash2_test",
+              "sha256": "b7afccc0b1ef8f427d15134b26bed29080e81320eb8256a8557f9b0628166fd1",
+              "bytes": 16178752
+            }
+          }
+        ],
+        "environment_sha256": "461c7cbb99aac5b1b8807947cf1bd446f31c7b1b383b12f492ef078fcdf27a41",
+        "budget": {
+          "wall": 180,
+          "cpu": 360,
+          "rss_cap": 4294967296,
+          "text_cap": 33554432,
+          "file_cap": 67108864,
+          "total_cap": 83886080
+        }
+      }
+    ],
+    "stage": "prepared",
+    "results": [],
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true,
+    "active": false,
+    "scope": "Bounded traced GPU parity for the indexed DFlash2 head on its coherent build."
   }
 }
