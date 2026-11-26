@@ -656,48 +656,32 @@ requires closed same-binary admission. Bind both workloads to the previous
 and layer-major prefill in both long workloads. Require width-three and
 scalar fallback decode captures in each long request on the same binary.
 
-The first 96K pair closes with exact request, output and reasoning hashes,
-draft and emitted counts, and expert work in both workloads. The candidate
-uses the cooperative resolver for all 12 layers of each width-three
-capture. Both processes exit normally with quiet validation and no fresh
-Xe fault. These are the first matched times and rates.
+The six independent processes match request, output and reasoning hashes,
+draft counts and expert work in both workloads. The code request consumes
+96,204 fresh inputs and emits 3,195 outputs. Prose consumes 96,274 and emits
+8,618. Each candidate capture uses cooperative resolution in all 12 KV
+layers at width three, with scalar captures at widths one, two and four.
+All six exit normally with quiet validation and zero fresh Xe faults.
 
-| Workload | Prefill tok/s, scalar → cooperative | TTFT s, scalar → cooperative | Decode tok/s, scalar → cooperative |
+| Workload and pair | Prefill tok/s, scalar → cooperative | TTFT s, scalar → cooperative | Decode tok/s, scalar → cooperative |
 | --- | ---: | ---: | ---: |
-| Code, 96,204 fresh inputs | 940.447 → 939.464 | 103.637 → 103.768 | 16.404 → 16.395 |
-| Prose, 96,274 fresh inputs | 1,040.051 → 1,038.072 | 92.752 → 92.941 | 11.692 → 11.758 |
+| Code 1 | 940.447 → 939.464 | 103.637 → 103.768 | 16.404 → 16.395 |
+| Code 2, reverse order | 925.623 → 941.370 | 105.327 → 103.553 | 15.505 → 16.490 |
+| Code 3 | 932.837 → 884.840 | 104.523 → 110.134 | 15.533 → 15.560 |
+| Prose 1 | 1,040.051 → 1,038.072 | 92.752 → 92.941 | 11.692 → 11.758 |
+| Prose 2, reverse order | 1,032.650 → 1,040.008 | 93.444 → 92.757 | 11.117 → 11.340 |
+| Prose 3 | 1,033.254 → 1,022.204 | 93.372 → 94.377 | 11.105 → 11.205 |
 
-Decode changes by −0.055% for code and +0.568% for prose. Complete the
-reverse pair and final pair before applying the declared speed and prefill
-preservation decision.
-
-The reverse-order cooperative process also closes normally with quiet
-validation and no fresh Xe fault. It repeats the input, output, reasoning,
-draft, expert and capture evidence of the first cooperative process. Code
-measures 941.370 PP, 103.553 s TTFT and 16.490 TG. Prose measures 1,040.008 PP,
-92.757 s TTFT and 11.340 TG. The same cooperative configuration varies by
-+0.581% code TG and −3.558% prose TG between its two independent processes.
-Compare this process with its following scalar arm for the second pair.
-
-The reverse-order scalar process closes normally with quiet validation and
-no fresh Xe fault. It matches the other processes' request, output,
-reasoning, draft and expert work. Relative to this scalar process, the
-second pair's cooperative TG is 15.505 → 16.490 for code (+6.355%) and
-11.117 → 11.340 for prose (+2.005%). Its scalar PP and TTFT are 925.623 and
-105.327 s for code, and 1,032.650 and 93.444 s for prose. Compared with the
-first scalar process, this scalar process has 5.48% lower code TG, 4.92%
-lower prose TG and 3.34–5.08% longer prefill on the four matched warm-ups.
-Preserve these observations with the second pair and complete the planned
-third pair before applying the verdict.
-
-The final scalar process closes normally with the same native work,
-outputs and capture routes and no fresh Xe fault. Code measures 932.837
-PP, 104.523 s TTFT and 15.533 TG. Prose measures 1,033.254 PP, 93.372 s TTFT
-and 11.105 TG. Compared with the preceding scalar process, decode rates
-change by +0.179% and −0.112%. Compared with the first scalar process,
-they fall by 5.31% and 5.02%. Its four warm-up prefill durations also
-remain within 0.70% of the preceding scalar process. The last matched
-candidate is required for the performance decision.
+The decode screen passes with paired geometric gains of 2.117% for code
+and 1.157% for prose. Median paired prompt time increases by 0.105% and
+0.191%, and median TTFT increases by 0.126% and 0.204%. Both preservation
+gates fail. Keep the scalar route and end model qualification for this
+candidate. The scalar code and prose rates fall about 5% between the first
+and last scalar processes. The last pair's four warm-up prefill times agree
+within 0.40%, while the measured code prompt time increases 5.42%. The
+finalized prefill dispatch and work agree across arms. These clocks
+leave the cause of the spread unresolved. The compact result retains
+all six samples under `dflash2_decode_kv_width3_speed_v1`.
 
 The earlier varied-prose model capture at `b28a9372b` has 6,485 decode
 windows at 33,287 input tokens. The width counts are 2,533, 1,987, 980 and
