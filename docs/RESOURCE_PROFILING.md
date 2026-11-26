@@ -1039,6 +1039,26 @@ tok/s for code and 1037.003 → 1038.282 for prose. Client TTFT is 103.816 →
 process, versus 3,195 in the first pair, while both candidate processes
 emit 3,591. Finish the third pair before applying the frozen decision.
 
+The first two closed blend processes also bound the benefit of draft yield
+at the current decode time. Let `e` be emitted tokens and `a` and `d`
+be accepted and offered drafts. In these completed spec4 requests, the
+number of verifier windows is at most `e - a + 3`, allowing up to three
+accepted positions after the last emitted token. Giving every existing
+offer acceptance would therefore yield at most `e - a + 3 + d` tokens for
+the recorded decode interval.
+
+| Workload | All existing offers accepted at fixed time | Four emitted tokens per window at fixed time | Observed window time |
+| --- | ---: | ---: | ---: |
+| Code | 17.73–17.98 tok/s | 23.17–23.49 tok/s | 170.31–173.07 ms |
+| Prose | 13.78–13.89 tok/s | 29.16–29.40 tok/s | 136.06–137.26 ms |
+
+The second column of rates additionally assumes every existing window can
+emit four tokens at unchanged cost. This gives a 57.14 ms whole-window
+budget for 70 tok/s even with perfect yield at width four. Improving draft
+yield can complement reducing verifier service time. A wider verifier or
+changed acceptance affects its output trajectory, expert work, GPU work and
+duration, so evaluate those changes in a matched model trial.
+
 Charging a full packed expert upload for each remaining CPU job would
 require at least 31.24 GB/s for code and 38.18 GB/s for prose at 70 tok/s.
 This lower bound uses the measured candidate's CPU jobs per output and the
