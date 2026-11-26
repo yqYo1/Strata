@@ -51,11 +51,10 @@ PLAN = dict(order=list(ORDER), hits=list(HITS), replays=REPLAYS, arm_batches=len
 
 
 def select_publication():
-    global KEY, ROOT, BUILD, CENSUS, ORDER, CASE_FLAG, PLAN, SUMMARY
+    global KEY, ROOT, BUILD, ORDER, CASE_FLAG, PLAN, SUMMARY
     KEY = 'dflash2_decode_split_publication_v1'
     ROOT = bank.B / KEY.replace('_', '-')
     BUILD = ROOT / 'fixture-build'
-    CENSUS = '920312e73'
     ORDER = ('validate',)
     CASE_FLAG = '--check-publication'
     SUMMARY = 'decode MoE combine numerical=PASS guards=PASS nodes=3/3/3 completed=1'
