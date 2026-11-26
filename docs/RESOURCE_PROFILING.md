@@ -390,8 +390,12 @@ from RAM, reads 8,209 new tokens and emits one token at 262,128. The readback
 verifies 3,607,695,360 bytes of target KV and 118,069,304 bytes of running
 state. All three requests match the expected 48-layer placement, both loan
 and refill cycles pass, and the owner closes normally with no fresh Xe fault.
-Use this result as the control for the near-capacity global loader. Keep the
-generated profile for the placement comparison after native admission.
+The near-capacity global arm matches the per-layer arm exactly across the
+three request states and outputs, RAM restore payload, loan/refill and
+48-layer placement. Its owner closes normally with no fresh Xe fault and all
+15 final asset hashes match. Both extents pass, closing the stock control.
+Keep the generated profile for the ranked comparison. These cases qualify
+identical placement admission and restore behavior at the tested extents.
 
 After stock admission, the same controller's `--ranked prepare` action
 materializes the exact within-layer and cross-layer rerankings from the
@@ -406,7 +410,8 @@ qualification follow in separate checks.
 The host replay at `62125e84b` reproduces both held-out job and byte totals
 and both complete ranking hashes. Writing and reading the resulting profile
 files preserves every pair, the protected slots and the 1,256-slot loader
-extent. The native stock and reranked sessions are still pending.
+extent. The native stock control is complete. The native reranked sessions
+are pending.
 
 The [ranked generation comparison](../bench/dflash2_decode_ranked_generation.py)
 keeps the global loader fixed. First compare stock with the within-layer
