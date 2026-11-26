@@ -682072,13 +682072,13 @@
     "extra_bytes": 268211200,
     "head_fixture_sha256": "2a2bc9df39feb07e00dadc39cffc124dd0bbf0b9f37578c4587b37e3926744eb",
     "head_memory_reference_sha256": "b49738edc70a20b2e271779997f2148868adcd998c553999c2886eff2ee21957",
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "bcdfef3728e7c85f384f20769048a386c06374bc",
     "host_passed": true,
     "ownership_closed": true,
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "plans": [
       {
         "index": 0,
@@ -682451,6 +682451,296 @@
         "head_arm": "indexed",
         "extra_bytes": 268211200,
         "drm_aggregate_eligible": true
+      },
+      {
+        "index": 1,
+        "read": 126977,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-indexed-head-native-v1/build/strata",
+          "sha256": "0722edfc2fb1db9a0bc57c77ade047065cf16474de38c8fdec149c8d2f93bf23",
+          "bytes": 26763232
+        },
+        "native_source_commit": "9866bec75d379342653a82f0d21523a1ae70af13",
+        "native_identity": {
+          "pid": 2211894,
+          "start_ticks": 402335724,
+          "sid": 2211836
+        },
+        "drm_boundaries": [
+          {
+            "request": 0,
+            "stage": "begin",
+            "clients": [
+              {
+                "client_id": 66591,
+                "memory_bytes": {
+                  "drm-total-system": 0,
+                  "drm-shared-system": 0,
+                  "drm-resident-system": 0,
+                  "drm-total-gtt": 4013989888,
+                  "drm-shared-gtt": 0,
+                  "drm-resident-gtt": 4013989888,
+                  "drm-total-vram0": 9690656768,
+                  "drm-shared-vram0": 0,
+                  "drm-resident-vram0": 9690656768,
+                  "drm-total-stolen": 0,
+                  "drm-shared-stolen": 0,
+                  "drm-resident-stolen": 0
+                }
+              }
+            ],
+            "snapshot_ns": 4036525
+          },
+          {
+            "request": 0,
+            "stage": "end",
+            "clients": [
+              {
+                "client_id": 66591,
+                "memory_bytes": {
+                  "drm-total-system": 0,
+                  "drm-shared-system": 0,
+                  "drm-resident-system": 0,
+                  "drm-total-gtt": 4630552576,
+                  "drm-shared-gtt": 0,
+                  "drm-resident-gtt": 4630552576,
+                  "drm-total-vram0": 9927430144,
+                  "drm-shared-vram0": 0,
+                  "drm-resident-vram0": 9927430144,
+                  "drm-total-stolen": 0,
+                  "drm-shared-stolen": 0,
+                  "drm-resident-stolen": 0
+                }
+              }
+            ],
+            "snapshot_ns": 2661640
+          },
+          {
+            "request": 1,
+            "stage": "begin",
+            "clients": [
+              {
+                "client_id": 66591,
+                "memory_bytes": {
+                  "drm-total-system": 0,
+                  "drm-shared-system": 0,
+                  "drm-resident-system": 0,
+                  "drm-total-gtt": 4630552576,
+                  "drm-shared-gtt": 0,
+                  "drm-resident-gtt": 4630552576,
+                  "drm-total-vram0": 9927430144,
+                  "drm-shared-vram0": 0,
+                  "drm-resident-vram0": 9927430144,
+                  "drm-total-stolen": 0,
+                  "drm-shared-stolen": 0,
+                  "drm-resident-stolen": 0
+                }
+              }
+            ],
+            "snapshot_ns": 2600365
+          },
+          {
+            "request": 1,
+            "stage": "end",
+            "clients": [
+              {
+                "client_id": 66591,
+                "memory_bytes": {
+                  "drm-total-system": 0,
+                  "drm-shared-system": 0,
+                  "drm-resident-system": 0,
+                  "drm-total-gtt": 4758478848,
+                  "drm-shared-gtt": 0,
+                  "drm-resident-gtt": 4758478848,
+                  "drm-total-vram0": 9927503872,
+                  "drm-shared-vram0": 0,
+                  "drm-resident-vram0": 9927503872,
+                  "drm-total-stolen": 0,
+                  "drm-shared-stolen": 0,
+                  "drm-resident-stolen": 0
+                }
+              }
+            ],
+            "snapshot_ns": 2855466
+          }
+        ],
+        "request_routes_checked_before_continue": 2,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2211894,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18998",
+              "jobs": "24423",
+              "source_H2D_bytes": "243793920",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "126976"
+            },
+            "uploads": {
+              "uploads": "18998",
+              "requested_H2D_bytes": "38779008000",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 737280,
+              "reused": 2211840
+            },
+            "fixed_bytes": 4171465728,
+            "free_bytes": 4320641024,
+            "direct_pieces": 768,
+            "native_request": [
+              126977,
+              0,
+              126977,
+              24,
+              14,
+              16
+            ],
+            "memory": {
+              "before-prefill": {
+                "free_bytes": 1154289664,
+                "total_bytes": 10666115072
+              },
+              "after-refill": {
+                "free_bytes": 694427648,
+                "total_bytes": 10666115072
+              },
+              "after-draft-activation": {
+                "free_bytes": 180092928,
+                "total_bytes": 10666115072
+              },
+              "after-decode": {
+                "free_bytes": 179896320,
+                "total_bytes": 10666115072
+              }
+            },
+            "max_single_allocation_bytes": 10132807680,
+            "head_arm": "gathered",
+            "head_owned_bytes": 223227900,
+            "drafter_owned_bytes": 845776220
+          },
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18976",
+              "jobs": "24386",
+              "source_H2D_bytes": "243793920",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "126976"
+            },
+            "uploads": {
+              "uploads": "18976",
+              "requested_H2D_bytes": "38738432000",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 737280,
+              "reused": 2211840
+            },
+            "fixed_bytes": 4171465728,
+            "free_bytes": 4237045760,
+            "direct_pieces": 768,
+            "native_request": [
+              126977,
+              0,
+              126977,
+              24,
+              15,
+              17
+            ],
+            "memory": {
+              "before-prefill": {
+                "free_bytes": 955330560,
+                "total_bytes": 10666115072
+              },
+              "after-refill": {
+                "free_bytes": 694226944,
+                "total_bytes": 10666115072
+              },
+              "after-draft-activation": {
+                "free_bytes": 179888128,
+                "total_bytes": 10666115072
+              },
+              "after-decode": {
+                "free_bytes": 179822592,
+                "total_bytes": 10666115072
+              }
+            },
+            "max_single_allocation_bytes": 10132807680,
+            "head_arm": "gathered",
+            "head_owned_bytes": 223227900,
+            "drafter_owned_bytes": 845776220
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 126977,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 131344.7,
+            "prompt_tps": 966.7,
+            "ttft_s": 131.548,
+            "total_s": 133.283,
+            "generated_tokens": 24,
+            "request_sha256": "b33d44ec0d233fcc2f52f013e20d16b14dc1b293dbe0ea83c76c00aa3b280306",
+            "drafts_offered": 16,
+            "drafts_accepted": 14,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 126977,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 120231.5,
+            "prompt_tps": 1056.1,
+            "ttft_s": 120.433,
+            "total_s": 122.098,
+            "generated_tokens": 24,
+            "request_sha256": "f6a7bb0a58d20ae9c7c37f7e5e7c1a8c3853775e4b1bc1073144657d920c234f",
+            "drafts_offered": 17,
+            "drafts_accepted": 15,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 120231.5,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "head_arm": "gathered",
+        "extra_bytes": 268211200,
+        "drm_aggregate_eligible": true
       }
     ],
     "budgets": {
@@ -682489,6 +682779,131 @@
         "passed": true
       }
     ],
+    "decision": {
+      "matched_work": true,
+      "drm_aggregate_eligible": true,
+      "drm_vram": {
+        "indexed": [
+          {
+            "request": 0,
+            "stage": "begin",
+            "bytes": {
+              "drm-total-vram0": 9467371520,
+              "drm-resident-vram0": 9467371520
+            }
+          },
+          {
+            "request": 0,
+            "stage": "end",
+            "bytes": {
+              "drm-total-vram0": 9927434240,
+              "drm-resident-vram0": 9927434240
+            }
+          },
+          {
+            "request": 1,
+            "stage": "begin",
+            "bytes": {
+              "drm-total-vram0": 9927434240,
+              "drm-resident-vram0": 9927434240
+            }
+          },
+          {
+            "request": 1,
+            "stage": "end",
+            "bytes": {
+              "drm-total-vram0": 9927503872,
+              "drm-resident-vram0": 9927503872
+            }
+          }
+        ],
+        "gathered": [
+          {
+            "request": 0,
+            "stage": "begin",
+            "bytes": {
+              "drm-total-vram0": 9690656768,
+              "drm-resident-vram0": 9690656768
+            }
+          },
+          {
+            "request": 0,
+            "stage": "end",
+            "bytes": {
+              "drm-total-vram0": 9927430144,
+              "drm-resident-vram0": 9927430144
+            }
+          },
+          {
+            "request": 1,
+            "stage": "begin",
+            "bytes": {
+              "drm-total-vram0": 9927430144,
+              "drm-resident-vram0": 9927430144
+            }
+          },
+          {
+            "request": 1,
+            "stage": "end",
+            "bytes": {
+              "drm-total-vram0": 9927503872,
+              "drm-resident-vram0": 9927503872
+            }
+          }
+        ]
+      },
+      "indexed_minus_gathered_bytes": [
+        {
+          "request": 0,
+          "stage": "begin",
+          "bytes": {
+            "drm-total-vram0": -223285248,
+            "drm-resident-vram0": -223285248
+          }
+        },
+        {
+          "request": 0,
+          "stage": "end",
+          "bytes": {
+            "drm-total-vram0": 4096,
+            "drm-resident-vram0": 4096
+          }
+        },
+        {
+          "request": 1,
+          "stage": "begin",
+          "bytes": {
+            "drm-total-vram0": 4096,
+            "drm-resident-vram0": 4096
+          }
+        },
+        {
+          "request": 1,
+          "stage": "end",
+          "bytes": {
+            "drm-total-vram0": 0,
+            "drm-resident-vram0": 0
+          }
+        }
+      ],
+      "sycl_free_byte_deltas": [
+        {
+          "before-prefill": 0,
+          "after-refill": -4096,
+          "after-draft-activation": -4096,
+          "after-decode": -4096
+        },
+        {
+          "before-prefill": -261103616,
+          "after-refill": -4096,
+          "after-draft-activation": 0,
+          "after-decode": 0
+        }
+      ],
+      "allocation_verified": false,
+      "clean_speed_qualified": false,
+      "adopted": false
+    },
     "source_inputs": {
       "files": 825,
       "sha256": "245ec9228c6529b7996323a4bae3a0d491f01b9305b37b862bc15d96e4a9d02e"

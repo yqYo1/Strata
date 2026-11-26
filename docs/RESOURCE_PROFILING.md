@@ -511,6 +511,26 @@ and matched work across arms before aggregating VRAM deltas. Associate the
 end readings with the native post-decode marks. Admission of additional
 allocations and clean speed still have separate evidence requirements.
 
+Both arms close normally with no fresh Xe fault. All four requests match the
+frozen input, prefill route, expert work, KV placement and draft counters.
+Each native process has one private DRM client at all four boundaries. Its
+reported requested and resident VRAM totals agree at every sampled boundary.
+
+| Request boundary | Indexed minus gathered, Xe VRAM | Indexed minus gathered, SYCL free VRAM |
+| --- | ---: | ---: |
+| First begin, before prefill | −223,285,248 B | 0 B |
+| First end, after decode | +4,096 B | −4,096 B |
+| Second begin, before prefill | +4,096 B | −261,103,616 B |
+| Second end, after decode | 0 B | 0 B |
+
+The initial 212.94 MiB per-client reduction is consistent with removing the
+gathered head. It disappears by the first post-decode boundary, including
+when running the indexed process first. Aggregate counters cannot assign the
+intervening growth to particular allocations. Keep gathered selection and
+close this capacity candidate. The 256 MiB expert allocation remains below
+its admission gate. Use a separate decode experiment for the CPU result copy
+and any further residency changes.
+
 The Xe comparison reads the closed head-memory result at `6cae88023`,
 its exact executable and frozen request hashes. That result preserves the
 phase bytes and all request gates. Retired its `host`, `0` and `1` directories
