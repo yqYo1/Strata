@@ -378,7 +378,19 @@ generator is overlaid. CMake's new compile database is pinned in
 The model plan binds that binary and 820 committed inputs to both pairs of
 original request hashes, with 94,209 followed by 126,977 input tokens.
 Both current-source frontend probes pass. The two native GPU processes
-remain pending.
+have separate process receipts. The 94,209-token process closes normally
+with no new Xe fault. Both fresh prompts keep the expected mode16 route,
+expert arena, draft width and 24-output scope. Free memory in bytes is:
+
+| Request | Before prefill | After refill | After draft activation | After decode |
+| --- | ---: | ---: | ---: | ---: |
+| First long request | 1,154,351,104 | 761,860,096 | 217,968,640 | 217,772,032 |
+| Subsequent long request | 955,392,000 | 761,659,392 | 217,763,840 | 217,763,840 |
+
+The reported single-allocation limit is 10,132,807,680 bytes. Both actual
+post-activation bounds are below the replay's first 268,211,200-byte slice,
+by at least 50,242,560 bytes. The 126,977-token process is the remaining
+measurement. Keep diagnostic durations out of the speed comparison.
 The existing successful layer-major runs already verify that this runtime
 exposed and returned the Intel free-memory query during prefill. The
 reported bytes, per-allocation limit and physical residency are distinct.

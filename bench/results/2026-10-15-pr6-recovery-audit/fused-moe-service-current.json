@@ -680244,7 +680244,7 @@
       ]
     },
     "extra_bytes": 268211200,
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "24f082ec20bc47f91b96160e9c9c247b7daa6b8b",
     "host_passed": true,
     "ownership_closed": true,
@@ -680333,7 +680333,192 @@
         "kv_arm": "retain"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 94209,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-handoff-native-v1/build/strata",
+          "sha256": "1c7531daa1667461952eb5a808e04090eb07bf5cf51e7c2f1cc13493393e8ecc",
+          "bytes": 26695264
+        },
+        "native_source_commit": "b72ed4fb09c10f11fafa5ce37dd24a7ef61f83eb",
+        "native_identity": {
+          "pid": 2011458,
+          "start_ticks": 401849921,
+          "sid": 2011407
+        },
+        "request_routes_checked_before_continue": 2,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2011458,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18634",
+              "jobs": "22430",
+              "source_H2D_bytes": "180879360",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "94208"
+            },
+            "uploads": {
+              "uploads": "18634",
+              "requested_H2D_bytes": "38044313600",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 405504,
+              "reused": 1216512
+            },
+            "fixed_bytes": 3097461760,
+            "free_bytes": 4320702464,
+            "direct_pieces": 576,
+            "native_request": [
+              94209,
+              0,
+              94209,
+              24,
+              14,
+              16
+            ],
+            "memory": {
+              "before-prefill": {
+                "free_bytes": 1154351104,
+                "total_bytes": 10666115072
+              },
+              "after-refill": {
+                "free_bytes": 761860096,
+                "total_bytes": 10666115072
+              },
+              "after-draft-activation": {
+                "free_bytes": 217968640,
+                "total_bytes": 10666115072
+              },
+              "after-decode": {
+                "free_bytes": 217772032,
+                "total_bytes": 10666115072
+              }
+            },
+            "max_single_allocation_bytes": 10132807680
+          },
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18678",
+              "jobs": "22464",
+              "source_H2D_bytes": "180879360",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "94208"
+            },
+            "uploads": {
+              "uploads": "18678",
+              "requested_H2D_bytes": "38130790400",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 405504,
+              "reused": 1216512
+            },
+            "fixed_bytes": 3097461760,
+            "free_bytes": 4237107200,
+            "direct_pieces": 576,
+            "native_request": [
+              94209,
+              0,
+              94209,
+              24,
+              14,
+              16
+            ],
+            "memory": {
+              "before-prefill": {
+                "free_bytes": 955392000,
+                "total_bytes": 10666115072
+              },
+              "after-refill": {
+                "free_bytes": 761659392,
+                "total_bytes": 10666115072
+              },
+              "after-draft-activation": {
+                "free_bytes": 217763840,
+                "total_bytes": 10666115072
+              },
+              "after-decode": {
+                "free_bytes": 217763840,
+                "total_bytes": 10666115072
+              }
+            },
+            "max_single_allocation_bytes": 10132807680
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 94209,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 102647.4,
+            "prompt_tps": 917.8,
+            "ttft_s": 102.834,
+            "total_s": 104.513,
+            "generated_tokens": 24,
+            "request_sha256": "491972b626092a3845b2cf6bced256ed26f78653d630069aa09f096806d84f4f",
+            "drafts_offered": 16,
+            "drafts_accepted": 14,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 94209,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 89877.3,
+            "prompt_tps": 1048.2,
+            "ttft_s": 90.06,
+            "total_s": 91.605,
+            "generated_tokens": 24,
+            "request_sha256": "5d05fc29b0592da89fd33e16411bd2b5be637d5da4ab068978f461454fc60339",
+            "drafts_offered": 16,
+            "drafts_accepted": 14,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 89877.3,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "extra_bytes": 268211200
+      }
+    ],
     "budgets": {
       "wall": 5400,
       "cpu": 21600,
