@@ -501,6 +501,24 @@ and resident VRAM with the SYCL free-memory marks. This tests whether
 driver allocation or residency changed despite the free-memory result.
 [DRM client memory counters](https://docs.kernel.org/gpu/drm-usage-stats.html#memory).
 
+The [Xe memory comparison](../bench/dflash2_decode_indexed_head_drm.py)
+reverses the original process order and reuses the two exact 126,977-token
+requests in each arm. The host reads Xe counters at each existing begin and
+end gate while the client is waiting, for four snapshots per process. Retain
+per-client requested, resident and shared bytes with the owned native
+identity. Require unchanged, private client membership within each process
+and matched work across arms before aggregating VRAM deltas. Associate the
+end readings with the native post-decode marks. Admission of additional
+allocations and clean speed still have separate evidence requirements.
+
+The Xe comparison reads the closed head-memory result at `6cae88023`,
+its exact executable and frozen request hashes. That result preserves the
+phase bytes and all request gates. Retire its `host`, `0` and `1` directories
+under `dflash2-decode-indexed-head-memory-v1` after verifying the inventory.
+Keep its root receipt. The inventory contains 146 files, 25,295,661 bytes,
+and hashes to `913d712ab541ffd026bfc802d358ab2a9d91536331ed26e4c96dfc1045e3e570`
+over the sorted state-relative path, byte-count and SHA-256 tuples.
+
 The replay at `e3d371974` verifies 4,668,262 original stock CPU jobs.
 Training uses the first 3,242 verifier windows and evaluation uses the
 remaining 3,243. All arms preserve the same protected members, 1,256 slot
