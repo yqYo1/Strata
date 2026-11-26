@@ -377,7 +377,8 @@ generator is overlaid. CMake's new compile database is pinned in
 `1c7531daa1667461952eb5a808e04090eb07bf5cf51e7c2f1cc13493393e8ecc`.
 The model plan binds that binary and 820 committed inputs to both pairs of
 original request hashes, with 94,209 followed by 126,977 input tokens.
-Frontend checks and GPU execution remain pending.
+Both current-source frontend probes pass. The two native GPU processes
+remain pending.
 The existing successful layer-major runs already verify that this runtime
 exposed and returned the Intel free-memory query during prefill. The
 reported bytes, per-allocation limit and physical residency are distinct.
