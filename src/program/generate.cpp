@@ -6737,11 +6737,13 @@ int main(int argc, char** argv) {
                 const strata::core::OnDevice on(p.dev);
                 uint64_t uploaded = 0;
                 const auto transfer = [&] {
-                    for (int64_t slot = p.first_now; slot < p.cache->slots(); ++slot) {
+                    // Keep the existing loan's destination submission order.
+                    for (const auto& lent : p.lent) {
+                        const int32_t slot = lent.second;
                         const auto* blob = decode_refill_sources[size_t(slot)];
                         const int64_t bytes = decode_refill_sizes[size_t(slot)];
-                        if (!(refill_blocking() ? p.cache->fill_slot_blocking(int32_t(slot), blob, e, bytes)
-                                                 : p.cache->fill_slot_queued(int32_t(slot), blob, e, bytes)))
+                        if (!(refill_blocking() ? p.cache->fill_slot_blocking(slot, blob, e, bytes)
+                                                 : p.cache->fill_slot_queued(slot, blob, e, bytes)))
                             return false;
                         uploaded += uint64_t(bytes);
                     }
