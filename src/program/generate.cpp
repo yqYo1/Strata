@@ -5165,6 +5165,7 @@ int main(int argc, char** argv) {
         }
         const char* loan_audit_env = std::getenv("STRATA_SYCL_CACHE_LOAN_AUDIT");
         const bool loan_audit = loan_audit_env && std::strcmp(loan_audit_env, "1") == 0;
+        const bool df2_placement_audit = loan_audit && use_df2 && cache_scratch_lease_enabled;
         if (loan_audit && (multi_gpu || !pf_borrow || d_res == nullptr || host_res.empty())) {
             std::fprintf(stderr, "strata serve: cache loan audit requires single-GPU profiled borrowing\n");
             return 2;
@@ -5209,6 +5210,28 @@ int main(int argc, char** argv) {
             }
             std::fprintf(stderr, "strata loan audit: phase=payload rows=%llu bytes=%llu lent=%zu same_slots=%d payload_match=1\n",
                          (unsigned long long) rows, (unsigned long long) bytes, p.lent.size(), int(!replacement));
+            return true;
+        };
+        auto audit_df2_expert_phase = [&](uint64_t request, const char* phase, int64_t from, int64_t to,
+                                           int64_t first_masked, std::string& e) -> bool {
+            std::vector<int32_t> actual(host_res.size());
+            const auto bytes = actual.size() * sizeof(int32_t);
+            if (cudaMemcpy(actual.data(), d_res, bytes, cudaMemcpyDeviceToHost) != cudaSuccess || actual != host_res) {
+                e = "DFlash2 expert phase audit: device residency differs from host";
+                return false;
+            }
+            for (size_t i = 0; i < host_res.size(); ++i) {
+                const auto slot = xcache.slot_of(i / g.n_expert, i % g.n_expert);
+                const auto visible = slot >= first_masked ? strata::core::kNotResident : slot;
+                if (visible != actual[i]) {
+                    e = "DFlash2 expert phase audit: CPU residency differs from the visible table";
+                    return false;
+                }
+            }
+            std::fprintf(stderr, "strata DFlash2 expert phase: request=%llu phase=%s from=%lld to=%lld "
+                                 "first_masked=%lld entries=%zu map=%016llx\n",
+                         (unsigned long long) request, phase, (long long) from, (long long) to,
+                         (long long) first_masked, actual.size(), (unsigned long long) fnv1a(actual.data(), bytes));
             return true;
         };
 #endif
@@ -6948,6 +6971,18 @@ int main(int argc, char** argv) {
                     std::printf("ERR lending the prompt path its slots failed: %s\n", err.c_str());
                     return 1;
                 }
+#ifdef STRATA_ENABLE_SYCL
+                if (df2_placement_audit) {
+                    // Checked loan admission gives this path exactly one participant.
+                    const auto& part = pf_parts.front();
+                    const auto first_masked = part.lent.empty() ? xcache.slots() : part.first_now;
+                    if (!audit_df2_expert_phase(census_request, win ? "prefill-cache" : "prefill-batched",
+                                                at, to, first_masked, err)) {
+                        std::printf("ERR %s\n", err.c_str());
+                        return 1;
+                    }
+                }
+#endif
                 const auto tsp = Clock::now();
                 const bool sp_ok = win ? read_windows(at, to, err) : run_prompt_with_native_dense_phase(dense_phase,
                     sp, mtp, prefill_head_route(),
@@ -7002,6 +7037,11 @@ int main(int argc, char** argv) {
             }
             tr("prompt done (slots refilled)");
 #ifdef STRATA_ENABLE_SYCL
+            if (df2_placement_audit && !audit_df2_expert_phase(census_request,
+                    cancelled ? "cancel-refill" : "decode-handoff", read_from, at, xcache.slots(), err)) {
+                std::printf("ERR %s\n", err.c_str());
+                return 1;
+            }
             if (use_df2) {
                 if (cancelled) {
                     df2_taps.release();
