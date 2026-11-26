@@ -429,6 +429,18 @@ controls close with final model asset hashes verified. This admits the two
 profiles to the matched speed comparisons. Check numerical and task behavior
 before adopting either profile.
 
+After closing both controls, verified the compact results against the local
+receipts and retired their owned raw outputs. Both original receipts and all
+three profile files retain their original hashes. The reviewed numerical-scope
+record remains in the research index. The following inventories hash sorted
+state-relative paths, file byte counts and file hashes.
+
+| Retired scope | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| Stock restore `host`, `short-stock`, `short-global`, `near-stock`, `near-global` | 233 | 50392534 | `54dbaddbe4191093dd5836c1d289861f17d921a64b96940f444c49ca00ffb817` |
+| Ranked restore `host`, `short-within`, `short-cross`, `near-within`, `near-cross` | 233 | 50392654 | `0b54c8a36a1033920794db457ffb8b9c2f9eb5b80930e76530db1d776768d62d` |
+| `dflash2-expert-placement-numerics-20261126` report, control, review and source-view roots | 40 | 1533998 | `6917b6bbeda44ea22a058872cc1a99570b50de9f34242cd2c9f5dd324860a6bc` |
+
 The [ranked generation comparison](../bench/dflash2_decode_ranked_generation.py)
 keeps the global loader fixed. First compare stock with the within-layer
 ranking, then compare within-layer with cross-layer in a separate run plan.
