@@ -24,7 +24,7 @@ TARGETS = [*primary.TARGETS, 'sycl_verify_window_policy_test']
 CONTROLLERS = (THIS, retained.THIS, 'bench/sycl', 'tools/sycl', *bank.basis.POLICIES)
 
 
-def inputs(revision):
+def inputs(revision, *, historical_controls=False):
     current = retained.baseline()
     base = bank.previous.read(primary.ROOT / 'record.json')
     comp = bank.previous.historic(COMPONENT_REVISION, COMPONENT_KEY)
@@ -49,15 +49,24 @@ def inputs(revision):
                 and all(bank.sha(root / p) == h for p, h in pin['source_sha256'].items()),
                 'the retained dependencies changed: ' + str(root))
 
-    controls = source.pin(bank.P, CONTROLLERS)['source_sha256']
-    require(bank.stage.hashed(dict(source.blobs(bank.P, revision, controls))) == controls,
-            'commit the build controller and its helpers')
+    if historical_controls:
+        names = source.git(bank.P, 'ls-tree', '-r', '--name-only', '-z', revision, '--', *CONTROLLERS)
+        paths = names.decode().rstrip('\0').split('\0')
+        require(paths and all(paths), 'missing historical build controllers')
+        controls = bank.stage.hashed(dict(source.blobs(bank.P, revision, paths)))
+    else:
+        controls = source.pin(bank.P, CONTROLLERS)['source_sha256']
+        require(bank.stage.hashed(dict(source.blobs(bank.P, revision, controls))) == controls,
+                'commit the build controller and its helpers')
     payload = dict(source.blobs(bank.P, current['native_source_commit'], base['source_files']))
     require(bank.stage.hashed(payload) == base['source_files'], 'the qualified native source differs')
     previous = dict(source.blobs(bank.P, OVERLAY + '^', FILES))
     changed = dict(source.blobs(bank.P, OVERLAY, FILES))
-    require(all(payload[p] == previous[p] != changed[p] and (bank.P / p).read_bytes() == changed[p]
-                for p in FILES), 'the candidate must apply to the exact verified source preimages')
+    require(all(payload[p] == previous[p] != changed[p] for p in FILES),
+            'the candidate must apply to the exact verified source preimages')
+    if not historical_controls:
+        require(all((bank.P / p).read_bytes() == changed[p] for p in FILES),
+                'commit the exact candidate source overlays before building')
     payload.update(changed)
 
     old, new = str(primary.ROOT), str(ROOT)
@@ -78,11 +87,13 @@ def inputs(revision):
     return fields, payload, original, base
 
 
-def check(row, committed=True):
+def check(row, committed=True, *, historical_controls=False):
+    if historical_controls:
+        require(committed and retained.closed(row, 'built'), 'historical controls require a closed build')
     if committed:
         require(validation.committed(bank.RESULT, (KEY,)) == builder.compact(row),
                 'commit the preceding QSA build stage')
-    fields, _, original, base = inputs(row['source_commit'])
+    fields, _, original, base = inputs(row['source_commit'], historical_controls=historical_controls)
     require(all(row[k] == v for k, v in fields.items())
             and {p.relative_to(TREE).as_posix() for p in TREE.rglob('*') if p.is_file()} == row['source_files'].keys()
             and all(bank.sha(TREE / p) == h for p, h in row['source_files'].items())

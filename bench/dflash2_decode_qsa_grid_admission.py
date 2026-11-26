@@ -38,7 +38,7 @@ def baseline():
     require(build.retained.closed(native, 'built') and native['base_binary'] == reference['binary']
             and native['base_build_sha256'] == reference['native_build_sha256'],
             'finish the coherent grid build with the qualified fallback')
-    build.check(native)
+    build.check(native, historical_controls=True)
     stock = ranked.restore_proof(reference, ranked.restore.KEY, ranked.restore.ORDER)
     profile = ranked.qualified_profile('stock', stock, None)
     return reference, native, profile
