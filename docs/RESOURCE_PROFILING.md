@@ -348,8 +348,8 @@ on independent model evidence before combining it with another change.
 
 Retired the raw comparison and admission output scopes below after verifying
 the closed owners and the compact committed decisions. Verified the root
-`record.json` files. The primary fallback and QSA build serve the cooperative
-KV comparison.
+`record.json` files. The cooperative KV comparison used the primary
+fallback and the QSA build.
 The inventories hash sorted state-relative paths, byte counts and SHA-256
 values. No current reader uses those output directories.
 
@@ -375,8 +375,10 @@ original `record.json`. It contains 1,525 regular files and 223,866,799
 bytes, with SHA-256
 `7e74fb0de99e62cc51ec4cabb9bf19a382530e94c1b322e75c4ce920271813c9`
 over the compact JSON array of sorted state-relative paths, byte counts
-and file hashes. Recheck this inventory and the primary fallback under
-the measurement lock before deleting. This check is pending.
+and file hashes. The inventory matched immediately before deletion under
+the measurement lock. The original receipt remains byte-identical. All 23
+executable identities across the primary prefill and independent decode
+references match before and after retirement.
 
 Retired the component's raw runs and fixture from `decode-qsa-score-grid-v1`
 under the tuning state directory and verified the path is absent. The
