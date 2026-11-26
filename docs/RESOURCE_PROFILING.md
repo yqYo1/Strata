@@ -898,6 +898,23 @@ with quiet validation, closed ownership, unchanged model assets and no
 fresh Xe fault. Both native extents now qualify the frozen map for the
 clean generation comparison.
 
+The first speed pair closes under the same retained executable and global
+loader. Both 96K request hashes match, the dedicated prefill dispatch and
+expert upload counts match, and both processes close without a fresh Xe
+fault. The raw output lengths change with the placement.
+
+| Workload | Output, stock → blend | Decode tok/s, stock → blend | CPU jobs/output, stock → blend | Client TTFT s, stock → blend |
+| --- | ---: | ---: | ---: | ---: |
+| 96,204-token code | 3,195 → 3,591 | 16.212 → 17.262 | 354.84 → 295.48 | 103.836 → 103.633 |
+| 96,274-token prose | 8,618 → 8,212 | 11.601 → 11.835 | 398.11 → 361.11 | 92.749 → 92.871 |
+
+Both cases show fewer CPU jobs per emitted token. The exact draft totals
+and first/subsequent prompt timings remain in the speed result. Two read-only
+research scopes overlapped part of the candidate process, each capped at
+30% of one logical CPU. They accounted for 26.2 and 27.3 CPU seconds before
+closure. Treat the observed code and prose gains as a first pair and finish
+the two planned repetitions before a performance decision.
+
 Retired `dflash2-blend-independent-capture-v3` under the tuning state
 directory after verifying its absence. The exact scoring source and compact closed
 results remain in Git at `53f824443` and `a7c068890`. Both captured traces match
