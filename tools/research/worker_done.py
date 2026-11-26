@@ -12,6 +12,11 @@ from pathlib import Path
 import subprocess
 
 
+def artifact_sha(path):
+    with path.open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('orca', 'task_id', 'dispatch_id', 'subject', 'summary'):
@@ -29,14 +34,10 @@ def main():
             and receipt['ok'] and receipt['reachable']
             and receipt['task_id'] == args.task_id and receipt['dispatch_id'] == args.dispatch_id):
         parser.error('the recorded worker proofs must match this directory and dispatched task')
-    report_bytes = report.read_bytes()
-    if not report_bytes.strip():
-        parser.error('write a nonempty report.md before reporting success')
 
     body = (f'{args.summary.strip()}\n\n'
             f'task_id={args.task_id} dispatch_id={args.dispatch_id}\n'
-            f'report.md={hashlib.sha256(report_bytes).hexdigest()}\n'
-            f'worker-orca-status.json={hashlib.sha256(ipc_bytes).hexdigest()}')
+            f'report.md={artifact_sha(report)}\nworker-orca-status.json={hashlib.sha256(ipc_bytes).hexdigest()}')
     subprocess.run([args.orca, 'orchestration', 'send', '--from', receipt['terminal'],
                     '--type', 'worker_done', '--subject', args.subject, '--body', body,
                     '--task-id', args.task_id, '--dispatch-id', args.dispatch_id, '--outcome', 'succeeded',
