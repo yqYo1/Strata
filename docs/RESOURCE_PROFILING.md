@@ -466,6 +466,11 @@ headers and the oracle header match `968e71988`, the compared `d1bdd6872`
 image and the current worktree. Reuse the retained runtime archive after
 checking the actual header and link-input census. Build only those three
 translation units, with the new committed fixture as the sole source overlay.
+The [width-three controller](../bench/decode_kv_width3.py) freezes these
+commands, the runtime and the comparison order in its `prepare` stage.
+It uses the shared measurement lock and the existing input and ownership
+checks. Commit the recorded stage before advancing through `build`,
+`smoke`, `validate` and the six numbered timing processes.
 
 Run `--planner-width3-smoke` first in a separate traced process. Require
 two direct cases and two graph replays before proceeding to
