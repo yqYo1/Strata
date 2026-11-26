@@ -473,8 +473,14 @@ prefill is 0.10% slower and TTFT is 0.114 s longer. The scalar prose request
 measures 1,035.824 PP, 93.127 s TTFT and 11.601 TG. Cooperative prose TG is
 2.98% higher in this pair, with 8,618 outputs and 3,442/4,864 drafts versus
 9,371 and 3,771/5,378 for scalar. The prose rate includes changed generation
-work. Keep the original speed screen and report the work difference. The
-third pair is still pending.
+work. Keep the original speed screen and report the work difference.
+
+The third scalar process closes normally with quiet validation, matching
+assets and no fresh Xe fault. Code measures 941.014 PP, 103.580 s TTFT and
+16.264 TG. Prose measures 1,029.666 PP, 93.688 s TTFT and 11.601 TG. Both
+requests reproduce the first scalar process's input, output and reasoning
+hashes, emitted token counts and draft totals. The final cooperative process
+will complete the frozen third pair.
 
 The archived prose trace at `b28a9372b` records a 33,287-token request
 with 11,783 outputs on the unsplit DFlash2 cap-four path. It uses the same
