@@ -417,8 +417,12 @@ Xe fault. Its final output differs from the stock control, and its three
 single-token requests use 471, 476 and 442 CPU jobs versus 469, 469 and 414
 on stock. The cross-layer ranking passes the same case with its own verified
 snapshot and membership and no fresh Xe fault. Its three outputs match the
-stock outputs and it uses 465, 474 and 447 CPU jobs. Both near-capacity runs
-and sustained speed and task-quality qualification remain pending.
+stock outputs and it uses 465, 474 and 447 CPU jobs. The near-capacity
+within-layer run also passes. It restores 253,919 parked tokens, reads 8,209
+and emits one token at 262,128. Its three output hashes match the stock
+control at this extent, the saved-state readback and both loan/refill cycles
+pass, and no fresh Xe fault occurs. Near-capacity cross-layer validation,
+sustained speed and task-quality qualification remain pending.
 
 The [ranked generation comparison](../bench/dflash2_decode_ranked_generation.py)
 keeps the global loader fixed. First compare stock with the within-layer
