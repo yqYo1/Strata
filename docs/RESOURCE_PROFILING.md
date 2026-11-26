@@ -373,6 +373,53 @@ dispatch, width-one fallback, double dispatch and a missing capture. The
 prepared short pair pins the exact executable and 82-input/32-output
 request. Both native runs remain pending.
 
+#### Width-four KV cache working set
+
+The retained K8V8 verifier at `968e71988` scores four-cell blocks and
+allocates space for 2,051 selected cells per query. The SYCL selector emits
+all four cells of each selected full block, except for at most one
+threshold-tie cutoff block. At most one more block is partial at the end of
+the context. Therefore a query touches at most
+`floor(2051 / 4) + 2 = 514` pages. An identity selection touches at most
+513 pages. The union over at most four queries fits in 2,056 pages. The
+scalar resolver pins all selected hits before choosing victims and stamps
+each newly placed miss in the same epoch. This bound covers the pages it
+must keep simultaneously for one verified selection with a valid map.
+The same conservative bound is 4,112 pages for width eight. Keep the
+existing 5,120-page default for other configurations and shared callers.
+[Selector](../src/kernels/sycl/qsa_select.cpp) ·
+[Resolver](../src/kernels/sycl/kv_stream.cpp) ·
+[Current sizing](../src/core/layer.cpp).
+
+Each K8V8 page carries 4,224 bytes. Across 12 QSA layers, the allocation
+reductions below exclude changes to the stage, indexer, page table and host
+mirror. Slot metadata saves another 20 bytes per removed slot per layer.
+
+| Resident pages per layer | Resident cells | KV payload saved versus 5,120 pages |
+| ---: | ---: | ---: |
+| 4,096 | 16,384 | 49.5 MiB |
+| 3,072 | 12,288 | 99.0 MiB |
+| 2,056 | 8,224 | 148.1 MiB |
+
+The 3,072-page point leaves 1,016 slots above the width-four union bound.
+Treat this as an experimental cache size. Window-to-window hit rate,
+prefill placement, append, reject/rewind, RESTORE and capacity remain
+unverified.
+At 5,120 pages the scalar reference in `a5645a43d` logged 20,162,064
+block lookups, a 98.33% hit rate and 1,356.5 MiB of requested KV payload
+for the 96,204-token code request. The 96,274-token prose request logged
+61,872,480 lookups, a 99.25% hit rate and 1,878.2 MiB. Both are fresh
+requests. `session_zero` resets the per-layer map counters before each one.
+The cooperative decode gate currently matches exactly 5,120 pages.
+For a smaller-cache screen, keep the scalar resolver and expert placement
+fixed in both arms. Check the K/V host mirror, full context, reused and
+rejected suffixes and small-to-large requests before clean timing. Use the
+existing KV stream miss, lookup and overflow counters with their map reset
+points, plus separate clean TG and TTFT samples. Convert misses to requested
+page payload using the verified K8V8 shape. The B570 bus traffic and overlap
+remain separate measurements. Test allocating the released VRAM to expert
+slots as its own comparison after the smaller-cache cost is known.
+
 ### DFlash2 expert service and placement
 
 The independent worker-leaf bracket at `6bbd3e3e1` uses native source
