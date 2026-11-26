@@ -671,6 +671,14 @@ Decode changes by −0.055% for code and +0.568% for prose. Complete the
 reverse pair and final pair before applying the declared speed and prefill
 preservation decision.
 
+The reverse-order cooperative process also closes normally with quiet
+validation and no fresh Xe fault. It repeats the input, output, reasoning,
+draft, expert and capture evidence of the first cooperative process. Code
+measures 941.370 PP, 103.553 s TTFT and 16.490 TG. Prose measures 1,040.008 PP,
+92.757 s TTFT and 11.340 TG. The same cooperative configuration varies by
++0.581% code TG and −3.558% prose TG between its two independent processes.
+Compare this process with its following scalar arm for the second pair.
+
 The earlier varied-prose model capture at `b28a9372b` has 6,485 decode
 windows at 33,287 input tokens. The width counts are 2,533, 1,987, 980 and
 985 for widths one to four. Their weighted sum of 13,387 rows agrees with
