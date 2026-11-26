@@ -786,6 +786,19 @@ code workload and a distinct prose request before native placement or
 throughput testing. Keep the all-ratio counts and selected map digest in
 `dflash2_decode_blended_rank_replay_v1`.
 
+The [independent placement replay](../bench/dflash2_blend_independent_capture.py)
+reconstructs only the frozen 75%-code blend at `03d0b3cac`. Require its
+ranking digest, protected prefix and packed slot sizes before using the two
+separate counted 96K code and prose request bodies from `9261c4b44`. Each
+body runs on the retained primary engine with the ordinary stock placement
+and four official warm-ups in a fresh process. The task types match training
+and the request bodies and long context differ. Keep the actual warm-up and
+last-request journals, route checks and CPU counters binding each trace.
+Score both layouts against the exact same routes. Advance to a new placement
+trial only if CPU jobs and logical packed bytes improve on both captures.
+This diagnostic does not change the live map or establish throughput or
+physical traffic. The bounded raw traces serve only this comparison.
+
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
 96-swap and 197,913,600-byte caps. Compare early distinct jobs, routed rows
@@ -869,7 +882,10 @@ Read-only enumeration on the Ryzen 5 5600X (family 19h, model 21h), kernel
 `7.0.0-38-generic`, exposes `cpu`, `ibs_op` and `ibs_fetch` in
 `/sys/bus/event_source/devices`. The data-fabric and memory-controller PMUs
 `amd_df` and `amd_umc` are absent from that list. `perf_event_paranoid` is
-4. IBS activation and physical DRAM bytes remain unmeasured.
+4. On 2026-11-26 the unprivileged user-mode cycles and instructions probe
+also reports no supported events. Leave IBS activation, IPC and physical
+DRAM bytes unknown. Use the earlier matched worker replay for its measured
+scan and expert scaling only.
 
 The first caller-observed process at `7340714a9` matches the clean work and
 emits 4,111 tokens at 16.649 tok/s. The 1,345 windows average 83.67 ms in the

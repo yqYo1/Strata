@@ -71,7 +71,7 @@ def long_route(frame, read):
                 bank_h2d_requested_bytes=int(uploads['requested_H2D_bytes']), placement_preserved=True)
 
 
-def routes(text, samples, arm, *, profile_check=None):
+def routes(text, samples, arm, *, profile_check=None, workloads=WORKLOADS):
     require(arm == 'dflash2' and text.count('strata native head DPAS: ready=1 columns=4 layout=canonical') == 1
             and not re.search(r'(?m)^strata mtp: .*loaded|strata loan audit:|strata DFlash2 tap payload:|'
                               r'^strata (?:trace:|decode timing:)', text), 'unexpected DFlash2 route or observer')
@@ -99,7 +99,7 @@ def routes(text, samples, arm, *, profile_check=None):
         require(all(counts[k] == 0 for k in footer.COPY_KEYS[:6])
                 and 0 < counts['cpu_unique_misses'] <= counts['cpu_entries'], 'post-prefill expert route changed')
         checked[sample['workload']] = dict(long_route(text[start:header.start()], read), expert_work=counts)
-    require(tuple(checked) == WORKLOADS, 'both split-prefill decode handoffs are required')
+    require(tuple(checked) == workloads, 'the selected split-prefill decode handoffs are required')
     return checked
 
 

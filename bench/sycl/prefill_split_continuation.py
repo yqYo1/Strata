@@ -30,7 +30,7 @@ def command(plan):
             '--out', str(root / 'bench')]
 
 
-def read_complete_suite(root, workload_id):
+def read_complete_suite(root, workload_id, *, workloads=WORKLOADS):
     path, = (root / 'bench').glob('*/results.json')
     result = clock.build.previous.read(path)
     params, identity, out = result['params'], result['comparison_identity'], result['results']
@@ -49,23 +49,23 @@ def read_complete_suite(root, workload_id):
     cohort = out['long_generation']
     geometry = cohort['long_generation_input']
     require(cohort['complete'] and cohort['thinking'] and not cohort['speed_only']
-            and not cohort['diagnostic_subset'] and cohort['workload_version'] == 'split-v1'
+            and cohort['diagnostic_subset'] == (len(workloads) == 1) and cohort['workload_version'] == 'split-v1'
             and cohort['reasoning_budget_tokens'] == 0 and cohort['max_tokens'] == MAX_OUTPUT
             and geometry == params['long_generation_input'] == identity['long_generation_input']
-            and geometry['case'] == INPUT_CASE and cohort['selected_workloads'] == list(WORKLOADS),
+            and geometry['case'] == INPUT_CASE and cohort['selected_workloads'] == list(workloads),
             'split-input geometry, thinking or generation workload differs')
     rows = suite.gen.collect_samples(cohort, MAX_OUTPUT)
     require([(s['workload'], s['run'], s['order']) for s in rows] ==
-            [(name, 0, i) for i, name in enumerate(WORKLOADS)] and all(s['controller_eligible'] for s in rows),
-            'both sustained generation samples must qualify')
+            [(name, 0, i) for i, name in enumerate(workloads)] and all(s['controller_eligible'] for s in rows),
+            'the selected sustained generation samples must qualify')
     events = [json.loads(line) for line in (path.parent / 'requests.jsonl').read_text().splitlines()]
     requests = [e for e in events if e['kind'] in ('start', 'result')]
-    suite.gen.warmup_reconciliation(requests, WORKLOADS, MAX_OUTPUT)
+    suite.gen.warmup_reconciliation(requests, workloads, MAX_OUTPUT)
     preflight = [e for e in events if e['kind'] == 'count-preflight']
-    require(len(preflight) == len(WORKLOADS), 'require one count preflight for each split request')
+    require(len(preflight) == len(workloads), 'require one count preflight for each split request')
     samples = [dict(e['sample'], phase=e['phase'], run=e['run'], turn=e['turn'])
                for e in requests if e['kind'] == 'result']
-    for row, sample, checked in zip(rows, samples[-len(WORKLOADS):], preflight, strict=True):
+    for row, sample, checked in zip(rows, samples[-len(workloads):], preflight, strict=True):
         proof = checked['proof']
         require(checked['phase'] == sample['phase'] == 'long-generation/' + row['workload']
                 and checked['run'] == sample['run'] == 0 and proof['input_case'] == row['input_case'] == INPUT_CASE
