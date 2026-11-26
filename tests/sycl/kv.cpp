@@ -1,5 +1,6 @@
 #include "strata/kernels/kv_q4.hpp"
 #include "strata/kernels/kv_q8.hpp"
+#include "strata/kernels/qsa_select.hpp"
 #include "strata/prefill/kernels.hpp"
 #include "strata/sycl/runtime.hpp"
 #include <algorithm>
