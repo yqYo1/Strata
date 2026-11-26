@@ -480,7 +480,20 @@ assets and no fresh Xe fault. Code measures 941.014 PP, 103.580 s TTFT and
 16.264 TG. Prose measures 1,029.666 PP, 93.688 s TTFT and 11.601 TG. Both
 requests reproduce the first scalar process's input, output and reasoning
 hashes, emitted token counts and draft totals. The final cooperative process
-will complete the frozen third pair.
+matches both requests' exact output and reasoning hashes and draft totals.
+Code measures 940.448 PP, 103.638 s TTFT and 17.128 TG. Prose measures
+1,039.353 PP, 92.813 s TTFT and 11.948 TG.
+
+All six processes close normally with quiet validation and no fresh Xe
+fault. Decode improves in every pair, with geometric-mean gains of 5.889%
+for code and 3.120% for prose. Code has the same work in all three pairs.
+The second prose pair includes the different generated work recorded above.
+The paired median candidate/reference prefill-time and TTFT ratios are
+1.000602 and 1.000560 for code, and 0.995469 and 0.995479 for prose. The
+predeclared prefill and TTFT limits therefore fail on code. Preserve the
+scalar model selection and the original outcome. These paired differences
+establish the screen result. The exact prompt dispatch is unchanged, and
+the differences alone do not establish a causal prefill slowdown.
 
 The archived prose trace at `b28a9372b` records a 33,287-token request
 with 11,783 outputs on the unsplit DFlash2 cap-four path. It uses the same
