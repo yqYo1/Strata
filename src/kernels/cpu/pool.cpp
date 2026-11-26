@@ -536,6 +536,10 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
             const int e = (int) i / parts_b_, part = (int) i % parts_b_;
             const int r0 = H * part / parts_b_, r1 = H * (part + 1) / parts_b_;
             s2_expert_down_rows(jobs_[e].blob, split_[(size_t) e].a2, jobs_[e].out, r0, r1);
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+        } else if (mode_ == kDecodeByExpert) {
+            finish_decode_native_expert(id, i);
+#endif
         } else if (mode_ >= 5) {
             // plan v0.3 P6: native layers, 5 = gate/up rows, 6 = down rows
             const int per = mode_ == 5 ? FF : H;
@@ -711,6 +715,62 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
     mode_ = 0;
     ms_drain_ += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
 }
+
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+void ExpertPool::finish_decode_native_expert(int id, unsigned expert) {
+    (void) id;
+    const ExpertJobMulti& job = mjobs_[expert];
+    const NativeFmt& fmt = *nfmt_;
+    SplitBufMulti& scratch = split_multi_[expert];
+    float* hidden[MAXT];
+    const void* quantized[MAXT];
+    for (int t = 0; t < job.nt; ++t) {
+        hidden[t] = scratch.ff[t];
+        quantized[t] = scratch.hq[t];
+    }
+    {
+#ifdef STRATA_CPU_SERVICE_PROFILE
+        service::Profile::Scope profile(service_profile_, id, fmt, service::Op::Gu, job.nt, FF, NativeGuPhase::Decode);
+#endif
+        native_gu_rows(fmt, job.blob, job.nact, job.nt, hidden, 0, FF, NativeGuPhase::Decode);
+    }
+    {
+#ifdef STRATA_CPU_SERVICE_PROFILE
+        service::Profile::Scope profile(service_profile_, id, fmt, service::Op::HiddenQuant, job.nt, FF,
+                                        NativeGuPhase::Decode);
+#endif
+        for (int t = 0; t < job.nt; ++t)
+            native_quant_h(fmt, hidden[t], scratch.hq[t]);
+    }
+    {
+#ifdef STRATA_CPU_SERVICE_PROFILE
+        service::Profile::Scope profile(service_profile_, id, fmt, service::Op::Down, job.nt, H, NativeGuPhase::Decode);
+#endif
+        native_down_rows(fmt, job.blob, quantized, job.nt, job.out, 0, H);
+    }
+}
+
+bool ExpertPool::run_decode_native_by_expert(const NativeFmt& f, ExpertJobMulti* jobs, int n) {
+    if (!jobs || n <= 0 || n > kMaxSplitMulti || f.n_embd != H || f.n_ff != FF ||
+        (f.gu_type != 18 && f.gu_type != 21) || f.d_type != 20)
+        return false;
+    for (int e = 0; e < n; ++e)
+        if (jobs[e].nt < 1 || jobs[e].nt > MAXT) return false;
+#ifdef STRATA_CPU_SERVICE_PROFILE
+    service::Profile::BatchScope batch(service_profile_, NativeGuPhase::Decode);
+#endif
+    const auto start = std::chrono::steady_clock::now();
+    mjobs_ = jobs;
+    nfmt_ = &f;
+    // Each claim owns a disjoint scratch slot and result rows. The ordinary
+    // epoch completion still retires every claim before the caller can reuse them.
+    run_phase(kDecodeByExpert, n);
+    mode_ = 0;
+    multi_bytes += static_cast<int64_t>(n) * f.bytes;
+    ms_drain_ += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
+    return true;
+}
+#endif
 
 void ExpertPool::run(ExpertJob* jobs, int n) {
     if (n <= 0) return;

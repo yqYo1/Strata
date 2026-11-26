@@ -60,6 +60,17 @@ LOCALITY_PROTOCOL = (
     'are separate questions, and the component does not qualify a model speedup.'
 )
 LOCALITY_MODE = False
+SCHEDULE_ARMS = ('split', 'by-expert')
+SCHEDULE_MODE = False
+SCHEDULE_PROTOCOL = (
+    'Replay the same eight held-out width-two and width-four batches with six physical cores and the '
+    'DFlash2 decode IQ3 pair selection. Use the same compiled expert arithmetic, inputs, weights and '
+    'pool in both arms. Compare the current row-split Gate/Up and Down phases against one complete '
+    'expert per claim. The latter keeps the intermediate on the worker and retires all claims before '
+    'the caller proceeds. Prove identical row outputs, guards, total work and affinity. Measure whole '
+    'passes, with five scored samples and three counterbalanced independent pairs. Advance only if '
+    'by-expert is faster in all three paired medians. This is a CPU scheduling screen.'
+)
 need, sha, git = recipe.need, owned.sha, recipe.git
 
 
@@ -75,6 +86,18 @@ def select_locality():
              for round_id, batches in enumerate(((4, 5), (5, 4), (4, 5)))
              for batch in batches
              for layout in (('rotate', 'hot') if round_id == 1 else ('hot', 'rotate'))]
+
+
+def select_schedule():
+    global ROOT, BUILD, RESULT, PROTOCOL, CHECK_ORDER, ORDER, SCHEDULE_MODE
+    SCHEDULE_MODE = True
+    ROOT = B / 'cpu-fixed-expert-schedule-v1'
+    BUILD = ROOT / 'build'
+    RESULT = recipe.RESULT.with_name('cpu-fixed-expert-schedule-current.json')
+    PROTOCOL = SCHEDULE_PROTOCOL
+    CHECK_ORDER = [(0, 6, mode) for mode in SCHEDULE_ARMS]
+    ORDER = [(round_id, 6, mode) for round_id, arms in
+             enumerate((SCHEDULE_ARMS, SCHEDULE_ARMS[::-1], SCHEDULE_ARMS)) for mode in arms]
 
 
 def atomic_json(path, data):
@@ -218,6 +241,8 @@ def prepare():
                LD_LIBRARY_PATH='/opt/intel/oneapi/compiler/2026.2/lib', OMP_NUM_THREADS='1',
                STRATA_IQ_SINGLE_EXACT='0', STRATA_IQ3_PAIR='0', STRATA_CPU_SERVICE='0',
                TMPDIR=str(ROOT / 'tmp'), XDG_CACHE_HOME=str(ROOT / 'cache'))
+    if SCHEDULE_MODE:
+        env['STRATA_IQ3_PAIR'] = '1'
     allowed.update(recipe.host_inventory(env)['files'])
     tools = {str(Path(p).resolve()): sha(p) for p in
              (recipe.CC, recipe.CXX, '/usr/bin/cmake', '/usr/bin/ninja', '/usr/bin/ldd', sys.executable)}
@@ -250,6 +275,8 @@ def prepare():
                processes=[], active=False, ownership_closed=True, gpu_executed=False)
     if LOCALITY_MODE:
         row['observer_environment'] = dict(env, STRATA_CPU_SERVICE='1')
+    if SCHEDULE_MODE:
+        row['configure'].append('-DSTRATA_CPU_EXPERT_SCHEDULE_TEST=ON')
     save(row)
     print('Prepared fixed CPU replay; commit the plan before compiling.', flush=True)
 
@@ -276,6 +303,10 @@ def load():
         need(row['environment']['STRATA_CPU_SERVICE'] == '0'
              and row['observer_environment'] == dict(row['environment'], STRATA_CPU_SERVICE='1'),
              'separate clean and observed worker envelopes required')
+    if SCHEDULE_MODE:
+        need(row['environment']['STRATA_IQ3_PAIR'] == '1'
+             and row['environment']['STRATA_IQ_SINGLE_EXACT'] == row['environment']['STRATA_CPU_SERVICE'] == '0'
+             and row['configure'][-1] == '-DSTRATA_CPU_EXPERT_SCHEDULE_TEST=ON', 'fixed decode scheduling inputs')
     return row
 
 
@@ -333,12 +364,17 @@ def summaries(row, text, mode, cores, timed):
     need(placement['host_cpu'] == host and placement['workers'] == workers
          and placement['caller_computes'] == (cores == 6), 'replay caller and worker placement')
     result = dict(mode=mode, cores=cores, placement=placement)
+    schedule = mode in SCHEDULE_ARMS
+    if schedule:
+        need(cores == 6 and all(v.get('schedule') == mode for v in
+             by_kind['replay_input'] + by_kind['timer_check'] + by_kind['sample']),
+             'wrong decode expert schedule')
     if mode in LOCALITY_ARMS:
         need(cores == 5, 'locality replay requires five pinned workers')
         result.update(locality_summary(fixture, mode, by_kind, timed))
     else:
         need(not by_kind['locality_input'] and not by_kind['locality_workers'], 'unexpected locality records')
-    if mode == 'pool':
+    if mode == 'pool' or schedule:
         actual, = by_kind['replay_input']
         need(all(actual[k] == fixture[k] for k in ('jobs', 'entries', 'logical_bytes', 'unique_blobs', 'unique_bytes'))
              and actual['batches'] == 8 and actual['threads'] == cores and actual['host_works'] == (cores == 6)
@@ -355,7 +391,7 @@ def summaries(row, text, mode, cores, timed):
     if mode in LOCALITY_ARMS:
         byte_count, visits, label = result['locality']['logical_bytes'], 32, 'locality'
         need(timer['mode'] == label and timer['layout'] == LOCALITY_ARMS[mode][0], 'wrong locality timer arm')
-    elif mode == 'pool':
+    elif mode == 'pool' or schedule:
         byte_count, visits, label = fixture['logical_bytes'], fixture['jobs'], 'replay'
     else:
         byte_count, visits, label = fixture['unique_bytes'], 1, 'scan'
@@ -372,6 +408,8 @@ def summaries(row, text, mode, cores, timed):
             phases = [sample[k] for k in ('gu_s', 'q_s', 'down_s')]
             need(all(math.isfinite(v) and v >= 0 for v in phases) and sum(phases) <= sample['wall_s'] + .001,
                  'bounded disjoint pool stage times')
+            if mode == 'by-expert':
+                need(phases == [0, 0, 0], 'by-expert work has no disjoint stage clocks')
         if label == 'locality':
             need(sample['layout'] == result['locality']['layout'], 'wrong scored locality arm')
     return dict(result, samples=samples, timer=timer,
@@ -429,6 +467,8 @@ def execute(stage):
                 if mode in LOCALITY_ARMS:
                     layout, batch = LOCALITY_ARMS[mode]
                     args = ['replay-locality', str(ROOT / 'replay.txt'), str(batch), layout, stage]
+                elif mode in SCHEDULE_ARMS:
+                    args = ['replay-schedule', str(ROOT / 'replay.txt'), mode, stage]
                 elif mode == 'pool':
                     args = ['replay', str(ROOT / 'replay.txt'), str(cores), stage]
                 else:
@@ -446,6 +486,8 @@ def execute(stage):
                           for x in measured}) == len(ORDER), 'independent replay process count')
                 if LOCALITY_MODE:
                     row['locality_pairs'] = locality_pairs(measured)
+                elif SCHEDULE_MODE:
+                    row['schedule_result'] = schedule_result(measured)
                 else:
                     row['medians_s_per_pass'] = {mode: {
                         str(cores): statistics.median(x['median_s_per_pass'] for x in measured
@@ -458,7 +500,8 @@ def execute(stage):
     finally:
         row.update(active=bool(owner.active), ownership_closed=not owner.active and all(owned.closed(e) for e in owner.commands))
         save(row)
-    print(row['stage'], row.get('locality_pairs', row.get('medians_s_per_pass', {})), flush=True)
+    print(row['stage'], row.get('locality_pairs', row.get('schedule_result', row.get('medians_s_per_pass', {}))),
+          flush=True)
 
 
 def locality_pairs(measured):
@@ -479,10 +522,24 @@ def locality_pairs(measured):
     return result
 
 
+def schedule_result(measured):
+    ratios = []
+    for a, b in zip(measured[::2], measured[1::2], strict=True):
+        arms = {c['mode']: c['median_s_per_pass'] for c in (a, b)}
+        need(a['round'] == b['round'] and set(arms) == set(SCHEDULE_ARMS)
+             and min(arms.values()) > 0, 'unpaired decode expert schedule')
+        ratios.append(arms['by-expert'] / arms['split'])
+    need(len(ratios) == 3, 'expected three decode scheduling pairs')
+    return dict(by_expert_over_split=ratios, eligible=all(v < 1.0 for v in ratios))
+
+
 if __name__ == '__main__':
     if sys.argv[1:2] == ['--locality']:
         sys.argv.pop(1)
         select_locality()
+    elif sys.argv[1:2] == ['--schedule']:
+        sys.argv.pop(1)
+        select_schedule()
     need(sys.executable == '/home/yayoi/.local/share/strata-sycl/venv/bin/python3' and len(sys.argv) == 2
          and sys.argv[1] in ('prepare', 'build', 'check', 'measure'), 'pinned Python and prepare|build|check|measure required')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:

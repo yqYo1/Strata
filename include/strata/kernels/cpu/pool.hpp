@@ -164,6 +164,10 @@ public:
     /// Plan v0.3 P6: the same for a native pack's layer (ggml-cpu arithmetic, `nact` activations).
     void run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n,
                                 NativeGuPhase phase = NativeGuPhase::Decode);
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+    // CPU fixture arm. Complete all three stages of an expert in one claim.
+    bool run_decode_native_by_expert(const NativeFmt& f, ExpertJobMulti* jobs, int n);
+#endif
     static constexpr int kMaxSplitMulti = 96;
     /// run_split_multi's phases, accumulated ms: gate/up rows, the intermediate quantization, down rows.
     double ms_multi_gu = 0, ms_multi_q = 0, ms_multi_down = 0;
@@ -203,6 +207,10 @@ private:
     void worker(int id);
     void drain(int id, ExpertScratch& scratch, uint32_t epoch);
     void run_phase(int mode, int n_tasks);
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+    static constexpr int kDecodeByExpert = 7;
+    void finish_decode_native_expert(int id, unsigned expert);
+#endif
     /// Claim the next job of batch `epoch`, or -1 (that batch is exhausted, or it is not the current one).
     int claim(uint32_t epoch);
     /// Publish the batch whose description the caller has just written: reset `done`, then `head`, then the epoch.

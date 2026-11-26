@@ -949,6 +949,27 @@ runtime identities and executable. The closed inventory has 110 files and
 `9277f3d5034636228953e60f273a02269c494243834bfbcf3376cbee7d89f2b2`
 over the sorted compact JSON list of relative paths, sizes and file hashes.
 
+The same [fixed replay](../bench/sycl/cpu_roofline/fixed_replay.py) has a
+`--schedule` comparison for the dependency between Gate/Up, hidden
+quantization and Down. The reference retires all Gate/Up row tasks,
+quantizes the intermediates on the caller, and starts a second pool epoch
+for Down. The candidate keeps these three operations in one claim per
+expert and retires all jobs before returning. Its scratch and output
+ownership remain per job. It uses the regular pool's claim and retirement
+protocol. Only the CPU replay build can select this candidate.
+
+Replay the original eight held-out batches with 13–36 distinct jobs per
+batch, 201 jobs and 226 routed entries in total. The weights cover IQ3_XXS
+and IQ3_S with IQ4_NL Down and the inputs exercise one to three rows per
+expert. Use five pinned workers and the caller, with the current DFlash2
+IQ3 selection. Check serial-output bits and guards in each arm. Three
+counterbalanced matched process pairs use five eligible whole-pass timing
+batches per process. Advance only when the by-expert median is faster in
+all three pairs. A gain would include any change in balance, locality and
+epoch costs. Per-stage wall times from the split scheduler do not transfer
+to the candidate's overlapping worker stages. Native serving and hardware
+throughput claims require separate evidence.
+
 The [stock admission controller](../bench/dflash2_decode_stock_global_restore.py)
 uses the retained primary executable and recovers the original restore plans
 from `3d75f7e91`. It generates only the stock global profile. Both loaders

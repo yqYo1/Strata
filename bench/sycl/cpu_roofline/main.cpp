@@ -390,16 +390,24 @@ struct ReplayBatch {
     }
 
     // The pool borrows these buffers until its synchronous retirement.
-    void run(cpu::ExpertPool& pool) noexcept {
+    void run(cpu::ExpertPool& pool, bool by_expert = false) {
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+        if (by_expert) {
+            require(pool.run_decode_native_by_expert(*format, jobs.data(), static_cast<int>(jobs.size())),
+                    "by-expert schedule refused the replay batch");
+            return;
+        }
+#endif
+        (void) by_expert;
         pool.run_split_multi_native(*format, jobs.data(), static_cast<int>(jobs.size()),
                                     cpu::NativeGuPhase::Decode);
     }
 
-    void validate(cpu::ExpertPool& pool) {
+    void validate(cpu::ExpertPool& pool, bool by_expert = false) {
         for (const auto& job : jobs)
             for (int t = 0; t < job.nt; ++t)
                 std::fill_n(job.out[t], cpu::H, std::numeric_limits<float>::quiet_NaN());
-        run(pool);
+        run(pool, by_expert);
         for (const auto& job : jobs) {
             std::array<std::array<float, cpu::FF>, replay_rows> hidden;
             std::array<std::array<float, cpu::H>, replay_rows> expected;
@@ -421,6 +429,8 @@ struct ReplayBatch {
                 for (int row = 0; row < cpu::H; ++row)
                     require(std::isfinite(expected[t][row]) && job.out[t][row] == expected[t][row],
                             "replay pool differs from serial native output");
+                require(std::memcmp(job.out[t], expected[t].data(), cpu::H * sizeof(float)) == 0,
+                        "replay pool changes the serialized output bits");
             }
         }
         for (const auto& in : acts) if (in) in->check();
@@ -515,7 +525,7 @@ void replay_locality(ReplayBatch& batch, cpu::ExpertPool& pool, int batch_index,
 }
 
 void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int threads, bool timing,
-                  int locality_batch = -1, bool rotating = false) {
+                  int locality_batch = -1, bool rotating = false, std::string_view schedule = {}) {
     const bool host_works = threads == 6;
     const int workers = threads - static_cast<int>(host_works);
     cpu::ExpertPool pool(workers, true, host_works);
@@ -552,8 +562,10 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
     for (const auto& layer : layers)
         for (const auto& blob : layer.weights)
             if (blob) { ++unique_blobs; unique_bytes += blob->bytes; }
+    const bool by_expert = schedule == "by-expert";
+    const std::string schedule_field = schedule.empty() ? "" : ",\"schedule\":\"" + std::string(schedule) + "\"";
     auto validate = [&] {
-        for (auto& batch : batches) batch.validate(pool);
+        for (auto& batch : batches) batch.validate(pool, by_expert);
         for (const auto& layer : layers)
             for (const auto& blob : layer.weights) if (blob) blob->check();
         verify_placement(topo.host_core, worker_cores);
@@ -564,10 +576,10 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
               << ",\"entries\":" << entries << ",\"logical_bytes\":" << visits
               << ",\"unique_blobs\":" << unique_blobs << ",\"unique_bytes\":" << unique_bytes
               << ",\"threads\":" << threads << ",\"host_works\":" << (host_works ? "true" : "false")
-              << ",\"serial_output_equal\":true,\"verified_affinity\":true}" << std::endl;
+              << ",\"serial_output_equal\":true,\"verified_affinity\":true" << schedule_field << '}' << std::endl;
     if (timing) {
-        measure([&] { for (auto& batch : batches) batch.run(pool); }, visits, jobs,
-                "\"mode\":\"replay\",\"threads\":" + std::to_string(threads), &pool, true);
+        measure([&] { for (auto& batch : batches) batch.run(pool, by_expert); }, visits, jobs,
+                "\"mode\":\"replay\",\"threads\":" + std::to_string(threads) + schedule_field, &pool, true);
         validate();
     }
 }
@@ -576,6 +588,14 @@ int main(int argc,char** argv) try {
     std::cout<<std::setprecision(12);
     const auto topo=cpu::detect_cpu_topology(true);
     require(topo.host_core>=0 && topo.worker_cores.size()>=5,"six physical CPUs required");
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+    if (argc == 5 && std::string_view(argv[1]) == "replay-schedule") {
+        const std::string_view schedule(argv[3]), mode(argv[4]);
+        require((schedule == "split" || schedule == "by-expert") &&
+                (mode == "measure" || mode == "check"), "expert schedule replay arm");
+        route_replay(argv[2], topo, 6, mode == "measure", -1, false, schedule);
+    } else
+#endif
     if (argc == 5 && std::string_view(argv[1]) == "replay") {
         const int threads = std::stoi(argv[3]);
         const std::string_view mode(argv[4]);
