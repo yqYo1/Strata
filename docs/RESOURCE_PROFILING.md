@@ -337,6 +337,15 @@ The next cooperative-KV comparison needs a retained-build reader that
 recovers the original controls from Git and verifies the current run's
 inputs separately. It still needs the same candidate executable.
 
+The closed samples in `eb99d69fb` limit the case for repeating the grid
+immediately. In the first pair, the grid gains 1.99% code TG while changing
+the generated count from 3,195 to 3,269 and the draft totals. The second
+pair preserves code work and loses 0.21%. The two fully checked prose pairs
+preserve work and gain 0.13% and 0.35%. The positive differences from the
+third pair remain observations from the failed final build check. Keep the
+reference scorer fixed for the cooperative-KV comparison. Revisit the grid
+on independent model evidence before combining it with another change.
+
 Retired the raw comparison and admission output scopes below after verifying
 the closed owners and the compact committed decisions. Verified the root
 `record.json` files. The primary fallback and QSA build serve the cooperative
@@ -435,6 +444,18 @@ The first pair improves decode by 7.34% and 3.38% respectively. The code
 clock comes from the first long request and the prose clock from the next.
 Complete the other two independent pairs before deciding whether the gain
 and prefill preservation reproduce.
+
+Both processes report the same KV resolver counters at the long request
+footers. Code ends at 20,162,064 page lookups and 1,356.5 MiB of rounded
+logical miss payload. Prose ends at 61,872,480 lookups and 1,878.2 MiB.
+The footer reads the cache counters accumulated since map initialization
+or reset and computes payload at 4,224 bytes per miss. Use the matched
+totals as a work check at each footer. They include the requests' preceding
+work since the reset. They give no physical PCIe byte count, achieved
+transfer rate or separate decode interval. The TG gain motivates measuring
+resolver work and its place in the dependency chain at fixed recorded demand.
+[Counter readout](../src/program/generate.cpp#L7614) ·
+[Map reset](../src/kernels/sycl/kv_stream.cpp#L147).
 
 The archived prose trace at `b28a9372b` records a 33,287-token request
 with 11,783 outputs on the unsplit DFlash2 cap-four path. It uses the same
