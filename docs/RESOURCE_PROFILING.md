@@ -657,6 +657,11 @@ eight jobs four times, either reusing one copy or cycling through all four.
 The active address footprints are 17,408,000 versus 69,632,000 bytes for
 IQ3_XXS and 18,636,800 versus 74,547,200 bytes for IQ3_S.
 
+The first preparation stopped before creating its run directory because the
+capture referenced a retired worktree. The reader now checks the tracked
+profile against the capture digest and the identical bytes at its original
+source revision. It preserves the original resident membership and descriptor.
+
 Check complete serial output, every copied weight byte, buffer guards and
 affinity. Gather per-worker calls and rows in separate observed processes.
 Use three counterbalanced clean process pairs per format with five timing

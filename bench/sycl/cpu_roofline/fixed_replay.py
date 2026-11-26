@@ -27,6 +27,7 @@ BUILD = ROOT / 'build'
 RESULT = recipe.RESULT.with_name('cpu-fixed-expert-replay-current.json')
 CAPTURE_COMMIT = 'b28a9372bc1943812a87d170402435cc1c7425f0'
 CAPTURE_KEY = 'dflash2_long_routing_holdout_v1'
+PROFILE = 'data/expert-profile.bin'
 ROUTE = struct.Struct('<ii10i40s')
 SELECTED = '931fa301815eb3824492e10c571fcd0e63d1f3124ff9d09a3b93df305c080933'
 PROTOCOL = (
@@ -41,7 +42,7 @@ PROTOCOL = (
 )
 REQUIRED = ('bench/sycl/cpu_roofline/main.cpp', 'src/kernels/cpu/pool.cpp',
             'src/kernels/cpu/native_expert.cpp', 'src/kernels/cpu/iq_avx2.cpp')
-PROJECT = (*recipe.PROJECT, 'tools/sycl/cpu_roofline.py', 'tools/sycl/cpu_work_census.py')
+PROJECT = (*recipe.PROJECT, 'tools/sycl/cpu_roofline.py', 'tools/sycl/cpu_work_census.py', PROFILE)
 CHECK_ORDER = [(0, cores, mode) for cores in (1, 6) for mode in ('pool', 'scan')]
 ORDER = [(round_id, cores, mode)
          for round_id, counts in enumerate((range(1, 7), range(6, 0, -1), (3, 6, 1, 5, 2, 4)))
@@ -100,9 +101,13 @@ def fixture_from_capture():
     need(trace.stat().st_size == observed['routing_bytes'] <= 64 << 20
          and sha(trace) == observed['routing_sha256'], 'original routing capture changed')
     assets = capture['routing_metadata']
-    need(all(sha(assets[k]) == assets[k + '_sha256'] for k in ('manifest', 'profile'))
-         and Path(assets['manifest']) == calibration.METADATA, 'original native format or cache profile changed')
-    membership = census.expected_membership(assets['profile'])
+    profile = P / PROFILE
+    original_profile = git(P, 'show', capture['source_commit'] + ':' + PROFILE)
+    need(sha(profile) == hashlib.sha256(original_profile).hexdigest() == assets['profile_sha256'],
+         'tracked profile differs from the original capture')
+    need(Path(assets['manifest']) == calibration.METADATA and sha(calibration.METADATA) == assets['manifest_sha256'],
+         'original native format manifest changed')
+    membership = census.expected_membership(profile)
     need(hashlib.sha256(b''.join(x.to_bytes(64, 'little') for x in membership)).hexdigest()
          == observed['membership_sha256'], 'captured resident-expert membership')
     format_rows = census.manifest_formats(assets['manifest'])
