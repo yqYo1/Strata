@@ -212,6 +212,26 @@ score-to-selection time and the isolated selector time. The existing shared
 dispatcher also serves prefill and the single-token layer path, so a verifier
 trial needs a phase-specific call site.
 
+The separate [two-bit selector fixture](../bench/decode_qsa_topk_packed.py)
+keeps the reference scorer and starts from the retained binary-threshold
+selection entry. It tests sixteen two-bit scans in place of thirty-two
+one-bit scans. Each scan counts the three nonzero digits of the current
+prefix in 19-bit fields within one unsigned 64-bit sum. Each query covers
+at most 262,144 cells, so no field can carry into its neighbor.
+The zero digit is the remainder. Rank advances inside the selected prefix,
+while the retained emission pass keeps the existing weighted tail and
+ascending tie order.
+
+For width four, subtracting the original scorer envelope from the original
+combined graph in the profiled run below gives about 0.386 ms at 96K and
+1.561 ms at capacity. This motivates a selector-only clock. Separate graph
+envelopes can also differ in overhead. Compare selector-only and combined
+completion on the same device allocation and stock score input, in three
+independent processes. Check raw repeated keys, signed zero, infinities,
+NaNs and negative scores alongside live scorer values, guards, all tail
+remainders and replay across changing extents. Faster completion needs
+measurement because the packed count adds integer operations.
+
 The [decode scorer grid comparison](../bench/decode_qsa_score_grid.py)
 isolates the preceding score dispatch. At the 262,144-cell allocation,
 the existing scorer launches 65,538 workgroups per query. A 96,204-cell step
