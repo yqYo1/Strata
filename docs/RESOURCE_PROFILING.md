@@ -330,6 +330,14 @@ logical weight-byte savings on the unchanged held-out half. These caps
 are hypotheses. Before a native trial, measure post-handoff headroom and
 charge added upload, GPU work and retirement before the next prefill.
 
+The replay at `a5328e29d` reproduces the original 4,668,262 CPU jobs. On
+the holdout, the extra caps admit 137, 272 and 402 experts and remove 6.30%,
+12.05% and 16.89% of CPU jobs, respectively. At 768 MiB the logical weight
+visits drop by 0.890 TB (16.90%). These are same-work replay counts. Use
+`dflash2_decode_extra_capacity_replay_v1` for the exact tested byte budgets,
+rank hashes and sample counts. Check actual post-prefill headroom and
+maximum allocation before choosing a native capacity test.
+
 The replay at `e3d371974` verifies 4,668,262 original stock CPU jobs.
 Training uses the first 3,242 verifier windows and evaluation uses the
 remaining 3,243. All arms preserve the same protected members, 1,256 slot

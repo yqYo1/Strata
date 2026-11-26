@@ -678427,5 +678427,89 @@
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "dflash2_decode_extra_capacity_replay_v1": {
+    "source_commit": "a5328e29d2ae1adf603b50a42398db7cac450570",
+    "capture_commit": "b28a9372bc1943812a87d170402435cc1c7425f0",
+    "routing_sha256": "08dce3920dea2de8752b16cbbbaddc07e9486515dfde39264c92fa116b27926f",
+    "training_windows": 3242,
+    "holdout_windows": 3243,
+    "fixed_slots": 1256,
+    "fixed_bytes": 2575206400,
+    "fixed_order_sha256": "18279301970de96d5888055dcaf239962610506f9fa3b624424b6903d58e6776",
+    "cases": [
+      {
+        "cap_bytes": 0,
+        "added_slots": 0,
+        "extra_bytes": 0,
+        "extra_order_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "holdout": {
+          "cpu_jobs": 2581636,
+          "cpu_entries": 3359952,
+          "logical_job_blob_bytes": 5266123776000,
+          "jobs_NT": [
+            1975455,
+            464103,
+            112021,
+            30057
+          ]
+        }
+      },
+      {
+        "cap_bytes": 268435456,
+        "added_slots": 137,
+        "extra_bytes": 268211200,
+        "extra_order_sha256": "bf01cdad38baddc8dd484a452c3fedc765aa7487b5befaf6ec25376a27d98b58",
+        "holdout": {
+          "cpu_jobs": 2418934,
+          "cpu_entries": 3099535,
+          "logical_job_blob_bytes": 4946569472000,
+          "jobs_NT": [
+            1881479,
+            418339,
+            95086,
+            24030
+          ]
+        }
+      },
+      {
+        "cap_bytes": 536870912,
+        "added_slots": 272,
+        "extra_bytes": 534681600,
+        "extra_order_sha256": "a2a697f720674bea34a88ece38791e752752293fc7513ef45a406b09a184c96f",
+        "holdout": {
+          "cpu_jobs": 2270521,
+          "cpu_entries": 2853127,
+          "logical_job_blob_bytes": 4645549286400,
+          "jobs_NT": [
+            1800543,
+            374443,
+            78442,
+            17093
+          ]
+        }
+      },
+      {
+        "cap_bytes": 805306368,
+        "added_slots": 402,
+        "extra_bytes": 805043200,
+        "extra_order_sha256": "577c2355037aeca506fc10029c9c30867180b4659da28a6f7ae882bce6764445",
+        "holdout": {
+          "cpu_jobs": 2145579,
+          "cpu_entries": 2652331,
+          "logical_job_blob_bytes": 4375978572800,
+          "jobs_NT": [
+            1729070,
+            338657,
+            65461,
+            12391
+          ]
+        }
+      }
+    ],
+    "sort": "Highest training CPU job count per aligned extra byte, tie by layer and expert ID.",
+    "scope": "Fixed-work replay on the held-out half of one observed prose decode. Preserve every existing slot, including protected and lent positions. Each budget admits a prefix of the same extra ranking. The extra bytes are optional capacity hypotheses, not measured available memory. No engine allocation, transfer or timing.",
+    "conclusion": "At the 768 MiB cap, fixed-work CPU jobs fell 16.89% and logical weight bytes fell 16.90% on the held-out half. This measures neither available VRAM nor decode latency.",
+    "next": "After the current profile comparison, measure post-prefill free memory and maximum allocation on the retained profile. Price added reference residency, upload and retirement with the same context before a native comparison."
   }
 }
