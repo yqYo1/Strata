@@ -338,6 +338,23 @@ visits drop by 0.890 TB (16.90%). These are same-work replay counts. Use
 rank hashes and sample counts. Check actual post-prefill headroom and
 maximum allocation before choosing a native capacity test.
 
+All three closed placement processes report 1,781 MiB free at startup and
+845,776,220 accounted drafter bytes on each long request after activation.
+The 96K prefill path reports a per-allocation maximum of 10,132,807,680
+bytes. These observations are taken at different boundaries. The long
+prefill destructors retire request scratch before cache refill, while the
+draft arena is loaded after refill and the prompt tap owner is then released.
+The existing loan audit observes free memory before the draft activation.
+
+The stock native serve route now accepts the opt-in
+`STRATA_SYCL_DECODE_HANDOFF_MEMORY=1` observer. It records byte-precise free
+and total memory and the current expert arena immediately before prefill,
+after refill, after DFlash2 activation and tap release, and after the last
+decode commit completes if a window ran. Use a separate diagnostic process.
+Bind the four ordered records to the same accepted prompt, actual split-prefill
+allocation limit and unchanged stock placement. A missing query stops the
+diagnostic. The source currently awaits compilation and native validation.
+
 The replay at `e3d371974` verifies 4,668,262 original stock CPU jobs.
 Training uses the first 3,242 verifier windows and evaluation uses the
 remaining 3,243. All arms preserve the same protected members, 1,256 slot

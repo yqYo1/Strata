@@ -3630,6 +3630,23 @@ int main(int argc, char** argv) {
         return df2_taps.begin(n, 0, why);
     };
     const strata::prefill::Dflash2PrefillTaps::LayerTap df2_layer_tap{df2_taps};
+    const char* df2_handoff_memory_env = std::getenv("STRATA_SYCL_DECODE_HANDOFF_MEMORY");
+    const bool df2_handoff_memory = use_df2 && !multi_gpu && df2_handoff_memory_env &&
+        std::strcmp(df2_handoff_memory_env, "1") == 0;
+    auto mark_df2_handoff_memory = [&](const char* phase, int64_t prompt_tokens, int64_t first_read) {
+        size_t free_bytes = 0, total_bytes = 0;
+        if (cudaMemGetInfo(&free_bytes, &total_bytes) != cudaSuccess ||
+            total_bytes == 0 || free_bytes > total_bytes ||
+            std::fprintf(stderr, "strata DFlash2 handoff memory: phase=%s prompt=%lld read_from=%lld "
+                                 "free_bytes=%zu total_bytes=%zu expert_slots=%lld expert_bytes=%llu\n",
+                         phase, (long long)prompt_tokens, (long long)first_read, free_bytes, total_bytes,
+                         (long long)xcache.slots(), (unsigned long long)xcache.bytes()) < 0 ||
+            std::fflush(stderr) != 0) {
+            std::printf("ERR DFlash2 handoff memory observation failed at %s\n", phase);
+            return false;
+        }
+        return true;
+    };
     auto df2_activate = [&](strata::core::Verifier& verifier, const std::vector<int64_t>& ids,
                             int64_t resume, int max_drafts, std::string& why) {
         if (!use_df2) return true;
@@ -6470,6 +6487,8 @@ int main(int argc, char** argv) {
             if (use_df2 && !df2_begin_prompt(n, read_from, err)) {
                 std::printf("ERR %s\n", err.c_str()); return 1;
             }
+            const bool observe_handoff_memory = df2_handoff_memory && n - read_from > std::max<int64_t>(o.short_read, 0);
+            if (observe_handoff_memory && !mark_df2_handoff_memory("before-prefill", n, read_from)) return 1;
 #endif
             conversations.limit_reuse(read_from);
             pp_total = n;
@@ -6879,9 +6898,15 @@ int main(int argc, char** argv) {
             tr("prompt done (slots refilled)");
 #ifdef STRATA_ENABLE_SYCL
             if (use_df2) {
-                if (cancelled) df2_taps.release();
-                else if (!df2_activate(ver, ids, read_from, S_mtp - 1, err)) {
-                    std::printf("ERR %s\n", err.c_str()); return 1;
+                if (cancelled) {
+                    df2_taps.release();
+                } else {
+                    // Activation loads draft weights and retires the prompt taps.
+                    if (observe_handoff_memory && !mark_df2_handoff_memory("after-refill", n, read_from)) return 1;
+                    if (!df2_activate(ver, ids, read_from, S_mtp - 1, err)) {
+                        std::printf("ERR %s\n", err.c_str()); return 1;
+                    }
+                    if (observe_handoff_memory && !mark_df2_handoff_memory("after-draft-activation", n, read_from)) return 1;
                 }
             }
 #endif
@@ -7122,6 +7147,8 @@ int main(int argc, char** argv) {
                 return 1;
             }
 #ifdef STRATA_ENABLE_SYCL
+            if (observe_handoff_memory && dec_windows > 0 && !cancelled && std::strcmp(finish, "cancel") != 0 &&
+                !mark_df2_handoff_memory("after-decode", n, read_from)) return 1;
             decode_service.finish(!cancelled && std::strcmp(finish, "cancel") != 0);
 #endif
 #ifdef STRATA_CPU_SERVICE_PROFILE
