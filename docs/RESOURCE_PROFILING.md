@@ -457,6 +457,14 @@ resolver work and its place in the dependency chain at fixed recorded demand.
 [Counter readout](../src/program/generate.cpp#L7614) ·
 [Map reset](../src/kernels/sycl/kv_stream.cpp#L147).
 
+The second cooperative process closes normally with quiet validation,
+unchanged assets and no fresh Xe fault. Code measures 938.946 tok/s PP,
+103.797 s TTFT and 17.091 tok/s TG. Prose measures 1,040.538 tok/s PP,
+92.706 s TTFT and 11.947 tok/s TG. Both requests match the preceding
+cooperative process's input hashes, generated counts, draft totals, KV
+footer totals and all 18 capture dispatch records. Compare this process
+with the following scalar process in the reverse-order pair.
+
 The archived prose trace at `b28a9372b` records a 33,287-token request
 with 11,783 outputs on the unsplit DFlash2 cap-four path. It uses the same
 262,144-cell logical and 20,480-cell resident K8V8 geometry. Replaying its
