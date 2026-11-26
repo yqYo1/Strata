@@ -601,12 +601,14 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
     ss_ = &ss;
     hits_ = hits;
 #ifdef STRATA_ENABLE_SYCL
-    const char* kv_coalesced = std::getenv("STRATA_SYCL_DECODE_KV_COALESCED");
-    if (kv_coalesced && std::strcmp(kv_coalesced, "0") != 0 && std::strcmp(kv_coalesced, "1") != 0) {
-        err = "verify: STRATA_SYCL_DECODE_KV_COALESCED must be 0 or 1"; return false;
+    decode_kv_planner_ = decode_kv_planner_from_text(std::getenv("STRATA_SYCL_DECODE_KV_COALESCED"));
+    if (decode_kv_planner_ == DecodeKvPlanner::invalid) {
+        err = "verify: STRATA_SYCL_DECODE_KV_COALESCED must be 0, 1, or 3"; return false;
     }
-    decode_kv_coalesced_ = kv_coalesced && std::strcmp(kv_coalesced, "1") == 0;
-    if (decode_kv_coalesced_) {
+    if (decode_kv_planner_ == DecodeKvPlanner::cooperative_width_3 && tap_req_.empty()) {
+        err = "verify: width-three cooperative KV requires DFlash2 target taps"; return false;
+    }
+    if (decode_kv_planner_ != DecodeKvPlanner::scalar) {
         try {
             if (strata::kernels::kv_stream_copy_group_cap_from_text(
                     std::getenv("STRATA_SYCL_KV_COPY_GROUPS")) != 0) {
@@ -1288,7 +1290,7 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
                 const VerifyKvShape kv_shape{n, st.map.n_blocks, st.map.n_slots,
                     s.page_size, s.n_head_kv, s.head_dim, cap_,
                     st.kv_mode == 1 && qsa_kv_format(st) == kKvInt8};
-                if (decode_verify_coalesced_kv(decode_kv_coalesced_, input, kv_shape)) {
+                if (decode_verify_coalesced_kv(decode_kv_planner_, input, !tap_req_.empty(), kv_shape)) {
                     decode_kv_stream_resolve_coalesced(st.map, qsa_attn_pools(st), st.host,
                         kKvInt8, sel_ + (size_t) tb * cap_, step_ + tb * kStepCount,
                         n, cap_, s, cs, 0);
@@ -1720,7 +1722,8 @@ bool Verifier::capture(int T, std::string& err, VerifyInput input) try {
                  static_cast<unsigned long long>(window.q6_reference_calls),
                  static_cast<unsigned long long>(window.q6_columns_calls));
     std::fprintf(stderr, "strata verify KV_PLAN: phase=%s tokens=%d enabled=%d scalar_calls=%llu coalesced_calls=%llu\n",
-                 input == VerifyInput::prompt ? "prompt" : "decode", T, int(decode_kv_coalesced_),
+                 input == VerifyInput::prompt ? "prompt" : "decode", T,
+                 int(decode_kv_planner_ != DecodeKvPlanner::scalar),
                  static_cast<unsigned long long>(window.kv_scalar_calls),
                  static_cast<unsigned long long>(window.kv_coalesced_calls));
     std::fprintf(stderr, "strata verify centering: phase=%s tokens=%d enabled=%d centered_calls=%llu columns_calls=%llu\n",

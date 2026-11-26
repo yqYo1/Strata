@@ -539,6 +539,27 @@ separate same-binary model check, with other widths and prefill fixed.
 Keep the temporary fixture build for the bounded kernel trace below.
 Review the build and its logs when the trace decision closes.
 
+The model-trial source reads `STRATA_SYCL_DECODE_KV_COALESCED=3` at verifier
+initialization. It admits cooperative resolution only for the three-query
+decode operation on the DFlash2 target, at the existing streamed K8V8
+geometry with the existing copy-group cap of zero. A fresh process with
+`=0` runs the scalar reference. The earlier `=1` experiment still selects
+only widths two and four. The host verifier-policy fixture covers all three
+settings, malformed options, phase, owner and geometry. Build the model-trial
+source only after the component speed gate. Rebuild all translation units that
+consume the changed verifier or window policy headers. In both model arms
+verify the finalized prompt and decode captures, and require actual width-three
+work before comparing the results.
+
+The previous 82-input admission processed widths one, two and four. For
+width-three admission, recover the exact 33,287-input varied-prose prompt from
+`b28a9372b` and bound the output for the initial probe. The archived process
+verifies widths 1, 3, 3, 3, 4, 4, 1 and 2 in its first eight decode windows.
+Keep spec4, draft confidence, starting placement and the unsplit verifier
+fixed in both arms. Require width three and at least one scalar fallback width
+in both actual traces. Keep the bounded output probe separate from the paired
+96K throughput and physical-context/RESTORE checks.
+
 The earlier component result at `34cbaf29c` gives a control for the
 mechanism. With zero missing pages, median launch-through-completion time
 falls from 0.965 to 0.375 ms at width two and from 1.876 to 0.699 ms at width

@@ -30,13 +30,27 @@ struct VerifyKvShape {
     bool streamed_int8 = false;
 };
 
-// 34cbaf29c: all six cells improved in each of three independent process
-// pairs. Keep this model-trial opt-in separate from prompt and other shapes.
-constexpr bool decode_verify_coalesced_kv(bool enabled, VerifyInput input,
-                                   const VerifyKvShape& s) {
-    return enabled && input == VerifyInput::decode && s.streamed_int8 &&
-        (s.queries == 2 || s.queries == 4) && s.logical_pages == 65536 &&
-        s.resident_pages == 5120 && s.page_size == 4 && s.kv_heads == 2 &&
+enum class DecodeKvPlanner : uint8_t { scalar, cooperative_widths_2_4, cooperative_width_3, invalid };
+
+constexpr DecodeKvPlanner decode_kv_planner_from_text(const char* option) {
+    if (!option) return DecodeKvPlanner::scalar;
+    if (option[0] == '\0' || option[1] != '\0') return DecodeKvPlanner::invalid;
+    switch (option[0]) {
+        case '0': return DecodeKvPlanner::scalar;
+        case '1': return DecodeKvPlanner::cooperative_widths_2_4;
+        case '3': return DecodeKvPlanner::cooperative_width_3;
+        default: return DecodeKvPlanner::invalid;
+    }
+}
+
+// Keep the measured width-two/four setting and the independent DFlash2
+// width-three trial disjoint. Prompt always retains its original resolver.
+constexpr bool decode_verify_coalesced_kv(DecodeKvPlanner planner, VerifyInput input,
+                                          bool dflash2, const VerifyKvShape& s) {
+    return input == VerifyInput::decode && s.streamed_int8 &&
+        ((planner == DecodeKvPlanner::cooperative_widths_2_4 && (s.queries == 2 || s.queries == 4)) ||
+         (planner == DecodeKvPlanner::cooperative_width_3 && dflash2 && s.queries == 3)) &&
+        s.logical_pages == 65536 && s.resident_pages == 5120 && s.page_size == 4 && s.kv_heads == 2 &&
         s.head_dim == 256 && s.selection_capacity == 2051;
 }
 
