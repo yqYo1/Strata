@@ -970,6 +970,17 @@ research scopes overlapped part of the candidate process, each capped at
 closure. Treat the observed code and prose gains as a first pair and finish
 the two planned repetitions before a performance decision.
 
+Charging a full packed expert upload for each remaining CPU job would
+require at least 31.24 GB/s for code and 38.18 GB/s for prose at 70 tok/s.
+This lower bound uses the measured candidate's CPU jobs per output and the
+smallest packed expert in the model, 1,510,400 bytes. The separate large
+host-USM copy reference is 6.29–6.49 GB/s. At that copy rate, the entire
+budget could carry about 59.5–61.3 minimum-size jobs per output. The
+measured candidate has 295.48 and 361.11 remaining CPU jobs per output.
+Prioritize removing misses through reuse or reducing work per miss. Revisit
+streaming as a bounded subset with measured amortized bytes, GPU execution
+and transfer overlap. These are estimates for one full upload per miss.
+
 Retired `dflash2-blend-independent-capture-v3` under the tuning state
 directory after verifying its absence. The exact scoring source and compact closed
 results remain in Git at `53f824443` and `a7c068890`. Both captured traces match
