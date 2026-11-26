@@ -656,6 +656,21 @@ requires closed same-binary admission. Bind both workloads to the previous
 and layer-major prefill in both long workloads. Require width-three and
 scalar fallback decode captures in each long request on the same binary.
 
+The first 96K pair closes with exact request, output and reasoning hashes,
+draft and emitted counts, and expert work in both workloads. The candidate
+uses the cooperative resolver for all 12 layers of each width-three
+capture. Both processes exit normally with quiet validation and no fresh
+Xe fault. These are the first matched times and rates.
+
+| Workload | Prefill tok/s, scalar → cooperative | TTFT s, scalar → cooperative | Decode tok/s, scalar → cooperative |
+| --- | ---: | ---: | ---: |
+| Code, 96,204 fresh inputs | 940.447 → 939.464 | 103.637 → 103.768 | 16.404 → 16.395 |
+| Prose, 96,274 fresh inputs | 1,040.051 → 1,038.072 | 92.752 → 92.941 | 11.692 → 11.758 |
+
+Decode changes by −0.055% for code and +0.568% for prose. Complete the
+reverse pair and final pair before applying the declared speed and prefill
+preservation decision.
+
 The earlier varied-prose model capture at `b28a9372b` has 6,485 decode
 windows at 33,287 input tokens. The width counts are 2,533, 1,987, 980 and
 985 for widths one to four. Their weighted sum of 13,387 rows agrees with
