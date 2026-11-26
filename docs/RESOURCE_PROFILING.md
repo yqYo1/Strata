@@ -1788,6 +1788,35 @@ Prioritize removing misses through reuse or reducing work per miss. Revisit
 streaming as a bounded subset with measured amortized bytes, GPU execution
 and transfer overlap. These are estimates for one full upload per miss.
 
+For selective transfer, reuse the two qualified CPU leaf logs at
+`6bbd3e3e1`. Group all 1,449,976 jobs by their actual token count,
+multiplying each format pair by its verified packed blob size. The table
+shows CPU work per job and the time to copy its mean blob at the measured
+bulk reference of 6.291 GB/s.
+
+| Tokens per CPU job | Jobs | CPU leaf work per job (μs) | Full-blob copy at reference rate (μs) |
+| ---: | ---: | ---: | ---: |
+| 1 | 1,154,781 | 422.57–422.64 | 324.44 |
+| 2 | 237,631 | 502.37–503.64 | 322.43 |
+| 3 | 47,629 | 581.47–583.25 | 324.04 |
+| 4 | 9,935 | 679.12–682.82 | 324.90 |
+
+In the four-token bin the ideal per-job share with six busy cores is
+113.19–113.80 μs. Matching it would require hiding about 65% of the copy
+even before GPU execution. This comparison uses summed CPU work and bulk
+copy time. Measure the real CPU tail and exposed copy interval on the same
+layer slice before moving a missed expert. Keep resident reuse and early
+publication ahead of an unconditional upload rule.
+
+Apex places high-token-load misses using the completion time of the slower
+branch. Apto claims work as each processor advances and tries backup
+execution at the final expert. For the captured T4 layer slices, first
+measure exact static assignment with a bounded copy budget and one result
+per expert. Measure reuse and publication separately so a gain can be
+attributed to the right mechanism. A dynamic claim or backup race needs
+an observed residual tail after that comparison. [Apex](https://arxiv.org/html/2610.23006v1)
+· [Apto](https://arxiv.org/html/2611.01859v1).
+
 The [residency bound replay](../bench/dflash2_decode_residency_oracle.py)
 uses the retained prose trace from `b28a9372b`. First reproduce its native
 job, routed-row, format-width and logical byte counts. Compare the actual
