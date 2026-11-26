@@ -86,6 +86,8 @@ KEYS = r"""    auto compare_keys = [&](int context, int pivot) {
                 uint32_t key = b % 257 == 0 ? pattern[3] : pattern[0];
                 if (b % 17 == 0)
                     key = pivot == 5 || pivot == 6 ? pattern[5 + b % 2] : pattern[pivot];
+                if (pivot == 3)
+                    key = pattern[3]; // All 262,144 cells can occupy the highest count field.
                 input[guard + q * blocks + b] = std::bit_cast<float>(key);
             }
         scores.put(input); ids.put(unset_ids);
@@ -134,5 +136,6 @@ void qsa_block_topk(const float*, const int32_t*, int64_t, int64_t, int64_t, con
                            '        compare(97); compare(2055); compare_keys(2055, 4); compare(97); compare(-1);')
     fixture = replace_once(fixture, "        compare(96'203); compare(capacity); compare(96'203); compare(-1);",
                            "        compare(96'203); compare(capacity); compare(96'203); compare(-1);\n"
-                           "        for (int pivot = 0; pivot < 8; ++pivot) compare_keys(capacity - pivot % 4, pivot);")
+                           "        for (int pivot = 0; pivot < 8; ++pivot)\n"
+                           "            compare_keys(pivot == 3 ? capacity : capacity - pivot % 4, pivot);")
     return fixture.encode()
