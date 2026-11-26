@@ -33,6 +33,7 @@ constexpr int capacity = 262144, blocks = capacity / 4 + 2, guard = 16;
 constexpr float score_guard = -12345.5f;
 constexpr int32_t id_guard = -123456789;
 constexpr int replays = 512, batches = 3;
+constexpr int profile_replays = 5;
 
 void require(bool ok, const char* message) {
     if (!ok) throw std::runtime_error(message);
@@ -65,7 +66,7 @@ public:
         if (complete_) retire(cudaEventDestroy(complete_));
         if (stream_) retire(cudaStreamDestroy(stream_));
     }
-    template<class Record> double capture(int slot, size_t expected_nodes, Record record) {
+    template<class Record> double capture(int slot, size_t expected_nodes, bool profile, Record record) {
         const auto start = Clock::now();
         check(cudaStreamBeginCapture(stream_, cudaStreamCaptureModeThreadLocal), "score begin capture");
         capturing_ = true;
@@ -75,7 +76,10 @@ public:
         size_t nodes = 0;
         check(cudaGraphGetNodes(recording_, nullptr, &nodes), "score graph nodes");
         require(nodes == expected_nodes, "unexpected score graph topology");
-        check(cudaGraphInstantiate(&executable_[slot], recording_, 0ull), "score instantiate graph");
+        const auto status = profile
+            ? compat::graph_instantiate_profiled(&executable_[slot], recording_)
+            : cudaGraphInstantiate(&executable_[slot], recording_, 0ull);
+        check(status, "score instantiate graph");
         check(cudaGraphDestroy(recording_), "score destroy source graph");
         recording_ = nullptr;
         return elapsed(start);
@@ -83,6 +87,14 @@ public:
     void run(int slot) {
         check(compat::graph_launch_with_completion(executable_[slot], stream_, complete_), "score launch");
         check(cudaEventSynchronize(complete_), "score replay completion");
+    }
+    compat::GraphEnvelopeTimestamps envelope() const {
+        compat::GraphEnvelopeTimestamps sample{};
+        check(compat::graph_completion_timestamps(complete_, &sample), "score graph timestamps");
+        require((sample.available_fields & 6) == 6 && sample.timer_resolution > 0 &&
+                sample.end > sample.start && sample.end - sample.start >= sample.timer_resolution,
+                "invalid score graph device interval");
+        return sample;
     }
 };
 
@@ -159,12 +171,13 @@ void run(const std::shared_ptr<Runtime>& rt, int width, std::string_view mode) {
         ss.put(steps);
     };
     set_steps(96'204);
+    const bool profile = mode == "profile";
     const int order_offset = mode == "reverse" ? 1 : 0;
     std::array<double, 4> setups{};
     for (int i = 0; i < 4; ++i) {
         const int slot = i ^ order_offset;
         const bool grid = slot % 2, with_selector = slot >= 2;
-        setups[slot] = graphs.capture(slot, with_selector ? 2 : 1, [&](void* stream) {
+        setups[slot] = graphs.capture(slot, with_selector ? 2 : 1, profile, [&](void* stream) {
             auto score = grid ? decode_score_grid::qsa_block_scores : qsa_block_scores;
             score(kp.data(), kd.data(), qq.data(), ss.data(), width, blocks, shape, scores.data() + guard, stream, -1);
             if (with_selector)
@@ -196,6 +209,31 @@ void run(const std::shared_ptr<Runtime>& rt, int width, std::string_view mode) {
         std::fill(dead.begin(), dead.end(), 0.f);
         kp.put(pooled); kd.put(dead);
         compare(96'203); compare(capacity); compare(96'203); compare(-1);
+    } else if (profile) {
+        uint64_t previous_end = 0;
+        for (int context : {96'204, capacity}) {
+            compare(context);
+            for (int stage = 0; stage < 2; ++stage) {
+                graphs.run(stage * 2);
+                graphs.run(stage * 2 + 1);
+                for (int i = 0; i < profile_replays; ++i) {
+                    for (int order = 0; order < 2; ++order) {
+                        const int arm = (order + i) % 2;
+                        const auto start = Clock::now();
+                        graphs.run(stage * 2 + arm);
+                        const double wall_ms = elapsed(start);
+                        const auto sample = graphs.envelope();
+                        require(sample.start >= previous_end, "overlapping sequential score graph samples");
+                        previous_end = sample.end;
+                        std::cout << "device width=" << width << " context=" << context
+                                  << " stage=" << stage << " replay=" << i << " arm=" << arm
+                                  << " ns=" << sample.end - sample.start << " tick_ns=" << sample.timer_resolution
+                                  << " wall_ms=" << wall_ms << std::endl;
+                    }
+                }
+            }
+            compare(context);
+        }
     } else {
         for (int context : {96'204, capacity}) {
             compare(context);
@@ -226,9 +264,10 @@ void run(const std::shared_ptr<Runtime>& rt, int width, std::string_view mode) {
 } // namespace
 
 int main(int argc, char** argv) try {
-    require(argc == 2, "use smoke|validate|forward|reverse");
+    require(argc == 2, "use smoke|validate|forward|reverse|profile");
     const std::string_view mode(argv[1]);
-    require(mode == "smoke" || mode == "validate" || mode == "forward" || mode == "reverse", "invalid score mode");
+    require(mode == "smoke" || mode == "validate" || mode == "forward" || mode == "reverse" || mode == "profile",
+            "invalid score mode");
     auto runtime = strata::sycl_backend::runtime_for();
     const auto name = runtime->device().get_info<sycl::info::device::name>();
     require(name.find("B570") != std::string::npos, "expected Arc B570");

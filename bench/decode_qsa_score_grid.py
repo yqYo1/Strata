@@ -33,10 +33,14 @@ LIBRARIES = ('libstrata_kernels.a', 'libstrata_core.a', 'libstrata_sycl_runtime.
 STAGES = ('smoke', 'validate', '0', '1', '2')
 MODES = ('smoke', 'validate', 'forward', 'reverse', 'forward')
 CONTEXTS, WIDTHS, REPLAYS, BATCHES = (96204, 262144), (1, 2, 3, 4), 512, 3
+PROFILE_REPLAYS = 5
 LIMITS = dict(wall=300, cpu=600, rss_cap=4 << 30, text_cap=24 << 20,
               file_cap=32 << 20, total_cap=64 << 20)
 PLAN = dict(stages=list(STAGES), modes=list(MODES), contexts=list(CONTEXTS), widths=list(WIDTHS),
             grid=source.GROUPS, replays=REPLAYS, batches=BATCHES, budget=LIMITS,
+            diagnostic=dict(stage='profile', after=list(STAGES), replays=PROFILE_REPLAYS,
+                            clock='Outer SYCL graph end minus start. Report device ticks and wall completion in '
+                                  'the profiled process. Preserve unsupported clocks without changing clean timing.'),
             scope='Same retained scorer and FP32 arithmetic. Change only its decode grid. Use the production '
                   'SYCL compatibility graph and the unchanged top-k. Compare scorer-only and scorer-plus-top-k replay.',
             gates='Trace the short smoke first, then check exact score bits, selection IDs and guards at every '
@@ -134,7 +138,7 @@ def observations(text, mode):
     widths = (1,) if mode == 'smoke' else WIDTHS
     lines = text.strip().splitlines()
     require(lines and lines[-1] == 'decode QSA scorer completed', 'missing closed scorer fixture')
-    timings, setup, checked = [], {}, []
+    timings, device, setup, checked = [], [], {}, []
     number = r'(\d+\.\d+)'
     for line in lines[:-1]:
         if line.startswith('setup '):
@@ -145,6 +149,16 @@ def observations(text, mode):
             value = re.fullmatch(r'checked width=(\d+) scores=PASS ids=PASS guards=PASS replay=PASS', line)
             require(value is not None, 'missing numerical and replay proof')
             checked.append(int(value[1]))
+        elif line.startswith('device '):
+            value = re.fullmatch(r'device width=(\d+) context=(\d+) stage=(\d+) replay=(\d+) arm=(\d+) '
+                                 rf'ns=(\d+) tick_ns=(\d+) wall_ms={number}', line)
+            require(value is not None, 'unrecognized profiled graph row')
+            width, context, stage, replay, arm, ns, tick_ns = map(int, value.groups()[:7])
+            wall_ms = float(value[8])
+            require(ns >= tick_ns > 0 and math.isfinite(wall_ms) and wall_ms > 0,
+                    'invalid profiled graph interval')
+            device.append(dict(width=width, context=context, stage=stage, replay=replay, arm=arm,
+                               ns=ns, tick_ns=tick_ns, wall_ms=wall_ms))
         else:
             value = re.fullmatch(r'sample width=(\d+) context=(\d+) stage=(\d+) batch=(\d+) arm=(\d+) '
                                  rf'replays={REPLAYS} ms={number} clock_ms={number}', line)
@@ -159,16 +173,19 @@ def observations(text, mode):
     expected = ([(w, c, s, b, (i + b + offset) % 2) for w in WIDTHS for c in CONTEXTS for s in range(2)
                  for b in range(BATCHES) for i in range(2)] if mode in ('forward', 'reverse') else [])
     require([(s['width'], s['context'], s['stage'], s['batch'], s['arm']) for s in timings] == expected, 'incomplete timing order')
-    return {str(k): v for k, v in setup.items()}, timings
+    expected_device = ([(w, c, s, i, (j + i) % 2) for w in WIDTHS for c in CONTEXTS for s in range(2)
+                       for i in range(PROFILE_REPLAYS) for j in range(2)] if mode == 'profile' else [])
+    require([(s['width'], s['context'], s['stage'], s['replay'], s['arm']) for s in device] == expected_device,
+            'incomplete profiled graph order')
+    return {str(k): v for k, v in setup.items()}, timings, device
 
 
-def device_case(row, parent, index):
+def device_case(row, parent, stage, mode):
     build_record = BUILD / 'record.json'
     proof = bank.previous.read(build_record)
     require(sha(build_record) == row['build_receipt_sha256'] and proof['binary'] == row['binary']
             and sha(row['binary']['path']) == row['binary']['sha256']
             and all(sha(p) == h for g in ('compiled', 'linked') for p, h in proof[g].items()), 'component build changed')
-    stage, mode = STAGES[index], MODES[index]
     case = ROOT / stage
     case.mkdir(mode=0o700)
     for name in ('tmp', 'cache'):
@@ -190,7 +207,6 @@ def device_case(row, parent, index):
     owner = bank.builder.ownership.Owner(case / 'owned', lambda: write(case / 'ownership.json', owner.commands))
     command = [row['binary']['path'], mode]
     result = dict(stage=stage, mode=mode, command=command, environment_sha256=bank.signature(env), ownership_closed=False)
-    row['processes'].append(result)
     try:
         entry, out, err = owner.run(stage, command, env, case, **LIMITS)
         errors = err.read_text()
@@ -202,7 +218,8 @@ def device_case(row, parent, index):
                 and (not warning.exists() or warning.stat().st_size == 0)
                 and (stage != 'smoke' or 'urEnqueue' in errors), 'runtime or API validation differs')
         result['providers'] = bank.device.loaded_providers(errors, dict(row, environment=env))
-        result['setup_ms'], result['samples'] = observations(out.read_text(), mode)
+        result['setup_ms'], samples, device = observations(out.read_text(), mode)
+        result['device_samples' if mode == 'profile' else 'samples'] = device if mode == 'profile' else samples
         leader, = [item for item in entry['owners'] if item['pid'] == entry['pid']]
         result.update(host_probe_accepted=True, validation=runtime_proof, native_identity=leader)
     except BaseException as error:
@@ -254,11 +271,19 @@ def main(action):
     if action == 'build':
         build(row, parent, overlay)
         return
+    if action == 'profile':
+        require(row['stage'] == 'closed' and 'profile' not in row, 'one separate profile after clean closure')
+        result = device_case(row, parent, action, action)
+        row.update(profile=result, ownership_closed=result['ownership_closed'])
+        save(row)
+        require(result['passed'], result.get('error', 'profile validation or ownership gate failed'))
+        return
     index = STAGES.index(action)
     require(row['stage'] == ('built' if index == 0 else STAGES[index - 1]) and len(row['processes']) == index,
             'run the next committed stage only')
     try:
-        result = device_case(row, parent, index)
+        result = device_case(row, parent, action, MODES[index])
+        row['processes'].append(result)
         require(result['passed'], result.get('error', 'component validation or ownership gate failed'))
         row['stage'] = action
         if index == len(STAGES) - 1:
@@ -273,7 +298,7 @@ def main(action):
 
 if __name__ == '__main__':
     action, = sys.argv[1:]
-    require(sys.executable == basis.reference.model.PYTHON and action in ('prepare', 'build', *STAGES),
+    require(sys.executable == basis.reference.model.PYTHON and action in ('prepare', 'build', 'profile', *STAGES),
             'use the pinned interpreter and one planned scorer stage')
     with (bank.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)

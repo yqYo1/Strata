@@ -232,6 +232,14 @@ amortization. Advance a shape only if both clocks improve in all three
 processes. Model speed and physical GPU traffic require separate evidence.
 Run the component at a model-comparison idle boundary.
 
+After the three clean timing processes close, use one separate profiled
+process on the same fixture. Measure five alternating graph completions per
+arm and shape. Record the outer graph's start-to-end device interval, timer
+resolution and host launch-to-completion time. Check timestamp order on the
+serial stream and repeat the score and ID checks. Graph profiling can change
+graph realization. Use these samples for attribution and retain the clean
+decision separately if device timestamps are unavailable.
+
 The independent worker-leaf bracket at `6bbd3e3e1` uses native source
 `96832af6f` with the same request, output, reasoning and draft counts. Its two
 observed runs use 156.12 and 156.24 CPU ms per emitted token across six expert
