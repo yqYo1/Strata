@@ -453,8 +453,10 @@ ranked-refill implementation. The first [syntax check](../bench/dflash2_candidat
 at controller `a17905e15` on source `08f852e85`, passed both generator
 units (809 and 810 verified inputs) and the layer unit (726 inputs).
 The fixture failed because `qsa_block_topk` had no visible declaration.
-Include its declaring header in `4fd969361` and repeat with the updated
-source projection. The full build and device check remain pending.
+The correction in `4fd969361` includes the declaring header. The retry at
+`56e6d5f53` passes all four units with no diagnostic: the two generator
+units verify 809 and 810 inputs, the layer unit 726 and the fixture 695.
+The full build and device check remain pending.
 
 ### DFlash2 expert service and placement
 
