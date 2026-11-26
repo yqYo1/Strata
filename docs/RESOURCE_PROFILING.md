@@ -1154,7 +1154,8 @@ admitted slot, checks equal packed payload size at that slot, and retains
 source pointers from the immutable RAM arena. At a successful final handoff,
 the existing loan must cover the entire changed range. A refill under the
 lease validates both residency maps, submits and drains the replacement
-payloads, publishes the device table and commits the CPU table before
+payloads in the existing loan's destination order, publishes the device
+table and commits the CPU table before
 reopening decode admission. Early window refills, cancellation and a
 partial loan preserve the current valid placement. The standalone physical
 context diagnostic exercises the full fill separately from the serving
@@ -1162,7 +1163,7 @@ request's output reservation. After a successful switch,
 subsequent short requests can use the now-installed decode layout.
 
 The [isolated build](../bench/dflash2_decode_ranked_refill_build.py) applies
-the six-file change through `4757120ec` to the retained primary DFlash2 recipe.
+the six-file change through `da6ff1b5d` to the retained primary DFlash2 recipe.
 The generator projection excludes the separate memory observer. Rebuild all
 affected objects and both same-build fixtures. The [fixture runner](../bench/dflash2_decode_ranked_refill_checks.py)
 checks the host lease fixture and runs the bounded SYCL ranked-refill cases

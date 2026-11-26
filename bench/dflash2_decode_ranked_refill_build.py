@@ -18,13 +18,13 @@ ROOT = bank.B / KEY.replace('_', '-')
 TREE = ROOT / 'source'
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 PATCH_PARENT = 'd6ee8c2286edb0fc36417644e681102c583dd47f'
-PATCH = '4757120ec4d7c700bb0fdcd9571d1dd37abb8a04'
-PATCH_SHA = '54e04db380468d0a0ffde442d0038e6d6f8ed6558bbf9638bce40f74ee7e3231'
+PATCH = 'da6ff1b5d737f8e1eabc555ca3a61eb255f9ec3d'
+PATCH_SHA = 'a1521f2c67c366919a1ac8527039aa622f1985ef7917738d455f4ce1c03affd3'
 BASE = '968e71988953dca3d98037d3b3fec9f903bdfd6f'
 PLACEMENT = '5e75c7dbe333d0f4f11d2e7a2b21dcc3f56567e6'
 PLACEMENT_KEY = 'dflash2_decode_ranked_generation_blend_v1'
 GENERATOR = 'src/program/generate.cpp'
-GENERATOR_SHA = '52c77e3ff69566997e81b91663cf5f2d8ceba5352d67f7ccbe7939414e2f09f0'
+GENERATOR_SHA = 'be069342dbadc737a360f8400e64a4e6dc85fbb0cd05ee46f599ceeaaa588af8'
 FILES = ('include/strata/core/cache_scratch_lease.hpp', 'include/strata/core/expert_cache.hpp',
          'src/core/expert_cache.cpp', GENERATOR, 'tests/core/prefill_scratch_test.cpp', 'tests/sycl/prefill_scratch.cpp')
 FIXTURES = ('prefill_scratch_host_test', 'sycl_prefill_scratch_test')
