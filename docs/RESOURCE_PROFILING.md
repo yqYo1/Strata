@@ -821,8 +821,18 @@ The independent 96,204-input code capture completes with 3,195 outputs,
 1,133,707 native CPU jobs and 1,411,108 native CPU entries. The frozen blend
 would use 936,662 CPU jobs and 1,907,371,315,200 logical packed bytes versus
 2,312,898,073,600 on stock. The reductions are 17.38% and 17.53% on these
-captured routes. The second independent prose capture is required before a
-placement decision.
+captured routes.
+
+The independent 96,274-input prose capture completes with 8,618 outputs,
+5,177 verifier windows and 10,041 verified rows. The replay reconciles
+3,430,897 native CPU jobs and 4,484,620 native CPU entries. The blended map
+would use 3,113,832 CPU jobs and 6,353,114,547,200 logical packed bytes,
+compared with 7,005,568,563,200 logical bytes on stock. CPU jobs fall 9.24%
+and packed bytes fall 9.31%. Both native processes close normally with
+quiet validation, closed ownership and no fresh Xe fault. The final model
+asset hashes match. The frozen map passes the two-workload gate for live
+placement validation. Serving keeps the measured stock placement while the
+candidate's native RESTORE and clean throughput remain open.
 
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
