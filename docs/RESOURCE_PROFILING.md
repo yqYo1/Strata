@@ -690,6 +690,15 @@ lower prose TG and 3.34–5.08% longer prefill on the four matched warm-ups.
 Preserve these observations with the second pair and complete the planned
 third pair before applying the verdict.
 
+The final scalar process closes normally with the same native work,
+outputs and capture routes and no fresh Xe fault. Code measures 932.837
+PP, 104.523 s TTFT and 15.533 TG. Prose measures 1,033.254 PP, 93.372 s TTFT
+and 11.105 TG. Compared with the preceding scalar process, decode rates
+change by +0.179% and −0.112%. Compared with the first scalar process,
+they fall by 5.31% and 5.02%. Its four warm-up prefill durations also
+remain within 0.70% of the preceding scalar process. The last matched
+candidate is required for the performance decision.
+
 The earlier varied-prose model capture at `b28a9372b` has 6,485 decode
 windows at 33,287 input tokens. The width counts are 2,533, 1,987, 980 and
 985 for widths one to four. Their weighted sum of 13,387 rows agrees with
