@@ -692434,8 +692434,26 @@
       "scope": "Use the qualified global loader for the frozen code/prose blend. Require both independent 96K captures before checking live membership and short and near-capacity RESTORE.",
       "gates": "Reproduce the fixed holdout ranking; bind its actual membership, loaned slots and restored bytes. Verify each arm against its own saved state, preserve prefill and context extents, and record output and work for each arm. Diagnostic only. Stop on the first failed check."
     },
-    "stage": "prepared",
-    "outcomes": {},
+    "stage": "running",
+    "outcomes": {
+      "host": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "GPU_executed": false,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    },
     "plans": [
       {
         "name": "short-blend",
