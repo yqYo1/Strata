@@ -11574,7 +11574,14 @@ overhead. At `edfdc8812`, three host parser tests verify the complete CPU
 partition and reject incomplete MoE status wrapper output, incorrect call
 counts and nested totals outside the enclosing interval. The status copy,
 submission, drain and postcheck subtotals remain nested. Frontend and model
-admission for this comparison are pending.
+admission now pass for the first clean and observed processes. Both match
+all three native routes and close without new Xe faults. The first observed
+process's subsequent median is 0.99978 times the control's. Within that
+observed process, the first prompt takes 10.755 seconds longer than the
+subsequent median. The disjoint unclassified host interval increases by
+10.734 wall seconds and 5.340 thread CPU seconds. Observed wait-wall time
+is 75.268–75.343 seconds in all three requests. Check whether the reverse
+pair reproduces the attribution before selecting a narrower probe.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.

@@ -406,6 +406,11 @@ short and near-capacity RESTORE receipts before launch. It checks actual
 prefill dispatch and records decode rate, draft acceptance and CPU expert
 jobs per output separately. The long-form code and prose screen can advance
 a candidate to task, agent, observed-weak and physical-context qualification.
+The host check at `c22a389b5` replays the prior native routes through the
+original parser and the new startup branch. It checks that the comparison's
+arguments differ only by profile path and that a prefill slowdown blocks
+advancement even when the decode comparison passes. Native runs remain gated
+on the two RESTORE controls.
 
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
