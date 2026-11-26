@@ -404,6 +404,31 @@ request-local arena requires a graph-visible lookup for both allocations
 and checked reader retirement before unpublishing the extra slots. Measure
 the smaller 256 MiB budget first before choosing a native design.
 
+The 94,209-token observations make the DFlash2 vocabulary projection a
+capacity candidate. `Dflash2Drafter::bind` gathers the 106,299 configured
+vocabulary rows out of the resident 248,320-row canonical Q6_K head. Each
+row is 2,100 bytes. The duplicate accounts for 223,227,900 bytes, or
+212.9 MiB, and the same allocation appears in both requests' launch logs.
+The unchanged vocabulary map has SHA-256
+`b1e1d3a7a9e4bf862dcd5923ce661fb59bbd07907e594df5cf86a62ac235cb91`.
+It contains 15,377 contiguous runs and one backward jump. The gathered
+copy and indexed view visit the same logical weight bytes. The indexed
+addresses span more pages, so measure their GPU service cost.
+
+Test a DFlash2-only Q6_K entry that reads the canonical head through the
+existing device vocabulary map. Preserve its output row order, exact
+MMVQ arithmetic, Q8_1 input, top-k mapping, queue ownership and borrowed
+head lifetime. Leave the gathered implementation available for the
+comparison. Verify all selected rows and widths, boundary and nonmonotonic
+IDs, buffer guards and actual dispatch before timing. The archived MTP
+indexed packed-DPAS result uses a different kernel and reference; recover
+its time and guards from `a0ede5973` and its recorded comparison.
+Compare the DFlash2 head change alone first. Measure end-to-end memory at
+the same handoff marks and sustained decode separately. Evaluate any
+additional expert residency as its own change once real allocation coverage
+and capacity allow it. Preserve long-prefill and RESTORE admission at both
+steps and in any combined candidate.
+
 The replay at `e3d371974` verifies 4,668,262 original stock CPU jobs.
 Training uses the first 3,242 verifier windows and evaluation uses the
 remaining 3,243. All arms preserve the same protected members, 1,256 slot
