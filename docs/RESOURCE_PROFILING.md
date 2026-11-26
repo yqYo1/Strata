@@ -816,6 +816,14 @@ state-relative paths, byte counts and file hashes.
 | `dflash2-blend-independent-capture-v1` | 5 | 118,297 | `2f1249199a1acb377ad4e3fee02ce05c49ddcec8b266280b4975bc129daea0b9` |
 | `dflash2-blend-independent-capture-v2` | 5 | 118,379 | `7f5f9cb24c8c4726e1e0aba3c93001b244c883e68409f7fb495ee7853d868157` |
 
+The independent 96,204-input code capture completes with 3,195 outputs,
+1,024 verifier windows and 3,272 verified rows. The replay reconciles
+1,133,707 native CPU jobs and 1,411,108 native CPU entries. The frozen blend
+would use 936,662 CPU jobs and 1,907,371,315,200 logical packed bytes versus
+2,312,898,073,600 on stock. The reductions are 17.38% and 17.53% on these
+captured routes. The second independent prose capture is required before a
+placement decision.
+
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
 96-swap and 197,913,600-byte caps. Compare early distinct jobs, routed rows
