@@ -549,6 +549,11 @@ code and 1.1594 and 1.1285 for prose so far. The frozen screen needs two TG
 wins on each workload, which the within-layer profile can no longer meet on
 code. Complete the third pair to measure the remaining spread and finish the
 recorded comparison without changing its criteria.
+The fifth process closes the final stock arm without a fresh Xe fault.
+It repeats the code and prose output and reasoning hashes of the fourth
+process. Code reaches 939.9 PP and 16.23 TG tok/s on 3,195 outputs; prose
+reaches 1,038.9 PP and 11.61 TG tok/s on 8,618 outputs. The final within-layer
+process is the remaining arm.
 
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
