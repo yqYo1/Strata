@@ -42261,5 +42261,41 @@
     "finding": "Primary: pinned flow calls indexed Q6_K then df2_topk. Reasoning: novelty is scoped to 106,299 draft rows and widths 1–7; savings remain a traffic bound.",
     "correction": "No device timings, traffic or row-run census; alternate bitwise parity is unproven. Comparator breaks ties by row index, so token-ID order needs map-order proof.",
     "consumer": "Retrieve by commit 35fcc191, 106,299-row draft Q6_K, widths 1–7, Top-16. Reopen with matched full-shape measurements and ordered-output parity."
+  },
+  "zen3-decode-gu-static-worker-ownership-20261126": {
+    "classification": "decision_support",
+    "source_commit": "22f24637de3315281a06a17d30f25c4867de2a27",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zen3-decode-gu-static-worker-ownership-20261126/report.md",
+    "report_sha256": "b2f917f30caff77a5b369e0f4e3f4165ac565147333b8cdf74f5bf8c629b534c",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-zen3-gu-and-sycl-kv-floor-20261126/review.json",
+    "review_sha256": "22d9446121a9a9a9547ba96c8d7eb9a052a9a00e5351e5e70734369bca2b1936",
+    "worker": "Orca gpt-6-luna medium, ctx_f8245072584e",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "stage": "reviewed",
+    "owners_closed": true,
+    "verdict": "Substantive and scoped; distinct from prior grouped-dynamic study. Proposal only; no patch adoption or measured speedup.",
+    "finding": "Static mapping cuts queue claims by construction, but its skew and locality effects remain unmeasured.",
+    "correction": "Clarify whether 8 jobs per batch are aggregated per submission; 15 claims × 8 submissions otherwise leaves the job multiplier unclear. One tail claim cannot redistribute earlier skew.",
+    "consumer": "Use only as a CPU-replay candidate; fix the denominator, then test full-pass time and per-worker tails before any model trial.",
+    "prerequisite": "Require the dynamic group-claim replay and measured worker-tail evidence before implementing static ownership.",
+    "schedulable_now": false
+  },
+  "sycl-qsa-streaming-residency-floor-20261126": {
+    "classification": "decision_support",
+    "source_commit": "22f24637de3315281a06a17d30f25c4867de2a27",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/sycl-qsa-streaming-residency-floor-20261126/report.md",
+    "report_sha256": "a7b1dede8fe5076541104f91697ed22b8766ce2518471a6fb270fe372b768833",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-zen3-gu-and-sycl-kv-floor-20261126/review.json",
+    "review_sha256": "22d9446121a9a9a9547ba96c8d7eb9a052a9a00e5351e5e70734369bca2b1936",
+    "worker": "Orca gpt-6-luna medium, ctx_bb96760f9a73",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "stage": "reviewed",
+    "owners_closed": true,
+    "verdict": "Substantive and cautious; distinct from K8V4 quality and extra-arena lifetime work. No code adoption or throughput claim.",
+    "finding": "Evidence cannot bound a smaller floor without selected-page union, page mapping, eviction/refill, and overlap semantics.",
+    "correction": "External sources motivate blocks and eviction but do not establish this route's safe GPU allocation or miss/refill path; keep them conceptual.",
+    "consumer": "Retain 20,480; source-trace worst-case union per admitted width and head and handoff, then measure actual admission, residency, failures, and paired throughput.",
+    "prerequisite": "Require a source-proved page-union and handoff bound for all admitted decode widths before a lower-floor admission test.",
+    "schedulable_now": false
   }
 }
