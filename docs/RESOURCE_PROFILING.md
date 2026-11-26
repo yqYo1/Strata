@@ -513,9 +513,10 @@ allocations and clean speed still have separate evidence requirements.
 
 The Xe comparison reads the closed head-memory result at `6cae88023`,
 its exact executable and frozen request hashes. That result preserves the
-phase bytes and all request gates. Retire its `host`, `0` and `1` directories
+phase bytes and all request gates. Retired its `host`, `0` and `1` directories
 under `dflash2-decode-indexed-head-memory-v1` after verifying the inventory.
-Keep its root receipt. The inventory contains 146 files, 25,295,661 bytes,
+The root receipt and executable hashes are unchanged. The inventory contains
+146 files, 25,295,661 bytes,
 and hashes to `913d712ab541ffd026bfc802d358ab2a9d91536331ed26e4c96dfc1045e3e570`
 over the sorted state-relative path, byte-count and SHA-256 tuples.
 
