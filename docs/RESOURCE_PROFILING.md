@@ -1835,6 +1835,17 @@ outputs match across arms. Both owners close with quiet validation and
 no fresh Xe fault. The near-capacity, cancellation and physical-fill
 checks remain open.
 
+Retired the closed device fixture traces after the first live pair and
+verified both original `record.json` files are unchanged. The failed V1
+evidence at `1afe5f82e` remains
+distinct from the closed V2 proof at `c6839420b`. Inventory hashes cover
+sorted state-relative paths, byte counts and file SHA-256 values.
+
+| Scope under tuning state | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-decode-ranked-refill-checks-v1` | 7 | 249,123 | `e42e3a390d09f5e92a8db995b84a9cdf7b41ed878c0d442bc1e351cb4e2e5719` |
+| `dflash2-decode-ranked-refill-checks-v2` | 15 | 496,278 | `971f8af45108f2f488e978c4843fd7d1a9a85897f27b9681a948ec2ebef2b455` |
+
 The primary prefill executable supplies the ranked-refill baseline. The
 pending route-census comparison also checks that executable and the
 independent `96832af6f` decode build. Keep the two checked phase references
