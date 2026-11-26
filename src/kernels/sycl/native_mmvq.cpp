@@ -990,9 +990,10 @@ auto activation_block_at(const void *base, size_t index) {
 // Preserve the native thread-to-block mapping and ascending cross-subgroup
 // partial sum, followed by XOR reduction. Each column uses the same arithmetic
 // regardless of the total column count when multi_exact is enabled.
-template <typename F, int ROWS, int NW>
+template <typename F, int ROWS, int NW, bool Indexed = false>
 void launch(const void *weights, const void *activations, float *y, int n_in,
-            int n_out, int ncols, void *stream) {
+            int n_out, int ncols, void *stream, const int32_t *row_map = nullptr,
+            int weight_rows = 0) {
   const void *w = weights;
   const void *x = activations;
   const size_t groups = (size_t(n_out) + ROWS - 1) / ROWS;
@@ -1006,13 +1007,25 @@ void launch(const void *weights, const void *activations, float *y, int n_in,
           const size_t row0 = item.get_group_linear_id() * ROWS;
           const int blocks = n_in / F::DIV;
           const size_t stride = size_t(n_in) / 32;
+          int mapped_rows[ROWS];
+          if constexpr (Indexed) {
+            for (int i = 0; i < ROWS; ++i)
+              mapped_rows[i] = row0 + i < size_t(n_out) ? row_map[row0 + i] : -1;
+          }
           float tmp[8][ROWS] = {};
           for (int kbx = tid / F::T; kbx < blocks; kbx += F::BPI * NW / 4) {
             const int kqs = F::kqs(tid);
             for (int i = 0; i < ROWS; ++i)
               if (row0 + i < size_t(n_out)) {
+                size_t weight_row = row0 + i;
+                if constexpr (Indexed) {
+                  const int mapped = mapped_rows[i];
+                  if (mapped < 0 || mapped >= weight_rows)
+                    continue;
+                  weight_row = size_t(mapped);
+                }
                 const auto weight = F::load(
-                    weight_block_at<F>(w, (row0 + i) * blocks + kbx), kqs);
+                    weight_block_at<F>(w, weight_row * blocks + kbx), kqs);
                 for (int j = 0; j < ncols; ++j)
                   tmp[j][i] +=
                       F::apply(weight,
@@ -1042,18 +1055,19 @@ void launch(const void *weights, const void *activations, float *y, int n_in,
         });
   });
 }
-template <typename F>
+template <typename F, bool Indexed = false>
 void dispatch(const void *w, const void *x, float *y, int n_in, int n_out,
-              int ncols, void *stream) {
+              int ncols, void *stream, const int32_t *row_map = nullptr,
+              int weight_rows = 0) {
   if (ncols > 1 && !multi_exact.load(std::memory_order_relaxed)) {
     if (ncols <= 4)
-      launch<F, 2, 4>(w, x, y, n_in, n_out, ncols, stream);
+      launch<F, 2, 4, Indexed>(w, x, y, n_in, n_out, ncols, stream, row_map, weight_rows);
     else
-      launch<F, 2, 2>(w, x, y, n_in, n_out, ncols, stream);
+      launch<F, 2, 2, Indexed>(w, x, y, n_in, n_out, ncols, stream, row_map, weight_rows);
   } else if (n_in / F::DIV < F::BPI)
-    launch<F, 4, 4>(w, x, y, n_in, n_out, ncols, stream);
+    launch<F, 4, 4, Indexed>(w, x, y, n_in, n_out, ncols, stream, row_map, weight_rows);
   else
-    launch<F, 1, 4>(w, x, y, n_in, n_out, ncols, stream);
+    launch<F, 1, 4, Indexed>(w, x, y, n_in, n_out, ncols, stream, row_map, weight_rows);
 }
 
 // Explicit Q6_K candidate; the production dispatch above stays unchanged.
@@ -1478,6 +1492,18 @@ size_t native_mmvq_weight_bytes(int type, int n_in, int n_out) {
   if (n_out <= 0)
     throw std::invalid_argument("SYCL MMVQ requires positive output width");
   return checked_count(checked_count(n_out, n_in / f.width), f.bytes);
+}
+void dflash2_q6_k_indexed_head(const void *w, const int32_t *rows,
+                             const void *x, float *y, int n_in, int weight_rows,
+                             int n_out, int ncols, void *stream) {
+  const auto wb = native_mmvq_weight_bytes(14, n_in, weight_rows);
+  const auto xb = native_q8_1_bytes(n_in, ncols);
+  if (n_out <= 0)
+    throw std::invalid_argument("DFlash2 Q6_K head requires positive output width");
+  validate_stream(stream);
+  validate_spans({{y, checked_count(checked_count(n_out, ncols), sizeof(float))}},
+                 {{w, wb}, {x, xb}, {rows, checked_count(n_out, sizeof(int32_t))}});
+  dispatch<Q6KTraits, true>(w, x, y, n_in, n_out, ncols, stream, rows, weight_rows);
 }
 void native_mmvq(int type, const void *w, const void *x, float *y, int n_in,
                  int n_out, int ncols, void *stream) {

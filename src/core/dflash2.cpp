@@ -300,7 +300,13 @@ bool Dflash2Drafter::bind(const WeightTable& wt, const NativeHead* head, const s
     int64_t head_rows = row_bytes > 0 ? (int64_t) (head->weight_bytes() / (uint64_t) row_bytes) : 0;
     if (head_rows != vocab_) { err = "dflash2: target head vocabulary does not match the draft model"; return false; }
     strata::sycl_backend::validate_device_span(hw, head->weight_bytes(), *cs_);
-    if (!vocab.empty()) {
+    const char* indexed_setting = std::getenv("STRATA_SYCL_DFLASH2_INDEXED_HEAD");
+    const bool indexed = indexed_setting && std::strcmp(indexed_setting, "1") == 0 &&
+        !vocab.empty() && head->type() == 14 &&
+        row_bytes == int64_t(kernels::native_mmvq_weight_bytes(14, N_, 1));
+    if (indexed) {
+        head_rows = int64_t(vocab.size());
+    } else if (!vocab.empty()) {
         std::unique_ptr<int32_t, decltype(&release_device)> dv(owned_device<int32_t>(vocab.size(), *cs_), &release_device);
         dhead_ = owned_device<uint8_t>((size_t) ((int64_t) vocab.size() * row_bytes), *cs_);
         if (!dv || dhead_ == nullptr) {
@@ -316,6 +322,11 @@ bool Dflash2Drafter::bind(const WeightTable& wt, const NativeHead* head, const s
         head_rows = (int64_t) vocab.size();
     }
     if (!bind_raw(embed, hw, head->type(), head_rows, vocab, err)) return false;
+    indexed_head_ = indexed;
+    if (indexed_head_) {
+        std::fprintf(stderr, "strata dflash2: indexed Q6_K head rows=%lld canonical_bytes=%llu owned_head_bytes=0\n",
+                     (long long) n_dvocab_, (unsigned long long) head->weight_bytes());
+    }
     std::fprintf(stderr, "strata dflash2: %lld-token draft head (%.1f MiB), drafter %.0f MiB of VRAM (Q4_0 weights)\n", (long long) n_dvocab_,
                  (double) (n_dvocab_ * row_bytes) / 1048576.0, (double) vram_ / 1048576.0);
     operation.complete = true;
@@ -419,7 +430,10 @@ bool Dflash2Drafter::record_block(std::string& err) {
         native_quantize_q8_1(fn_ + N_, xq_, N_, ndraft_, cs_);   // rows 1..ndraft, the head's format
         df2_quant_rows(fn_ + N_, N_, ndraft_, xqp_, xdp_, cs_);   // and the selector projection's
         gemm({"candidate_selector.hidden_projection.weight"}, {hsel_}, ndraft_, xqp_, xdp_);
-        native_mmvq(head_type_, head_w_, xq_, logits_, N_, (int) n_dvocab_, ndraft_, cs_);
+        if (indexed_head_)
+            dflash2_q6_k_indexed_head(head_w_, dvocab_, xq_, logits_, N_, int(vocab_), int(n_dvocab_), ndraft_, cs_);
+        else
+            native_mmvq(head_type_, head_w_, xq_, logits_, N_, int(n_dvocab_), ndraft_, cs_);
         df2_topk(logits_, (int) n_dvocab_, dvocab_, ndraft_, topscratch_, topval_, toptok_, cs_);
         df2_select(hsel_, topval_, toptok_, reinterpret_cast<const uint16_t*>(blob_ + find("candidate_selector.predecessor_codebook").off),
                    reinterpret_cast<const uint16_t*>(blob_ + find("candidate_selector.successor_codebook").off), rank_, ndraft_, d_meta_ + 16, d_out_,

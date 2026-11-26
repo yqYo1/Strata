@@ -125,7 +125,8 @@ private:
     int head_type_ = -1;
     int64_t n_dvocab_ = 0;
     int32_t* dvocab_ = nullptr;
-    uint8_t* dhead_ = nullptr;      ///< the draft vocabulary's head rows (owned), or null with head_w_ the whole head
+    uint8_t* dhead_ = nullptr;      ///< the draft vocabulary's gathered head rows, if owned
+    bool indexed_head_ = false;   ///< head_w_ borrows the canonical Q6_K head
     bool bound_ = false;
     bool loaded_ = false, failed_ = false; // failed mutations require a new owner
 

@@ -1,12 +1,14 @@
 // Independently authored small DFlash2 kernel contract checks; repository LICENSE.
 // Manual only. No model weights, graphs, host-flag polling or timed speed claims.
 #include "strata/kernels/dflash2.hpp"
+#include "strata/kernels/native_mmvq.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
 #include "strata/prefill/dflash2_taps.hpp"
 #include <cuda_runtime.h>
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <cmath>
 #include <cstring>
 #include <iostream>
@@ -27,6 +29,61 @@ struct Drain {
     }
 };
 void need(bool value, const char* what) { if (!value) throw std::runtime_error(what); }
+
+void indexed_head(const std::shared_ptr<strata::sycl_backend::Runtime>& runtime, int width) {
+    constexpr int WeightRows = 9, Columns = 7, Guard = 16;
+    constexpr std::array<int32_t, 7> row_map{8, 0, 7, 4, 2, -1, WeightRows};
+    constexpr int OutputRows = row_map.size();
+    constexpr float Marker = -999999;
+    const size_t row_bytes = native_mmvq_weight_bytes(14, width, 1);
+    std::vector<uint8_t> weights(WeightRows * row_bytes), gathered(OutputRows * row_bytes);
+    for (size_t at = 0; at < weights.size(); at += 210) {
+        for (size_t i = 0; i < 208; ++i) weights[at + i] = uint8_t((i * 31 + (at / 210) * 13) % 251);
+        weights[at + 208] = 0;
+        weights[at + 209] = 0x3c; // FP16 scale 1
+    }
+    for (size_t i = 0; i < row_map.size(); ++i)
+        if (row_map[i] >= 0 && row_map[i] < WeightRows)
+            std::memcpy(gathered.data() + i * row_bytes, weights.data() + row_map[i] * row_bytes, row_bytes);
+    std::vector<float> activation(size_t(Columns) * width);
+    for (size_t i = 0; i < activation.size(); ++i)
+        activation[i] = float(int(i * 19 % 255) - 127);
+    const std::vector<float> initial(2 * Guard + OutputRows * Columns, Marker);
+    std::vector<float> reference(initial.size()), indexed(initial.size());
+    auto& q = runtime->compute();
+    Allocation w(runtime, weights.size(), MemoryKind::Device), g(runtime, gathered.size(), MemoryKind::Device),
+        ids(runtime, sizeof(row_map), MemoryKind::Device), x(runtime, activation.size() * sizeof(float), MemoryKind::Device),
+        xq(runtime, native_q8_1_bytes(width, Columns), MemoryKind::Device),
+        yr(runtime, initial.size() * sizeof(float), MemoryKind::Device),
+        yi(runtime, initial.size() * sizeof(float), MemoryKind::Device);
+    Drain drain{q};
+    q.memcpy(w.data(), weights.data(), weights.size());
+    q.memcpy(g.data(), gathered.data(), gathered.size());
+    q.memcpy(ids.data(), row_map.data(), sizeof(row_map));
+    q.memcpy(x.data(), activation.data(), activation.size() * sizeof(float));
+    native_quantize_q8_1(x.as<float>(), xq.data(), width, Columns, &q);
+    for (int columns = 1; columns <= Columns; ++columns) {
+        const size_t bytes = initial.size() * sizeof(float);
+        q.memcpy(yr.data(), initial.data(), bytes);
+        q.memcpy(yi.data(), initial.data(), bytes);
+        native_mmvq(14, g.data(), xq.data(), yr.as<float>() + Guard, width, OutputRows, columns, &q);
+        dflash2_q6_k_indexed_head(w.data(), ids.as<int32_t>(), xq.data(), yi.as<float>() + Guard,
+                                width, WeightRows, OutputRows, columns, &q);
+        q.memcpy(reference.data(), yr.data(), bytes);
+        q.memcpy(indexed.data(), yi.data(), bytes).wait_and_throw();
+        for (size_t i = 0; i < initial.size(); ++i) {
+            if (i < Guard || i >= size_t(Guard + columns * OutputRows)) {
+                need(reference[i] == Marker && indexed[i] == Marker, "indexed head output guard");
+            } else if ((i - Guard) % OutputRows < OutputRows - 2) {
+                need(std::isfinite(indexed[i]) &&
+                    std::bit_cast<uint32_t>(reference[i]) == std::bit_cast<uint32_t>(indexed[i]),
+                    "indexed head matches gathered Q6_K arithmetic");
+            } else {
+                need(indexed[i] == 0, "invalid indexed head row cannot read weights");
+            }
+        }
+    }
+}
 
 void gemm(const std::shared_ptr<strata::sycl_backend::Runtime>& runtime) {
     constexpr int K = 512, M = 64, Columns = 8, Jobs = 3;
@@ -271,7 +328,15 @@ void prompt_taps(const std::shared_ptr<strata::sycl_backend::Runtime>& runtime) 
 
 int main(int argc, char** argv) try {
     const bool supervised = argc == 2 && std::string(argv[1]) == "--supervised";
-    need(argc == 1 || supervised, "usage: sycl_dflash2_test [--supervised]");
+    const bool indexed = argc == 2 && std::string(argv[1]) == "--indexed-q6-head";
+    if (indexed) {
+        auto runtime = strata::sycl_backend::runtime_for(0);
+        for (int width : {256, 2560}) indexed_head(runtime, width);
+        runtime->wait();
+        std::cout << "dflash2 indexed Q6_K head cases=14 PASS\n";
+        return 0;
+    }
+    need(argc == 1 || supervised, "usage: sycl_dflash2_test [--supervised|--indexed-q6-head]");
     std::cout << "dflash2 fixture: bounded eager kernels, no model\n" << std::flush;
     auto runtime = strata::sycl_backend::runtime_for(0);
     gemm(runtime);
