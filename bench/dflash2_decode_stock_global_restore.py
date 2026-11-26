@@ -20,11 +20,14 @@ THIS = str(Path(__file__).resolve().relative_to(bank.P))
 REFERENCE = '3d75f7e9126c74077f2bd1016981e19b9459db9f'
 RANKED_KEY = 'dflash2_decode_ranked_global_restore_v1'
 RANKED_ROOT = bank.B / RANKED_KEY.replace('_', '-')
+BLEND_KEY = 'dflash2_decode_blend_global_restore_v1'
+BLEND_ROOT = bank.B / BLEND_KEY.replace('_', '-')
 REPLAY_RESULT = '6a36f262b'
 RANK = '07362e5b275d174eba7a1dcb4511fca13f26825e4c328fde576f2b9ac9b04547'
 MANIFEST = 'd9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d'
 ORDER = ('host', 'short-stock', 'short-global', 'near-stock', 'near-global')
 RANKED_ORDER = ('host', 'short-within', 'short-cross', 'near-within', 'near-cross')
+BLEND_ORDER = ('host', 'short-blend', 'near-blend')
 RANKED_PROFILES = {
     'within': ('within_layer', 'f731c6a0fd0464b8648bd6520cc29a2bef8c213eb355113f659d5b59630c9851',
                2_013_072, 4_086_496_000_000),
@@ -46,6 +49,9 @@ RANKED_PLAN = dict(order=list(RANKED_ORDER), stock_gate=KEY, replay=REPLAY_RESUL
                          'and restored bytes. Verify each arm against its own saved state, preserve '
                          'prefill and context extents, and record output and work for each arm. '
                          'Diagnostic only. Stop on the first failed check.')
+BLEND_PLAN = dict(RANKED_PLAN, order=list(BLEND_ORDER), replay='dflash2_blend_independent_capture_v3',
+                  scope='Use the qualified global loader for the frozen code/prose blend. Require both independent '
+                        '96K captures before checking live membership and short and near-capacity RESTORE.')
 
 
 def geometry(row):
@@ -74,10 +80,10 @@ def ranked_profiles():
     return selected
 
 
-def check_ranked_profile(ranking, stock_ranking, formats, arm):
+def check_ranked_profile(ranking, stock_ranking, formats, digest):
     slots = quota.EXPECTED_SLOTS
     size = [quota.replay.aligned(f[2]) for f in formats]
-    require(quota.rank_sha256(ranking) == RANKED_PROFILES[arm][1]
+    require(quota.rank_sha256(ranking) == digest
             and ranking[:quota.PROTECTED] == stock_ranking[:quota.PROTECTED]
             and [size[layer] for layer, _ in ranking[:slots]] == [size[layer] for layer, _ in stock_ranking[:slots]]
             and quota.global_profile(ranking[:slots], quota.read_profile(STOCK), size) == (ranking, 968),
@@ -122,11 +128,27 @@ def check_placement(log, requests, membership, formats):
     return dict(loans=[list(item) for item in loans], decode_placement=[{k: item[k] for k in keys} for item in observed])
 
 
-def experiment(*, ranked=False):
+def blend_proof(row):
+    import dflash2_blend_independent_capture as capture
+
+    holdout = basis.validation.committed(bank.RESULT, (capture.KEY,))
+    require(retained.closed(holdout, 'closed')
+            and all(holdout[k] == row[k] for k in ('binary', 'native_source_commit', 'native_build_sha256'))
+            and holdout['decision'] == capture.decision(holdout['processes'])
+            and holdout['decision']['advance_to_native_placement'],
+            'the exact blend must reduce CPU work on both closed 96K captures')
+    return holdout
+
+
+def experiment(*, mode='stock'):
     ctx = primary.experiment()
     base_inspect, base_environment = ctx.inspect, ctx.environment
-    root, key, order, plan = (RANKED_ROOT, RANKED_KEY, RANKED_ORDER, RANKED_PLAN) if ranked else (ROOT, KEY, ORDER, PLAN)
-    paths = {arm: root / (arm + '.bin') for arm in RANKED_PROFILES} if ranked else {'global': GLOBAL}
+    root, key, order, plan, arms = {
+        'stock': (ROOT, KEY, ORDER, PLAN, ()),
+        'ranked': (RANKED_ROOT, RANKED_KEY, RANKED_ORDER, RANKED_PLAN, tuple(RANKED_PROFILES)),
+        'blend': (BLEND_ROOT, BLEND_KEY, BLEND_ORDER, BLEND_PLAN, ('blend',)),
+    }[mode]
+    paths = {arm: root / (arm + '.bin') for arm in arms} if arms else {'global': GLOBAL}
     ctx.ROOT, ctx.KEY, ctx.ORDER = root, key, order
 
     def inputs(revision):
@@ -143,6 +165,9 @@ def experiment(*, ranked=False):
         files = (THIS, quota.THIS, 'bench/dflash2_decode_residency_replay.py', quota.PROFILE,
                  primary.THIS, primary.physical.THIS, primary.physical.checks.THIS, primary.generation.THIS,
                  retained.THIS, retained.speed.THIS, 'tools/make_profile.py')
+        if mode == 'blend':
+            import dflash2_blend_independent_capture as capture
+            files += (capture.THIS, capture.blend.THIS)
         pins = ctx.sources(revision)
         for name in files:
             path = bank.P / name
@@ -154,13 +179,17 @@ def experiment(*, ranked=False):
                   'python_selected', 'native_source_commit', 'native_build_sha256', 'binary', 'draft_arguments')
         row = {k: prior[k] for k in fields}
         row.update({k: actual[k] for k in ('environment_template', 'model_assets', 'runtime_manifest')})
-        if ranked:
-            stock = basis.validation.committed(bank.RESULT).get(KEY)
-            require(stock is not None and retained.closed(stock, 'closed') and stock['binary'] == row['binary']
+        if arms:
+            stock = basis.validation.committed(bank.RESULT, (KEY,))
+            require(retained.closed(stock, 'closed') and stock['binary'] == row['binary']
                     and stock['native_source_commit'] == row['native_source_commit']
                     and all(stock['outcomes'][name]['passed'] for name in ORDER),
                     'complete the identical stock global control on this build')
             row['stock_control_sha256'] = bank.signature(stock)
+        if mode == 'blend':
+            holdout = blend_proof(row)
+            row['blend_capture_sha256'] = bank.signature(holdout)
+            row['blend_rank_sha256'] = holdout['frozen_rank_sha256']
         return dict(row, source_commit=revision, sources=pins, plan=plan), prior
 
     def environment(row, case):
@@ -195,7 +224,7 @@ def experiment(*, ranked=False):
         path = paths.get(arm, STOCK)
         check_loader(log, path, per_layer=arm == 'stock')
         _, stock, formats = geometry(row)
-        membership = quota.masks(quota.read_profile(path)[:quota.EXPECTED_SLOTS]) if ranked else stock
+        membership = quota.masks(quota.read_profile(path)[:quota.EXPECTED_SLOTS]) if arms else stock
         out.update(check_placement(log, requests, membership, formats))
         if arm == 'global':
             control = row['outcomes'][extent + '-stock']
@@ -203,16 +232,28 @@ def experiment(*, ranked=False):
                     'global loading changed fixed-work behavior, state or payload')
         return out
 
+    def expected_ranks(row):
+        if mode == 'blend':
+            return {'blend': row['blend_rank_sha256']}
+        return {arm: detail[1] for arm, detail in RANKED_PROFILES.items()}
+
     def prepare():
         require(not root.exists() and key not in basis.validation.committed(bank.RESULT), 'fresh placement control required')
         revision = basis.validation.git('rev-parse', 'HEAD').decode().strip()
         row, prior = inputs(revision)
         ranking, _, formats = geometry(row)
         cases = plans(row, prior)
-        selected = ranked_profiles() if ranked else {'global': ranking}
-        if ranked:
-            for arm, profile in selected.items():
-                check_ranked_profile(profile, ranking, formats, arm)
+        if mode == 'blend':
+            import dflash2_blend_independent_capture as capture
+            profile, *_ = capture.frozen_ranking()
+            selected = {'blend': profile}
+        elif mode == 'ranked':
+            selected = ranked_profiles()
+        else:
+            selected = {'global': ranking}
+        if arms:
+            for arm, digest in expected_ranks(row).items():
+                check_ranked_profile(selected[arm], ranking, formats, digest)
         root.mkdir(mode=0o700)
         for arm, profile in selected.items():
             write_profile(paths[arm], profile)
@@ -222,7 +263,7 @@ def experiment(*, ranked=False):
         (root / 'host').mkdir(mode=0o700)
         row.update(stage='prepared', outcomes={}, plans=cases,
                    complete=False, passed=False, active=False, ownership_closed=True, speed_eligible=False)
-        if ranked:
+        if arms:
             row['ranked_profile_sha256'] = {arm: bank.sha(path) for arm, path in paths.items()}
         else:
             row['profile_sha256'] = bank.sha(GLOBAL)
@@ -234,11 +275,11 @@ def experiment(*, ranked=False):
         ranking, stock, formats = geometry(row)
         require(all(row[k] == v for k, v in expected.items()) and row['plans'] == plans(row, prior),
                 'frozen control or plans changed')
-        if ranked:
+        if arms:
             require({arm: bank.sha(path) for arm, path in paths.items()} == row['ranked_profile_sha256'],
                     'frozen ranked profile bytes changed')
-            for arm, path in paths.items():
-                check_ranked_profile(quota.read_profile(path), ranking, formats, arm)
+            for arm, digest in expected_ranks(row).items():
+                check_ranked_profile(quota.read_profile(paths[arm]), ranking, formats, digest)
         else:
             require(bank.sha(GLOBAL) == row['profile_sha256'] and quota.read_profile(GLOBAL) == ranking
                     and census.expected_membership(GLOBAL) == stock, 'frozen stock profile bytes changed')
@@ -248,16 +289,16 @@ def experiment(*, ranked=False):
 
 
 if __name__ == '__main__':
-    ranked = sys.argv[1:2] == ['--ranked']
-    if ranked:
+    modes = {'--ranked': ('ranked', RANKED_ORDER), '--blend': ('blend', BLEND_ORDER)}
+    mode, allowed = modes.get(sys.argv[1], ('stock', ORDER)) if len(sys.argv) > 1 else ('stock', ORDER)
+    if mode != 'stock':
         sys.argv.pop(1)
     action, = sys.argv[1:]
-    allowed = RANKED_ORDER if ranked else ORDER
     require(sys.executable == basis.reference.model.PYTHON and action in ('prepare', *allowed), 'select a placement control stage')
     with (bank.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         bank.builder.guards.no_model_owners([])
-        controller = experiment(ranked=ranked)
+        controller = experiment(mode=mode)
         if action == 'prepare':
             controller.prepare()
         else:

@@ -33,7 +33,7 @@ PLAN = dict(primary.PLAN, order=list(ORDER),
              'normal measurement without it for native placement and speed. Keep stock selected.')
 
 
-def placement():
+def frozen_ranking():
     old = json.loads(replay.git('show', TRAINED + ':' + replay.EVIDENCE))[BLEND]
     require(basis.validation.committed(bank.RESULT, (BLEND,)) == old
             and old['advance_to_independent_capture'] and old['selected_code_weight_quarters'] == 3,
@@ -59,7 +59,13 @@ def placement():
             'the preselected rank, protected prefix or packed slot layout changed')
     training = {archive[k]['processes'][0]['evidence']['samples'][-1]['request_sha256']
                 for k in (blend.CODE_RUN, replay.KEY)}
-    return masks, quota.masks(candidate), formats, target['ranking_sha256'], sorted(training)
+    return ranking, masks, formats, target['ranking_sha256'], sorted(training)
+
+
+def placement():
+    ranking, masks, formats, digest, training = frozen_ranking()
+    candidate = quota.masks(ranking[:quota.EXPECTED_SLOTS])
+    return masks, candidate, formats, digest, training
 
 
 def baseline():

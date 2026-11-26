@@ -834,6 +834,17 @@ asset hashes match. The frozen map passes the two-workload gate for live
 placement validation. Serving keeps the measured stock placement while the
 candidate's native RESTORE and clean throughput remain open.
 
+The [native placement controller](../bench/dflash2_decode_stock_global_restore.py)
+uses the exact capture decision and reconstructs the selected profile before
+preparing it. Preserve the stock control's 1,256 physical slots, slot widths
+and first 132 resident entries. Use the same retained executable and check
+actual loader membership and loan/refill payloads, live RESTORE and the
+first verifier row on the 32,769- and 253,919-token parked prefixes. The
+[generation comparison](../bench/dflash2_decode_ranked_generation.py) admits
+the blend only after both checks close. It keeps the global loader fixed and
+compares PP, TTFT and sustained TG on the same two 96K bodies in three process
+pairs, accounting for changes in output length and draft acceptance.
+
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
 96-swap and 197,913,600-byte caps. Compare early distinct jobs, routed rows

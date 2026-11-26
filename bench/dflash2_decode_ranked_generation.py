@@ -12,7 +12,7 @@ import dflash2_primary_continuation as primary
 
 bank, basis, require = primary.bank, primary.basis, primary.require
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-COMPARISONS = {'within': ('stock', 'within'), 'cross': ('within', 'cross')}
+COMPARISONS = {'within': ('stock', 'within'), 'cross': ('within', 'cross'), 'blend': ('stock', 'blend')}
 EXTENTS = ('short', 'near')
 
 
@@ -30,7 +30,8 @@ def qualified_profile(arm, stock, ranked):
         proof, tag, path = stock, 'global', restore.GLOBAL
         digest = proof['profile_sha256']
     else:
-        proof, tag, path = ranked, arm, restore.RANKED_ROOT / (arm + '.bin')
+        root = restore.BLEND_ROOT if arm == 'blend' else restore.RANKED_ROOT
+        proof, tag, path = ranked, arm, root / (arm + '.bin')
         digest = proof['ranked_profile_sha256'][arm]
     require(bank.sha(path) == digest, 'the restored profile bytes changed')
     slots = restore.quota.masks(restore.quota.read_profile(path)[:restore.quota.EXPECTED_SLOTS])
@@ -110,7 +111,14 @@ def experiment(kind):
     def baseline():
         row = primary.retained.baseline()
         stock = restore_proof(row, restore.KEY, restore.ORDER)
-        ranked = restore_proof(row, restore.RANKED_KEY, restore.RANKED_ORDER)
+        if kind == 'blend':
+            ranked = restore_proof(row, restore.BLEND_KEY, restore.BLEND_ORDER)
+            capture = restore.blend_proof(row)
+            require(ranked['blend_capture_sha256'] == bank.signature(capture)
+                    and ranked['blend_rank_sha256'] == capture['frozen_rank_sha256'],
+                    'RESTORE must qualify the exact independent-capture blend')
+        else:
+            ranked = restore_proof(row, restore.RANKED_KEY, restore.RANKED_ORDER)
         require(ranked['stock_control_sha256'] == bank.signature(stock), 'ranked runs used a different stock control')
         profiles = {arm: qualified_profile(arm, stock, ranked) for arm in (before, after)}
         return dict(row, qualified_profiles=profiles,
@@ -118,7 +126,10 @@ def experiment(kind):
 
     def pins(revision):
         paths = base_pins(revision)
-        for name in (THIS, primary.THIS, restore.THIS, restore.quota.THIS, 'tools/make_profile.py'):
+        files = (THIS, primary.THIS, restore.THIS, restore.quota.THIS, 'tools/make_profile.py')
+        if kind == 'blend':
+            files += ('bench/dflash2_blend_independent_capture.py',)
+        for name in files:
             path = bank.P / name
             require(path.read_bytes() == basis.validation.git('show', revision + ':' + name),
                     'commit the exact ranked comparison input: ' + name)
@@ -138,5 +149,5 @@ def experiment(kind):
 
 if __name__ == '__main__':
     kind = sys.argv.pop(1)
-    require(kind in COMPARISONS, 'select within or cross before the planned stage')
+    require(kind in COMPARISONS, 'select within, cross or blend before the planned stage')
     primary.clock.main(experiment(kind))
