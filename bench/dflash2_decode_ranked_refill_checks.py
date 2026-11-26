@@ -2,18 +2,18 @@
 
 import fcntl
 from pathlib import Path
-import re
 import subprocess
 import sys
 
 sys.dont_write_bytecode = True
 import dflash2_decode_ranked_refill_build as build
 import dflash2_primary_checks as common
+from run_q6_columns import validation_log
 
 bank, builder, require = build.bank, build.builder, build.require
 validation, device = build.validation, bank.device
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'dflash2_decode_ranked_refill_checks_v1'
+KEY = 'dflash2_decode_ranked_refill_checks_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 ORDER = ('host', 'ranked-refill', 'ranked-refill-copy-failure', 'ranked-refill-publish-failure')
 FAIL_STOP = 'Strata SYCL cleanup: ranked refill fixture verified poisoned lease; retaining owners until process exit'
@@ -21,6 +21,8 @@ PLAN = dict(order=list(ORDER), scope='Same-build host lease checks and a 130-slo
             checks='Read back prefix, borrowed payloads and both residency tables. Refuse invalid maps before copies. '
                    'After separately injected transfer or publication failure, require blocked readers and the expected '
                    'fail-stop marker. Require no new Xe fault or runtime validation warning in any case.',
+            trace='Require exactly the qualified pre-main null-platform query and reject every other UR/ZE error. '
+                  'The preserved V1 runner counted that query as an unexpected device error.',
             stop='Stop on the first unexpected exit, changed premise or driver fault. Model RESTORE and speed are separate.')
 
 
@@ -30,7 +32,7 @@ def inputs(revision):
     original = build.check(native)
     envelope = common.parameters(native, original['native_validation_probe'])
     sources = {}
-    for name in (THIS, build.THIS, common.THIS):
+    for name in (THIS, build.THIS, common.THIS, 'tools/sycl/run_q6_columns.py'):
         path = bank.P / name
         require(path.read_bytes() == validation.git('show', revision + ':' + name), 'commit exact fixture input: ' + name)
         sources[name] = bank.sha(path)
@@ -99,11 +101,10 @@ def execute(row, name, env):
         log = err.read_text()
         outcome['coverage'] = coverage(name, out.read_text(), log)
         if name != 'host':
-            proof = validation.preload_evidence(log, entry['pid'])
+            proof = validation_log(log, entry['pid'], row['native_validation_probe']['loader']['path'], traced=True)
             layer = root / 'validation.log'
-            require(proof['loader'] == row['native_validation_probe']['loader']['path']
-                    and 'urEnqueueUSMMemcpy' in log and (not layer.exists() or layer.stat().st_size == 0)
-                    and not re.search(r'UR_RESULT_ERROR_|ZE_RESULT_ERROR_|terminate called', log),
+            require('urEnqueueUSMMemcpy' in log and (not layer.exists() or layer.stat().st_size == 0)
+                    and 'terminate called' not in log,
                     'missing copy trace or unexpected runtime validation')
             outcome['providers'] = device.loaded_providers(log, dict(row, environment=env))
             outcome['validation'] = proof
