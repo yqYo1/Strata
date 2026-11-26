@@ -11585,7 +11585,13 @@ process at `b4aaf76ad` also passes all three matched requests without a fresh
 Xe fault. Its first prefill is 10.335 seconds longer, with 10.804 additional
 unclassified wall seconds and 5.453 thread CPU seconds. The recorded wait
 interval ranges from 75.174 to 75.326 seconds. The final clean control
-will close the reverse-pair observer-cost comparison.
+closes the comparison with 949.9 tok/s and 125.236 s client TTFT on the
+first long request and 1055.7/1054.3 tok/s on the subsequent requests.
+The two observed-to-clean subsequent duration ratios are 0.999780 and
+1.004486, within the declared observer gate. All 12 requests match the
+expected work and all four processes close normally with no fresh Xe faults.
+The clean first-use prompts themselves differ by 3.013 seconds. The
+noticeable first-use spread remains outside the observer-cost qualification.
 
 The optional cold host phase observer uses the regular V4 wait and host
 ledger. `STRATA_PREFILL_COLD_HOST_PHASES=1` records the calling thread's
