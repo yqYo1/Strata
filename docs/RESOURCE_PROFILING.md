@@ -1805,7 +1805,15 @@ early, late and wrong-size refill events.
 The isolated build is configured at `d15fe1cb6`. Its recorded inputs
 cover 1,327 project files, the six ranked-refill overlays on `968e71988`,
 the two original profile files and four generated build recipe files.
-Full compilation and device qualification are pending.
+The full build at `edabb557c` closes with 141 fresh objects from 136
+translation units and 13 executable identities. The same-build host
+fixture passes all 40 lease cases at `7a8e4195d`.
+The first device fixture exits zero and verifies the replacement payloads
+and both maps. The runner stops because full UR tracing exposes the
+qualified preload's deliberate null-platform query before main. It reports
+`UR_RESULT_ERROR_INVALID_NULL_HANDLE` once at that query. The validation
+logger is empty and no fresh Xe fault occurs. Preserve this failed fixture
+cohort and use a fresh plan for the corrected trace check.
 The primary prefill executable supplies the ranked-refill baseline. The
 pending route-census comparison also checks that executable and the
 independent `96832af6f` decode build. Keep the two checked phase references

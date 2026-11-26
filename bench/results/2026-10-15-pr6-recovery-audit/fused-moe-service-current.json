@@ -715119,7 +715119,7 @@
         }
       }
     ],
-    "stage": "running",
+    "stage": "failed",
     "outcomes": {
       "host": {
         "name": "host",
@@ -715140,6 +715140,28 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "ranked-refill": {
+        "name": "ranked-refill",
+        "host_probe_accepted": false,
+        "exit_code": 0,
+        "coverage": {
+          "payloads_verified": true,
+          "map_verified": true
+        },
+        "error": "missing copy trace or unexpected runtime validation",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
       }
     },
     "passed": false,
