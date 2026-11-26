@@ -711910,9 +711910,9 @@
         "read_tokens": 96274
       }
     },
-    "stage": "prepared",
+    "stage": "ready",
     "source_commit": "18b8248fcd6eae1944a3468230068ba1f8136838",
-    "host_passed": false,
+    "host_passed": true,
     "ownership_closed": true,
     "active": false,
     "passed": false,
@@ -712179,6 +712179,16 @@
       "acceptance": "Require decode gains in at least two pairs and a positive geometric mean gain for both workloads. Require median paired prefill and TTFT ratios at most one in each workload. Keep first/subsequent clocks and recorded native work. A pass permits dedicated physical-context, RESTORE and model quality checks.",
       "coverage": "Both 96K workloads must execute fresh long prefill and sustained generation. Bind each workload to its archived request and show width three and scalar fallback in its own finalized capture interval. Check scalar verifier prompt captures in the short warm-up and use the layer-major route checks for the long prompts."
     },
+    "host_results": [
+      {
+        "role": "benchmark",
+        "passed": true
+      },
+      {
+        "role": "server",
+        "passed": true
+      }
+    ],
     "source_inputs": {
       "files": 841,
       "sha256": "50975269be7178ea26d33563cd68c152a06f6491bb055b61c18763c394004486"
