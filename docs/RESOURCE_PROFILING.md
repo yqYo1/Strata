@@ -1209,6 +1209,15 @@ context runner](../bench/dflash2_decode_ranked_refill_context.py) first checks
 bounds and a 16,385-token handoff, then requires consuming the final slot of
 the 262,144-token context with zero output. A cancelled prefill remains a
 separate model gate.
+
+The offline check at `0715d2d3c` uses the retained primary build metadata
+to reproduce the four live request plans and the two standalone requests.
+The phase reader accepts four synthetic traces and rejects sixteen with
+changed map digests, failed payload checks, premature or extra publications,
+or a missing final handoff. The masked, stock and blended digests are
+`9377e60e8ad8ea63`, `9e0b070ebe90ab9b` and `68eea56314d4990b`.
+The actual candidate build and device qualification remain pending.
+
 The two 96K thinking workloads need
 three matched independent process pairs. Keep the first-use and subsequent
 PP, client TTFT and TG measurements separate. Account for all final map
