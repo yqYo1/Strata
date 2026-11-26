@@ -274,6 +274,22 @@ combined graph's median device interval is 0.591 → 0.509 ms at 96K and
 with profiling enabled. They locate the reduction inside the graph in
 that test. Arithmetic occupancy and physical memory traffic remain open.
 
+The [coherent build](../bench/dflash2_decode_qsa_grid_native.py) applies
+`d1bdd6872` to the exact retained primary source and compiles every target
+from fresh sources. The changes touch verifier class definitions, so the
+build includes the same-build host policy target and checks every affected
+compiler input. The [admission runner](../bench/dflash2_decode_qsa_grid_admission.py)
+checks real finalized graph scorer calls and short thinking-prompt parity
+with the grid off and on. The grid stays off by default.
+
+The [model timing plan](../bench/dflash2_decode_qsa_grid_speed.py) keeps
+the stock global expert profile fixed and switches only
+`STRATA_SYCL_DECODE_QSA_SCORE_GRID` between six fresh processes. It uses the
+same 96,204- and 96,274-token thinking requests to resolve sustained decode,
+prefill and first output timing. Finish the short native control before
+timing. A successful timing screen permits the separate full-context,
+RESTORE and quality checks.
+
 Retired the component's raw runs and fixture from `decode-qsa-score-grid-v1`
 under the tuning state directory and verified the path is absent. The
 recovery check reproduces the recipe and generated
