@@ -377,20 +377,23 @@ generator is overlaid. CMake's new compile database is pinned in
 `1c7531daa1667461952eb5a808e04090eb07bf5cf51e7c2f1cc13493393e8ecc`.
 The model plan binds that binary and 820 committed inputs to both pairs of
 original request hashes, with 94,209 followed by 126,977 input tokens.
-Both current-source frontend probes pass. The two native GPU processes
-have separate process receipts. The 94,209-token process closes normally
-with no new Xe fault. Both fresh prompts keep the expected mode16 route,
-expert arena, draft width and 24-output scope. Free memory in bytes is:
+Both current-source frontend probes pass. The 94,209- and 126,977-token
+processes close normally without new Xe faults. All four fresh prompts keep
+the expected mode16 route, expert arena, draft width and 24-output scope.
+The final model asset hashes match. Free memory in bytes is:
 
-| Request | Before prefill | After refill | After draft activation | After decode |
-| --- | ---: | ---: | ---: | ---: |
-| First long request | 1,154,351,104 | 761,860,096 | 217,968,640 | 217,772,032 |
-| Subsequent long request | 955,392,000 | 761,659,392 | 217,763,840 | 217,763,840 |
+| Input | Request | Before prefill | After refill | After draft activation | After decode |
+| ---: | --- | ---: | ---: | ---: | ---: |
+| 94,209 | First long request | 1,154,351,104 | 761,860,096 | 217,968,640 | 217,772,032 |
+| 94,209 | Subsequent long request | 955,392,000 | 761,659,392 | 217,763,840 | 217,763,840 |
+| 126,977 | First long request | 1,154,351,104 | 694,493,184 | 180,158,464 | 179,961,856 |
+| 126,977 | Subsequent long request | 955,396,096 | 694,292,480 | 179,953,664 | 179,888,128 |
 
-The reported single-allocation limit is 10,132,807,680 bytes. Both actual
-post-activation bounds are below the replay's first 268,211,200-byte slice,
-by at least 50,242,560 bytes. The 126,977-token process is the remaining
-measurement. Keep diagnostic durations out of the speed comparison.
+The reported single-allocation limit is 10,132,807,680 bytes. The lowest
+decode free-memory sample is 179,888,128 bytes (171.6 MiB), leaving an
+88,323,072-byte shortfall against the replay's first 268,211,200-byte slice.
+Keep the stock expert arena and test the head allocation reduction first.
+Keep diagnostic durations out of the speed comparison.
 The existing successful layer-major runs already verify that this runtime
 exposed and returned the Intel free-memory query during prefill. The
 reported bytes, per-allocation limit and physical residency are distinct.
@@ -401,8 +404,8 @@ The reviewed cache-lifetime audit confirms that existing captured hit
 readers use one cache base and a residency table. A contiguous startup
 tail keeps that representation at the cost of persistent capacity. A
 request-local arena requires a graph-visible lookup for both allocations
-and checked reader retirement before unpublishing the extra slots. Measure
-the smaller 256 MiB budget first before choosing a native design.
+and checked reader retirement before unpublishing the extra slots. Recheck
+the 256 MiB budget after a measured reduction in existing decode allocations.
 
 The 94,209-token observations make the DFlash2 vocabulary projection a
 capacity candidate. `Dflash2Drafter::bind` gathers the 106,299 configured
