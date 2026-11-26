@@ -338,8 +338,9 @@ recovers the original controls from Git and verifies the current run's
 inputs separately. It still needs the same candidate executable.
 
 Retired the raw comparison and admission output scopes below after verifying
-the closed owners and the compact committed decisions. Verified both root
-`record.json` files are unchanged. Both engine builds serve the current comparison.
+the closed owners and the compact committed decisions. Verified the root
+`record.json` files. The primary fallback and QSA build serve the cooperative
+KV comparison.
 The inventories hash sorted state-relative paths, byte counts and SHA-256
 values. No current reader uses those output directories.
 
@@ -347,6 +348,7 @@ values. No current reader uses those output directories.
 | --- | --- | ---: | ---: | --- |
 | `dflash2-decode-ranked-generation-blend-v1/{host,0,1,2,3,4,5}` | `5e75c7dbe` | 436 | 90736645 | `03df792418095e2ec885876c36282b4f34befb1b05898a682109bc2958defb36` |
 | `dflash2-decode-qsa-grid-admission-v1/{host,reference,grid}` | `22ae164ed` | 95 | 23090175 | `af84718cb8856aefc04661263fcbe113d9bc491ea1a277c426c0119ea8ce3b30` |
+| `dflash2-decode-qsa-grid-speed-v1/{host,0,1,2,3,4,5}` | `eb99d69fb` | 436 | 90839294 | `ee1f2723cef99b759ffff0b3c5ced4a4aeef30ebd007183bc0c5bbb2d0f8e350` |
 
 Retired the component's raw runs and fixture from `decode-qsa-score-grid-v1`
 under the tuning state directory and verified the path is absent. The
