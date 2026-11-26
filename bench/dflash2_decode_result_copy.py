@@ -27,6 +27,7 @@ THIS = str(Path(__file__).resolve().relative_to(bank.P))
 LINK_DRIVER = 'bench/sycl/build_prefill_mixed_gather.py'
 LIBRARIES = ('libstrata_kernels.a', 'libstrata_core.a', 'libstrata_sycl_runtime.a')
 ORDER = ('validate', 'time-forward', 'time-reverse', 'time-rotated')
+CASE_FLAG = '--compare-stock'
 HITS = (0, 1, 2, 3, 4, 5, 10)
 ARM_ORDERS = tuple(permutations(range(3)))
 ARM_START = dict(zip(ORDER[1:], (0, 3, 2), strict=True))
@@ -47,6 +48,26 @@ PLAN = dict(order=list(ORDER), hits=list(HITS), replays=REPLAYS, arm_batches=len
                      'The copy-versus-mapped contrast separately prices the ordered copy.',
             retention='Retire this fixture build and raw output at the comparison closure; '
                       'keep the independently validated serving engine unchanged.')
+
+
+def select_publication():
+    global KEY, ROOT, BUILD, CENSUS, ORDER, CASE_FLAG, PLAN, SUMMARY
+    KEY = 'dflash2_decode_split_publication_v1'
+    ROOT = bank.B / KEY.replace('_', '-')
+    BUILD = ROOT / 'fixture-build'
+    CENSUS = '920312e73'
+    ORDER = ('validate',)
+    CASE_FLAG = '--check-publication'
+    SUMMARY = 'decode MoE combine numerical=PASS guards=PASS nodes=3/3/3 completed=1'
+    PLAN = dict(order=list(ORDER), option=CASE_FLAG, hits=[0, 1, 2, 3, 4, 5, 10, 39, 40],
+                budgets=LIMITS, inputs='Four tokens, ten expert rows per token, 2560 FP32 columns. '
+                    'Two seeded CPU publications, with independently allocated first and second Host-USM halves.',
+                scope='Verify the full stock graph and two ordered half graphs. Prove first-half completion '
+                    'while second-half input is poisoned and its output is untouched. Then enqueue both '
+                    'halves with no intermediate host wait, publishing the second immediately after the first enqueue. '
+                    'Check bitwise FP32 outputs, output guards, capture node counts, actual providers and quiet closure.',
+                retention='Keep the fixture only while the next fixed-work publication experiment can reuse it. '
+                    'Retain compact build and device correctness evidence and retire ordinary logs.')
 
 
 def inputs(revision):
@@ -210,7 +231,7 @@ def device_case(row, parent, index):
         ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15).splitlines()
         if line.startswith('-- cursor: ')]
     owner = bank.builder.ownership.Owner(case / 'owned', lambda: write(case / 'ownership.json', owner.commands))
-    command = [row['binary']['path'], mode, '--compare-stock']
+    command = [row['binary']['path'], mode, CASE_FLAG]
     result = dict(index=index, mode=mode, command=command, environment_sha256=bank.signature(env),
                   ownership_closed=False)
     row['processes'].append(result)
@@ -247,7 +268,11 @@ def measure(row, parent, action):
             result = device_case(row, parent, index)
             require(result['passed'], result.get('error', 'fixture device or ownership gate failed'))
         if action == 'validate':
-            row['stage'] = 'validated'
+            if CASE_FLAG == '--check-publication':
+                row.update(stage='closed', complete=True, passed=True,
+                           split_publication_correctness_qualified=True, model_speed_qualified=False)
+            else:
+                row['stage'] = 'validated'
             return
         owners = {(p['native_identity']['pid'], p['native_identity']['start_ticks']) for p in row['processes']}
         require(len(owners) == len(ORDER), 'fixture comparisons need independent processes')
@@ -275,8 +300,12 @@ def measure(row, parent, action):
 
 
 if __name__ == '__main__':
+    if sys.argv[1:2] == ['--publication']:
+        sys.argv.pop(1)
+        select_publication()
     action, = sys.argv[1:]
-    require(sys.executable == basis.reference.model.PYTHON and action in ('prepare', 'build', 'validate', 'time'),
+    allowed = ('prepare', 'build', 'validate') if CASE_FLAG == '--check-publication' else ('prepare', 'build', 'validate', 'time')
+    require(sys.executable == basis.reference.model.PYTHON and action in allowed,
             'use the pinned interpreter and one component stage')
     with (bank.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)

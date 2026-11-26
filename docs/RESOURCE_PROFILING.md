@@ -1749,9 +1749,27 @@ Extend the existing resident-row replay to count these dependencies over all
 first-pair dependencies are a prefix of the stock first-seen CPU job order.
 Record first-only, shared and second-only jobs, routed rows and logical packed
 bytes, and how often the first pair requires at most half the original jobs
-while the second still has unshared CPU work. Use the distribution to decide whether
-ordered-prefix completion is enough for the early publication fixture. The
+while the second still has unshared CPU work. Use the distribution to decide
+whether ordered-prefix completion is enough for early publication. The
 counts describe dependencies and do not establish hardware time or overlap.
+
+The [combine fixture](../tests/sycl/decode_moe_combine.cpp) exposes a
+correctness-only `validate --check-publication` mode. A stock four-token
+graph and two stock two-token graphs use the same weighted-reduction order,
+with rebased hit metadata for each half. The two halves use distinct Host-USM
+allocations. In the staggered check, complete the first graph while the second
+half still contains poison and verify that the second output stays untouched.
+In the queued check, submit the first graph, write the separate second
+allocation, and submit the second graph on the same in-order stream. Its
+completion retires both publications before reuse. Compare all results
+bitwise with the FP32 oracle and verify guards at each readback.
+The [component controller](../bench/dflash2_decode_result_copy.py) uses
+`--publication prepare`, `--publication build` and `--publication validate`,
+committing each transition. This qualifies the buffer and queue contract with
+generated inputs. A real CPU-worker prototype also needs independent result
+readiness, fixed routed work, and timed stock, two-half-wait and early-enqueue
+comparisons before claiming an overlap benefit.
+[SYCL Host USM](https://github.khronos.org/SYCL_Reference/iface/usm_basic_concept.html).
 
 The selected verifier at `968e71988` can split a decode window into two
 groups for `T >= 2`. In its SYCL path the host synchronizes the current

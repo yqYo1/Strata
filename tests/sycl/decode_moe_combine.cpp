@@ -31,10 +31,13 @@ namespace compat = strata::sycl_backend::compat;
 
 constexpr int tokens = 4, experts = 10, columns = 2560;
 constexpr int rows = tokens * experts, parts = rows * columns, outputs = tokens * columns;
+constexpr int half_tokens = tokens / 2, half_rows = half_tokens * experts;
+constexpr int first_half_meta = rows + 1, second_half_meta = first_half_meta + half_rows + 1;
+constexpr int split_metadata_entries = second_half_meta + half_rows + 1;
 constexpr int guard = 16, batches = 4, replays = 512;
 constexpr float sentinel = -7103.0f;
 using Clock = std::chrono::steady_clock;
-enum class Comparison { stock_to_mapped, mapped_to_copy, all_three };
+enum class Comparison { stock_to_mapped, mapped_to_copy, all_three, publication };
 constexpr int stock_hit_counts[] = {0, 1, 2, 3, 4, 5, 10, 39, rows};
 constexpr int legacy_hit_counts[] = {0, 4, 10, 20, 39, rows};
 constexpr std::array<std::array<int, 3>, 6> three_arm_orders{{
@@ -89,6 +92,9 @@ public:
         check(compat::graph_launch_with_completion(executable_[arm], stream, completion_), "launch");
         check(cudaEventSynchronize(completion_), "replay completion");
     }
+    void enqueue(int arm) {
+        check(cudaGraphLaunch(executable_[arm], stream), "enqueue without host wait");
+    }
 };
 
 float part_value(size_t index, int seed) {
@@ -102,14 +108,20 @@ float weight_value(int row) {
 void run(std::string_view mode, Comparison comparison) {
     const bool all_three = comparison == Comparison::all_three;
     const bool mapped_to_copy = comparison == Comparison::mapped_to_copy;
+    const bool publication = comparison == Comparison::publication;
     const int arm_count = all_three ? 3 : 2;
     const int copy_arm = all_three ? 2 : 1;
     const bool include_copy = all_three || mapped_to_copy;
     auto runtime = runtime_for();
     Allocation host(runtime, parts * sizeof(float), MemoryKind::Host);
+    std::array<Allocation, 2> host_halves;
+    if (publication)
+        for (auto& half : host_halves)
+            half = Allocation(runtime, half_rows * columns * sizeof(float), MemoryKind::Host);
     Allocation gpu(runtime, parts * sizeof(float), MemoryKind::Device);
     Allocation assembled(runtime, parts * sizeof(float), MemoryKind::Device);
-    Allocation meta(runtime, (rows + 1) * sizeof(int32_t), MemoryKind::Device);
+    const int metadata_entries = publication ? split_metadata_entries : rows + 1;
+    Allocation meta(runtime, metadata_entries * sizeof(int32_t), MemoryKind::Device);
     Allocation weights(runtime, rows * sizeof(float), MemoryKind::Device);
     Allocation shared(runtime, outputs * sizeof(float), MemoryKind::Device);
     Allocation result(runtime, (outputs + 2 * guard) * sizeof(float), MemoryKind::Device);
@@ -126,21 +138,37 @@ void run(std::string_view mode, Comparison comparison) {
                                            weights.as<float>(), shared.as<float>(), out, stream);
         });
     };
+    auto capture_stock = [&](int arm, const float* cpu_input, int first_token, int token_count, int meta_offset) {
+        const int first_row = first_token * experts;
+        const int span_rows = token_count * experts;
+        const int part_offset = first_row * columns;
+        const int output_offset = first_token * columns;
+        graphs.capture(arm, 3, [&](void* stream) {
+            copy_rows_from_mapped(stage + part_offset, cpu_input, span_rows, columns,
+                                  hits + meta_offset + 1, hits + meta_offset, stream);
+            moe_hit_add(stage + part_offset, device + part_offset, hits + meta_offset + 1,
+                         hits + meta_offset, span_rows, columns, stream);
+            native_moe_combine_multi(stage + part_offset, weights.as<float>() + first_row,
+                                     shared.as<float>() + output_offset, out + output_offset,
+                                     columns, experts, token_count, stream);
+        });
+    };
     if (mapped_to_copy) {
         capture_fused(0, cpu);
     } else {
-        graphs.capture(0, 3, [&](void* stream) {
-            copy_rows_from_mapped(stage, cpu, rows, columns, hits + 1, hits, stream);
-            moe_hit_add(stage, device, hits + 1, hits, rows, columns, stream);
-            native_moe_combine_multi(stage, weights.as<float>(), shared.as<float>(), out, columns, experts, tokens, stream);
-        });
+        capture_stock(0, cpu, 0, tokens, 0);
     }
-    capture_fused(1, mapped_to_copy ? stage : cpu);
-    if (all_three) capture_fused(2, stage);
+    if (publication) {
+        capture_stock(1, host_halves[0].as<float>(), 0, half_tokens, first_half_meta);
+        capture_stock(2, host_halves[1].as<float>(), half_tokens, half_tokens, second_half_meta);
+    } else {
+        capture_fused(1, mapped_to_copy ? stage : cpu);
+        if (all_three) capture_fused(2, stage);
+    }
 
     std::vector<float> gpu_input(parts), shared_input(outputs), output(outputs + 2 * guard, sentinel);
     std::array<std::vector<float>, 2> cpu_inputs{std::vector<float>(parts), std::vector<float>(parts)};
-    std::array<int32_t, rows + 1> metadata{};
+    std::array<int32_t, split_metadata_entries> metadata{};
     std::array<float, rows> weight_input{};
     for (int row = 0; row < rows; ++row) weight_input[row] = weight_value(row);
     for (int i = 0; i < outputs; ++i) shared_input[i] = part_value(i, 17);
@@ -155,7 +183,8 @@ void run(std::string_view mode, Comparison comparison) {
     };
     upload(weights.data(), weight_input.data(), weights.size());
     upload(shared.data(), shared_input.data(), shared.size());
-    const auto hit_counts = all_three ? std::span<const int>(stock_hit_counts) : std::span<const int>(legacy_hit_counts);
+    const auto hit_counts = all_three || publication ? std::span<const int>(stock_hit_counts)
+                                                     : std::span<const int>(legacy_hit_counts);
     for (int count : hit_counts) {
         if (mode != "validate" && ((!all_three && count == 0) || count > 20)) continue;
         metadata.fill(-1);
@@ -165,6 +194,15 @@ void run(std::string_view mode, Comparison comparison) {
             const int row = (hit * 7 + count) % rows;
             resident[row] = true;
             metadata[hit + 1] = row;
+        }
+        if (publication) {
+            for (int first : {0, half_rows}) {
+                const int offset = first == 0 ? first_half_meta : second_half_meta;
+                int cut_hits = 0;
+                for (int row = 0; row < half_rows; ++row)
+                    if (resident[first + row]) metadata[offset + 1 + cut_hits++] = row;
+                metadata[offset] = cut_hits;
+            }
         }
         for (size_t i = 0; i < parts; ++i) {
             const float value = part_value(i, count);
@@ -178,24 +216,28 @@ void run(std::string_view mode, Comparison comparison) {
         upload(gpu.data(), gpu_input.data(), gpu.size());
         check(cudaStreamSynchronize(graphs.stream), "publish case");
 
-        auto publish_cpu_rows = [&](int version) {
-            for (int row = 0; row < rows; ++row)
+        auto publish_cpu_rows = [&](float* destination, int version, int begin, int end) {
+            for (int row = begin; row < end; ++row)
                 if (!resident[row])
-                    std::memcpy(cpu + row * columns, cpu_inputs[version].data() + row * columns,
+                    std::memcpy(destination + (row - begin) * columns, cpu_inputs[version].data() + row * columns,
                                 columns * sizeof(float));
             std::atomic_thread_fence(std::memory_order_seq_cst);
         };
-        auto verify = [&](int arm, int version) {
-            publish_cpu_rows(version);
+        auto reset_output = [&] {
             std::fill(output.begin(), output.end(), sentinel);
             upload(result.data(), output.data(), result.size());
-            replay(arm);
+        };
+        auto verify_output = [&](int version, int complete_tokens) {
             check(cudaMemcpyAsync(output.data(), result.data(), result.size(),
                                   cudaMemcpyDeviceToHost, graphs.stream), "readback");
             check(cudaStreamSynchronize(graphs.stream), "readback completion");
             for (int i = 0; i < guard; ++i)
                 require(output[i] == sentinel && output[guard + outputs + i] == sentinel, "output guard moved");
             for (int i = 0; i < outputs; ++i) {
+                if (i >= complete_tokens * columns) {
+                    require(output[guard + i] == sentinel, "unpublished output modified");
+                    continue;
+                }
                 const int first = i / columns * experts;
                 const int column = i % columns;
                 auto part = [&](int row) {
@@ -211,8 +253,46 @@ void run(std::string_view mode, Comparison comparison) {
                         "ordered FP32 combine or row source differs");
             }
         };
+        if (publication) {
+            const float poison = std::numeric_limits<float>::quiet_NaN();
+            float* first = host_halves[0].as<float>();
+            float* second = host_halves[1].as<float>();
+            auto publish_first = [&](int version) {
+                std::fill_n(first, half_rows * columns, poison);
+                std::fill_n(second, half_rows * columns, poison);
+                reset_output();
+                publish_cpu_rows(first, version, 0, half_rows);
+            };
+            for (int version : {0, 1}) {
+                publish_cpu_rows(cpu, version, 0, rows);
+                reset_output();
+                replay(0);
+                verify_output(version, tokens);
+
+                publish_first(version);
+                graphs.replay(1);
+                verify_output(version, half_tokens);
+                publish_cpu_rows(second, version, half_rows, rows);
+                graphs.replay(2);
+                verify_output(version, tokens);
+
+                publish_first(version);
+                graphs.enqueue(1);
+                // The GPU reads a different Host-USM allocation. The ordered
+                // queue retires both before either allocation is reused.
+                publish_cpu_rows(second, version, half_rows, rows);
+                graphs.replay(2);
+                verify_output(version, tokens);
+            }
+            continue;
+        }
         for (int arm = 0; arm < arm_count; ++arm)
-            for (int version : {0, 1}) verify(arm, version);
+            for (int version : {0, 1}) {
+                publish_cpu_rows(cpu, version, 0, rows);
+                reset_output();
+                replay(arm);
+                verify_output(version, tokens);
+            }
 
         if (mode == "validate") continue;
         const int start = mode == "time-reverse" ? 1 : 0;
@@ -227,7 +307,7 @@ void run(std::string_view mode, Comparison comparison) {
                 Clock::duration elapsed{}, full{}, empty{};
                 for (int i = 0; i < replays; ++i) {
                     const auto publish_begin = Clock::now();
-                    publish_cpu_rows(i % 2);
+                    publish_cpu_rows(cpu, i % 2, 0, rows);
                     const auto begin = Clock::now();
                     replay(arm);
                     const auto end = Clock::now();
@@ -250,7 +330,7 @@ void run(std::string_view mode, Comparison comparison) {
             }
         }
     }
-    if (mode == "validate") {
+    if (mode == "validate" && !publication) {
         // The regular dispatcher publishes each output slot once. Exercise
         // a malformed list separately, where the old scatter has no contract.
         metadata[0] = 2;
@@ -274,15 +354,19 @@ int main(int argc, char** argv) {
     try {
         const bool compare_copy = argc == 3 && std::string_view(argv[2]) == "--compare-copy";
         const bool compare_stock = argc == 3 && std::string_view(argv[2]) == "--compare-stock";
-        const std::string_view mode = (argc == 2 || compare_copy || compare_stock) ? argv[1] : "";
+        const bool publication = argc == 3 && std::string_view(argv[2]) == "--check-publication";
+        const std::string_view mode = (argc == 2 || compare_copy || compare_stock || publication) ? argv[1] : "";
+        require(!publication || mode == "validate", "publication fixture only supports validate");
         require(mode == "validate" || mode == "time-forward" || mode == "time-reverse"
                 || (compare_stock && mode == "time-rotated"), "select a valid combine comparison and mode");
         Comparison comparison = Comparison::stock_to_mapped;
         if (compare_copy) comparison = Comparison::mapped_to_copy;
         if (compare_stock) comparison = Comparison::all_three;
+        if (publication) comparison = Comparison::publication;
         run(mode, comparison);
         std::cout << "decode MoE combine numerical=PASS guards=PASS nodes="
-                  << (compare_stock ? "3/1/1" : compare_copy ? "1/1" : "3/1") << " completed=1\n";
+                  << (publication ? "3/3/3" : compare_stock ? "3/1/1" : compare_copy ? "1/1" : "3/1")
+                  << " completed=1\n";
     } catch (const std::exception& failure) {
         std::cerr << failure.what() << '\n';
         return 1;
