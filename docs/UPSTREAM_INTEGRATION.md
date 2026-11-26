@@ -16,10 +16,10 @@ records actual fetch and remote-ref observations, separately from integration.
 
 | Item | Recorded state |
 | --- | --- |
-| Last actual check | 2026-11-24 01:09:27 UTC / November 24 10:09:27 JST. Fetched main and verified its remote ref. |
-| Observed upstream | `6a6db7ff58c283cf28d2b913404b5fa31a767eaa`, 16 commits after v0.2.20 |
-| Published release | v0.2.20, at `a34979fc94f3d126b9bb8210f4ad311345688b52` |
-| Next check at the approximate 48-hour cadence | 2026-11-26 01:09 UTC / November 26 10:09 JST |
+| Last actual check | 2026-11-26 01:07:19 UTC / November 26 10:07:19 JST. Fetched main and both new releases and verified the advertised refs. |
+| Observed upstream | `c234774038d1c9249cb33637d27b895d47b39786`, one commit after v0.2.22 |
+| Published release | v0.2.22, at `b28ca95e3e6847f2d5e317994f253b66716deeaa` |
+| Next check at the approximate 48-hour cadence | 2026-11-28 01:07 UTC / November 28 10:07 JST |
 | Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4` plus individually tested ports, including GPU-list ordering, three server/Web fixes and offline DFlash2 pack readiness. Service and app changes remain open. |
 | Complete native function ledger and required-function port | Incomplete |
 | Unmodified, hardware-tuned upstream performance evaluation | Incomplete |
@@ -34,14 +34,28 @@ own host evidence; that does not complete the native function ledger or full
 host validation. The interval's changed source and partial status are recorded
 under `current_sync.functional_import` in the status file.
 
-Since v0.2.18 the fetched interval adds 152 commits and changes 835 paths.
-The Qwen-facing feature review covers model discovery and API schema, setup and
+The November 26 check adds 321 commits and 482 changed paths after
+`6a6db7ff5`. Initial Qwen-facing scopes cover agent-session prefix reuse,
+the custom Responses tool keep-alive, update resume, and chat working-folder
+preservation. This fork already has a tool keep-alive path. Compare its
+behavior and fixture with `e83de74d7` before porting that slice. Check the
+new no-host admission separately on Arc. Trace whether Arc executes the GPU
+normalization kernel changed by `ed5bff88c` before a numerical comparison.
+The release publishes Qwen SYCL engine 0.1.69 and main adds libgomp packaging.
+Track the selected unmodified build and measure both default and tuned
+configurations on this B570. This observation closes neither the required
+function ledger nor model performance evaluation. [v0.2.21](https://github.com/Niko1221/Strata/releases/tag/v0.2.21) · [v0.2.22](https://github.com/Niko1221/Strata/releases/tag/v0.2.22).
+
+The prior 152-commit wave through `6a6db7ff5` changed 835 paths.
+Its Qwen-facing feature review covered model discovery and API schema, setup and
 installer changes, conversation branching, and SYCL device-loss propagation.
 Evaluate the Battlemage grouped expert path, GDN pairing and tiling, Unsloth
 multi-row SYCL formats, and cold-expert CPU SIMD as individual components.
 The upstream benchmark uses the unmodified source under `engine/sycl/` and
 the matching `tools/bench.sh`. Its execution and hardware-tuned comparison
-remain pending. [Niko1221's v0.2.20 release](https://github.com/Niko1221/Strata/releases/tag/v0.2.20).
+remain pending. The exact prior decisions and model-discovery and admission
+host checks are recoverable from `8db0078e3` in the status file.
+[Niko1221's v0.2.20 release](https://github.com/Niko1221/Strata/releases/tag/v0.2.20).
 
 The Arc BMG direct kernels accept the weight formats of five of this Qwen
 pack's 48 layers. They also cap each grouped expert at 32 rows and apply separate
