@@ -11609,6 +11609,14 @@ Future native attribution requires the same clean and observed route,
 matching work and clock accounting, and a separate observer-cost check.
 The fault counters cover the calling thread. Use them together with the
 phase timings to select a narrower test of faults, allocation or submission.
+The [observer build controller](../bench/dflash2_cold_host_build.py) starts
+from the exact retained primary build recipe and adds the three cold-host
+source files from `8a437b97a` after checking the original preimages. Keep
+the independently developed CPU expert scheduling changes outside this
+build. For the native comparison, use separate processes with the existing
+V4 wait ledger enabled in both arms and switch the new phase ledger only.
+Match the 118,785-token requests and check the phase sums before interpreting
+their elapsed time and per-thread fault counts.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
