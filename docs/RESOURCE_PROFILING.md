@@ -919,12 +919,21 @@ independent process's median from four alternating pairs of 512 replays.
 | 20 | 1.165 / 1.160 / 1.182 | 1.159 / 1.153 / 1.175 | Fail |
 
 Copying 409,600 bytes on the ordered stream helps at the two tested lower hit
-counts. Use the actual decode hit distribution, handoff dependencies and
-workspace cost to decide whether a selective path is worth a matched model
-test. Keep mapped rows for the tested 20-hit shape. The fixture times do not
-measure variable token widths, CPU expert work or model throughput.
+counts. The fixture baseline uses the opt-in fused mapped path. Count the
+actual resident rows in eligible unsplit width-four verifier layers before
+choosing shapes for comparison with the stock combine path. Check production
+handoff dependencies and workspace cost in that comparison. Keep the mapped
+arm for the tested 20-hit shape. The fixture times exclude variable token
+widths and CPU expert work. Model throughput remains unmeasured.
 [Fixture](../tests/sycl/decode_moe_combine.cpp) ·
 [Controller](../bench/dflash2_decode_result_copy.py).
+
+At `4a3526351`, the committed samples preserve all 72 timed batches. Verified
+the source recipe, actual compiler and linker inputs, and executable before
+retiring `dflash2-decode-result-copy-v1/{0,1,2,3,fixture-build}`. The root
+receipt is unchanged. The 38 retired files occupy 12,751,098 bytes and hash
+to `c5c71ca26f6af02ca27009b708c793fcdcccfb40f18ca22876c7805c639e2512`
+with the sorted state-relative inventory format above.
 
 The event-query process at `65f0f927c` repeats the same work at 16.443 tok/s.
 The two resident wrappers each run 64,560 times without query or clock
