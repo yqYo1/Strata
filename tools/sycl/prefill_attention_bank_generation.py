@@ -22,6 +22,7 @@ import ur_validation as validation
 
 P, B, RESULT, basis = restore.P, restore.B, restore.RESULT, restore.basis
 build, require, sha, signature = restore.build, restore.require, restore.sha, restore.signature
+match_samples = official.matched
 ROOT, KEY = B / 'prefill-attention-bank-generation-v3', 'prefill_attention_bank_generation_v3'
 THIS = 'tools/sycl/prefill_attention_bank_generation.py'
 RESTORE_EVIDENCE = 'f2a044c7ff3f332327e7af1e748bfb3664c9c231'
@@ -285,7 +286,7 @@ def run(index):
         evidence = evidence_reader.read_complete_suite(root, WORKLOAD_ID)
         outcome['evidence'] = evidence
         if row['processes']:
-            official.matched(evidence['samples'], row['processes'][0]['evidence']['samples'])
+            match_samples(evidence['samples'], row['processes'][0]['evidence']['samples'])
         end = gen.native_end(root,row,dict(config=configuration(row,plan)),row['boot'],entry['pid'])
         log = (root/'engine.stderr').read_text()
         probe = validation.preload_evidence(log,end['native']['pid'])

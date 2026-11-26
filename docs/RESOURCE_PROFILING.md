@@ -798,6 +798,10 @@ Score both layouts against the exact same routes. Advance to a new placement
 trial only if CPU jobs and logical packed bytes improve on both captures.
 This diagnostic does not change the live map or establish throughput or
 physical traffic. The bounded raw traces serve only this comparison.
+The preparation at `2e4136098` stops before any host probe or model process.
+The ordinary suite requires matching final bodies between arms. The new
+plan keeps that rule for normal comparisons and checks matched warm-ups
+plus distinct, predeclared long bodies in this capture.
 
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same

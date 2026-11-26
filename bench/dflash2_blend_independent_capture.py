@@ -13,7 +13,7 @@ import dflash2_primary_continuation as primary
 
 bank, basis, require = primary.bank, primary.basis, primary.require
 replay, quota = blend.replay, blend.quota
-KEY = 'dflash2_blend_independent_capture_v1'
+KEY = 'dflash2_blend_independent_capture_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 TRAINED = '03d0b3cac'
@@ -26,7 +26,8 @@ PLAN = dict(primary.PLAN, order=list(ORDER),
           'already selected 75%-code map at the same per-layer placements and packed-byte budget.',
     route='Require the retained binary and ordinary 96K prefill/draft handoff. Use fixed resident masks. '
           'Require the same independent request bodies as the closed primary continuation and bind their '
-          'last trace frames to actual window, row, CPU-job and CPU-entry counts.',
+          'last trace frames to actual window, row, CPU-job and CPU-entry counts. Match warm-ups across '
+          'processes while requiring distinct long bodies.',
     evidence='Reproduce the selected rank digest before both captures. Advance only if logical packed bytes '
              'and CPU jobs both fall on both preserved request routes. The trace is diagnostic; resume '
              'normal measurement without it for native placement and speed. Keep stock selected.')
@@ -123,12 +124,20 @@ def routes(text, samples, arm):
 
 def decision(processes):
     require(tuple(p['arm'] for p in processes) == ORDER and all(p['passed'] and p['complete']
-            and p['ownership_closed'] and p['native_exit_code'] == 0 and not p['fresh_faults'] for p in processes),
+            and p['ownership_closed'] and p['native_exit_code'] == 0 and not p['fresh_faults'] for p in processes)
+            and len({(p['native_identity']['pid'], p['native_identity']['start_ticks']) for p in processes}) == len(ORDER),
             'both independent trace processes must close normally')
     results = {p['arm']: {k: p['routes']['blended'][k] / p['routes']['stock'][k] for k in blend.METRICS}
                for p in processes}
     return dict(candidate_over_stock=results, advance_to_native_placement=all(
                 max(m.values()) < 1 for m in results.values()), model_speed_qualified=False, adopted=False)
+
+
+def match_holdouts(current, previous):
+    require(len(current) == len(previous) == 5 and (previous[-1]['workload'], current[-1]['workload']) == ORDER
+            and current[-1]['request_sha256'] != previous[-1]['request_sha256'],
+            'require distinct code and prose holdout bodies after the standard warm-ups')
+    primary.clock.suite.official.matched(current[:-1], previous[:-1])
 
 
 def experiment():
@@ -142,10 +151,11 @@ def experiment():
     ctx.evidence_reader.read_complete_suite = lambda root, name: primary.continuation.read_complete_suite(
         root, name, workloads=(ORDER[int(root.name)],))
     ctx.evidence_reader.decide = decision
+    ctx.match_samples = match_holdouts
 
     def pins(revision):
         values = original_pins(revision)
-        names = (THIS, 'tools/make_profile.py',
+        names = (THIS, 'tools/make_profile.py', primary.clock.suite.THIS,
                  *(str(Path(mod.__file__).resolve().relative_to(bank.P)) for mod in (blend, replay, quota)))
         for name in names:
             path = bank.P / name
