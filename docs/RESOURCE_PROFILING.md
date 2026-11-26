@@ -1160,8 +1160,10 @@ partial loan preserve the current valid placement. Full-context fill with
 no output requested follows ordinary refill. After a successful switch,
 subsequent short requests can use the now-installed decode layout.
 
-Rebuild the affected engine and fixture sources together on the retained
-primary DFlash2 recipe. Run the host lease fixture and the small SYCL
+The [isolated build](../bench/dflash2_decode_ranked_refill_build.py) applies
+the six-file change at `fa003a8f5` to the retained primary DFlash2 recipe.
+The generator projection excludes the separate memory observer. Rebuild all
+affected objects and both same-build fixtures. Run the host lease fixture and the small SYCL
 ranked-refill fixture with parameter validation. The device fixture covers
 wrong extent, changed prefix, missing or aliased slots, reader exclusion,
 payload and both tables, and fail-stop after an injected copy or publication
