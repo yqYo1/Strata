@@ -695142,8 +695142,64 @@
       "decision": "Require an improvement in the median scorer and combined graph in all three independent processes for a shape. Report graph setup separately and the number of replays required to recover an observed extra setup cost. Model throughput and adoption require separate checks.",
       "stop": "Stop on the first invalid input, validation, timing, owner or Xe fault. Preserve every captured result."
     },
-    "stage": "built",
-    "processes": [],
+    "stage": "smoke",
+    "processes": [
+      {
+        "stage": "smoke",
+        "mode": "smoke",
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-qsa-score-grid-v1/fixture-build/decode_qsa_score_grid",
+          "smoke"
+        ],
+        "environment_sha256": "8c894e4901811a53bf8408b0c19723cc509f881e86d87d2d2612a9797db0d695",
+        "ownership_closed": true,
+        "providers": {
+          "initialized_ELFs": 33,
+          "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d",
+          "required_providers_verified": true,
+          "source": "glibc constructors;not speed or hardware utilization"
+        },
+        "setup_ms": {
+          "1": [
+            168.681871,
+            33.149805,
+            288.525529,
+            0.407929
+          ]
+        },
+        "samples": [],
+        "host_probe_accepted": true,
+        "validation": {
+          "pid": 2730547,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_identity": {
+          "pid": 2730547,
+          "start_ticks": 403646665,
+          "sid": 2730547,
+          "pgid": 2730547
+        },
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
     "active": false,
     "ownership_closed": true,
     "complete": false,
