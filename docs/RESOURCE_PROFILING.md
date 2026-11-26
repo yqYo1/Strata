@@ -1814,6 +1814,14 @@ qualified preload's deliberate null-platform query before main. It reports
 `UR_RESULT_ERROR_INVALID_NULL_HANDLE` once at that query. The validation
 logger is empty and no fresh Xe fault occurs. Preserve this failed fixture
 cohort and use a fresh plan for the corrected trace check.
+The revised runner at `78fdc2e3d` reuses the shared strict trace reader.
+It accepts the original complete trace and rejects six mutations, including
+a duplicate probe and an identical null-handle result after startup.
+The fresh four-process cohort at `c6839420b` uses the same native executable.
+It passes all 40 host cases, replacement payload and CPU/GPU map checks,
+and both expected failure exits with decode admission blocked. All three
+device validation logs are empty and the processes close with no fresh
+Xe fault. The live RESTORE plan pins this successful fixture receipt.
 The primary prefill executable supplies the ranked-refill baseline. The
 pending route-census comparison also checks that executable and the
 independent `96832af6f` decode build. Keep the two checked phase references
