@@ -417,8 +417,24 @@ The 96,274-token prose request emits 8,618 at 1,038.092 tok/s PP and 11.478
 tok/s TG, with 92.928 s TTFT. Draft acceptance is 2,173/2,248 and
 3,442/4,864 respectively. During this process the separately capped
 report worker and native reviews use 62.186 CPU seconds in total, including
-one timed-out review. Preserve the individual process data for the paired
-comparison and collect the first cooperative arm next.
+one timed-out review.
+
+The first cooperative process closes with exit 0, quiet validation, no fresh
+Xe fault, and matching final executable and model assets. Seven decode
+captures switch all twelve layers to cooperative resolution. The two
+prompt captures and the nine width-one or width-three decode captures use
+scalar resolution. Both requests match the first scalar process's input
+hashes, generated counts and draft totals.
+
+| 96K workload | Prefill tok/s, scalar → cooperative | Client TTFT s, scalar → cooperative | Decode tok/s, scalar → cooperative |
+| --- | ---: | ---: | ---: |
+| Code | 934.726 → 937.323 | 104.284 → 103.978 | 15.963 → 17.134 |
+| Prose | 1,038.092 → 1,039.622 | 92.928 → 92.790 | 11.478 → 11.867 |
+
+The first pair improves decode by 7.34% and 3.38% respectively. The code
+clock comes from the first long request and the prose clock from the next.
+Complete the other two independent pairs before deciding whether the gain
+and prefill preservation reproduce.
 
 The archived prose trace at `b28a9372b` records a 33,287-token request
 with 11,783 outputs on the unsplit DFlash2 cap-four path. It uses the same
