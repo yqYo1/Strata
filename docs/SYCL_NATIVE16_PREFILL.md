@@ -11674,7 +11674,12 @@ At `fcaf1e45a`, four controller checks pass. The same parser also accepts
 the actual two-layer C++ fixture output and rejects both incomplete fixture
 outcomes. The next native projection recovers byte-identical preimages for
 both changed files from Git. Its coarse reference and observer-cost decision
-are now closed. The new executable and layer-detail model runs remain pending.
+are now closed. Source preparation recovers 1,328 files and the pinned
+11-target recipe from the retained primary build and the two observer
+revisions. It binds both original first-use deltas and validates the
+materialized sources. The diagnostic build's sole consumer is the matched
+118,785-token layer-detail comparison. Review it for retirement at that
+comparison's closure. The new executable and model runs remain pending.
 
 The closed observer generation and outputs were retired after verifying all
 1,328 original source files against Git, the configure and build recipe, 139
