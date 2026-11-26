@@ -600,9 +600,24 @@ end-to-end comparison.
 Preparation at `bed3f9f91` recovers the original route and freezes the six
 descriptors and exact shard slices. All cases have 64 single-row jobs in
 eight submissions. The hot cases use 15,769,600–18,636,800 packed bytes and
-the rotating cases use 124,185,600–142,105,600 bytes. The CPU build and its
-18 correctness and 54 timing processes remain pending. The build's consumer
-is this comparison. Retire it with its raw output after closing the decision.
+the rotating cases use 124,185,600–142,105,600 bytes. The verified Zen 3
+fixture passes all 18 correctness cases and finishes 54 independent timing
+processes. Each has five eligible timing batches. The rotating results below
+are geometric means of the three paired total-time ratios.
+
+| Gate/Up type with IQ4_NL Down | Two partitions per claim | Four partitions per claim |
+| --- | ---: | ---: |
+| IQ3_XXS | 1.120 | 1.322 |
+| IQ3_S | 1.135 | 1.207 |
+| IQ2_S | 1.098 | 1.290 |
+
+Both group sizes take longer in every hot and rotating pair, on both the
+Gate/Up and full-pass clocks. The group-claim changes fail the component gate.
+Keep one partition per claim. The control validates work, placement and claim
+counts. The results leave worker imbalance, weight traffic and arithmetic
+cost unresolved. Use the existing worker-scaling methods with fixed native
+expert work and a matched streaming control before attributing the gap to
+memory bandwidth or scheduling.
 
 The [stock admission controller](../bench/dflash2_decode_stock_global_restore.py)
 uses the retained primary executable and recovers the original restore plans
