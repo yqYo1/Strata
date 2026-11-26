@@ -807,6 +807,15 @@ appended trace option moved after resolution by the serving frontend.
 The next plan uses the resolver's user option slot and checks that resolving
 the saved arguments again preserves the exact argv.
 
+The two earlier preparation roots are retired. Both held only the
+verified setup configs and unlaunched receipts. Inventory hashes use sorted
+state-relative paths, byte counts and file hashes.
+
+| Retired root | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-blend-independent-capture-v1` | 5 | 118,297 | `2f1249199a1acb377ad4e3fee02ce05c49ddcec8b266280b4975bc129daea0b9` |
+| `dflash2-blend-independent-capture-v2` | 5 | 118,379 | `7f5f9cb24c8c4726e1e0aba3c93001b244c883e68409f7fb495ee7853d868157` |
+
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
 96-swap and 197,913,600-byte caps. Compare early distinct jobs, routed rows
