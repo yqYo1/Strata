@@ -695142,7 +695142,7 @@
       "decision": "Require an improvement in the median scorer and combined graph in all three independent processes for a shape. Report graph setup separately and the number of replays required to recover an observed extra setup cost. Model throughput and adoption require separate checks.",
       "stop": "Stop on the first invalid input, validation, timing, owner or Xe fault. Preserve every captured result."
     },
-    "stage": "smoke",
+    "stage": "validate",
     "processes": [
       {
         "stage": "smoke",
@@ -695186,6 +695186,79 @@
           "start_ticks": 403646665,
           "sid": 2730547,
           "pgid": 2730547
+        },
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      },
+      {
+        "stage": "validate",
+        "mode": "validate",
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-qsa-score-grid-v1/fixture-build/decode_qsa_score_grid",
+          "validate"
+        ],
+        "environment_sha256": "2eb9a7086afd617ae42a0da8fbcf30fe814788e749ebc14c1dd9212d017558e6",
+        "ownership_closed": true,
+        "providers": {
+          "initialized_ELFs": 33,
+          "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d",
+          "required_providers_verified": true,
+          "source": "glibc constructors;not speed or hardware utilization"
+        },
+        "setup_ms": {
+          "1": [
+            168.135506,
+            36.600175,
+            283.723923,
+            0.384113
+          ],
+          "2": [
+            0.048311,
+            0.014367,
+            0.017563,
+            0.013125
+          ],
+          "3": [
+            0.048471,
+            0.015129,
+            0.017332,
+            0.012915
+          ],
+          "4": [
+            0.048592,
+            0.015189,
+            0.018474,
+            0.013124
+          ]
+        },
+        "samples": [],
+        "host_probe_accepted": true,
+        "validation": {
+          "pid": 2731880,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_identity": {
+          "pid": 2731880,
+          "start_ticks": 403650019,
+          "sid": 2731880,
+          "pgid": 2731880
         },
         "fresh_faults": [],
         "boot_unchanged": true,
