@@ -464,9 +464,10 @@ binds the new test to this build and the retained loader and runtime.
 All 14 cases pass bitwise parity, invalid-row and output-canary checks.
 The traced native process exits normally, ownership closes and validation
 reports no fresh Xe fault. The model admission reads the committed fixture
-result. Retire `dflash2-decode-indexed-head-fixture-v1/indexed` after
-inventory verification and keep its root receipt. The six files occupy
-4,348,547 bytes and hash to
+result. After inventory verification, retired
+`dflash2-decode-indexed-head-fixture-v1/indexed` and preserved the root
+receipt and executable hashes. The six files occupied 4,348,547 bytes with
+SHA-256
 `13a6b856107cba6163b4e5b16c5358ad88925fc7d3febe9a55634d1fd3b90e0d`
 over the sorted state-relative path, byte-count and SHA-256 tuples.
 
