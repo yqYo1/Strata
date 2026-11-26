@@ -453,8 +453,16 @@ a candidate to task, agent, observed-weak and physical-context qualification.
 The host check at `c22a389b5` replays the prior native routes through the
 original parser and the new startup branch. It checks that the comparison's
 arguments differ only by profile path and that a prefill slowdown blocks
-advancement even when the decode comparison passes. Native runs remain gated
-on the two RESTORE controls.
+advancement even when the decode comparison passes. Both RESTORE controls
+are closed. The pinned stock/within-layer comparison passes its frontend
+checks at `5b4bf351d` and closes its first stock process with no fresh Xe fault.
+The 96,204-input code case measures 941.5 PP and 15.92 TG tok/s with 3,195
+outputs. The 96,274-input prose case measures 1,040.1 PP and 11.34 TG tok/s
+with 7,687 outputs. Both exercised the same prefill routing and requested
+expert-upload bytes as the earlier per-layer reference. Code output and draft
+work match that reference. Prose uses the identical input and emits 931 fewer
+tokens, so keep the output, stop and draft counters when comparing its decode
+rates. The first within-layer process is the next arm in the frozen order.
 
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
