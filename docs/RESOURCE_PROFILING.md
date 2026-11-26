@@ -380,8 +380,11 @@ handoff and 8,209-token resumed suffix. Require identical active state,
 output, full loan/refill and all 48 actual membership masks. Advance reranked
 profiles only after this control passes. The stock file and four native plans
 are pinned at `033583182`, and both owned host protocol cases pass. The
-native checks are next. Keep the generated stock profile for the next
-placement comparison once the native checks pass.
+per-layer stock arm parks 32,769 tokens, switches to a 33-token prompt,
+then restores and reads the 8,209-token suffix to reach 40,978. Its native
+process exits normally with its holder closed and no fresh Xe fault. Next
+run the identical global arm, then both near-capacity arms. Keep the
+generated profile for the placement comparison after native admission.
 
 After stock admission, the same controller's `--ranked prepare` action
 materializes the exact within-layer and cross-layer rerankings from the
