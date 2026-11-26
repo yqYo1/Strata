@@ -11653,6 +11653,13 @@ the enclosing layer interval. All eight host cases pass at `8f379bcaa`.
 The three valid segments fit inside the enclosing layer interval, including
 the clock and fault totals. The native follow-up needs a separate build and
 matched observer-cost gate after the current comparison closes.
+The [layer-detail controller](../bench/dflash2_cold_layer_measure.py) recovers
+the same primary source and compiler recipe, then replaces only the two
+instrumented layer files after verifying their original Git preimages.
+It requires both closed coarse observations to localize excess in the layer
+loop. Both new arms enable the coarse and V4 ledgers. Change only the layer
+detail selector and bind each aggregate to that request's actual layer count
+and enclosing interval before accepting it.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
