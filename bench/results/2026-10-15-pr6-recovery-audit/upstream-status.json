@@ -60,7 +60,7 @@
       "release_commit": "b28ca95e3e6847f2d5e317994f253b66716deeaa",
       "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
       "required_function_candidates": [
-        "e83de74d7: adapt the scripted HTTP regression and add the output-level idle heartbeat for held custom arguments on the local Responses route after the source freeze.",
+        "e83de74d7: ported the Responses output-idle heartbeat and its loopback HTTP regression. Focused host validation passes.",
         "3575dd122 and the v0.2.21 agent-session updates: check prompt-cache option admission and live prefix reuse through the actual serial SYCL entrypoint.",
         "Review update resume and chat working-folder behavior jointly with their shared App/Control API contracts."
       ],
@@ -93,6 +93,43 @@
         "decision": "keep_host_fallback_for_retained_sycl_entry",
         "evidence": "The configured SYCL backend compiles the verified source. Its device_plan_ is false, per-layer publication waits on a completed event, and the host pool callback serves misses.",
         "revisit": "An explicit no-host selector or a change to the resident-only verifier dispatch."
+      },
+      "responses_custom_keepalive": {
+        "upstream_commit": "e83de74d7d6207622c7e8f3ae5f8b35dae15d491",
+        "source_destination": "serve/server.py",
+        "implementation_source": "26b95ce9976e9797b493baf10e5610713a36717d",
+        "regression_source": "630fd80d333a116afb02da581f45feeac250875c",
+        "baseline": {
+          "passed": 2,
+          "failed": 1,
+          "observed_held_body_keepalives": 0,
+          "expected_minimum": 2
+        },
+        "focused_validation": {
+          "suites": [
+            "serve.test_responses",
+            "serve.test_stream_write_timeout"
+          ],
+          "passed": 49,
+          "skipped": 1,
+          "skip_reason": "optional jsonschema not installed",
+          "failed": 0,
+          "keepalive_regressions_passed": 3,
+          "exit_code": 0
+        },
+        "broader_attempt": {
+          "suites": [
+            "serve.test_responses",
+            "serve.test_stream_ownership",
+            "serve.test_stream_write_timeout"
+          ],
+          "stage": "timed_out",
+          "timeout_s": 130,
+          "exit_code": 124,
+          "resolution": "Isolate stream ownership in a verbose run separately."
+        },
+        "scope": "Host HTTP verification of timely pings during held custom arguments, a single complete custom argument body, ordinary function deltas and disconnect handling.",
+        "native_performance_qualified": false
       }
     },
     "prior_source_review": {

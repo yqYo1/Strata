@@ -37,10 +37,16 @@ under `current_sync.functional_import` in the status file.
 The November 26 check adds 321 commits and 482 changed paths after
 `6a6db7ff5`. Initial Qwen-facing scopes cover agent-session prefix reuse,
 the custom Responses tool keep-alive, update resume, and chat working-folder
-preservation. The reviewed source shows that the generic tool timer can reset
-while the Responses assembler is holding back custom arguments. Adapt
-`e83de74d7` and its scripted HTTP test at the output boundary after the active
-source freeze. The retained Arc verifier uses completed GPU events and its
+preservation. The custom Responses keep-alive from `e83de74d7` is ported in
+`26b95ce99` at the assembler's output boundary. The scripted HTTP regression
+at `630fd80d3` reproduces zero keep-alives during held custom input before
+the fix. Afterward, the three new cases pass, including the complete custom
+argument and ordinary function streaming. Responses and write-timeout
+validation records 49 passes and one optional `jsonschema` skip. The
+broader run that includes the stream-ownership module reaches its 130-second
+deadline and remains open for separate verification.
+
+The retained Arc verifier uses completed GPU events and its
 host expert callback. The compiled SYCL path at `968e71988` sets the
 all-resident device planner to false. Keep this host fallback. Revisit the
 upstream `a7eb7c6c8` admission guard if an explicit no-host mode is added. The
