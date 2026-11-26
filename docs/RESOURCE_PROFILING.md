@@ -445,6 +445,18 @@ additional expert residency as its own change once real allocation coverage
 and capacity allow it. Preserve long-prefill and RESTORE admission at both
 steps and in any combined candidate.
 
+Source `9866bec75` adds `STRATA_SYCL_DFLASH2_INDEXED_HEAD=1` for canonical
+Q6_K with a draft vocabulary. The startup log reports the indexed path
+and owned head bytes. The `--indexed-q6-head` fixture compares gathered
+and indexed output bits at 256 and 2,560 input elements over seven draft
+widths, including tail, invalid row and canary cases. Head release already
+refuses any still-live DFlash2 owner, and the long request destroys that
+owner before release and binds the next owner after restoration. The
+[isolated build](../bench/dflash2_decode_indexed_head_build.py) overlays the
+five changed sources and the previously measured memory observer, then
+rebuilds all primary targets with the same recipe. Compilation and GPU
+comparison are pending.
+
 The replay at `e3d371974` verifies 4,668,262 original stock CPU jobs.
 Training uses the first 3,242 verifier windows and evaluation uses the
 remaining 3,243. All arms preserve the same protected members, 1,256 slot
