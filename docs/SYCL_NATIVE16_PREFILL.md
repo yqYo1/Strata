@@ -11640,7 +11640,12 @@ request adds 10.680 unclassified wall seconds and 5.350 main-thread CPU
 seconds over the subsequent medians. Its calling thread records 23,415
 minor faults in the layer loop, compared with 5 and 0 later. No major
 faults occur. The counts locate the change in the layer loop. Their backing
-and cost remain unmeasured. The reversed process pair remains open.
+and cost remain unmeasured. The reversed phase-observed process yields
+10.769 additional unclassified wall seconds and 5.437 calling-thread CPU
+seconds inside that loop. It records 23,121 minor faults on first use and
+3 and 0 later, with no major faults. The three requests preserve the route
+and workload, validation is quiet, and the owner exits without a fresh Xe
+fault. The final V4-only process remains the reversed pair's cost control.
 The next observer splits the layer loop into outer preparation, the
 `run_impl` call and retirement of the pass. Set
 `STRATA_PREFILL_COLD_LAYER_PHASES=1` to collect those calling-thread clocks,
@@ -11660,6 +11665,11 @@ It requires both closed coarse observations to localize excess in the layer
 loop. Both new arms enable the coarse and V4 ledgers. Change only the layer
 detail selector and bind each aggregate to that request's actual layer count
 and enclosing interval before accepting it.
+At `fcaf1e45a`, four controller checks pass. The same parser also accepts
+the actual two-layer C++ fixture output and rejects both incomplete fixture
+outcomes. The next native projection recovers byte-identical preimages for
+both changed files from Git. It still needs the closed paired observer-cost
+decision before preparing a build.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
