@@ -708742,7 +708742,7 @@
       },
       "retention": "Keep the private fixture through the bounded resolver and copy kernel trace. Retire the fixture and routine logs after the decisions and build recovery are verified. Reuse the retained runtime archive and keep the selected serving executable."
     },
-    "stage": "smoke",
+    "stage": "validate",
     "processes": [
       {
         "stage": "smoke",
@@ -708773,6 +708773,104 @@
           "start_ticks": 406041405,
           "sid": 3664690,
           "pgid": 3664690
+        },
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      },
+      {
+        "stage": "validate",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-width3-v1/fixture-build/sycl_kv_copy_groups_bench",
+          "--planner-width3-validate"
+        ],
+        "environment_sha256": "e858687598c7c8b6bcb5322edaae1dcb1531ee2874e473b27a3b4190865121b5",
+        "graph_fingerprints": [
+          1733011624505392910,
+          11969949509791534883,
+          3287452364046770679,
+          5112703831475762793,
+          18068875654498574754
+        ],
+        "exact_miss_cases": [
+          {
+            "phase": "planner_perf_cases",
+            "nq": 3,
+            "missing": 0,
+            "cooperative": false,
+            "replays": 2,
+            "oracle_exact": true
+          },
+          {
+            "phase": "planner_perf_cases",
+            "nq": 3,
+            "missing": 0,
+            "cooperative": true,
+            "replays": 2,
+            "oracle_exact": true
+          },
+          {
+            "phase": "planner_perf_cases",
+            "nq": 3,
+            "missing": 384,
+            "cooperative": false,
+            "replays": 2,
+            "oracle_exact": true
+          },
+          {
+            "phase": "planner_perf_cases",
+            "nq": 3,
+            "missing": 384,
+            "cooperative": true,
+            "replays": 2,
+            "oracle_exact": true
+          },
+          {
+            "phase": "planner_perf_cases",
+            "nq": 3,
+            "missing": 1539,
+            "cooperative": false,
+            "replays": 2,
+            "oracle_exact": true
+          },
+          {
+            "phase": "planner_perf_cases",
+            "nq": 3,
+            "missing": 1539,
+            "cooperative": true,
+            "replays": 2,
+            "oracle_exact": true
+          }
+        ],
+        "provider_sha256": "78ee4b764717a824f2a6298ea138795071a4f3f8a9a24c0405b9da4e51bc67e1",
+        "host_probe_accepted": true,
+        "validation": {
+          "pid": 3666360,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_identity": {
+          "pid": 3666360,
+          "start_ticks": 406046133,
+          "sid": 3666360,
+          "pgid": 3666360
         },
         "native_exit_code": 0,
         "ownership_closed": true,

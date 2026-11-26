@@ -542,6 +542,13 @@ counters, K/V and scale payloads, and guards. Stop on a failure, including
 an input mismatch, provider warning, budget stop, unclosed owner or fresh
 Xe fault.
 
+The three-unit component build verifies 672 compiler inputs and 25 link
+inputs at `8c6935fa4`. Its traced smoke passes two direct calls and two graph
+replays. The full Arc check matches five fingerprints across both resolvers,
+including the final physical cell, and checks two exact replays per resolver
+at each of the three miss counts. Both device processes close normally and
+report quiet validation and no fresh Xe fault.
+
 Run `--planner-width3-benchmark scalar|cooperative` in three fresh process
 pairs, alternating scalar-first, cooperative-first, scalar-first. Keep all
 nine samples per process. Follow the existing warm-up, calibration and timer
