@@ -556,7 +556,16 @@ The fifth process closes the final stock arm without a fresh Xe fault.
 It repeats the code and prose output and reasoning hashes of the fourth
 process. Code reaches 939.9 PP and 16.23 TG tok/s on 3,195 outputs; prose
 reaches 1,038.9 PP and 11.61 TG tok/s on 8,618 outputs. The final within-layer
-process is the remaining arm.
+process closes normally with no fresh Xe fault, matched prefill dispatch
+and matching final model asset hashes. Its code request gives 940.3 PP and
+15.93 TG tok/s with 3,370 outputs. Prose gives 1,038.8 PP and 13.08 TG tok/s
+with 6,939 outputs. Both repeat the preceding within-layer draft counts.
+All three process pairs preserve median prefill time. The within-layer
+TG ratios are 0.9979, 0.9943 and 0.9816 for code and 1.1594, 1.1285 and
+1.1268 for prose. CPU jobs per output rise from 354.8 to 365.4 for code and
+fall from 398–403 to 263 for prose. Generated work changes between maps.
+The sustained gain screen fails on code. Keep the stock map. Cross-layer
+placement has independent RESTORE evidence and no clean generation result.
 
 The [blended rank replay](../bench/dflash2_decode_blended_rank_replay.py)
 tests whether both workloads can reduce CPU expert work at the same VRAM
