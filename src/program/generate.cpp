@@ -6982,7 +6982,7 @@ int main(int argc, char** argv) {
             }
             bool decode_tail_applied = false;
 #ifdef STRATA_ENABLE_SYCL
-            if (decode_refill_first_changed >= 0 && !cancelled && !stop_req.load() && max_new > 0 && pf_parts.size() == 1) {
+            if (decode_refill_first_changed >= 0 && !cancelled && !stop_req.load() && pf_parts.size() == 1) {
                 auto& p = pf_parts.front();
                 if (p.lease && p.first_now >= 128 && p.first_now <= decode_refill_first_changed &&
                     p.lent.size() == size_t(p.cache->slots() - p.first_now)) {
