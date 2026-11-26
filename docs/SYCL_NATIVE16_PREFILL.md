@@ -11649,8 +11649,10 @@ sample the existing disjoint V4 ledger after its nested scopes are closed.
 The output is one aggregate per request. The host fixture uses the same GCC
 command above and includes a complete two-layer loop, out-of-order marks and
 an incomplete layer count. Require the three segment totals to fit inside
-the enclosing layer interval. The native follow-up needs a separate build
-and matched observer-cost gate after the current comparison closes.
+the enclosing layer interval. All eight host cases pass at `8f379bcaa`.
+The three valid segments fit inside the enclosing layer interval, including
+the clock and fault totals. The native follow-up needs a separate build and
+matched observer-cost gate after the current comparison closes.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
