@@ -586,6 +586,22 @@ steps to 96 and leaves next-segment submission after the callback. Use the
 planned fixed-work publication test to isolate readiness and the downstream
 interval before selecting a new split-window schedule. [Verifier](../src/core/verify.cpp)
 
+For a copy-once control, the full CPU result slab at `T=4`, `K=10` and
+`N=2560` is 409,600 bytes per layer, or 19,660,800 across 48 layers. The
+6.292–6.485 GB/s large host-USM copy reference would move that payload in
+3.03–3.13 ms if it sustained the same rate. At 3.057 outputs per window,
+70 tok/s would request about 450 MB/s for those slabs. These calculations
+cover useful result bytes. The mapped load path, small-copy throughput,
+readiness waits and actual bus transactions need separate measurements.
+
+The existing combine fixture adds a `--compare-copy` mode. Both graphs run
+the same fused reduction. The control reads the mapped host rows. The
+candidate first queues one 409,600-byte copy to device storage on the
+ordered stream. Time the copy and synchronized graph together and keep the
+existing scalar oracle, poisoned source and output-guard checks. This tests
+the copy-once boundary before changing publication order. Its native build
+and measurements are pending. [Fixture](../tests/sycl/decode_moe_combine.cpp)
+
 The event-query process at `65f0f927c` repeats the same work at 16.443 tok/s.
 The two resident wrappers each run 64,560 times without query or clock
 errors. Their wall times are 224.99 and 314.64 ms, totaling 0.216% of the

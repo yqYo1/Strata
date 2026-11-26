@@ -92,7 +92,7 @@ float weight_value(int row) {
     return float(row % 9 - 4) / 23.0f;
 }
 
-void run(std::string_view mode) {
+void run(std::string_view mode, bool compare_copy) {
     auto runtime = runtime_for();
     Allocation host(runtime, parts * sizeof(float), MemoryKind::Host);
     Allocation gpu(runtime, parts * sizeof(float), MemoryKind::Device);
@@ -108,14 +108,22 @@ void run(std::string_view mode) {
     float* stage = assembled.as<float>();
     int32_t* hits = meta.as<int32_t>();
     float* out = result.as<float>() + guard;
-    graphs.capture(0, 3, [&](void* stream) {
-        copy_rows_from_mapped(stage, cpu, rows, columns, hits + 1, hits, stream);
-        moe_hit_add(stage, device, hits + 1, hits, rows, columns, stream);
-        native_moe_combine_multi(stage, weights.as<float>(), shared.as<float>(), out, columns, experts, tokens, stream);
-    });
-    graphs.capture(1, 1, [&](void* stream) {
-        decode_moe_combine_mapped_rows(cpu, device, hits + 1, hits, weights.as<float>(), shared.as<float>(), out, stream);
-    });
+    auto capture_fused = [&](int arm, const float* cpu_input) {
+        graphs.capture(arm, 1, [&](void* stream) {
+            decode_moe_combine_mapped_rows(cpu_input, device, hits + 1, hits,
+                                           weights.as<float>(), shared.as<float>(), out, stream);
+        });
+    };
+    if (compare_copy) {
+        capture_fused(0, cpu);
+    } else {
+        graphs.capture(0, 3, [&](void* stream) {
+            copy_rows_from_mapped(stage, cpu, rows, columns, hits + 1, hits, stream);
+            moe_hit_add(stage, device, hits + 1, hits, rows, columns, stream);
+            native_moe_combine_multi(stage, weights.as<float>(), shared.as<float>(), out, columns, experts, tokens, stream);
+        });
+    }
+    capture_fused(1, compare_copy ? stage : cpu);
 
     std::vector<float> gpu_input(parts), shared_input(outputs), output(outputs + 2 * guard, sentinel);
     std::array<std::vector<float>, 2> cpu_inputs{std::vector<float>(parts), std::vector<float>(parts)};
@@ -125,6 +133,12 @@ void run(std::string_view mode) {
     for (int i = 0; i < outputs; ++i) shared_input[i] = part_value(i, 17);
     auto upload = [&](void* dst, const void* src, size_t bytes) {
         check(cudaMemcpyAsync(dst, src, bytes, cudaMemcpyHostToDevice, graphs.stream), "fixture upload");
+    };
+    auto replay = [&](int arm) {
+        // The copy and graph share the ordered stream. Replay waits before
+        // the caller overwrites the host publication for the next iteration.
+        if (compare_copy && arm == 1) upload(stage, cpu, host.size());
+        graphs.replay(arm);
     };
     upload(weights.data(), weight_input.data(), weights.size());
     upload(shared.data(), shared_input.data(), shared.size());
@@ -161,7 +175,7 @@ void run(std::string_view mode) {
             publish_cpu_rows(version);
             std::fill(output.begin(), output.end(), sentinel);
             upload(result.data(), output.data(), result.size());
-            graphs.replay(arm);
+            replay(arm);
             check(cudaMemcpyAsync(output.data(), result.data(), result.size(),
                                   cudaMemcpyDeviceToHost, graphs.stream), "readback");
             check(cudaStreamSynchronize(graphs.stream), "readback completion");
@@ -196,7 +210,7 @@ void run(std::string_view mode) {
                     const auto publish_begin = Clock::now();
                     publish_cpu_rows(i % 2);
                     const auto begin = Clock::now();
-                    graphs.replay(arm);
+                    replay(arm);
                     const auto end = Clock::now();
                     elapsed += end - begin;
                     full += end - publish_begin;
@@ -210,7 +224,10 @@ void run(std::string_view mode) {
                 std::cout << "decode MoE combine hits=" << count << " batch=" << batch
                           << " arm=" << arm << " replays=" << replays << " ms="
                           << std::fixed << std::setprecision(6) << ms << " full_ms=" << full_ms
-                          << " empty_ms=" << empty_ms << '\n';
+                          << " empty_ms=" << empty_ms;
+                if (compare_copy)
+                    std::cout << " cpu_copy_bytes_per_replay=" << (arm == 1 ? host.size() : 0);
+                std::cout << '\n';
             }
         }
     }
@@ -221,7 +238,7 @@ void run(std::string_view mode) {
         metadata[1] = metadata[2] = 0;
         std::fill_n(cpu, parts, 1.0f);
         upload(meta.data(), metadata.data(), meta.size());
-        graphs.replay(1);
+        replay(1);
         check(cudaMemcpyAsync(output.data(), result.data(), result.size(),
                               cudaMemcpyDeviceToHost, graphs.stream), "malformed list readback");
         check(cudaStreamSynchronize(graphs.stream), "malformed list completion");
@@ -234,11 +251,13 @@ void run(std::string_view mode) {
 
 int main(int argc, char** argv) {
     try {
-        const std::string_view mode = argc == 2 ? argv[1] : "";
+        const bool compare_copy = argc == 3 && std::string_view(argv[2]) == "--compare-copy";
+        const std::string_view mode = (argc == 2 || compare_copy) ? argv[1] : "";
         require(mode == "validate" || mode == "time-forward" || mode == "time-reverse",
-                "select validate, time-forward or time-reverse");
-        run(mode);
-        std::cout << "decode MoE combine numerical=PASS guards=PASS nodes=3/1 completed=1\n";
+                "select validate, time-forward or time-reverse with optional --compare-copy");
+        run(mode, compare_copy);
+        std::cout << "decode MoE combine numerical=PASS guards=PASS nodes="
+                  << (compare_copy ? "1/1" : "3/1") << " completed=1\n";
     } catch (const std::exception& failure) {
         std::cerr << failure.what() << '\n';
         return 1;
