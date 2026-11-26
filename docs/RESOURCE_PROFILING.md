@@ -362,7 +362,14 @@ diagnostic. Source `b72ed4fb0` passes the retained serving target's C++20
 `-fsyntax-only` check with oneAPI 2026.2 `icpx`, with no compiler output and
 closed process ownership. The pinned compile database SHA-256 is
 `660138a4f65f93f17485225cad35b3155ba262644b14dca894013d1d8e1e5e4b`.
-Linking and diagnostic execution remain pending.
+The [handoff diagnostic controller](../bench/dflash2_decode_handoff_memory.py)
+rebuilds the original source and targets with only the serving generator
+observer changed. It checks the restored stock profile, two fresh
+94,209-input requests and two fresh 126,977-input requests, with each
+length in its own process. Keep the qualified prefill and decode references
+through this temporary third generation and retire the observer build after
+the diagnostic closes. Native build, frontend checks and GPU execution
+remain pending.
 The reviewed cache-lifetime audit confirms that existing captured hit
 readers use one cache base and a residency table. A contiguous startup
 tail keeps that representation at the cost of persistent capacity. A
