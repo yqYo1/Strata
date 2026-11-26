@@ -6,6 +6,7 @@
 #include "strata/sycl/runtime.hpp"
 #include <chrono>
 #include <cstdlib>
+#include <ctime>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -627,12 +628,21 @@ void planner_width3_trace(std::shared_ptr<Runtime> rt, sycl::queue &q, bool coop
   require(!expected.ctl[3] && expected.ctl[2] == missing, "trace placement count");
   f.put(c.before, initial_payload(shape, c.before));
   auto graph = capture(f, in, 0, cooperative);
+  const auto raw_ns = [] {
+    std::timespec stamp{};
+    require(::clock_gettime(CLOCK_MONOTONIC_RAW, &stamp) == 0, "read planner trace clock");
+    return uint64_t(stamp.tv_sec) * 1'000'000'000 + uint64_t(stamp.tv_nsec);
+  };
   // A fixed number of submissions makes the native resolver and payload
   // kernel instances countable without including calibration replays.
   for (int replay = 0; replay < 5; ++replay) {
     f.put_map(c.before);
+    const auto begin = raw_ns();
     (void)timed(f, in, 0, false, graph.get());
+    const auto end = raw_ns();
     (void)check(f, in, expected, payload);
+    std::cout << "{\"phase\":\"planner_width3_replay\",\"replay\":" << replay
+              << ",\"begin_raw_ns\":" << begin << ",\"end_raw_ns\":" << end << "}\n";
   }
   f.source_exact();
   std::cout << "{\"phase\":\"planner_width3_trace\",\"replays\":5,\"nq\":3,\"graph_nodes\":2"

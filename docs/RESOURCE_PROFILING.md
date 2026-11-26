@@ -538,8 +538,11 @@ each launch. Begin with zero and 384 misses in both arms. Require five
 distinct resolver instances and five matching copy instances on the same
 native GPU, with successful setup, replay and exit and quiet parameter
 validation. Separate the two kernels from map resets and readbacks. Keep
-kernel service, launch gaps and wall completion separate. Reuse the pinned
-indexed UnitTrace collector only after its provider and instance checks
+kernel service, launch gaps and wall completion separate. Match each kernel
+to the fixture's `CLOCK_MONOTONIC_RAW` launch-through-completion bounds and
+the collector's native process flow. The fixture records these bounds in
+trace mode, between the completed map reset and oracle readback. Reuse the
+pinned indexed UnitTrace collector only after its provider and instance checks
 pass for this fixture. Retire complete traces once the kernel split is
 recorded. No physical PCIe traffic or model TG follows from this trace.
 
