@@ -481,7 +481,10 @@ enough reported room for the existing 268,211,200-byte candidate. A separate
 device allocation and touch/readback will test physical capacity. Use a
 separate sustained comparison to judge throughput. Both current-source
 frontend probes pass with the pinned 823 controller inputs and exact
-request bodies.
+request bodies. The gathered arm closes normally with no fresh Xe fault.
+Each request observes 223,227,900 owned head bytes. The first and subsequent
+post-decode queries report 179,892,224 and 179,818,496 free bytes,
+respectively. Run the indexed arm against this frozen control.
 
 The replay at `e3d371974` verifies 4,668,262 original stock CPU jobs.
 Training uses the first 3,242 verifier windows and evaluation uses the
