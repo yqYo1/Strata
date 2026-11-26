@@ -400,6 +400,13 @@ layers of the width-two and width-four decode captures. This qualifies the
 short dispatch and parity checks. The 96K timing, capacity and RESTORE
 checks remain pending.
 
+The retained-build reader at `460621507` recovers the original QSA build's
+controller files from the recorded Git revision and checks them against the
+committed build receipt. The subsequent model comparison pins its own live
+inputs separately. The cooperative-KV plan at `8e12b034d` prepares all six
+processes with the same retained executable and passes both frontend host
+probes. The original QSA comparison remains failed.
+
 #### Width-four KV cache working set
 
 The retained K8V8 verifier at `968e71988` scores four-cell blocks and
