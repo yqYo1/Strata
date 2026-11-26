@@ -420,6 +420,29 @@ report worker and native reviews use 62.186 CPU seconds in total, including
 one timed-out review. Preserve the individual process data for the paired
 comparison and collect the first cooperative arm next.
 
+The archived prose trace at `b28a9372b` records a 33,287-token request
+with 11,783 outputs on the unsplit DFlash2 cap-four path. It uses the same
+262,144-cell logical and 20,480-cell resident K8V8 geometry. Replaying its
+request footers and verifier positions accounts for 6,485 windows and 13,387
+target rows, including all 6,902 offered drafts.
+
+| Actual verifier width | Windows | Target rows |
+| ---: | ---: | ---: |
+| 1 | 2,533 | 2,533 |
+| 2 | 1,987 | 3,974 |
+| 3 | 980 | 2,940 |
+| 4 | 985 | 3,940 |
+
+The admitted width-two and width-four shapes cover 45.83% of these windows.
+Width three adds 15.11% of windows and 21.96% of target rows. The resolver in
+`decode_kv_stream.cpp` iterates across the provided query count, while the
+verifier admission is restricted to the two measured widths. The same page
+bound below gives at most 1,542 simultaneously selected pages for three
+queries, within the stock 5,120 slots. After the current comparison, a
+separate three-query component can test the full plane, map and attention
+parity and clean completion time. Keep other widths and prefill fixed.
+These counts cover the archived 33K workload and do not predict 96K TG.
+
 #### Width-four KV cache working set
 
 The retained K8V8 verifier at `968e71988` scores four-cell blocks and
