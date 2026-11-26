@@ -37,14 +37,19 @@ under `current_sync.functional_import` in the status file.
 The November 26 check adds 321 commits and 482 changed paths after
 `6a6db7ff5`. Initial Qwen-facing scopes cover agent-session prefix reuse,
 the custom Responses tool keep-alive, update resume, and chat working-folder
-preservation. This fork already has a tool keep-alive path. Compare its
-behavior and fixture with `e83de74d7` before porting that slice. Check the
-new no-host admission separately on Arc. Trace whether Arc executes the GPU
-normalization kernel changed by `ed5bff88c` before a numerical comparison.
+preservation. The reviewed source shows that the generic tool timer can reset
+while the Responses assembler is holding back custom arguments. Adapt
+`e83de74d7` and its scripted HTTP test at the output boundary after the active
+source freeze. Check the new no-host admission separately on Arc. The
+normalization change in `ed5bff88c` is in the root GPU source. Niko Arc
+selects `kernels.dp.cpp`, and this fork's compiler census contains its own
+`prefill/sycl/postops.cpp` implementation. Their numerical and runtime
+comparisons are separate work. The reviewed reports are indexed in the status
+file.
 The release publishes Qwen SYCL engine 0.1.69 and main adds libgomp packaging.
 Track the selected unmodified build and measure both default and tuned
-configurations on this B570. This observation closes neither the required
-function ledger nor model performance evaluation. [v0.2.21](https://github.com/Niko1221/Strata/releases/tag/v0.2.21) · [v0.2.22](https://github.com/Niko1221/Strata/releases/tag/v0.2.22).
+configurations on this B570. The required-function ledger and model
+performance evaluation remain open. [v0.2.21](https://github.com/Niko1221/Strata/releases/tag/v0.2.21) · [v0.2.22](https://github.com/Niko1221/Strata/releases/tag/v0.2.22).
 
 The prior 152-commit wave through `6a6db7ff5` changed 835 paths.
 Its Qwen-facing feature review covered model discovery and API schema, setup and
