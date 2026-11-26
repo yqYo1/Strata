@@ -428,6 +428,24 @@ page payload using the verified K8V8 shape. The B570 bus traffic and overlap
 remain separate measurements. Test allocating the released VRAM to expert
 slots as its own comparison after the smaller-cache cost is known.
 
+The initial implementation selects the smaller pool at session initialization
+with `STRATA_SYCL_DFLASH2_KV_12288=1` and `--kv-resident 12288`.
+Both arms request 12,288 cells. With the switch off, ordinary clamping gives
+20,480 cells. With it on, require native single-device DFlash2, width four,
+262,144 context, the two-head 256-element K8V8 shape and scalar resolve.
+Check the actual resident count from the native session. The one-query
+fallback can ask for at most 2,051 cells even with arbitrary page IDs.
+Long batch prefill uses its own identity staging layout and the host mirror
+still has all 262,144 cells. Their runtime checks remain separate.
+
+The existing [SYCL KV fixture](../tests/sycl/kv.cpp) has a bounded
+`--dflash2-kv-resident` case with 65,536 logical pages and 3,072 resident
+slots. The four synthetic queries select 2,056 different pages, including
+full pages, tied cutoffs and partial tails. Replay the same selections and
+then switch the full pages while retaining the tails. Check actual selection
+IDs, the four K/V and scale planes, inverse map, guard cells and hit/miss
+counters before testing the real model. Build and device results are pending.
+
 ### DFlash2 expert service and placement
 
 The independent worker-leaf bracket at `6bbd3e3e1` uses native source

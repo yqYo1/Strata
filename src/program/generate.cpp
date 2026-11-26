@@ -2266,7 +2266,6 @@ int main(int argc, char** argv) {
         std::fprintf(stderr, "strata generate: --kv k8v4 does not support --kv-resident streaming (yet)\n");
         return 2;
     }
-    strata::core::qsa_set_kv_resident(o.kv_resident);
     // Prompt lookup (the suffix drafter, on by default): the MTP keeps its --spec windows and a lookup window may be
     // up to 2 tokens longer; the draft policy (strata/spec/draft_policy.hpp) takes one only where it pays. Code
     // edits +6-11%, ordinary text unchanged (bench/results/2026-09-27-spec). --suffix-draft 0 turns it off.
@@ -2651,6 +2650,31 @@ int main(int argc, char** argv) {
                              rope_cfg.type == RST::YaRN ? "YaRN" : "--yarn-attn-factor", rope_cfg.mscale());
         }
     }
+    auto kv_resident_floor = strata::core::QsaKvResidentFloor::standard;
+#ifdef STRATA_ENABLE_SYCL
+    if (const char* trial = std::getenv("STRATA_SYCL_DFLASH2_KV_12288"); trial && std::strcmp(trial, "0") != 0) {
+        if (std::strcmp(trial, "1") != 0) {
+            std::fprintf(stderr, "strata generate: STRATA_SYCL_DFLASH2_KV_12288 must be 0 or 1\n");
+            return 2;
+        }
+        const char* coalesced = std::getenv("STRATA_SYCL_DECODE_KV_COALESCED");
+        if (!use_df2 || !native_pack || multi_gpu || !o.no_token_graph || o.gpu_only_full ||
+            o.kv != "int8" || o.spec != 4 || o.max_context != 262144 ||
+            o.kv_resident != strata::core::kDflash2Spec4TrialKvCells ||
+            g.n_head_kv != 2 || g.head_dim != 256 || g.n_qsa_layers() != 12 ||
+            std::getenv("STRATA_KV_MAIN_OFF") || (coalesced && std::strcmp(coalesced, "0") != 0)) {
+            std::fprintf(stderr, "strata generate: STRATA_SYCL_DFLASH2_KV_12288 requires single-device native "
+                                 "DFlash2 spec4, int8 KV, scalar KV resolve, no token graphs, and "
+                                 "--max-context 262144 --kv-resident 12288\n");
+            return 2;
+        }
+        // The exact block selector needs at most 2056 pages for four queries.
+        // A token-wise fallback issues one selection of at most 2051 cells.
+        // The long-prefill identity stage and full host mirror keep their extent.
+        kv_resident_floor = strata::core::QsaKvResidentFloor::dflash2_spec4_trial;
+    }
+#endif
+    strata::core::qsa_set_kv_resident(o.kv_resident, kv_resident_floor);
     strata::core::NativeEmbed native_embed;
     if (native_pack) {
         if (o.native_preset.empty() || o.keep_canonical || o.spec < 0 || o.spec == 1 ||
