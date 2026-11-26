@@ -666,11 +666,24 @@ Check complete serial output, every copied weight byte, buffer guards and
 affinity. Gather per-worker calls and rows in separate observed processes.
 Use three counterbalanced clean process pairs per format with five timing
 batches each. Compare whole-pass and Gate/Up intervals and keep the observed
-worker distribution as context for interpreting the pair. A repeatable timing
-change would show address-reuse sensitivity of this fixed component. Physical
-DRAM traffic, the last worker's completion latency and model speed still need
-their own evidence. The build and checks follow the current GPU comparison's
-next idle boundary.
+worker distribution as context for interpreting the pair.
+
+The CPU build verifies 633 actual compiler inputs. All four observed cases
+pass exact serial-output and worker-accounting checks. The 12 clean CPU
+processes complete 60 eligible timing batches. Table times are medians of
+process medians. The percentage changes are geometric means of the three
+paired rotating/hot time ratios per format.
+
+| Gate/Up type | Hot pass | Rotating pass | Full-pass time change | Gate/Up time change |
+| --- | ---: | ---: | ---: | ---: |
+| IQ3_XXS | 2.737 ms | 2.812 ms | +2.56% | +1.28% |
+| IQ3_S | 3.297 ms | 3.386 ms | +2.51% | +1.71% |
+
+Rotating takes longer in every pair on both clocks. The effect is modest for
+this repeated eight-job shape, with actual worker assignments recorded in the
+separate observed runs. Keep reducing routed CPU work and measuring verifier
+service before choosing a larger locality rewrite. Physical DRAM traffic, the
+last worker's completion latency and model speed need separate evidence.
 
 The [stock admission controller](../bench/dflash2_decode_stock_global_restore.py)
 uses the retained primary executable and recovers the original restore plans
