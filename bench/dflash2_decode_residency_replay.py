@@ -85,23 +85,28 @@ def inputs():
     return revision, data, windows, baseline, manifest_formats(assets['manifest']), observed
 
 
-def window_counts(data, widths):
+def window_routes(data, widths):
     offset = len(data) - sum(widths) * LAYERS * ROUTE.size
     require(offset >= 0 and offset % ROUTE.size == 0, 'unbound routing extent')
     empty_weights = bytes(40)
     for width in widths:
         frame = []
         for layer in range(LAYERS):
-            jobs = Counter()
+            rows = []
             for _ in range(width):
                 actual, fanout, *experts, weights = ROUTE.unpack_from(data, offset)
                 offset += ROUTE.size
                 require((actual, fanout, weights) == (layer, 10, empty_weights)
                         and len(set(experts)) == 10 and all(0 <= e < EXPERTS for e in experts), 'bad route')
-                jobs.update(experts)
-            frame.append(jobs)
+                rows.append(experts)
+            frame.append(rows)
         yield frame
     require(offset == len(data), 'trailing capture bytes')
+
+
+def window_counts(data, widths):
+    for frame in window_routes(data, widths):
+        yield [Counter(expert for row in rows for expert in row) for rows in frame]
 
 
 def count_routes(data, widths):

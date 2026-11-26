@@ -1744,6 +1744,15 @@ grouped. Use these slices with the existing mapped-combine parity fixture
 to validate the barrier control. Their data establish routing dependencies.
 Actual GPU completion and the benefit of early publication need measurement.
 
+Extend the existing resident-row replay to count these dependencies over all
+47,280 width-four layer calls in the same held-out request. Check whether
+first-pair dependencies are a prefix of the stock first-seen CPU job order.
+Record first-only, shared and second-only jobs, routed rows and logical packed
+bytes, and how often the first pair requires at most half the original jobs
+while the second still has unshared CPU work. Use the distribution to decide whether
+ordered-prefix completion is enough for the early publication fixture. The
+counts describe dependencies and do not establish hardware time or overlap.
+
 The selected verifier at `968e71988` can split a decode window into two
 groups for `T >= 2`. In its SYCL path the host synchronizes the current
 segment, calls the expert pool, retires copies and then submits the next
