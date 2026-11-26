@@ -1005,6 +1005,22 @@ copy and completion ordering, and actual dispatch in a native run before
 comparing model throughput. Component results cover only these width-four
 shapes. The prior copy regression at 20 hits remains a separate result.
 
+Weighting the fixture median differences by the seven exact census counts
+gives 1.271 seconds, or 0.108 ms per emitted token for that 11,783-token
+request. This is an arithmetic projection without production selection or
+launch overhead. Keep CPU expert service and the GPU verifier dependency
+chain as the larger optimization targets. The existing verifier loop joins
+the CPU callback and outstanding expert copies before its next layer graph
+launch. Use that boundary to test the copy without adding a wait. Preserve
+the stock route for all other widths, placements and unmeasured hit counts.
+
+The comparison closes at `d3f81b99a`. Verified the Git source and recipe,
+691 compiler inputs, 27 linker inputs and fixture hash before retiring
+`dflash2-decode-combine-stock-v1/{0,1,2,3,fixture-build}`. The 50 retired
+files occupy 13,902,658 bytes. Their sorted inventory hashes to
+`837f2d7f7dbeb531b37ba959b07bddc9f8e493468357a3ac88595d7a6fa6a502`.
+The root receipt is unchanged.
+
 The event-query process at `65f0f927c` repeats the same work at 16.443 tok/s.
 The two resident wrappers each run 64,560 times without query or clock
 errors. Their wall times are 224.99 and 314.64 ms, totaling 0.216% of the
