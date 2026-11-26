@@ -860,6 +860,18 @@ with quiet validation, closed ownership, unchanged model assets and no
 fresh Xe fault. Both native extents now qualify the frozen map for the
 clean generation comparison.
 
+The pending retirement covers only `dflash2-blend-independent-capture-v3`
+under the tuning state directory. The exact scoring source and compact closed
+results remain in Git at `53f824443` and `a7c068890`. Both captured traces match
+their committed lengths and hashes, and both process owners are closed. The
+native RESTORE and generation plans consume the committed result, the original
+training evidence and the generated candidate profile. Their inputs do not
+include this capture directory. The verified inventory has 151 files and
+88,069,211 bytes with SHA-256
+`3cbef7b879a2d12d1b72e5793192e0cf4e3e83f35ff3a5ae5732b3fca3143719`
+over the compact JSON list of sorted paths relative to that directory, file
+sizes and file hashes.
+
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
 96-swap and 197,913,600-byte caps. Compare early distinct jobs, routed rows
