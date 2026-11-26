@@ -428,7 +428,94 @@ struct ReplayBatch {
     }
 };
 
-void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int threads, bool timing) {
+constexpr int locality_jobs = 8, locality_banks = 4, locality_observed_passes = 32;
+
+void replay_locality(ReplayBatch& batch, cpu::ExpertPool& pool, int batch_index, bool rotating, bool timing) {
+    require(batch.jobs.size() >= locality_jobs, "locality descriptor must supply eight jobs");
+    batch.jobs.resize(locality_jobs);
+    batch.outputs.resize(locality_jobs);
+    batch.validate(pool);
+    const uint64_t blob_bytes = batch.format->bytes;
+    struct Bank {
+        std::array<std::unique_ptr<Buffer>, locality_jobs> blobs;
+        std::array<cpu::ExpertJobMulti, locality_jobs> jobs;
+    };
+    std::array<Bank, locality_banks> banks;
+    std::array<std::vector<float>, locality_jobs> expected;
+    int entries = 0;
+    for (int e = 0; e < locality_jobs; ++e) {
+        const auto& job = batch.jobs[e];
+        expected[e].assign(job.out[0], job.out[0] + job.nt * cpu::H);
+        entries += job.nt;
+        for (auto& bank : banks) {
+            bank.blobs[e] = std::make_unique<Buffer>(blob_bytes);
+            std::memcpy(bank.blobs[e]->data(), job.blob, blob_bytes);
+            bank.jobs[e] = job;
+            bank.jobs[e].blob = rotating ? bank.blobs[e]->data() : banks[0].blobs[e]->data();
+        }
+    }
+    auto run = [&](Bank& bank) {
+        pool.run_split_multi_native(*batch.format, bank.jobs.data(), locality_jobs, cpu::NativeGuPhase::Decode);
+    };
+    auto pass = [&] { for (auto& bank : banks) run(bank); };
+    auto validate = [&] {
+        for (auto& bank : banks) {
+            for (const auto& job : bank.jobs)
+                std::fill_n(job.out[0], job.nt * cpu::H, std::numeric_limits<float>::quiet_NaN());
+            run(bank);
+            for (int e = 0; e < locality_jobs; ++e) {
+                bank.blobs[e]->check();
+                batch.outputs[e]->check();
+                require(std::memcmp(bank.blobs[e]->data(), batch.jobs[e].blob, blob_bytes) == 0 &&
+                        std::equal(expected[e].begin(), expected[e].end(), bank.jobs[e].out[0]),
+                        "locality changed packed weights or serial output");
+            }
+        }
+        for (const auto& act : batch.acts) if (act) act->check();
+    };
+    validate();
+    const uint64_t work = locality_jobs * locality_banks;
+    const char* arm = rotating ? "rotate" : "hot";
+    std::cout << "{\"kind\":\"locality_input\",\"batch\":" << batch_index
+              << ",\"layout\":\"" << arm << "\",\"gu\":" << batch.format->gu_type
+              << ",\"down\":" << batch.format->d_type << ",\"jobs\":" << locality_jobs
+              << ",\"entries\":" << entries << ",\"logical_bytes\":" << work * blob_bytes
+              << ",\"allocated_bytes\":" << work * blob_bytes
+              << ",\"address_bytes\":" << (rotating ? work : locality_jobs) * blob_bytes
+              << ",\"serial_output_equal\":true}" << std::endl;
+    const auto before = pool.service_snapshot();
+    require(before.enabled != timing, "use worker census only for the untimed locality check");
+    if (timing) {
+        measure(pass, work * blob_bytes, work,
+                "\"mode\":\"locality\",\"threads\":5,\"layout\":\"" + std::string(arm) + "\"", &pool, true);
+    } else {
+        for (int i = 0; i < locality_observed_passes; ++i) pass();
+        const auto after = pool.service_snapshot();
+        require(before.valid && after.valid, "invalid locality worker census");
+        std::cout << "{\"kind\":\"locality_workers\",\"passes\":" << locality_observed_passes << ",\"slots\":[";
+        bool comma = false;
+        cpu::service::Counts full;
+        for (size_t i = 0; i < after.threads.size(); ++i) {
+            cpu::service::Counts count;
+            require(cpu::service::subtract(after.threads[i].total, before.threads[i].total, count) &&
+                    cpu::service::add(full, count), "inconsistent locality worker counts");
+            if (count.calls == 0) continue;
+            require(after.threads[i].tid > 0 && (i < 5 || i == cpu::service::kWorkers), "unexpected locality worker");
+            std::cout << (comma ? "," : "") << "{\"slot\":" << i << ",\"calls\":" << count.calls
+                      << ",\"rows\":" << count.rows << ",\"token_rows\":" << count.token_rows
+                      << ",\"wall_ns\":" << count.wall_ns << ",\"cpu_ns\":" << count.cpu_ns << "}";
+            comma = true;
+        }
+        require(full.rows == locality_observed_passes * work * (2 * cpu::FF + cpu::H) &&
+                full.token_rows == locality_observed_passes * locality_banks * entries * (2 * cpu::FF + cpu::H),
+                "locality worker census lost rows");
+        std::cout << "]}" << std::endl;
+    }
+    validate();
+}
+
+void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int threads, bool timing,
+                  int locality_batch = -1, bool rotating = false) {
     const bool host_works = threads == 6;
     const int workers = threads - static_cast<int>(host_works);
     cpu::ExpertPool pool(workers, true, host_works);
@@ -445,6 +532,17 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
     in >> std::ws;
     require(in.eof(), "trailing replay instructions");
 
+    const std::vector<int> worker_cores(topo.worker_cores.begin(), topo.worker_cores.begin() + workers);
+    if (locality_batch >= 0) {
+        verify_placement(topo.host_core, worker_cores);
+        report_placement(topo.host_core, worker_cores, host_works);
+        replay_locality(batches[locality_batch], pool, locality_batch, rotating, timing);
+        for (const auto& layer : layers)
+            for (const auto& blob : layer.weights) if (blob) blob->check();
+        verify_placement(topo.host_core, worker_cores);
+        return;
+    }
+
     uint64_t jobs = 0, entries = 0, visits = 0, unique_blobs = 0, unique_bytes = 0;
     for (const auto& batch : batches) {
         jobs += batch.jobs.size();
@@ -454,7 +552,6 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
     for (const auto& layer : layers)
         for (const auto& blob : layer.weights)
             if (blob) { ++unique_blobs; unique_bytes += blob->bytes; }
-    const std::vector<int> worker_cores(topo.worker_cores.begin(), topo.worker_cores.begin() + workers);
     auto validate = [&] {
         for (auto& batch : batches) batch.validate(pool);
         for (const auto& layer : layers)
@@ -484,6 +581,12 @@ int main(int argc,char** argv) try {
         const std::string_view mode(argv[4]);
         require(threads >= 1 && threads <= 6 && (mode == "measure" || mode == "check"), "replay arm");
         route_replay(argv[2], topo, threads, mode == "measure");
+    } else if (argc == 6 && std::string_view(argv[1]) == "replay-locality") {
+        const int batch = std::stoi(argv[3]);
+        const std::string_view layout(argv[4]), mode(argv[5]);
+        require((batch == 4 || batch == 5) && (layout == "hot" || layout == "rotate") &&
+                (mode == "measure" || mode == "check"), "locality replay arm");
+        route_replay(argv[2], topo, 5, mode == "measure", batch, layout == "rotate");
     } else if (argc == 5 && std::string_view(argv[1]) == "replay-scan") {
         const int threads = std::stoi(argv[2]);
         const auto bytes = std::stoull(argv[3]);

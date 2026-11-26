@@ -46,7 +46,34 @@ CHECK_ORDER = [(0, cores, mode) for cores in (1, 6) for mode in ('pool', 'scan')
 ORDER = [(round_id, cores, mode)
          for round_id, counts in enumerate((range(1, 7), range(6, 0, -1), (3, 6, 1, 5, 2, 4)))
          for cores in counts for mode in (('scan', 'pool') if round_id == 1 else ('pool', 'scan'))]
+LOCALITY_ARMS = {f'{layout}-{batch}': (layout, batch) for batch in (4, 5) for layout in ('hot', 'rotate')}
+LOCALITY_PROTOCOL = (
+    'Keep the first eight ordered CPU jobs from each of the two held-out width-two layer batches, '
+    'their production packed weights, seeded activations and five pinned workers with a reserved caller. '
+    'Allocate four identical copies in each process. Compare reusing one copy with reading each copy in '
+    'turn across four otherwise identical submissions. Validate actual work, exact serial outputs, guards, '
+    'and observed worker rows and calls outside the timed processes. Three counterbalanced independent '
+    'pairs per format, with the existing five scored batches per process and no CPU service observer. '
+    'Report whole-pass and gate/up times separately and retain every pair, including mixed or flat results. '
+    'This tests address reuse sensitivity of the fixed work. Dynamic claim timing and physical DRAM bytes '
+    'are separate questions, and the component does not qualify a model speedup.'
+)
+LOCALITY_MODE = False
 need, sha, git = recipe.need, owned.sha, recipe.git
+
+
+def select_locality():
+    global ROOT, BUILD, RESULT, PROTOCOL, CHECK_ORDER, ORDER, LOCALITY_MODE
+    LOCALITY_MODE = True
+    ROOT = B / 'cpu-fixed-expert-locality-v1'
+    BUILD = ROOT / 'build'
+    RESULT = recipe.RESULT.with_name('cpu-fixed-expert-locality-current.json')
+    PROTOCOL = LOCALITY_PROTOCOL
+    CHECK_ORDER = [(0, 5, mode) for mode in LOCALITY_ARMS]
+    ORDER = [(round_id, 5, f'{layout}-{batch}')
+             for round_id, batches in enumerate(((4, 5), (5, 4), (4, 5)))
+             for batch in batches
+             for layout in (('rotate', 'hot') if round_id == 1 else ('hot', 'rotate'))]
 
 
 def atomic_json(path, data):
@@ -216,6 +243,8 @@ def prepare():
                budgets=dict(build_wall=300, run_wall=45, build_rss=8 << 30, run_rss=2 << 30,
                             text=4 << 20, file=64 << 20, total=384 << 20),
                processes=[], active=False, ownership_closed=True, gpu_executed=False)
+    if LOCALITY_MODE:
+        row['observer_environment'] = dict(env, STRATA_CPU_SERVICE='1')
     save(row)
     print('Prepared fixed CPU replay; commit the plan before compiling.', flush=True)
 
@@ -238,6 +267,10 @@ def load():
     need(sha(target) == row['replay_input_sha256'] and target.read_text() == native_descriptor(row['fixture'])
          and row['check_order'] == [list(c) for c in CHECK_ORDER]
          and row['order'] == [list(c) for c in ORDER] and row['protocol'] == PROTOCOL, 'replay input or plan drift')
+    if LOCALITY_MODE:
+        need(row['environment']['STRATA_CPU_SERVICE'] == '0'
+             and row['observer_environment'] == dict(row['environment'], STRATA_CPU_SERVICE='1'),
+             'separate clean and observed worker envelopes required')
     return row
 
 
@@ -252,10 +285,39 @@ def verify_binary(row):
          'route descriptor or model shard identity changed')
 
 
+def locality_summary(fixture, mode, by_kind, timed):
+    layout, batch = LOCALITY_ARMS[mode]
+    source = json.loads(fixture['blocks'])[batch]
+    gu, down, blob_bytes = source['fmt']
+    jobs = source['jobs'][:8]
+    entries = sum(len(rows) for _, rows in jobs)
+    expected = dict(kind='locality_input', layout=layout, batch=batch, gu=gu, down=down, jobs=8,
+                    entries=entries, logical_bytes=32 * blob_bytes, allocated_bytes=32 * blob_bytes,
+                    address_bytes=(32 if layout == 'rotate' else 8) * blob_bytes, serial_output_equal=True)
+    need(source['window'] == 4801 and source['width'] == 2 and len(jobs) == 8
+         and by_kind['locality_input'] == [expected] and not by_kind['replay_input'],
+         'locality decoded work or address footprint changed')
+    result = dict(locality=expected)
+    if timed:
+        need(not by_kind['locality_workers'], 'profile observer active in a clean timing arm')
+    else:
+        profile, = by_kind['locality_workers']
+        counts = profile['slots']
+        need(profile['passes'] == 32 and {v['slot'] for v in counts} == {0, 1, 2, 3, 4, 64}
+             and len(counts) == 6 and all(v['calls'] > 0 and 0 < v['rows'] <= v['token_rows'] <= 2 * v['rows']
+                                         and 0 <= v['cpu_ns'] <= v['wall_ns'] + 1_000_000 for v in counts),
+             'missing or inconsistent observed CPU workers')
+        host, = (v for v in counts if v['slot'] == 64)
+        need(host['calls'] == 32 * 4 * 8, 'the caller may only quantize the hidden rows')
+        result['worker_census'] = profile
+    return result
+
+
 def summaries(row, text, mode, cores, timed):
     rows = [json.loads(line) for line in text.splitlines()]
     by_kind = {kind: [v for v in rows if v['kind'] == kind]
-               for kind in ('replay_placement', 'replay_input', 'timer_check', 'sample', 'closed')}
+               for kind in ('replay_placement', 'replay_input', 'timer_check', 'sample', 'closed',
+                            'locality_input', 'locality_workers')}
     need(sum(map(len, by_kind.values())) == len(rows) and
          by_kind['closed'] == [dict(kind='closed', passed=True)] and rows[-1] == by_kind['closed'][0],
          'complete CPU replay output required')
@@ -265,6 +327,12 @@ def summaries(row, text, mode, cores, timed):
     placement, = by_kind['replay_placement']
     need(placement['host_cpu'] == host and placement['workers'] == workers
          and placement['caller_computes'] == (cores == 6), 'replay caller and worker placement')
+    result = dict(mode=mode, cores=cores, placement=placement)
+    if mode in LOCALITY_ARMS:
+        need(cores == 5, 'locality replay requires five pinned workers')
+        result.update(locality_summary(fixture, mode, by_kind, timed))
+    else:
+        need(not by_kind['locality_input'] and not by_kind['locality_workers'], 'unexpected locality records')
     if mode == 'pool':
         actual, = by_kind['replay_input']
         need(all(actual[k] == fixture[k] for k in ('jobs', 'entries', 'logical_bytes', 'unique_blobs', 'unique_bytes'))
@@ -272,7 +340,6 @@ def summaries(row, text, mode, cores, timed):
              and actual['serial_output_equal'] and actual['verified_affinity'], 'pool replay conservation or numerics')
     else:
         need(not by_kind['replay_input'], 'unexpected expert work in the read control')
-    result = dict(mode=mode, cores=cores, placement=placement)
     samples = by_kind['sample']
     need(len(samples) == (5 if timed else 0), 'scored replay sample count')
     if not timed:
@@ -280,21 +347,28 @@ def summaries(row, text, mode, cores, timed):
         return result
     timer, = by_kind['timer_check']
     need(0 < timer['query_s'] < timer['fastest_pass_s'] * .001, 'timer overhead admission')
-    byte_count = fixture['logical_bytes' if mode == 'pool' else 'unique_bytes']
-    visits = fixture['jobs'] if mode == 'pool' else 1
+    if mode in LOCALITY_ARMS:
+        byte_count, visits, label = result['locality']['logical_bytes'], 32, 'locality'
+        need(timer['mode'] == label and timer['layout'] == LOCALITY_ARMS[mode][0], 'wrong locality timer arm')
+    elif mode == 'pool':
+        byte_count, visits, label = fixture['logical_bytes'], fixture['jobs'], 'replay'
+    else:
+        byte_count, visits, label = fixture['unique_bytes'], 1, 'scan'
     for rep, sample in enumerate(samples):
         repeats = sample['iterations']
-        need(sample['mode'] == ('replay' if mode == 'pool' else 'scan') and sample['threads'] == cores
+        need(sample['mode'] == label and sample['threads'] == cores
              and sample['rep'] == rep and sample['attempt'] == 0 and 0 < repeats < 1000000
              and sample['requested_bytes'] == repeats * byte_count and sample['visits'] == repeats * visits
              and math.isfinite(sample['wall_s']) and sample['wall_s'] >= 1
              and math.isfinite(sample['cpu_s'])
              and 0 <= sample['host_cpu_s'] <= sample['cpu_s'] + .005
              and sample['host_cpu_s'] <= sample['wall_s'] + .005, 'replay timing or work admission')
-        if mode == 'pool':
+        if label != 'scan':
             phases = [sample[k] for k in ('gu_s', 'q_s', 'down_s')]
             need(all(math.isfinite(v) and v >= 0 for v in phases) and sum(phases) <= sample['wall_s'] + .001,
                  'bounded disjoint pool stage times')
+        if label == 'locality':
+            need(sample['layout'] == result['locality']['layout'], 'wrong scored locality arm')
     return dict(result, samples=samples, timer=timer,
                 median_s_per_pass=statistics.median(v['wall_s'] / v['iterations'] for v in samples))
 
@@ -313,8 +387,9 @@ def execute(stage):
 
     owner = owned.Owner(scope, persist=persist)
 
-    def run(label, argv, *, build=False):
-        entry, out, err = owner.run(label, argv, row['environment'], ROOT,
+    def run(label, argv, *, build=False, observe=False):
+        env = row['observer_environment'] if observe else row['environment']
+        entry, out, err = owner.run(label, argv, env, ROOT,
             wall=row['budgets']['build_wall' if build else 'run_wall'],
             rss_cap=row['budgets']['build_rss' if build else 'run_rss'],
             cpu=1200 if build else 180, text_cap=row['budgets']['text'],
@@ -346,9 +421,14 @@ def execute(stage):
             cases = CHECK_ORDER if stage == 'check' else ORDER
             for i, (round_id, cores, mode) in enumerate(cases):
                 verify_binary(row)
-                args = (['replay', str(ROOT / 'replay.txt'), str(cores), stage] if mode == 'pool'
-                        else ['replay-scan', str(cores), str(row['fixture']['unique_bytes']), stage])
-                entry, out, err = run(f'case-{i}', [row['binary']['path'], *args])
+                if mode in LOCALITY_ARMS:
+                    layout, batch = LOCALITY_ARMS[mode]
+                    args = ['replay-locality', str(ROOT / 'replay.txt'), str(batch), layout, stage]
+                elif mode == 'pool':
+                    args = ['replay', str(ROOT / 'replay.txt'), str(cores), stage]
+                else:
+                    args = ['replay-scan', str(cores), str(row['fixture']['unique_bytes']), stage]
+                entry, out, err = run(f'case-{i}', [row['binary']['path'], *args], observe=LOCALITY_MODE and stage == 'check')
                 need(err.stat().st_size == 0, 'replay emitted stderr')
                 data = summaries(row, out.read_text(), mode, cores, stage == 'measure')
                 row['processes'].append(dict(round=round_id, **data, owner=recipe.receipt(entry)))
@@ -359,10 +439,13 @@ def execute(stage):
                 measured = row['processes'][len(CHECK_ORDER):]
                 need(len({(x['owner']['pid'], x['owner']['direct_identity']['start_ticks'])
                           for x in measured}) == len(ORDER), 'independent replay process count')
-                row['medians_s_per_pass'] = {mode: {
-                    str(cores): statistics.median(x['median_s_per_pass'] for x in measured
-                                                   if x['mode'] == mode and x['cores'] == cores)
-                    for cores in range(1, 7)} for mode in ('pool', 'scan')}
+                if LOCALITY_MODE:
+                    row['locality_pairs'] = locality_pairs(measured)
+                else:
+                    row['medians_s_per_pass'] = {mode: {
+                        str(cores): statistics.median(x['median_s_per_pass'] for x in measured
+                                                       if x['mode'] == mode and x['cores'] == cores)
+                        for cores in range(1, 7)} for mode in ('pool', 'scan')}
                 row['stage'] = 'closed'
     except BaseException as error:
         row.update(stage='failed', error=repr(error))
@@ -370,10 +453,31 @@ def execute(stage):
     finally:
         row.update(active=bool(owner.active), ownership_closed=not owner.active and all(owned.closed(e) for e in owner.commands))
         save(row)
-    print(row['stage'], row.get('medians_s_per_pass', {}), flush=True)
+    print(row['stage'], row.get('locality_pairs', row.get('medians_s_per_pass', {})), flush=True)
+
+
+def locality_pairs(measured):
+    def costs(case):
+        return (case['median_s_per_pass'], statistics.median(s['gu_s'] / s['iterations'] for s in case['samples']))
+
+    result = []
+    for a, b in zip(measured[::2], measured[1::2], strict=True):
+        hot, rotate = (a, b) if a['locality']['layout'] == 'hot' else (b, a)
+        need(hot['round'] == rotate['round'] and hot['locality']['batch'] == rotate['locality']['batch']
+             and hot['locality']['layout'] == 'hot' and rotate['locality']['layout'] == 'rotate',
+             'unpaired locality timing arms')
+        full_hot, gu_hot = costs(hot)
+        full_rotate, gu_rotate = costs(rotate)
+        need(min(full_hot, gu_hot, full_rotate, gu_rotate) > 0, 'missing positive locality clocks')
+        result.append(dict(round=hot['round'], batch=hot['locality']['batch'],
+                           full_rotate_over_hot=full_rotate/full_hot, gu_rotate_over_hot=gu_rotate/gu_hot))
+    return result
 
 
 if __name__ == '__main__':
+    if sys.argv[1:2] == ['--locality']:
+        sys.argv.pop(1)
+        select_locality()
     need(sys.executable == '/home/yayoi/.local/share/strata-sycl/venv/bin/python3' and len(sys.argv) == 2
          and sys.argv[1] in ('prepare', 'build', 'check', 'measure'), 'pinned Python and prepare|build|check|measure required')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:

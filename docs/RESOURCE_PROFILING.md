@@ -629,6 +629,26 @@ The root receipt is unchanged. The grouped-claim fixture and test-only
 scheduler are retired from the active tree. The measured source remains
 recoverable at `bed3f9f91`.
 
+The [fixed CPU replay](../bench/sycl/cpu_roofline/fixed_replay.py) now has a
+locality comparison for the Gate/Up interval. Use the first eight ordered
+CPU jobs from width-two window 4,801 in each of layers 0 and 17 of the same
+held-out descriptor used at `cd60b5041`. Keep both packed-weight formats,
+seeded activations, row order, five pinned workers and the reserved caller.
+Both arms allocate four identical weight copies. Each pass submits the same
+eight jobs four times, either reusing one copy or cycling through all four.
+The active address footprints are 17,408,000 versus 69,632,000 bytes for
+IQ3_XXS and 18,636,800 versus 74,547,200 bytes for IQ3_S.
+
+Check complete serial output, every copied weight byte, buffer guards and
+affinity. Gather per-worker calls and rows in separate observed processes.
+Use three counterbalanced clean process pairs per format with five timing
+batches each. Compare whole-pass and Gate/Up intervals and keep the observed
+worker distribution as context for interpreting the pair. A repeatable timing
+change would show address-reuse sensitivity of this fixed component. Physical
+DRAM traffic, the last worker's completion latency and model speed still need
+their own evidence. The build and checks follow the current GPU comparison's
+next idle boundary.
+
 The [stock admission controller](../bench/dflash2_decode_stock_global_restore.py)
 uses the retained primary executable and recovers the original restore plans
 from `3d75f7e91`. It generates only the stock global profile. Both loaders
