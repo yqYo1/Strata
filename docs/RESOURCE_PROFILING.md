@@ -860,8 +860,8 @@ with quiet validation, closed ownership, unchanged model assets and no
 fresh Xe fault. Both native extents now qualify the frozen map for the
 clean generation comparison.
 
-The pending retirement covers only `dflash2-blend-independent-capture-v3`
-under the tuning state directory. The exact scoring source and compact closed
+Retired `dflash2-blend-independent-capture-v3` under the tuning state
+directory after verifying its absence. The exact scoring source and compact closed
 results remain in Git at `53f824443` and `a7c068890`. Both captured traces match
 their committed lengths and hashes, and both process owners are closed. The
 native RESTORE and generation plans consume the committed result, the original
