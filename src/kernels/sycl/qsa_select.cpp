@@ -315,6 +315,52 @@ void qsa_block_scores(const float *pooled, const float *dead,
       });
   finish(stream, event);
 }
+void qsa_block_scores_decode_grid(const float *pooled, const float *dead,
+                                  const float *query, const int32_t *steps,
+                                  int64_t nq, int64_t blocks,
+                                  const QsaShapes &s, float *scores,
+                                  void *stream) {
+  const int64_t launched = validate(nq, blocks, -1, s);
+  validate_spans({{scores, checked_count(nq, blocks) * 4}},
+                 {{pooled, checked_count(blocks, 128) * 4},
+                  {dead, 512},
+                  {query, checked_count(nq, 512) * 4},
+                  {steps, checked_count(nq, kStepCount) * 4}});
+  constexpr int64_t grid_limit = 4096;
+  const int64_t grid = launched < grid_limit ? launched : grid_limit;
+  auto event = queue_for(stream).parallel_for(
+      sycl::nd_range<1>(size_t(nq * grid) * 32, 32),
+      [=](sycl::nd_item<1> it) [[sycl::reqd_sub_group_size(32)]] {
+        const int64_t qi = it.get_group_linear_id() / grid,
+                      first = it.get_group_linear_id() % grid;
+        const auto st = steps + qi * kStepCount;
+        const int64_t n = st[kStepNKv], nb = st[kStepNBid];
+        if (n < 0 || nb != n / 4 || nb >= launched)
+          return;
+        const int lane = it.get_local_linear_id();
+        // All lanes in the subgroup read the same step and visit the same blocks.
+        for (int64_t b = first; b <= nb; b += grid) {
+          const float *key = b == nb ? dead : pooled + b * 128;
+          const float *q = query + qi * 512;
+          float total = 0;
+          for (int h = 0; h < 4; ++h) {
+            float dot = key[lane * 4] * q[h * 128 + lane * 4];
+            for (int d = 1; d < 4; ++d)
+              dot += key[lane * 4 + d] * q[h * 128 + lane * 4 + d];
+            for (int off = 16; off; off /= 2)
+              dot += sycl::permute_group_by_xor(it.get_sub_group(), dot, off);
+            total += dot > 0 ? dot : 0.f;
+          }
+          if (lane == 0) {
+            if (b == nb && n % 4)
+              total += 1e9f;
+            scores[qi * blocks + b] = total;
+          }
+        }
+      });
+  finish(stream, event);
+}
+
 void qsa_block_scores_prefill(const float *pooled, const float *dead,
                               const float *query, const int32_t *steps,
                               int64_t nq, int64_t blocks, const QsaShapes &s,

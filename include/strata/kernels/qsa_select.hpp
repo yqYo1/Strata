@@ -45,6 +45,13 @@ void qsa_block_topk(const float* scores, const int32_t* steps, int64_t nq, int64
                                                    ///< CUDA uses the bound only on sm_75; HIP keeps its existing policy.
                                                    ///< Omit it for captured graphs whose context can grow after capture.
 #if defined(STRATA_ENABLE_SYCL)
+/// DFlash2 verifier scorer with a fixed number of subgroups per query. Each
+/// replay reads current steps and writes only its live scores. Full pooled and
+/// score spans and the original ordered-queue/lifetime contract still apply.
+void qsa_block_scores_decode_grid(const float* pooled, const float* dead, const float* q_idx,
+                                 const int32_t* steps, int64_t nq, int64_t max_blocks,
+                                 const QsaShapes& s, float* scores, void* stream);
+
 /// Dedicated layer-major prefill scorer; geometry/output match qsa_block_scores.
 /// Optimized paths may read every launched pooled row before inspecting steps:
 /// initialize and keep pooled[0, active_blocks) immutable until completion

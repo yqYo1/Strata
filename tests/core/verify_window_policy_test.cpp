@@ -19,6 +19,17 @@ static void need(bool ok, const char* message) {
 }
 
 int main() try {
+    using strata::core::decode_verify_qsa_score_grid;
+    for (int window : {1, 2, 3, 4})
+        need(decode_verify_qsa_score_grid(true, VerifyInput::decode, window, 65'538),
+             "QSA score grid rejected a measured width");
+    need(!decode_verify_qsa_score_grid(true, VerifyInput::prompt, 4, 65'538) &&
+         !decode_verify_qsa_score_grid(false, VerifyInput::decode, 4, 65'538) &&
+         !decode_verify_qsa_score_grid(true, VerifyInput::decode, 0, 65'538) &&
+         !decode_verify_qsa_score_grid(true, VerifyInput::decode, 5, 65'538) &&
+         !decode_verify_qsa_score_grid(true, VerifyInput::decode, 4, 8'194),
+         "QSA score grid escaped the selected phase or allocation");
+
     // The measured KV set must stay separate from prompt, non-streamed or
     // differently sized caches, and every unmeasured target width.
     const strata::core::VerifyKvShape kv{4,65536,5120,4,2,256,2051,true};

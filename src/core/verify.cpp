@@ -575,6 +575,12 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
         if (g.n_layers <= 0 || g.n_embd <= 0 || lb_ != 0 || (le_ >= 0 && le_ != g.n_layers)) {
             err = "verify taps: require the complete target on one device"; return false;
         }
+        // The DFlash2 drafter is the only owner that requests target taps.
+        const char* score_grid = std::getenv("STRATA_SYCL_DECODE_QSA_SCORE_GRID");
+        if (score_grid && std::strcmp(score_grid, "0") != 0 && std::strcmp(score_grid, "1") != 0) {
+            err = "verify: STRATA_SYCL_DECODE_QSA_SCORE_GRID must be 0 or 1"; return false;
+        }
+        decode_qsa_score_grid_ = score_grid && score_grid[0] == '1';
         tap_slot_.assign(size_t(g.n_layers), -1);
         for (size_t slot = 0; slot < tap_req_.size(); ++slot) {
             const int layer = tap_req_[slot];
@@ -915,6 +921,8 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
 #ifdef STRATA_ENABLE_SYCL
     auto& graph_window = window_graphs_.at(input, T);
     graph_window.kv_scalar_calls = graph_window.kv_coalesced_calls = 0;
+    graph_window.qsa_reference_calls = graph_window.qsa_grid_calls = 0;
+    const bool qsa_score_grid = decode_verify_qsa_score_grid(decode_qsa_score_grid_, input, T, max_blocks_);
     graph_window.q6_reference_calls = graph_window.q6_columns_calls =
         graph_window.q6_centered_calls = graph_window.q6_native_half_calls = 0;
     graph_window.q6_dpas_head_calls = 0;
@@ -1258,8 +1266,20 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
                 }
                 }
                 stamp(l, 10, grp);
-                qsa_block_scores(st.idx_pooled, st.idx_dead, qidx_ + tb * IQ * ID, step_ + tb * kStepCount, n, max_blocks_,
-                                 s, scores_ + (size_t) tb * max_blocks_, cs);
+#ifdef STRATA_ENABLE_SYCL
+                if (qsa_score_grid) {
+                    qsa_block_scores_decode_grid(st.idx_pooled, st.idx_dead, qidx_ + tb * IQ * ID,
+                        step_ + tb * kStepCount, n, max_blocks_, s, scores_ + (size_t) tb * max_blocks_, cs);
+                    ++graph_window.qsa_grid_calls;
+                } else
+#endif
+                {
+                    qsa_block_scores(st.idx_pooled, st.idx_dead, qidx_ + tb * IQ * ID, step_ + tb * kStepCount,
+                                     n, max_blocks_, s, scores_ + (size_t) tb * max_blocks_, cs);
+#ifdef STRATA_ENABLE_SYCL
+                    ++graph_window.qsa_reference_calls;
+#endif
+                }
                 qsa_block_topk(scores_ + (size_t) tb * max_blocks_, step_ + tb * kStepCount, n, max_blocks_, cap_, s,
                                sel_ + (size_t) tb * cap_, cs);
                 stamp(l, 11, grp);
@@ -1690,6 +1710,11 @@ bool Verifier::capture(int T, std::string& err, VerifyInput input) try {
     if (q6_route_audit_) window.q6_capture_id = ++q6_capture_sequence_;
     std::fprintf(stderr, "strata verify: captured the %d-token window in %zu event-completed segments\n",
                  T, window.layer.size());
+    if (!tap_req_.empty())
+        std::fprintf(stderr, "strata verify QSA_SCORE: phase=%s tokens=%d reference_calls=%llu grid_calls=%llu\n",
+                     input == VerifyInput::prompt ? "prompt" : "decode", T,
+                     static_cast<unsigned long long>(window.qsa_reference_calls),
+                     static_cast<unsigned long long>(window.qsa_grid_calls));
     std::fprintf(stderr, "strata verify: phase=%s tokens=%d q6_reference_calls=%llu q6_columns_calls=%llu\n",
                  input == VerifyInput::prompt ? "prompt" : "decode", T,
                  static_cast<unsigned long long>(window.q6_reference_calls),

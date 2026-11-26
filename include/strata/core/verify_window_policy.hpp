@@ -16,6 +16,13 @@ constexpr bool valid_verify_input(VerifyInput input) {
     return input == VerifyInput::prompt || input == VerifyInput::decode;
 }
 
+// Arc component evidence covers widths 1–4 at the physical 256K allocation.
+constexpr bool decode_verify_qsa_score_grid(bool enabled, VerifyInput input,
+                                            int window, int64_t max_blocks) {
+    return enabled && input == VerifyInput::decode && window >= 1 && window <= 4 &&
+        max_blocks == 262'144 / 4 + 2;
+}
+
 struct VerifyKvShape {
     int queries = 0;
     int64_t logical_pages = 0, resident_pages = 0, page_size = 0;
@@ -123,6 +130,7 @@ public:
     struct Window {
         std::vector<Handle> layer, resident, pcie;
         uint64_t kv_scalar_calls = 0, kv_coalesced_calls = 0;
+        uint64_t qsa_reference_calls = 0, qsa_grid_calls = 0;
         uint64_t q6_reference_calls = 0, q6_columns_calls = 0, q6_centered_calls = 0,
                  q6_native_half_calls = 0;
         // Packed target-head route is counted separately from canonical-row
@@ -170,6 +178,7 @@ public:
             }
             q6_reference_calls = q6_columns_calls = q6_centered_calls = q6_native_half_calls = 0;
             kv_scalar_calls = kv_coalesced_calls = 0;
+            qsa_reference_calls = qsa_grid_calls = 0;
             q6_dpas_head_calls = 0;
             q6_packed_head_calls = 0;
             q6_dpas_dense_calls.fill(0);

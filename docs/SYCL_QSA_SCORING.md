@@ -3,7 +3,8 @@
 `qsa_block_scores_prefill` is the layer-major long-prefill entry declared in
 `include/strata/kernels/qsa_select.hpp`. It accepts the same geometry and output
 layout as `qsa_block_scores`, with a separate register-sharing implementation.
-The original public scorer remains the decode, short-prefill and reference path.
+The original public scorer remains the default for decode, short prefill and
+reference calls.
 
 ## Selection and scope
 
@@ -86,6 +87,22 @@ and physical KV extent 262144 with 256 and 255 queries. Those component checks
 are separate from full-model context, RESTORE, quality and throughput evidence.
 See `bench/results/2026-10-15-pr6-recovery-audit/qsa-score-prefill-entry-results-v1.ja.md`
 and the individually pinned results for their exact scope.
+
+## DFlash2 decode verifier
+
+`STRATA_SYCL_DECODE_QSA_SCORE_GRID=1` selects the tested 4,096-subgroup grid
+per query for DFlash2 decode verifier windows of width one through four at
+the 262,144-cell allocation. Set it before process start. A DFlash2 verifier
+caches the setting before admission. An unset flag or `0` uses the original
+scorer. Verifier prompt windows and other geometries use their existing
+scorer. The prefill scorers and top-k selection retain their current options.
+
+On graph replay each query reads its current position record. A subgroup
+visits the corresponding blocks up to the live step and applies the original
+FP32 reduction and tail bonus. The queue, span ownership and completion rules
+above still apply. The capture log reports actual reference and grid calls
+for the finalized graph. Arc B570 component evidence qualifies a model trial.
+Production model throughput and context qualification are pending.
 
 
 ## Experimental FP16 score GEMM in long prefill
