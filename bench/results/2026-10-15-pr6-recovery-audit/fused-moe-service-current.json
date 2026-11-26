@@ -695142,7 +695142,7 @@
       "decision": "Require an improvement in the median scorer and combined graph in all three independent processes for a shape. Report graph setup separately and the number of replays required to recover an observed extra setup cost. Model throughput and adoption require separate checks.",
       "stop": "Stop on the first invalid input, validation, timing, owner or Xe fault. Preserve every captured result."
     },
-    "stage": "0",
+    "stage": "1",
     "processes": [
       {
         "stage": "smoke",
@@ -696197,6 +696197,944 @@
           "start_ticks": 403671365,
           "sid": 2740685,
           "pgid": 2740685
+        },
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      },
+      {
+        "stage": "1",
+        "mode": "reverse",
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-qsa-score-grid-v1/fixture-build/decode_qsa_score_grid",
+          "reverse"
+        ],
+        "environment_sha256": "d36e9e27079c76f33f1ee31df2263e3a56a4f454242557f9f79da091a9606ed3",
+        "ownership_closed": true,
+        "providers": {
+          "initialized_ELFs": 33,
+          "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d",
+          "required_providers_verified": true,
+          "source": "glibc constructors;not speed or hardware utilization"
+        },
+        "setup_ms": {
+          "1": [
+            157.157812,
+            40.239252,
+            0.326596,
+            291.22232
+          ],
+          "2": [
+            0.015169,
+            0.046327,
+            0.012805,
+            0.016711
+          ],
+          "3": [
+            0.015259,
+            0.049934,
+            0.013636,
+            0.018324
+          ],
+          "4": [
+            0.015269,
+            0.046809,
+            0.014096,
+            0.017583
+          ]
+        },
+        "samples": [
+          {
+            "width": 1,
+            "context": 96204,
+            "stage": 0,
+            "batch": 0,
+            "arm": 1,
+            "ms": 62.841539,
+            "clock_ms": 0.01063
+          },
+          {
+            "width": 1,
+            "context": 96204,
+            "stage": 0,
+            "batch": 0,
+            "arm": 0,
+            "ms": 60.241152,
+            "clock_ms": 0.01063
+          },
+          {
+            "width": 1,
+            "context": 96204,
+            "stage": 0,
+            "batch": 1,
+            "arm": 0,
+            "ms": 59.187216,
+            "clock_ms": 0.010279
+          },
+          {
+            "width": 1,
+            "context": 96204,
+            "stage": 0,
+            "batch": 1,
+            "arm": 1,
+            "ms": 50.192362,
+            "clock_ms": 0.010279
+          },
+          {
+            "width": 1,
+            "context": 96204,
+            "stage": 0,
+            "batch": 2,
+            "arm": 1,
+            "ms": 50.910725,
+            "clock_ms": 0.01047
+          },
+          {
+            "width": 1,
+            "context": 96204,
+            "stage": 0,
+            "batch": 2,
+            "arm": 0,
+            "ms": 59.817413,
+            "clock_ms": 0.01047
+          },
+          {
+            "width": 1,
+            "context": 96204,
+            "stage": 1,
+            "batch": 0,
+            "arm": 1,
+            "ms": 246.914944,
+            "clock_ms": 0.010309
+          },
+          {
+            "width": 1,
+            "context": 96204,
+            "stage": 1,
+            "batch": 0,
+            "arm": 0,
+            "ms": 256.346161,
+            "clock_ms": 0.010309
+          },
+          {
+            "width": 1,
+            "context": 96204,
+            "stage": 1,
+            "batch": 1,
+            "arm": 0,
+            "ms": 256.252044,
+            "clock_ms": 0.0103
+          },
+          {
+            "width": 1,
+            "context": 96204,
+            "stage": 1,
+            "batch": 1,
+            "arm": 1,
+            "ms": 247.048617,
+            "clock_ms": 0.0103
+          },
+          {
+            "width": 1,
+            "context": 96204,
+            "stage": 1,
+            "batch": 2,
+            "arm": 1,
+            "ms": 246.867925,
+            "clock_ms": 0.01031
+          },
+          {
+            "width": 1,
+            "context": 96204,
+            "stage": 1,
+            "batch": 2,
+            "arm": 0,
+            "ms": 256.375426,
+            "clock_ms": 0.01031
+          },
+          {
+            "width": 1,
+            "context": 262144,
+            "stage": 0,
+            "batch": 0,
+            "arm": 1,
+            "ms": 87.110567,
+            "clock_ms": 0.010299
+          },
+          {
+            "width": 1,
+            "context": 262144,
+            "stage": 0,
+            "batch": 0,
+            "arm": 0,
+            "ms": 91.0083,
+            "clock_ms": 0.010299
+          },
+          {
+            "width": 1,
+            "context": 262144,
+            "stage": 0,
+            "batch": 1,
+            "arm": 0,
+            "ms": 91.007248,
+            "clock_ms": 0.01029
+          },
+          {
+            "width": 1,
+            "context": 262144,
+            "stage": 0,
+            "batch": 1,
+            "arm": 1,
+            "ms": 87.020478,
+            "clock_ms": 0.01029
+          },
+          {
+            "width": 1,
+            "context": 262144,
+            "stage": 0,
+            "batch": 2,
+            "arm": 1,
+            "ms": 87.017622,
+            "clock_ms": 0.010279
+          },
+          {
+            "width": 1,
+            "context": 262144,
+            "stage": 0,
+            "batch": 2,
+            "arm": 0,
+            "ms": 90.755143,
+            "clock_ms": 0.010279
+          },
+          {
+            "width": 1,
+            "context": 262144,
+            "stage": 1,
+            "batch": 0,
+            "arm": 1,
+            "ms": 906.283131,
+            "clock_ms": 0.01031
+          },
+          {
+            "width": 1,
+            "context": 262144,
+            "stage": 1,
+            "batch": 0,
+            "arm": 0,
+            "ms": 910.602688,
+            "clock_ms": 0.01031
+          },
+          {
+            "width": 1,
+            "context": 262144,
+            "stage": 1,
+            "batch": 1,
+            "arm": 0,
+            "ms": 910.822262,
+            "clock_ms": 0.01067
+          },
+          {
+            "width": 1,
+            "context": 262144,
+            "stage": 1,
+            "batch": 1,
+            "arm": 1,
+            "ms": 906.555523,
+            "clock_ms": 0.01067
+          },
+          {
+            "width": 1,
+            "context": 262144,
+            "stage": 1,
+            "batch": 2,
+            "arm": 1,
+            "ms": 906.392265,
+            "clock_ms": 0.01028
+          },
+          {
+            "width": 1,
+            "context": 262144,
+            "stage": 1,
+            "batch": 2,
+            "arm": 0,
+            "ms": 910.026,
+            "clock_ms": 0.01028
+          },
+          {
+            "width": 2,
+            "context": 96204,
+            "stage": 0,
+            "batch": 0,
+            "arm": 1,
+            "ms": 65.694544,
+            "clock_ms": 0.010309
+          },
+          {
+            "width": 2,
+            "context": 96204,
+            "stage": 0,
+            "batch": 0,
+            "arm": 0,
+            "ms": 85.725548,
+            "clock_ms": 0.010309
+          },
+          {
+            "width": 2,
+            "context": 96204,
+            "stage": 0,
+            "batch": 1,
+            "arm": 0,
+            "ms": 85.682537,
+            "clock_ms": 0.01027
+          },
+          {
+            "width": 2,
+            "context": 96204,
+            "stage": 0,
+            "batch": 1,
+            "arm": 1,
+            "ms": 66.080542,
+            "clock_ms": 0.01027
+          },
+          {
+            "width": 2,
+            "context": 96204,
+            "stage": 0,
+            "batch": 2,
+            "arm": 1,
+            "ms": 65.997124,
+            "clock_ms": 0.01034
+          },
+          {
+            "width": 2,
+            "context": 96204,
+            "stage": 0,
+            "batch": 2,
+            "arm": 0,
+            "ms": 85.782926,
+            "clock_ms": 0.01034
+          },
+          {
+            "width": 2,
+            "context": 96204,
+            "stage": 1,
+            "batch": 0,
+            "arm": 1,
+            "ms": 263.750848,
+            "clock_ms": 0.010309
+          },
+          {
+            "width": 2,
+            "context": 96204,
+            "stage": 1,
+            "batch": 0,
+            "arm": 0,
+            "ms": 283.715969,
+            "clock_ms": 0.010309
+          },
+          {
+            "width": 2,
+            "context": 96204,
+            "stage": 1,
+            "batch": 1,
+            "arm": 0,
+            "ms": 283.433186,
+            "clock_ms": 0.010289
+          },
+          {
+            "width": 2,
+            "context": 96204,
+            "stage": 1,
+            "batch": 1,
+            "arm": 1,
+            "ms": 263.745008,
+            "clock_ms": 0.010289
+          },
+          {
+            "width": 2,
+            "context": 96204,
+            "stage": 1,
+            "batch": 2,
+            "arm": 1,
+            "ms": 263.455373,
+            "clock_ms": 0.01028
+          },
+          {
+            "width": 2,
+            "context": 96204,
+            "stage": 1,
+            "batch": 2,
+            "arm": 0,
+            "ms": 283.41434,
+            "clock_ms": 0.01028
+          },
+          {
+            "width": 2,
+            "context": 262144,
+            "stage": 0,
+            "batch": 0,
+            "arm": 1,
+            "ms": 138.079461,
+            "clock_ms": 0.010259
+          },
+          {
+            "width": 2,
+            "context": 262144,
+            "stage": 0,
+            "batch": 0,
+            "arm": 0,
+            "ms": 145.997998,
+            "clock_ms": 0.010259
+          },
+          {
+            "width": 2,
+            "context": 262144,
+            "stage": 0,
+            "batch": 1,
+            "arm": 0,
+            "ms": 144.69308,
+            "clock_ms": 0.010259
+          },
+          {
+            "width": 2,
+            "context": 262144,
+            "stage": 0,
+            "batch": 1,
+            "arm": 1,
+            "ms": 138.410985,
+            "clock_ms": 0.010259
+          },
+          {
+            "width": 2,
+            "context": 262144,
+            "stage": 0,
+            "batch": 2,
+            "arm": 1,
+            "ms": 138.113937,
+            "clock_ms": 0.01031
+          },
+          {
+            "width": 2,
+            "context": 262144,
+            "stage": 0,
+            "batch": 2,
+            "arm": 0,
+            "ms": 146.049104,
+            "clock_ms": 0.01031
+          },
+          {
+            "width": 2,
+            "context": 262144,
+            "stage": 1,
+            "batch": 0,
+            "arm": 1,
+            "ms": 936.75486,
+            "clock_ms": 0.010329
+          },
+          {
+            "width": 2,
+            "context": 262144,
+            "stage": 1,
+            "batch": 0,
+            "arm": 0,
+            "ms": 945.411296,
+            "clock_ms": 0.010329
+          },
+          {
+            "width": 2,
+            "context": 262144,
+            "stage": 1,
+            "batch": 1,
+            "arm": 0,
+            "ms": 945.466379,
+            "clock_ms": 0.010279
+          },
+          {
+            "width": 2,
+            "context": 262144,
+            "stage": 1,
+            "batch": 1,
+            "arm": 1,
+            "ms": 936.594716,
+            "clock_ms": 0.010279
+          },
+          {
+            "width": 2,
+            "context": 262144,
+            "stage": 1,
+            "batch": 2,
+            "arm": 1,
+            "ms": 935.791002,
+            "clock_ms": 0.01029
+          },
+          {
+            "width": 2,
+            "context": 262144,
+            "stage": 1,
+            "batch": 2,
+            "arm": 0,
+            "ms": 945.528936,
+            "clock_ms": 0.01029
+          },
+          {
+            "width": 3,
+            "context": 96204,
+            "stage": 0,
+            "batch": 0,
+            "arm": 1,
+            "ms": 79.391025,
+            "clock_ms": 0.010319
+          },
+          {
+            "width": 3,
+            "context": 96204,
+            "stage": 0,
+            "batch": 0,
+            "arm": 0,
+            "ms": 111.357142,
+            "clock_ms": 0.010319
+          },
+          {
+            "width": 3,
+            "context": 96204,
+            "stage": 0,
+            "batch": 1,
+            "arm": 0,
+            "ms": 111.379554,
+            "clock_ms": 0.01028
+          },
+          {
+            "width": 3,
+            "context": 96204,
+            "stage": 0,
+            "batch": 1,
+            "arm": 1,
+            "ms": 80.022805,
+            "clock_ms": 0.01028
+          },
+          {
+            "width": 3,
+            "context": 96204,
+            "stage": 0,
+            "batch": 2,
+            "arm": 1,
+            "ms": 79.800416,
+            "clock_ms": 0.010279
+          },
+          {
+            "width": 3,
+            "context": 96204,
+            "stage": 0,
+            "batch": 2,
+            "arm": 0,
+            "ms": 111.406024,
+            "clock_ms": 0.010279
+          },
+          {
+            "width": 3,
+            "context": 96204,
+            "stage": 1,
+            "batch": 0,
+            "arm": 1,
+            "ms": 277.935348,
+            "clock_ms": 0.010279
+          },
+          {
+            "width": 3,
+            "context": 96204,
+            "stage": 1,
+            "batch": 0,
+            "arm": 0,
+            "ms": 309.359825,
+            "clock_ms": 0.010279
+          },
+          {
+            "width": 3,
+            "context": 96204,
+            "stage": 1,
+            "batch": 1,
+            "arm": 0,
+            "ms": 309.75562,
+            "clock_ms": 0.010299
+          },
+          {
+            "width": 3,
+            "context": 96204,
+            "stage": 1,
+            "batch": 1,
+            "arm": 1,
+            "ms": 278.001914,
+            "clock_ms": 0.010299
+          },
+          {
+            "width": 3,
+            "context": 96204,
+            "stage": 1,
+            "batch": 2,
+            "arm": 1,
+            "ms": 278.172574,
+            "clock_ms": 0.0103
+          },
+          {
+            "width": 3,
+            "context": 96204,
+            "stage": 1,
+            "batch": 2,
+            "arm": 0,
+            "ms": 309.545134,
+            "clock_ms": 0.0103
+          },
+          {
+            "width": 3,
+            "context": 262144,
+            "stage": 0,
+            "batch": 0,
+            "arm": 1,
+            "ms": 181.026974,
+            "clock_ms": 0.010299
+          },
+          {
+            "width": 3,
+            "context": 262144,
+            "stage": 0,
+            "batch": 0,
+            "arm": 0,
+            "ms": 201.526341,
+            "clock_ms": 0.010299
+          },
+          {
+            "width": 3,
+            "context": 262144,
+            "stage": 0,
+            "batch": 1,
+            "arm": 0,
+            "ms": 201.030686,
+            "clock_ms": 0.010259
+          },
+          {
+            "width": 3,
+            "context": 262144,
+            "stage": 0,
+            "batch": 1,
+            "arm": 1,
+            "ms": 181.446635,
+            "clock_ms": 0.010259
+          },
+          {
+            "width": 3,
+            "context": 262144,
+            "stage": 0,
+            "batch": 2,
+            "arm": 1,
+            "ms": 181.017767,
+            "clock_ms": 0.0103
+          },
+          {
+            "width": 3,
+            "context": 262144,
+            "stage": 0,
+            "batch": 2,
+            "arm": 0,
+            "ms": 201.025988,
+            "clock_ms": 0.0103
+          },
+          {
+            "width": 3,
+            "context": 262144,
+            "stage": 1,
+            "batch": 0,
+            "arm": 1,
+            "ms": 994.478363,
+            "clock_ms": 0.010269
+          },
+          {
+            "width": 3,
+            "context": 262144,
+            "stage": 1,
+            "batch": 0,
+            "arm": 0,
+            "ms": 1014.752054,
+            "clock_ms": 0.010269
+          },
+          {
+            "width": 3,
+            "context": 262144,
+            "stage": 1,
+            "batch": 1,
+            "arm": 0,
+            "ms": 1015.765231,
+            "clock_ms": 0.010299
+          },
+          {
+            "width": 3,
+            "context": 262144,
+            "stage": 1,
+            "batch": 1,
+            "arm": 1,
+            "ms": 994.56752,
+            "clock_ms": 0.010299
+          },
+          {
+            "width": 3,
+            "context": 262144,
+            "stage": 1,
+            "batch": 2,
+            "arm": 1,
+            "ms": 994.891219,
+            "clock_ms": 0.010259
+          },
+          {
+            "width": 3,
+            "context": 262144,
+            "stage": 1,
+            "batch": 2,
+            "arm": 0,
+            "ms": 1016.14183,
+            "clock_ms": 0.010259
+          },
+          {
+            "width": 4,
+            "context": 96204,
+            "stage": 0,
+            "batch": 0,
+            "arm": 1,
+            "ms": 94.834246,
+            "clock_ms": 0.010289
+          },
+          {
+            "width": 4,
+            "context": 96204,
+            "stage": 0,
+            "batch": 0,
+            "arm": 0,
+            "ms": 137.268402,
+            "clock_ms": 0.010289
+          },
+          {
+            "width": 4,
+            "context": 96204,
+            "stage": 0,
+            "batch": 1,
+            "arm": 0,
+            "ms": 137.410541,
+            "clock_ms": 0.0103
+          },
+          {
+            "width": 4,
+            "context": 96204,
+            "stage": 0,
+            "batch": 1,
+            "arm": 1,
+            "ms": 95.029023,
+            "clock_ms": 0.0103
+          },
+          {
+            "width": 4,
+            "context": 96204,
+            "stage": 0,
+            "batch": 2,
+            "arm": 1,
+            "ms": 94.681058,
+            "clock_ms": 0.01053
+          },
+          {
+            "width": 4,
+            "context": 96204,
+            "stage": 0,
+            "batch": 2,
+            "arm": 0,
+            "ms": 136.770083,
+            "clock_ms": 0.01053
+          },
+          {
+            "width": 4,
+            "context": 96204,
+            "stage": 1,
+            "batch": 0,
+            "arm": 1,
+            "ms": 292.702294,
+            "clock_ms": 0.01031
+          },
+          {
+            "width": 4,
+            "context": 96204,
+            "stage": 1,
+            "batch": 0,
+            "arm": 0,
+            "ms": 335.046802,
+            "clock_ms": 0.01031
+          },
+          {
+            "width": 4,
+            "context": 96204,
+            "stage": 1,
+            "batch": 1,
+            "arm": 0,
+            "ms": 335.275893,
+            "clock_ms": 0.01031
+          },
+          {
+            "width": 4,
+            "context": 96204,
+            "stage": 1,
+            "batch": 1,
+            "arm": 1,
+            "ms": 293.104451,
+            "clock_ms": 0.01031
+          },
+          {
+            "width": 4,
+            "context": 96204,
+            "stage": 1,
+            "batch": 2,
+            "arm": 1,
+            "ms": 293.30561,
+            "clock_ms": 0.010289
+          },
+          {
+            "width": 4,
+            "context": 96204,
+            "stage": 1,
+            "batch": 2,
+            "arm": 0,
+            "ms": 335.314976,
+            "clock_ms": 0.010289
+          },
+          {
+            "width": 4,
+            "context": 262144,
+            "stage": 0,
+            "batch": 0,
+            "arm": 1,
+            "ms": 231.37104,
+            "clock_ms": 0.010289
+          },
+          {
+            "width": 4,
+            "context": 262144,
+            "stage": 0,
+            "batch": 0,
+            "arm": 0,
+            "ms": 254.835461,
+            "clock_ms": 0.010289
+          },
+          {
+            "width": 4,
+            "context": 262144,
+            "stage": 0,
+            "batch": 1,
+            "arm": 0,
+            "ms": 255.67323,
+            "clock_ms": 0.0103
+          },
+          {
+            "width": 4,
+            "context": 262144,
+            "stage": 0,
+            "batch": 1,
+            "arm": 1,
+            "ms": 232.27889,
+            "clock_ms": 0.0103
+          },
+          {
+            "width": 4,
+            "context": 262144,
+            "stage": 0,
+            "batch": 2,
+            "arm": 1,
+            "ms": 231.024226,
+            "clock_ms": 0.010269
+          },
+          {
+            "width": 4,
+            "context": 262144,
+            "stage": 0,
+            "batch": 2,
+            "arm": 0,
+            "ms": 254.929578,
+            "clock_ms": 0.010269
+          },
+          {
+            "width": 4,
+            "context": 262144,
+            "stage": 1,
+            "batch": 0,
+            "arm": 1,
+            "ms": 1029.274385,
+            "clock_ms": 0.01027
+          },
+          {
+            "width": 4,
+            "context": 262144,
+            "stage": 1,
+            "batch": 0,
+            "arm": 0,
+            "ms": 1054.32793,
+            "clock_ms": 0.01027
+          },
+          {
+            "width": 4,
+            "context": 262144,
+            "stage": 1,
+            "batch": 1,
+            "arm": 0,
+            "ms": 1054.33352,
+            "clock_ms": 0.010289
+          },
+          {
+            "width": 4,
+            "context": 262144,
+            "stage": 1,
+            "batch": 1,
+            "arm": 1,
+            "ms": 1029.775127,
+            "clock_ms": 0.010289
+          },
+          {
+            "width": 4,
+            "context": 262144,
+            "stage": 1,
+            "batch": 2,
+            "arm": 1,
+            "ms": 1029.949655,
+            "clock_ms": 0.0103
+          },
+          {
+            "width": 4,
+            "context": 262144,
+            "stage": 1,
+            "batch": 2,
+            "arm": 0,
+            "ms": 1054.106571,
+            "clock_ms": 0.0103
+          }
+        ],
+        "host_probe_accepted": true,
+        "validation": {
+          "pid": 2743368,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_identity": {
+          "pid": 2743368,
+          "start_ticks": 403678664,
+          "sid": 2743368,
+          "pgid": 2743368
         },
         "fresh_faults": [],
         "boot_unchanged": true,
