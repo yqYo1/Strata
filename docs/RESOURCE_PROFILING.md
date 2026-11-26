@@ -484,7 +484,22 @@ frontend probes pass with the pinned 823 controller inputs and exact
 request bodies. The gathered arm closes normally with no fresh Xe fault.
 Each request observes 223,227,900 owned head bytes. The first and subsequent
 post-decode queries report 179,892,224 and 179,818,496 free bytes,
-respectively. Run the indexed arm against this frozen control.
+respectively. The indexed arm closes normally with no fresh Xe fault and
+records zero owned head bytes in both requests. Actual mode16 prefill,
+expert work, KV residency and draft counters match the gathered control.
+The indexed post-decode queries report 179,892,224 and 179,822,592 bytes,
+for gains of zero and 4,096 bytes. The after-activation gains are also
+zero and 4,096 bytes. The second indexed request reports 261,099,520 fewer
+free bytes before prefill, then reaches the same after-refill value.
+
+The lowest indexed decode result leaves an 88,388,608-byte shortfall
+against the proposed expert budget. The allocation-probe gate fails.
+Keep the gathered selection. Retain this executable for a single matched
+diagnostic using the existing `client_resources.snapshot` reader at the
+owned prefill-only request gates. Compare deduplicated Xe client requested
+and resident VRAM with the SYCL free-memory marks. This tests whether
+driver allocation or residency changed despite the free-memory result.
+[DRM client memory counters](https://docs.kernel.org/gpu/drm-usage-stats.html#memory).
 
 The replay at `e3d371974` verifies 4,668,262 original stock CPU jobs.
 Training uses the first 3,242 verifier windows and evaluation uses the

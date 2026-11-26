@@ -681321,13 +681321,13 @@
     },
     "extra_bytes": 268211200,
     "head_fixture_sha256": "2a2bc9df39feb07e00dadc39cffc124dd0bbf0b9f37578c4587b37e3926744eb",
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "ffab7e33ec3aa33ec4128cac70c060ec7e9c4c93",
     "host_passed": true,
     "ownership_closed": true,
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "plans": [
       {
         "index": 0,
@@ -681600,6 +681600,196 @@
         },
         "passed": true,
         "extra_bytes": 268211200
+      },
+      {
+        "index": 1,
+        "read": 126977,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-indexed-head-native-v1/build/strata",
+          "sha256": "0722edfc2fb1db9a0bc57c77ade047065cf16474de38c8fdec149c8d2f93bf23",
+          "bytes": 26763232
+        },
+        "native_source_commit": "9866bec75d379342653a82f0d21523a1ae70af13",
+        "native_identity": {
+          "pid": 2134150,
+          "start_ticks": 402131121,
+          "sid": 2134083
+        },
+        "request_routes_checked_before_continue": 2,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2134150,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18998",
+              "jobs": "24423",
+              "source_H2D_bytes": "243793920",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "126976"
+            },
+            "uploads": {
+              "uploads": "18998",
+              "requested_H2D_bytes": "38779008000",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 737280,
+              "reused": 2211840
+            },
+            "fixed_bytes": 4171465728,
+            "free_bytes": 4320641024,
+            "direct_pieces": 768,
+            "native_request": [
+              126977,
+              0,
+              126977,
+              24,
+              14,
+              16
+            ],
+            "memory": {
+              "before-prefill": {
+                "free_bytes": 1154289664,
+                "total_bytes": 10666115072
+              },
+              "after-refill": {
+                "free_bytes": 694423552,
+                "total_bytes": 10666115072
+              },
+              "after-draft-activation": {
+                "free_bytes": 180088832,
+                "total_bytes": 10666115072
+              },
+              "after-decode": {
+                "free_bytes": 179892224,
+                "total_bytes": 10666115072
+              }
+            },
+            "max_single_allocation_bytes": 10132807680,
+            "head_arm": "indexed",
+            "head_owned_bytes": 0,
+            "drafter_owned_bytes": 622548320
+          },
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18976",
+              "jobs": "24386",
+              "source_H2D_bytes": "243793920",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "126976"
+            },
+            "uploads": {
+              "uploads": "18976",
+              "requested_H2D_bytes": "38738432000",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 737280,
+              "reused": 2211840
+            },
+            "fixed_bytes": 4171465728,
+            "free_bytes": 4240314368,
+            "direct_pieces": 768,
+            "native_request": [
+              126977,
+              0,
+              126977,
+              24,
+              15,
+              17
+            ],
+            "memory": {
+              "before-prefill": {
+                "free_bytes": 694226944,
+                "total_bytes": 10666115072
+              },
+              "after-refill": {
+                "free_bytes": 694222848,
+                "total_bytes": 10666115072
+              },
+              "after-draft-activation": {
+                "free_bytes": 179888128,
+                "total_bytes": 10666115072
+              },
+              "after-decode": {
+                "free_bytes": 179822592,
+                "total_bytes": 10666115072
+              }
+            },
+            "max_single_allocation_bytes": 10132807680,
+            "head_arm": "indexed",
+            "head_owned_bytes": 0,
+            "drafter_owned_bytes": 622548320
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 126977,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 133642.9,
+            "prompt_tps": 950.1,
+            "ttft_s": 133.843,
+            "total_s": 135.555,
+            "generated_tokens": 24,
+            "request_sha256": "b33d44ec0d233fcc2f52f013e20d16b14dc1b293dbe0ea83c76c00aa3b280306",
+            "drafts_offered": 16,
+            "drafts_accepted": 14,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 126977,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 120326.8,
+            "prompt_tps": 1055.3,
+            "ttft_s": 120.529,
+            "total_s": 122.182,
+            "generated_tokens": 24,
+            "request_sha256": "f6a7bb0a58d20ae9c7c37f7e5e7c1a8c3853775e4b1bc1073144657d920c234f",
+            "drafts_offered": 17,
+            "drafts_accepted": 15,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 120326.8,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "extra_bytes": 268211200
       }
     ],
     "budgets": {
@@ -681638,6 +681828,35 @@
         "passed": true
       }
     ],
+    "decision": {
+      "min_reported_decode_free_bytes": 179818496,
+      "min_single_allocation_limit_bytes": 10132807680,
+      "replay_extra_bytes": 268211200,
+      "observed_arithmetic_margin_bytes": -88392704,
+      "allocation_verified": false,
+      "clean_speed_qualified": false,
+      "adopted": false,
+      "headroom_comparison": {
+        "matched_work": true,
+        "free_byte_deltas": [
+          {
+            "before-prefill": 4096,
+            "after-refill": 0,
+            "after-draft-activation": 0,
+            "after-decode": 0
+          },
+          {
+            "before-prefill": -261099520,
+            "after-refill": 0,
+            "after-draft-activation": 4096,
+            "after-decode": 4096
+          }
+        ],
+        "min_indexed_decode_free_or_limit": 179822592,
+        "extra_capacity_arithmetic_margin_bytes": -88388608,
+        "eligible_for_allocation_probe": false
+      }
+    },
     "source_inputs": {
       "files": 823,
       "sha256": "35a3436354ac239dc15846290a046f3d12dc9bc9d252058f46e766ef864100d4"
