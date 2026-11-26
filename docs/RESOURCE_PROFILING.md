@@ -841,6 +841,27 @@ each with IQ4_NL Down. Together their Gate/Up work is 40.31–40.32% of total
 leaf CPU time. Even eliminating all three would fall short of the roughly
 45% leaf CPU reduction needed at fixed work and six available cores.
 
+For decode kernels selected by Gate/Up format regardless of Down type,
+sum the single-token bins across both Down types. The two pinned leaf logs
+in `dflash2_decode_adapt_cost_replay.py` match their original hashes,
+request work and total leaf CPU clocks. They give the following eligible
+work per emitted token on that capture.
+
+| Single-token Gate/Up format | Jobs per request | CPU ms per emitted token | Share of all CPU leaf time |
+| --- | ---: | ---: | ---: |
+| IQ3_XXS | 415,143 | 30.17–30.26 | 19.31–19.38% |
+| IQ3_S | 228,839 | 21.32–21.36 | 13.65–13.67% |
+| IQ2_S | 489,581 | 25.36–25.40 | 16.24–16.26% |
+
+A twofold speedup of just the IQ3_S bin would leave 145.46–145.56 CPU ms
+per emitted token, which gives a 41.22–41.25 tok/s CPU-leaf budget at six
+fully available cores. The 70 tok/s budget would require removing about
+92% of the three selected formats' combined single-token Gate/Up time
+if other leaf work stayed fixed. Select the isolated IQ3_S replay for
+the next kernel check. Keep expert placement, scheduling and GPU service
+reduction in scope for the throughput target. These budgets use summed
+CPU leaf time under fixed work and ideal core utilization.
+
 The fixed-quota ranking replay at `410332a8f` uses the separate native
 varied-prose capture at `b28a9372b`. Its 33,287-input, 11,783-output request
 uses 6,485 verifier windows. Replay of the incumbent conserves 4,668,262 CPU
