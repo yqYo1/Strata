@@ -1057,7 +1057,20 @@ tok/s (+2.55%), reporting stock before blend. Prefill is 938.743 → 942.207
 tok/s for code and 1037.003 → 1038.282 for prose. Client TTFT is 103.816 →
 103.437 and 93.027 → 92.910 seconds. Stock code emits 2,997 tokens in this
 process, versus 3,195 in the first pair, while both candidate processes
-emit 3,591. Finish the third pair before applying the frozen decision.
+emit 3,591.
+
+The third pair and frozen decision are recorded at `5e75c7dbe`. All six
+processes exit normally without fresh Xe faults. The two exact request bodies
+and the prefill dispatch match in each pair. Decode improves on every pair.
+Across pairs, the geometric mean gain is 7.13% for code and 2.64% for prose.
+Stock and blend decode medians are 16.298 and 17.498 tok/s for code and 11.616
+and 11.933 tok/s for prose. The highest individual code sample is 17.583 tok/s
+with 3,591 emitted tokens and 2,389 of 2,484 drafts accepted. Median CPU
+expert jobs per emitted token fall from 354.84 to 295.48 and from 398.11 to
+361.11, respectively. The paired median prompt-time ratios are 0.996324 for
+code and 1.000694 for prose, so the prefill preservation gate fails. Keep
+stock placement. To revisit the decode gain, isolate cache selection from
+prefill admission and handoff, then measure under a new matched plan.
 
 The first two closed blend processes also bound the benefit of draft yield
 at the current decode time. Let `e` be emitted tokens and `a` and `d`
