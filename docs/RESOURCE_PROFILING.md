@@ -629,8 +629,21 @@ pinned indexed UnitTrace collector only after its provider and instance checks
 pass for this fixture. The controller runs `trace-scalar-0`,
 `trace-cooperative-0`, `trace-cooperative-384` and `trace-scalar-384` in that
 order and records each case separately from the unprofiled timing decision.
-Retire complete traces once the kernel split is
-recorded. No physical PCIe traffic or model TG follows from this trace.
+
+All four collector processes complete normally with quiet validation, no
+fresh Xe fault and five native resolver/copy pairs per process. These are
+medians of the instrumented device intervals and enclosing replay wall time.
+
+| Missing pages | Resolver, scalar → cooperative (ms) | Copy, scalar → cooperative (ms) | Wall, scalar → cooperative (ms) |
+| ---: | ---: | ---: | ---: |
+| 0 | 3.134 → 1.117 | 0.0124 → 0.0125 | 3.271 → 1.259 |
+| 384 | 7.203 → 4.794 | 0.5010 → 0.5019 | 7.843 → 5.418 |
+
+The median gap between the kernels stays within 2.6–2.9 μs. The
+resolver accounts for the observed savings at both miss counts. Use the
+separate unprofiled samples for the speed decision. Physical PCIe traffic
+and model TG remain unmeasured in this fixture. Retire complete traces
+after reviewing the build and log dependencies.
 
 #### Width-four KV cache working set
 

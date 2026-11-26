@@ -710698,6 +710698,173 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "stage": "trace-scalar-384",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+          "--device-timing",
+          "--chrome-kernel-logging",
+          "--chrome-call-logging",
+          "--chrome-event-buffer-size",
+          "128",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-width3-v1/fixture-build/sycl_kv_copy_groups_bench",
+          "--planner-width3-trace",
+          "scalar",
+          "384"
+        ],
+        "environment_sha256": "9f76485b9a7908b8774b1746ca10921c8bcfe5885047bffd27f941e02868dbd8",
+        "arm": "scalar",
+        "missing": 384,
+        "replay_windows": [
+          {
+            "phase": "planner_width3_replay",
+            "replay": 0,
+            "begin_raw_ns": 4061262919933315,
+            "end_raw_ns": 4061262928311777
+          },
+          {
+            "phase": "planner_width3_replay",
+            "replay": 1,
+            "begin_raw_ns": 4061262965938007,
+            "end_raw_ns": 4061262973770355
+          },
+          {
+            "phase": "planner_width3_replay",
+            "replay": 2,
+            "begin_raw_ns": 4061263004011607,
+            "end_raw_ns": 4061263011854655
+          },
+          {
+            "phase": "planner_width3_replay",
+            "replay": 3,
+            "begin_raw_ns": 4061263042351305,
+            "end_raw_ns": 4061263050197218
+          },
+          {
+            "phase": "planner_width3_replay",
+            "replay": 4,
+            "begin_raw_ns": 4061263080289200,
+            "end_raw_ns": 4061263087314294
+          }
+        ],
+        "provider_sha256": "77d09268a04cab6d3ae23d8f29521bac75f31ab0afc81446b40636e24cf9ac22",
+        "trace_sha256": "8c38dd3ac2d0ff025aad68cdee80cad4311101e3fb2534d99da557b219483f16",
+        "trace_services": {
+          "kernel_names": [
+            "strata::kernels::resolve_impl(strata::kernels::KvStreamMap const&, strata::kernels::QsaAttnPools const&, strata::kernels::KvHostPools const&, int, int const*, int const*, long, long, strata::kernels::QsaShapes const&, void*, unsigned int, bool)::{lambda()#1}",
+            "strata::kernels::resolve_impl(strata::kernels::KvStreamMap const&, strata::kernels::QsaAttnPools const&, strata::kernels::KvHostPools const&, int, int const*, int const*, long, long, strata::kernels::QsaShapes const&, void*, unsigned int, bool)::{lambda(sycl::_V1::nd_item<1>)#1}"
+          ],
+          "samples": [
+            {
+              "replay": 0,
+              "native_ids": [
+                "21",
+                "22"
+              ],
+              "resolver_us": 7233.02,
+              "copy_us": 500.833,
+              "inter_kernel_gap_us": 2.91796875,
+              "wall_us": 8378.462
+            },
+            {
+              "replay": 1,
+              "native_ids": [
+                "43",
+                "44"
+              ],
+              "resolver_us": 7202.916,
+              "copy_us": 501.041,
+              "inter_kernel_gap_us": 2.91796875,
+              "wall_us": 7832.348
+            },
+            {
+              "replay": 2,
+              "native_ids": [
+                "65",
+                "66"
+              ],
+              "resolver_us": 7202.916,
+              "copy_us": 513.02,
+              "inter_kernel_gap_us": 2.9169921875,
+              "wall_us": 7843.048
+            },
+            {
+              "replay": 3,
+              "native_ids": [
+                "87",
+                "88"
+              ],
+              "resolver_us": 7202.916,
+              "copy_us": 503.02,
+              "inter_kernel_gap_us": 2.9169921875,
+              "wall_us": 7845.913
+            },
+            {
+              "replay": 4,
+              "native_ids": [
+                "109",
+                "110"
+              ],
+              "resolver_us": 6402.5,
+              "copy_us": 499.062,
+              "inter_kernel_gap_us": 2.7080078125,
+              "wall_us": 7025.094
+            }
+          ]
+        },
+        "capture_raw_ns": [
+          4061262410130572,
+          4061265311314037
+        ],
+        "trace_provider": {
+          "artifacts": {
+            "libunitrace_tool.so": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/libunitrace_tool.so",
+              "bytes": 2329704,
+              "sha256": "e7626aedf7e5bdb983c74f9d3c2e00c52468756853afb69beb37c12b671a2f5c"
+            },
+            "unitrace": {
+              "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/unitrace-indexed-collector-v1/unitrace",
+              "bytes": 513168,
+              "sha256": "6faac1e74f18ce481581f3ed112611ec3e0a1f81eac7990b57b622f212294244"
+            }
+          },
+          "source_commit": "e57b5ee7fce1de6391c793f1014c44cae3b85d9c",
+          "probe_sha256": "6f12324ab1a070af5020228d6dbccf97750c2eb65466ab38b5c99004fb6b61a6"
+        },
+        "host_probe_accepted": true,
+        "validation": {
+          "pid": 3703037,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_identity": {
+          "pid": 3703037,
+          "start_ticks": 406129437,
+          "sid": 3703037,
+          "pgid": 3703037
+        },
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     ]
   }
