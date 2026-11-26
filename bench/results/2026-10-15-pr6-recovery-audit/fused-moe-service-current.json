@@ -682072,7 +682072,7 @@
     "extra_bytes": 268211200,
     "head_fixture_sha256": "2a2bc9df39feb07e00dadc39cffc124dd0bbf0b9f37578c4587b37e3926744eb",
     "head_memory_reference_sha256": "b49738edc70a20b2e271779997f2148868adcd998c553999c2886eff2ee21957",
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "bcdfef3728e7c85f384f20769048a386c06374bc",
     "host_passed": true,
     "ownership_closed": true,
@@ -682161,7 +682161,298 @@
         "kv_arm": "retain"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 126977,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-indexed-head-native-v1/build/strata",
+          "sha256": "0722edfc2fb1db9a0bc57c77ade047065cf16474de38c8fdec149c8d2f93bf23",
+          "bytes": 26763232
+        },
+        "native_source_commit": "9866bec75d379342653a82f0d21523a1ae70af13",
+        "native_identity": {
+          "pid": 2190183,
+          "start_ticks": 402289294,
+          "sid": 2190122
+        },
+        "drm_boundaries": [
+          {
+            "request": 0,
+            "stage": "begin",
+            "clients": [
+              {
+                "client_id": 66587,
+                "memory_bytes": {
+                  "drm-total-system": 0,
+                  "drm-shared-system": 0,
+                  "drm-resident-system": 0,
+                  "drm-total-gtt": 4009795584,
+                  "drm-shared-gtt": 0,
+                  "drm-resident-gtt": 4009795584,
+                  "drm-total-vram0": 9467371520,
+                  "drm-shared-vram0": 0,
+                  "drm-resident-vram0": 9467371520,
+                  "drm-total-stolen": 0,
+                  "drm-shared-stolen": 0,
+                  "drm-resident-stolen": 0
+                }
+              }
+            ],
+            "snapshot_ns": 3050279
+          },
+          {
+            "request": 0,
+            "stage": "end",
+            "clients": [
+              {
+                "client_id": 66587,
+                "memory_bytes": {
+                  "drm-total-system": 0,
+                  "drm-shared-system": 0,
+                  "drm-resident-system": 0,
+                  "drm-total-gtt": 4615872512,
+                  "drm-shared-gtt": 0,
+                  "drm-resident-gtt": 4615872512,
+                  "drm-total-vram0": 9927434240,
+                  "drm-shared-vram0": 0,
+                  "drm-resident-vram0": 9927434240,
+                  "drm-total-stolen": 0,
+                  "drm-shared-stolen": 0,
+                  "drm-resident-stolen": 0
+                }
+              }
+            ],
+            "snapshot_ns": 2827875
+          },
+          {
+            "request": 1,
+            "stage": "begin",
+            "clients": [
+              {
+                "client_id": 66587,
+                "memory_bytes": {
+                  "drm-total-system": 0,
+                  "drm-shared-system": 0,
+                  "drm-resident-system": 0,
+                  "drm-total-gtt": 4615872512,
+                  "drm-shared-gtt": 0,
+                  "drm-resident-gtt": 4615872512,
+                  "drm-total-vram0": 9927434240,
+                  "drm-shared-vram0": 0,
+                  "drm-resident-vram0": 9927434240,
+                  "drm-total-stolen": 0,
+                  "drm-shared-stolen": 0,
+                  "drm-resident-stolen": 0
+                }
+              }
+            ],
+            "snapshot_ns": 2867499
+          },
+          {
+            "request": 1,
+            "stage": "end",
+            "clients": [
+              {
+                "client_id": 66587,
+                "memory_bytes": {
+                  "drm-total-system": 0,
+                  "drm-shared-system": 0,
+                  "drm-resident-system": 0,
+                  "drm-total-gtt": 4745895936,
+                  "drm-shared-gtt": 0,
+                  "drm-resident-gtt": 4745895936,
+                  "drm-total-vram0": 9927503872,
+                  "drm-shared-vram0": 0,
+                  "drm-resident-vram0": 9927503872,
+                  "drm-total-stolen": 0,
+                  "drm-shared-stolen": 0,
+                  "drm-resident-stolen": 0
+                }
+              }
+            ],
+            "snapshot_ns": 2821646
+          }
+        ],
+        "request_routes_checked_before_continue": 2,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2190183,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18998",
+              "jobs": "24423",
+              "source_H2D_bytes": "243793920",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "126976"
+            },
+            "uploads": {
+              "uploads": "18998",
+              "requested_H2D_bytes": "38779008000",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 737280,
+              "reused": 2211840
+            },
+            "fixed_bytes": 4171465728,
+            "free_bytes": 4320641024,
+            "direct_pieces": 768,
+            "native_request": [
+              126977,
+              0,
+              126977,
+              24,
+              14,
+              16
+            ],
+            "memory": {
+              "before-prefill": {
+                "free_bytes": 1154289664,
+                "total_bytes": 10666115072
+              },
+              "after-refill": {
+                "free_bytes": 694423552,
+                "total_bytes": 10666115072
+              },
+              "after-draft-activation": {
+                "free_bytes": 180088832,
+                "total_bytes": 10666115072
+              },
+              "after-decode": {
+                "free_bytes": 179892224,
+                "total_bytes": 10666115072
+              }
+            },
+            "max_single_allocation_bytes": 10132807680,
+            "head_arm": "indexed",
+            "head_owned_bytes": 0,
+            "drafter_owned_bytes": 622548320
+          },
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18976",
+              "jobs": "24386",
+              "source_H2D_bytes": "243793920",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "126976"
+            },
+            "uploads": {
+              "uploads": "18976",
+              "requested_H2D_bytes": "38738432000",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 737280,
+              "reused": 2211840
+            },
+            "fixed_bytes": 4171465728,
+            "free_bytes": 4240314368,
+            "direct_pieces": 768,
+            "native_request": [
+              126977,
+              0,
+              126977,
+              24,
+              15,
+              17
+            ],
+            "memory": {
+              "before-prefill": {
+                "free_bytes": 694226944,
+                "total_bytes": 10666115072
+              },
+              "after-refill": {
+                "free_bytes": 694222848,
+                "total_bytes": 10666115072
+              },
+              "after-draft-activation": {
+                "free_bytes": 179888128,
+                "total_bytes": 10666115072
+              },
+              "after-decode": {
+                "free_bytes": 179822592,
+                "total_bytes": 10666115072
+              }
+            },
+            "max_single_allocation_bytes": 10132807680,
+            "head_arm": "indexed",
+            "head_owned_bytes": 0,
+            "drafter_owned_bytes": 622548320
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 126977,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 131122.1,
+            "prompt_tps": 968.4,
+            "ttft_s": 131.326,
+            "total_s": 133.076,
+            "generated_tokens": 24,
+            "request_sha256": "b33d44ec0d233fcc2f52f013e20d16b14dc1b293dbe0ea83c76c00aa3b280306",
+            "drafts_offered": 16,
+            "drafts_accepted": 14,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 126977,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 120182.4,
+            "prompt_tps": 1056.5,
+            "ttft_s": 120.384,
+            "total_s": 122.057,
+            "generated_tokens": 24,
+            "request_sha256": "f6a7bb0a58d20ae9c7c37f7e5e7c1a8c3853775e4b1bc1073144657d920c234f",
+            "drafts_offered": 17,
+            "drafts_accepted": 15,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 120182.4,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "head_arm": "indexed",
+        "extra_bytes": 268211200,
+        "drm_aggregate_eligible": true
+      }
+    ],
     "budgets": {
       "wall": 5400,
       "cpu": 21600,
