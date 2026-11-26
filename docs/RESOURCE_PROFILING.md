@@ -462,7 +462,14 @@ with 7,687 outputs. Both exercised the same prefill routing and requested
 expert-upload bytes as the earlier per-layer reference. Code output and draft
 work match that reference. Prose uses the identical input and emits 931 fewer
 tokens, so keep the output, stop and draft counters when comparing its decode
-rates. The first within-layer process is the next arm in the frozen order.
+rates. The first within-layer process also closes with no fresh Xe fault.
+Both arms match the two actual prefill routes and requested upload bytes.
+Code measures 933.0 PP and 15.89 TG tok/s with 3,370 outputs and 365.4 CPU
+jobs per output, versus 354.8 on stock. Prose measures 1,041.1 PP and 13.15 TG
+tok/s with 6,820 outputs and 263.3 CPU jobs per output, versus 403.4 on stock.
+Prose TG is 15.94% higher in this pair. Both requests change generated work.
+Keep that distinction and complete the remaining counterbalanced pairs
+before selecting a placement.
 
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
