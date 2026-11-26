@@ -714982,5 +714982,148 @@
       "partial_archive_reuse": false,
       "uncovered": 0
     }
+  },
+  "dflash2_decode_ranked_refill_checks_v1": {
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "native_source_commit": "ffc455c22c019428649d985b30086d7f8bf9572f",
+    "build_sha256": "7d97bdc58993e2a88437612605621263cb1758624cc28724b8a81099436ab205",
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-speed-v2/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "source_commit": "edabb557c3e0a095f5ae592be98d645c15b4f8e8",
+    "sources": {
+      "bench/dflash2_decode_ranked_refill_checks.py": "ac236f8dd4989ce5320e503e745702028d4018e281ab84cb108db34230e031be",
+      "bench/dflash2_decode_ranked_refill_build.py": "8790915c928c4c6e78cfa145bf58608808bb0a33481bef99f6fa416c70e35ef5",
+      "bench/dflash2_primary_checks.py": "7e6d08905c41c942fa88d4d0461317d8812ee7861093f96dc938feeb9f97839b"
+    },
+    "plan": {
+      "order": [
+        "host",
+        "ranked-refill",
+        "ranked-refill-copy-failure",
+        "ranked-refill-publish-failure"
+      ],
+      "scope": "Same-build host lease checks and a 130-slot device cache with two replaced rows.",
+      "checks": "Read back prefix, borrowed payloads and both residency tables. Refuse invalid maps before copies. After separately injected transfer or publication failure, require blocked readers and the expected fail-stop marker. Require no new Xe fault or runtime validation warning in any case.",
+      "stop": "Stop on the first unexpected exit, changed premise or driver fault. Model RESTORE and speed are separate."
+    },
+    "cases": [
+      {
+        "name": "host",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-ranked-refill-build-v1/build/prefill_scratch_host_test",
+          "sha256": "2045275d9d6d54413f3a73ca31ba4673872b07adde72e3d1b8a0aa00ca778aa8",
+          "bytes": 143560
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-ranked-refill-build-v1/build/prefill_scratch_host_test"
+        ],
+        "expected_exit": 0,
+        "env_sha256": "eedcfe699ca92bdac59d38900388219ae7f5960bb2f454801ec5c0be3498cd8a",
+        "limits": {
+          "wall": 90,
+          "cpu": 120,
+          "rss_cap": 2147483648,
+          "text_cap": 131072,
+          "file_cap": 1048576,
+          "total_cap": 4194304
+        }
+      },
+      {
+        "name": "ranked-refill",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-ranked-refill-build-v1/build/sycl_prefill_scratch_test",
+          "sha256": "5e619eeb4adadd9a171178048d088c30a8d62a0de7c23c3f438a9a259b7042c1",
+          "bytes": 23773768
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-ranked-refill-build-v1/build/sycl_prefill_scratch_test",
+          "--case",
+          "ranked-refill"
+        ],
+        "expected_exit": 0,
+        "env_sha256": "f1ec082df0d9f907d626dddf8db39a8b7125819288fa2437d0cd02ccd341b87c",
+        "limits": {
+          "wall": 180,
+          "cpu": 360,
+          "rss_cap": 4294967296,
+          "text_cap": 33554432,
+          "file_cap": 67108864,
+          "total_cap": 83886080
+        }
+      },
+      {
+        "name": "ranked-refill-copy-failure",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-ranked-refill-build-v1/build/sycl_prefill_scratch_test",
+          "sha256": "5e619eeb4adadd9a171178048d088c30a8d62a0de7c23c3f438a9a259b7042c1",
+          "bytes": 23773768
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-ranked-refill-build-v1/build/sycl_prefill_scratch_test",
+          "--case",
+          "ranked-refill-copy-failure"
+        ],
+        "expected_exit": 1,
+        "env_sha256": "1ac37e641a008d59321af2222910110b28a6a43fd6da9e55ed78c29898940d7b",
+        "limits": {
+          "wall": 180,
+          "cpu": 360,
+          "rss_cap": 4294967296,
+          "text_cap": 33554432,
+          "file_cap": 67108864,
+          "total_cap": 83886080
+        }
+      },
+      {
+        "name": "ranked-refill-publish-failure",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-ranked-refill-build-v1/build/sycl_prefill_scratch_test",
+          "sha256": "5e619eeb4adadd9a171178048d088c30a8d62a0de7c23c3f438a9a259b7042c1",
+          "bytes": 23773768
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-ranked-refill-build-v1/build/sycl_prefill_scratch_test",
+          "--case",
+          "ranked-refill-publish-failure"
+        ],
+        "expected_exit": 1,
+        "env_sha256": "c45a6e42a85d1a4b8e4408afd0c205e76d71a781e261e22b59919d5fe01c4670",
+        "limits": {
+          "wall": 180,
+          "cpu": 360,
+          "rss_cap": 4294967296,
+          "text_cap": 33554432,
+          "file_cap": 67108864,
+          "total_cap": 83886080
+        }
+      }
+    ],
+    "stage": "prepared",
+    "outcomes": {},
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true,
+    "active": false
   }
 }
