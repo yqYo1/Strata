@@ -495,12 +495,16 @@ void ExpertPool::wait_parked(const char* what) {
 }
 
 void ExpertPool::wait_done(int n) {
+    wait_completed(done_, n);
+}
+
+void ExpertPool::wait_completed(const std::atomic<uint32_t>& completed, int n) {
     hstate_.store(kWaitDone, std::memory_order_relaxed);
     hstate_ms_.store(now_ms(), std::memory_order_relaxed);
     uint32_t spins = 0, seen = 0;
     std::chrono::steady_clock::time_point t0{};
     for (;;) {
-        const uint32_t d = done_.load(std::memory_order_acquire);
+        const uint32_t d = completed.load(std::memory_order_acquire);
         if (d >= (uint32_t) n) return;                                // `>=`: never a wait that an overshoot outlives
         _mm_pause();
         if ((++spins & 1023u) != 0) continue;
@@ -539,6 +543,8 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
 #ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
         } else if (mode_ == kDecodeByExpert) {
             finish_decode_native_expert(id, i);
+            if (decode_publication_ && i < static_cast<uint32_t>(decode_publication_->prefix_jobs))
+                decode_prefix_done_.fetch_add(1, std::memory_order_acq_rel);
 #endif
         } else if (mode_ >= 5) {
             // plan v0.3 P6: native layers, 5 = gate/up rows, 6 = down rows
@@ -611,7 +617,17 @@ void ExpertPool::run_phase(int mode, int n_tasks) {
     njobs_ = n_tasks;
     const uint32_t e = begin_batch(n_tasks);
     if (host_works_) drain(-1, host_scratch_, e);
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+    const auto* publication = mode == kDecodeByExpert ? decode_publication_ : nullptr;
+    if (publication && !publication->after_all) {
+        wait_completed(decode_prefix_done_, publication->prefix_jobs);
+        publication->ready(publication->context);
+    }
+#endif
     wait_done(n_tasks);
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+    if (publication && publication->after_all) publication->ready(publication->context);
+#endif
     wait_parked("after a phase");
     hstate_.store(kIdle, std::memory_order_relaxed);
     hstate_ms_.store(now_ms(), std::memory_order_relaxed);
@@ -750,21 +766,27 @@ void ExpertPool::finish_decode_native_expert(int id, unsigned expert) {
     }
 }
 
-bool ExpertPool::run_decode_native_by_expert(const NativeFmt& f, ExpertJobMulti* jobs, int n) {
+bool ExpertPool::run_decode_native_by_expert(const NativeFmt& f, ExpertJobMulti* jobs, int n,
+                                             const DecodePublication* publication) {
     if (!jobs || n <= 0 || n > kMaxSplitMulti || f.n_embd != H || f.n_ff != FF ||
         (f.gu_type != 18 && f.gu_type != 21) || f.d_type != 20)
         return false;
     for (int e = 0; e < n; ++e)
         if (jobs[e].nt < 1 || jobs[e].nt > MAXT) return false;
+    if (publication && (host_works_ || !publication->ready ||
+                        publication->prefix_jobs < 0 || publication->prefix_jobs > n)) return false;
 #ifdef STRATA_CPU_SERVICE_PROFILE
     service::Profile::BatchScope batch(service_profile_, NativeGuPhase::Decode);
 #endif
     const auto start = std::chrono::steady_clock::now();
     mjobs_ = jobs;
     nfmt_ = &f;
+    decode_prefix_done_.store(0, std::memory_order_relaxed);
+    decode_publication_ = publication;
     // Each claim owns a disjoint scratch slot and result rows. The ordinary
     // epoch completion still retires every claim before the caller can reuse them.
     run_phase(kDecodeByExpert, n);
+    decode_publication_ = nullptr;
     mode_ = 0;
     multi_bytes += static_cast<int64_t>(n) * f.bytes;
     ms_drain_ += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();

@@ -165,8 +165,17 @@ public:
     void run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n,
                                 NativeGuPhase phase = NativeGuPhase::Decode);
 #ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+    struct DecodePublication {
+        int prefix_jobs;
+        void (*ready)(void*) noexcept;
+        void* context;
+        bool after_all;
+    };
     // CPU fixture arm. Complete all three stages of an expert in one claim.
-    bool run_decode_native_by_expert(const NativeFmt& f, ExpertJobMulti* jobs, int n);
+    // The callback runs on the reserved caller and may read finished output
+    // rows. Borrowed buffers still need to live through full pool retirement.
+    bool run_decode_native_by_expert(const NativeFmt& f, ExpertJobMulti* jobs, int n,
+                                     const DecodePublication* publication = nullptr);
 #endif
     static constexpr int kMaxSplitMulti = 96;
     /// run_split_multi's phases, accumulated ms: gate/up rows, the intermediate quantization, down rows.
@@ -210,6 +219,7 @@ private:
 #ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
     static constexpr int kDecodeByExpert = 7;
     void finish_decode_native_expert(int id, unsigned expert);
+    const DecodePublication* decode_publication_ = nullptr;
 #endif
     /// Claim the next job of batch `epoch`, or -1 (that batch is exhausted, or it is not the current one).
     int claim(uint32_t epoch);
@@ -218,6 +228,7 @@ private:
     /// The host's waits, bounded by `kStall`.
     void wait_parked(const char* what);
     void wait_done(int n);
+    void wait_completed(const std::atomic<uint32_t>& completed, int n);
     /// Bump `epoch_`, and wake the workers that went to sleep.  Every publish goes through here.
     void publish();
 
@@ -289,6 +300,9 @@ private:
     std::vector<SplitBufMulti> split_multi_;
     PoolAffinity affinity_ = PoolAffinity::All;
     CpuTopology topo_;
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+    alignas(64) std::atomic<uint32_t> decode_prefix_done_{0};
+#endif
 };
 
 }  // namespace strata::kernels::cpu

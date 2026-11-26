@@ -63,6 +63,7 @@ LOCALITY_MODE = False
 SCHEDULE_ARMS = ('split', 'by-expert')
 SCHEDULE_SHAPES = ((0, 0), (18, 2), (18, 4), (21, 2), (21, 4))
 SCHEDULE_MODE = False
+PUBLICATION_MODE = False
 SCHEDULE_PROTOCOL = (
     'Replay the same eight held-out width-two and width-four batches with six physical cores and the '
     'DFlash2 decode IQ3 pair selection. Use the same compiled expert arithmetic, inputs, weights and '
@@ -102,6 +103,25 @@ def select_schedule():
     CHECK_ORDER = [(0, 6, mode) for mode in SCHEDULE_ARMS]
     ORDER = [(round_id, 6, mode) for round_id, arms in
              enumerate((SCHEDULE_ARMS, SCHEDULE_ARMS[::-1], SCHEDULE_ARMS)) for mode in arms]
+
+
+def select_publication():
+    global PUBLICATION_MODE, ROOT, BUILD, RESULT, PROTOCOL, CHECK_ORDER, ORDER
+    select_schedule()
+    PUBLICATION_MODE = True
+    ROOT = B / 'cpu-fixed-expert-publication-v1'
+    BUILD = ROOT / 'build'
+    RESULT = recipe.RESULT.with_name('cpu-fixed-expert-publication-current.json')
+    PROTOCOL = (
+        'On the four captured width-four layers, reserve the caller and run five pinned workers. '
+        'Check a one-epoch by-expert schedule with the actual first-pair dependency prefix, '
+        'zero dependencies, and the full batch. Compare callback-after-prefix and callback-after-all. '
+        'Prove the caller sees the completed prefix exactly, every job returns exactly the serial bits '
+        'at retirement, the callback fires once per epoch, and the original guards and placement hold. '
+        'No GPU execution or timing. Leave the complete original replay descriptor unchanged.'
+    )
+    CHECK_ORDER = [(0, 5, 'publication')]
+    ORDER = []
 
 
 def atomic_json(path, data):
@@ -448,6 +468,25 @@ def summaries(row, text, mode, cores, timed):
     return dict(result, samples=samples, timer=timings[0], median_s_per_pass=cells[0]['median_s_per_pass'])
 
 
+def publication_summary(row, text):
+    records = [json.loads(line) for line in text.splitlines()]
+    host, *available = row['machine']['physical_cpus']
+    placement = dict(kind='replay_placement', host_cpu=host, workers=available[:5], caller_computes=False)
+    expected = []
+    for batch in json.loads(row['fixture']['blocks']):
+        if batch['width'] != 4:
+            continue
+        jobs = batch['jobs']
+        expected.append(dict(kind='publication_input', jobs=len(jobs), gu=batch['fmt'][0],
+            prefix_jobs=sum(rows[0] < 2 for _, rows in jobs), logical_bytes=batch['fmt'][2] * len(jobs),
+            cases=8, bitwise=True))
+    need(len(expected) == 4 and sum(v['jobs'] for v in expected) == 137
+         and sum(v['logical_bytes'] for v in expected) == 308249600
+         and records == [placement, *expected, dict(kind='closed', passed=True)],
+         'CPU publication placement, captured work or readiness proof changed')
+    return dict(placement=placement, slices=expected, gpu_executed=False)
+
+
 def execute(stage):
     row = load()
     expected = dict(build='prepared', check='built', measure='checked')
@@ -496,7 +535,9 @@ def execute(stage):
             cases = CHECK_ORDER if stage == 'check' else ORDER
             for i, (round_id, cores, mode) in enumerate(cases):
                 verify_binary(row)
-                if mode in LOCALITY_ARMS:
+                if PUBLICATION_MODE:
+                    args = ['replay-publication-check', str(ROOT / 'replay.txt')]
+                elif mode in LOCALITY_ARMS:
                     layout, batch = LOCALITY_ARMS[mode]
                     args = ['replay-locality', str(ROOT / 'replay.txt'), str(batch), layout, stage]
                 elif mode in SCHEDULE_ARMS:
@@ -507,11 +548,15 @@ def execute(stage):
                     args = ['replay-scan', str(cores), str(row['fixture']['unique_bytes']), stage]
                 entry, out, err = run(f'case-{i}', [row['binary']['path'], *args], observe=LOCALITY_MODE and stage == 'check')
                 need(err.stat().st_size == 0, 'replay emitted stderr')
-                data = summaries(row, out.read_text(), mode, cores, stage == 'measure')
+                data = (publication_summary(row, out.read_text()) if PUBLICATION_MODE
+                        else summaries(row, out.read_text(), mode, cores, stage == 'measure'))
                 row['processes'].append(dict(round=round_id, **data, owner=recipe.receipt(entry)))
             need(weights(row['fixture']) == row['weights'], 'expert weight slices changed during replay')
             if stage == 'check':
-                row['stage'] = 'checked'
+                if PUBLICATION_MODE:
+                    row.update(stage='closed', complete=True, passed=True, publication_cpu_correctness_qualified=True)
+                else:
+                    row['stage'] = 'checked'
             else:
                 measured = row['processes'][len(CHECK_ORDER):]
                 need(len({(x['owner']['pid'], x['owner']['direct_identity']['start_ticks'])
@@ -577,8 +622,12 @@ if __name__ == '__main__':
     elif sys.argv[1:2] == ['--schedule']:
         sys.argv.pop(1)
         select_schedule()
+    elif sys.argv[1:2] == ['--publication']:
+        sys.argv.pop(1)
+        select_publication()
+    stages = ('prepare', 'build', 'check') if PUBLICATION_MODE else ('prepare', 'build', 'check', 'measure')
     need(sys.executable == '/home/yayoi/.local/share/strata-sycl/venv/bin/python3' and len(sys.argv) == 2
-         and sys.argv[1] in ('prepare', 'build', 'check', 'measure'), 'pinned Python and prepare|build|check|measure required')
+         and sys.argv[1] in stages, 'pinned Python and one declared CPU replay stage required')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         guards.no_model_owners([])

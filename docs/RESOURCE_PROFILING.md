@@ -1771,6 +1771,21 @@ readiness, fixed routed work, and timed stock, two-half-wait and early-enqueue
 comparisons before claiming an overlap benefit.
 [SYCL Host USM](https://github.khronos.org/SYCL_Reference/iface/usm_basic_concept.html).
 
+The [fixed expert replay](../bench/sycl/cpu_roofline/fixed_replay.py) exposes
+`--publication prepare`, `--publication build` and `--publication check`.
+It reuses the original eight captured batches and qualifies the four T4 layers
+above. Five pinned workers retain the full one-claim-per-expert arithmetic.
+The reserved caller observes the original first-pair prefix via one completion
+counter on its own cache line. Each worker increments it after writing all of
+that expert's rows, with acquire-release ordering. Check each captured prefix,
+an empty prefix, a full prefix and a repeated captured prefix in both
+early and after-all modes. The callback compares only completed CPU outputs
+with the serial-checked reference. The pool retires all claims before buffer
+reuse, including when the early group has zero dependencies. This is a
+CPU-only readiness check for the isolated build. The Arc fixture separately
+exercises host-to-device visibility and ordered completion.
+[C++ atomic ordering](https://eel.is/c++draft/atomics.order).
+
 The selected verifier at `968e71988` can split a decode window into two
 groups for `T >= 2`. In its SYCL path the host synchronizes the current
 segment, calls the expert pool, retires copies and then submits the next

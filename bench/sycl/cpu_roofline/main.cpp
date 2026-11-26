@@ -345,6 +345,9 @@ struct ReplayBatch {
     std::array<std::unique_ptr<Buffer>, replay_rows> acts;
     std::vector<std::unique_ptr<Buffer>> outputs;
     std::vector<cpu::ExpertJobMulti> jobs;
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+    std::vector<int> first_token;
+#endif
     const cpu::NativeFmt* format = nullptr;
     int width = 0;
 
@@ -381,6 +384,9 @@ struct ReplayBatch {
                 int row = 0;
                 in >> row;
                 require(!in.fail() && row > previous_row && row < width, "replay job row order");
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+                if (t == 0) first_token.push_back(row);
+#endif
                 previous_row = row;
                 job.nact[t] = acts[row]->data();
                 job.out[t] = reinterpret_cast<float*>(out->data()) + t * cpu::H;
@@ -437,6 +443,63 @@ struct ReplayBatch {
         for (const auto& in : acts) if (in) in->check();
         for (const auto& out : outputs) out->check();
     }
+
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+    void validate_publication(cpu::ExpertPool& pool) {
+        const int total = static_cast<int>(jobs.size());
+        const int prefix = static_cast<int>(std::count_if(first_token.begin(), first_token.end(),
+                                                         [](int token) { return token < 2; }));
+        require(width == 4 && first_token.size() == jobs.size() && std::is_sorted(first_token.begin(), first_token.end())
+                && 0 < prefix && prefix < total, "exact T4 publication prefix required");
+        validate(pool, true);
+
+        std::vector<std::vector<float>> expected;
+        for (const auto& job : jobs) {
+            auto& values = expected.emplace_back();
+            for (int t = 0; t < job.nt; ++t) values.insert(values.end(), job.out[t], job.out[t] + cpu::H);
+        }
+        struct Readback {
+            const std::vector<cpu::ExpertJobMulti>& jobs;
+            const std::vector<std::vector<float>>& expected;
+            int ready_jobs;
+            int calls = 0;
+            bool exact = true;
+
+            bool matches(int count) const noexcept {
+                for (int j = 0; j < count; ++j)
+                    for (int t = 0; t < jobs[j].nt; ++t)
+                        if (std::memcmp(jobs[j].out[t], expected[j].data() + t * cpu::H,
+                                        cpu::H * sizeof(float)) != 0) return false;
+                return true;
+            }
+        };
+        const auto ready = +[](void* opaque) noexcept {
+            auto& result = *static_cast<Readback*>(opaque);
+            ++result.calls;
+            result.exact &= result.matches(result.ready_jobs);
+        };
+        int cases = 0;
+        for (int cutoff : {prefix, 0, total, prefix}) {
+            for (bool after_all : {false, true}) {
+                for (const auto& job : jobs)
+                    for (int t = 0; t < job.nt; ++t)
+                        std::fill_n(job.out[t], cpu::H, std::numeric_limits<float>::quiet_NaN());
+                Readback check{jobs, expected, after_all ? total : cutoff};
+                const cpu::ExpertPool::DecodePublication publication{cutoff, ready, &check, after_all};
+                require(pool.run_decode_native_by_expert(*format, jobs.data(), total, &publication),
+                        "publication schedule refused a captured layer");
+                require(check.calls == 1 && check.exact && check.matches(total),
+                        "publication callback or final result differs from serial native output");
+                for (const auto& out : outputs) out->check();
+                ++cases;
+            }
+        }
+        for (const auto& in : acts) if (in) in->check();
+        std::cout << "{\"kind\":\"publication_input\",\"jobs\":" << total << ",\"prefix_jobs\":" << prefix
+                  << ",\"gu\":" << format->gu_type << ",\"logical_bytes\":" << total * format->bytes
+                  << ",\"cases\":" << cases << ",\"bitwise\":true}" << std::endl;
+    }
+#endif
 };
 
 constexpr int locality_jobs = 8, locality_banks = 4, locality_observed_passes = 32;
@@ -544,6 +607,17 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
     require(in.eof(), "trailing replay instructions");
 
     const std::vector<int> worker_cores(topo.worker_cores.begin(), topo.worker_cores.begin() + workers);
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+    if (schedule == "publication") {
+        verify_placement(topo.host_core, worker_cores);
+        report_placement(topo.host_core, worker_cores, host_works);
+        for (auto& batch : batches) if (batch.width == 4) batch.validate_publication(pool);
+        for (const auto& layer : layers)
+            for (const auto& blob : layer.weights) if (blob) blob->check();
+        verify_placement(topo.host_core, worker_cores);
+        return;
+    }
+#endif
     if (locality_batch >= 0) {
         verify_placement(topo.host_core, worker_cores);
         report_placement(topo.host_core, worker_cores, host_works);
@@ -609,7 +683,9 @@ int main(int argc,char** argv) try {
     const auto topo=cpu::detect_cpu_topology(true);
     require(topo.host_core>=0 && topo.worker_cores.size()>=5,"six physical CPUs required");
 #ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
-    if (argc == 5 && std::string_view(argv[1]) == "replay-schedule") {
+    if (argc == 3 && std::string_view(argv[1]) == "replay-publication-check") {
+        route_replay(argv[2], topo, 5, false, -1, false, "publication");
+    } else if (argc == 5 && std::string_view(argv[1]) == "replay-schedule") {
         const std::string_view schedule(argv[3]), mode(argv[4]);
         require((schedule == "split" || schedule == "by-expert") &&
                 (mode == "measure" || mode == "check"), "expert schedule replay arm");
