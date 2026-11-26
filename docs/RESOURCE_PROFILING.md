@@ -845,6 +845,13 @@ the blend only after both checks close. It keeps the global loader fixed and
 compares PP, TTFT and sustained TG on the same two 96K bodies in three process
 pairs, accounting for changes in output length and draft acceptance.
 
+The host protocol checks pass. On Arc, the short case restores all 32,769
+parked tokens from RAM, reads 8,209 new tokens and reaches position 40,978.
+Both long requests return all 1,124 loaned slots with matching payloads, and
+the recorded decode membership matches the selected profile. Validation is
+quiet and the native process exits normally without a fresh Xe fault. The
+near-capacity case remains required.
+
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
 96-swap and 197,913,600-byte caps. Compare early distinct jobs, routed rows
