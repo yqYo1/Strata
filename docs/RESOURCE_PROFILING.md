@@ -1175,7 +1175,16 @@ files from `4757120ec` with `/usr/bin/x86_64-linux-gnu-g++-13 -std=c++20
 -O2 -Wall -Wextra -Werror -pthread -Iinclude tests/core/prefill_scratch_test.cpp`
 in a private source tree. The compiler SHA-256 is
 `1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769`.
-It requires all 40 cases and creates a temporary host executable only.
+All 40 cases pass, including rejected and repeated check admission on the
+same generation. The standalone result checks 267 system headers and uses
+no SYCL runtime. The temporary executable is retired. For the separate
+native syntax precheck, use all six compile database entries for the
+changed generator, cache implementation and host/device fixtures. Materialize
+the frozen projection in a private tree. Keep the retained compiler,
+options, working directory and environment. Redirect source paths to the
+projection and replace `-o … -c` with `-fsyntax-only -MD -MF …`. Validate
+actual compiler dependency hashes against the committed project and retained
+external inputs. This check creates no native executable.
 Proceed to the short and near-capacity RESTORE fixtures before
 clean timing. Include a fresh long request, a following short request and
 another fresh long request in the same process, plus a cancelled prefill and
