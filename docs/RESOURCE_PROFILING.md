@@ -302,6 +302,13 @@ compiler input. The [admission runner](../bench/dflash2_decode_qsa_grid_admissio
 checks real finalized graph scorer calls and short thinking-prompt parity
 with the grid off and on. The grid stays off by default.
 
+Short admission closes at `22ae164ed` with the same 82-token input, 32
+generated IDs and 23 of 23 accepted drafts in both native processes. The
+reference uses its existing scorer in every capture. The candidate uses the
+existing scorer in both prompt captures and the bounded grid in all twelve
+QSA layers of each decode capture at widths one, two and four. Both native
+owners exit normally, with quiet parameter validation and no fresh Xe fault.
+
 The [model timing plan](../bench/dflash2_decode_qsa_grid_speed.py) keeps
 the stock global expert profile fixed and switches only
 `STRATA_SYCL_DECODE_QSA_SCORE_GRID` between six fresh processes. It uses the
@@ -309,6 +316,17 @@ same 96,204- and 96,274-token thinking requests to resolve sustained decode,
 prefill and first output timing. Finish the short native control before
 timing. A successful timing screen permits the separate full-context,
 RESTORE and quality checks.
+
+Retired the raw comparison and admission output scopes below after verifying
+the closed owners and the compact committed decisions. Verified both root
+`record.json` files are unchanged. Both engine builds serve the current comparison.
+The inventories hash sorted state-relative paths, byte counts and SHA-256
+values. No current reader uses those output directories.
+
+| Scope under the tuning state root | Evidence | Files | Bytes | Inventory SHA-256 |
+| --- | --- | ---: | ---: | --- |
+| `dflash2-decode-ranked-generation-blend-v1/{host,0,1,2,3,4,5}` | `5e75c7dbe` | 436 | 90736645 | `03df792418095e2ec885876c36282b4f34befb1b05898a682109bc2958defb36` |
+| `dflash2-decode-qsa-grid-admission-v1/{host,reference,grid}` | `22ae164ed` | 95 | 23090175 | `af84718cb8856aefc04661263fcbe113d9bc491ea1a277c426c0119ea8ce3b30` |
 
 Retired the component's raw runs and fixture from `decode-qsa-score-grid-v1`
 under the tuning state directory and verified the path is absent. The
