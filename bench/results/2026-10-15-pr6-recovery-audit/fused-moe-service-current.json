@@ -683025,8 +683025,57 @@
       "retention": "Retire this fixture build and raw output at the comparison closure; keep the independently validated serving engine unchanged."
     },
     "parent_environment_sha256": "219f24b0aee14857ea319a4f935e82c4ea71449563bde6aacaaede56f16ecfd1",
-    "stage": "built",
-    "processes": [],
+    "stage": "validated",
+    "processes": [
+      {
+        "index": 0,
+        "mode": "validate",
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-result-copy-v1/fixture-build/sycl_decode_moe_combine_test",
+          "validate",
+          "--compare-copy"
+        ],
+        "environment_sha256": "f87554ef6b4a372fa7d7f2b50e4258199200ae4b4a06705db1fa69e21c9dc8f2",
+        "ownership_closed": true,
+        "providers": {
+          "initialized_ELFs": 33,
+          "sha256": "466dbf7948b6a440b45ee62972771eb070ce686928b9c122d57e7aa42efe583d",
+          "required_providers_verified": true,
+          "source": "glibc constructors;not speed or hardware utilization"
+        },
+        "samples": [],
+        "host_probe_accepted": true,
+        "validation": {
+          "pid": 2252201,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_identity": {
+          "pid": 2252201,
+          "start_ticks": 402424752,
+          "sid": 2252201,
+          "pgid": 2252201
+        },
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
     "complete": false,
     "passed": false,
     "ownership_closed": true,
