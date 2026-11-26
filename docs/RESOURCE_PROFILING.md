@@ -379,7 +379,14 @@ reference at `40c76d2f1`. A synthetic cooperative version activates seven
 eligible captures. Four malformed variants are rejected, covering prompt
 dispatch, width-one fallback, double dispatch and a missing capture. The
 prepared short pair pins the exact executable and 82-input/32-output
-request. Both native runs remain pending.
+request. Both native cases now pass with the same 32 output IDs and 23 of
+23 accepted drafts. Both native owners exit normally with quiet validation
+and no fresh Xe fault. The control uses the scalar resolver in all twelve
+layers of the five captures. The candidate preserves both prompt captures
+and width-one decode, and uses the cooperative resolver in all twelve
+layers of the width-two and width-four decode captures. This qualifies the
+short dispatch and parity checks. The 96K timing, capacity and RESTORE
+checks remain pending.
 
 #### Width-four KV cache working set
 
