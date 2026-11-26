@@ -407,6 +407,17 @@ inputs separately. The cooperative-KV plan at `8e12b034d` prepares all six
 processes with the same retained executable and passes both frontend host
 probes. The original QSA comparison remains failed.
 
+The first scalar process closes all route, executable and asset checks with
+exit 0 and no fresh Xe faults. All 18 verifier captures use the scalar KV
+resolver on the 12 QSA layers. The 96,204-token code request emits 3,195
+tokens at 934.726 tok/s PP and 15.963 tok/s TG, with 104.284 s client TTFT.
+The 96,274-token prose request emits 8,618 at 1,038.092 tok/s PP and 11.478
+tok/s TG, with 92.928 s TTFT. Draft acceptance is 2,173/2,248 and
+3,442/4,864 respectively. During this process the separately capped
+report worker and native reviews use 62.186 CPU seconds in total, including
+one timed-out review. Preserve the individual process data for the paired
+comparison and collect the first cooperative arm next.
+
 #### Width-four KV cache working set
 
 The retained K8V8 verifier at `968e71988` scores four-cell blocks and
