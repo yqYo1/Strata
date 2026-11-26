@@ -642,6 +642,14 @@ route to one native footer with 33,287 fresh input tokens and 48 outputs.
 It requires actual width-three and scalar fallback decode captures in both
 fresh processes with the same native commands and prompt.
 
+Both corrected model processes pass with quiet validation, normal exit and
+no fresh Xe fault. Each reads 33,287 fresh tokens, emits the same 48 token
+IDs and accepts 21 of 30 drafts. The scalar arm reports 12 scalar KV calls
+at each captured width (1, 3, 4 and 2). The cooperative arm reports 12
+cooperative calls at width three and 12 scalar calls at widths one, four
+and two. Both enter the checked layer-major prefill route. This
+establishes bounded same-model dispatch and output parity.
+
 The [matched 96K controller](../bench/dflash2_decode_kv_width3_speed.py)
 requires closed same-binary admission. Bind both workloads to the previous
 96K request hashes. Validate scalar prompt captures in the short warm-ups
