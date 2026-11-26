@@ -24,11 +24,18 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
 #if defined(STRATA_ENABLE_SYCL)
         // Read on the calling thread before publishing the thread-local scope.
         const char* cpu_wait_switch = std::getenv("STRATA_PREFILL_CPU_WAIT_PROFILE");
+        static const bool cold_host_phases = [] {
+            const char* value = std::getenv("STRATA_PREFILL_COLD_HOST_PHASES");
+            return value && std::strcmp(value, "1") == 0;
+        }();
         sycl_backend::cpu_wait_profile::Scope cpu_wait_scope(
-            cpu_wait_switch && std::strcmp(cpu_wait_switch, "1") == 0);
+            cold_host_phases || (cpu_wait_switch && std::strcmp(cpu_wait_switch, "1") == 0));
+        std::optional<detail::ColdHostPhases> cold;
+        if (cold_host_phases) cold.emplace(true);
 #endif
         const bool ok = run_layer_major(tokens, n, pos0, err);
 #if defined(STRATA_ENABLE_SYCL)
+        if (cold) cold->finish(ok);
         cpu_wait_scope.complete(ok);
 #endif
         return ok;
@@ -766,6 +773,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         std::fflush(stderr); std::abort();
     });
     lease.arm();
+    detail::ColdHostPhases::mark(detail::ColdHostPhases::Boundary::allocated_plan);
     if (!drain()) { err = "prefill layer-major: entry queue drain failed"; return false; }
     if (profile) profile->open();
     if (qsa_profile) qsa_profile->open();
@@ -1050,6 +1058,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                              "FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; "
                              "QSA tensor IO=%s, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified\n",
                      qsa16_on ? "BF16" : "FP32");
+    detail::ColdHostPhases::mark(detail::ColdHostPhases::Boundary::provisioned);
     for (; layer < g.n_layers; ++layer) {
         if (profile) profile->layer = int(layer);
         if (qsa_profile) qsa_profile->layer = int(layer);
@@ -1307,6 +1316,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         on_chunk = {}; on_stage_chunk = {}; m.on_chunk16 = {};
         if (window_context) window_context->complete_piece = {};
     }
+    detail::ColdHostPhases::mark(detail::ColdHostPhases::Boundary::layer_passes_finished);
     if (!stage_delivered || logical_chunks != 1 + (n - 1) / m.T) {
         err = "prefill layer-major: incomplete final callback sequence"; return false;
     }

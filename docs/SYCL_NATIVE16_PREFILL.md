@@ -11583,6 +11583,20 @@ subsequent median. The disjoint unclassified host interval increases by
 is 75.268–75.343 seconds in all three requests. Check whether the reverse
 pair reproduces the attribution before selecting a narrower probe.
 
+The optional cold host phase observer uses the regular V4 wait and host
+ledger. `STRATA_PREFILL_COLD_HOST_PHASES=1` records the calling thread's
+wall time, CPU time and faults over admission, allocation and provisioning,
+the layer passes, and final retirement. Boundaries require all existing
+inner scopes to be closed. The observer reads calling-thread state and keeps
+its phase subtotals nested in the original request ledger. A repeated or
+missing boundary makes the phase sample unavailable. The standalone host
+fixture uses `/usr/bin/g++ -std=c++17 -O2 -Wall -Wextra -Werror -pthread
+-Iinclude -Isrc/prefill tests/sycl/prefill_cold_host_phases.cpp`.
+Future native attribution requires the same clean and observed route,
+matching work and clock accounting, and a separate observer-cost check.
+The fault counters cover the calling thread. Use them together with the
+phase timings to select a narrower test of faults, allocation or submission.
+
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
 The host count through the production chat renderer and tokenizer is

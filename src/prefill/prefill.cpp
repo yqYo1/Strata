@@ -40,6 +40,7 @@
 #include "strata/sycl/launch.hpp"
 #include "strata/sycl/checked_cleanup.hpp"
 #include "strata/sycl/cpu_wait_profile.hpp"
+#include "cold_host_phases.hpp"
 #include "strata/prefill/native16.hpp"
 #include "strata/prefill/dflash2_taps.hpp"
 #include "strata/prefill/moe_window_routes.hpp"
@@ -73,6 +74,7 @@
 #include <limits>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <thread>
 #include <vector>
 
