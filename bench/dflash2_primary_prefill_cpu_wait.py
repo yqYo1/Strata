@@ -2,7 +2,6 @@
 
 from pathlib import Path
 import re
-import statistics
 import sys
 from types import SimpleNamespace
 
@@ -120,15 +119,15 @@ def after_execution(outcome, row, plan):
     outcome.update(arm=plan['arm'], clean_speed=not observed)
 
 
-def decision(processes):
-    require(tuple(p['arm'] for p in processes) == ORDER
+def decision(processes, order=ORDER):
+    require(tuple(p['arm'] for p in processes) == order
             and all(p['passed'] and p['complete'] and p['ownership_closed']
                     and p['native_exit_code'] == 0 and not p['fresh_faults'] for p in processes)
             and len({(p['native_identity']['pid'], p['native_identity']['start_ticks'])
-                     for p in processes}) == len(ORDER), 'require four independently closed processes')
+                     for p in processes}) == len(order), 'require four independently closed processes')
     pairs = []
     for x, y in zip(processes[::2], processes[1::2], strict=True):
-        clean, observed = (x, y) if x['arm'] == 'clean' else (y, x)
+        clean, observed = (x, y) if x['arm'] == order[0] else (y, x)
         ratios = {'first': observed['samples'][0]['prompt_ms'] / clean['samples'][0]['prompt_ms'],
                   'subsequent': observed['subsequent_median_ms'] / clean['subsequent_median_ms']}
         pairs.append(ratios)
@@ -142,12 +141,14 @@ def experiment():
     ctx.ROOT, ctx.KEY, ctx.THIS, ctx.ORDER = ROOT, KEY, THIS, ORDER
     ctx.baseline, ctx.protocol = baseline, PLAN
     ctx.configuration, ctx.command, ctx.environment = speed.generation.configuration, command, environment
+    ctx.selector, ctx.extra_sources = SELECTOR, ()
+    ctx.request_route, ctx.after_execution, ctx.decision = route, after_execution, decision
     original_save, original_current = ctx.save, ctx.current
     speed_pins = speed.experiment().pins
 
     def pins(revision):
         values = speed_pins(revision)
-        for name in (THIS, curve.THIS, retained.THIS, OBSERVER):
+        for name in (THIS, curve.THIS, retained.THIS, OBSERVER, *ctx.extra_sources):
             source = bank.P / name
             require(source.read_bytes() == basis.validation.git('show', revision + ':' + name),
                     'changed cold-prefill comparison input: ' + name)
@@ -163,13 +164,13 @@ def experiment():
     def current(row):
         require(all((p['read'], p['heads'], p['kv_arm']) == (READ, speed.HEADS, 'retain')
                     for p in row['plans']), 'frozen read extent or KV policy differs')
-        comparable = [{k: v.replace(p['root'], '<process>') for k, v in environment(row, p).items()
-                       if k != SELECTOR} for p in row['plans']]
+        comparable = [{k: v.replace(p['root'], '<process>') for k, v in ctx.environment(row, p).items()
+                       if k != ctx.selector} for p in row['plans']]
         require(all(env == comparable[0] for env in comparable), 'another setting differs between arms')
         return original_current(row)
 
     def run(index):
-        row = bank.previous.read(ROOT / 'record.json')
+        row = bank.previous.read(ctx.ROOT / 'record.json')
         runner = basis.core.source.device.load_module('mode16_cold_wait', basis.comparison.__file__)
         original_models = runner.shared.models
         runner.shared = SimpleNamespace(**vars(runner.shared))
@@ -187,9 +188,10 @@ def experiment():
 
         runner.shared.models = SimpleNamespace(model_pins=model_pins)
         runner.fingerprint = bank.signature
-        policy = SimpleNamespace(ROOT=ROOT, ORDER=[(READ, speed.HEADS)] * len(ORDER), RUNS=speed.RUNS,
-            current=current, native_context=lambda data, _: data, environment=environment, save=save,
-            request_route=route, after_execution=after_execution, decision=decision, validate_model_text=validate_model)
+        policy = SimpleNamespace(ROOT=ctx.ROOT, ORDER=[(READ, speed.HEADS)] * len(ctx.ORDER), RUNS=speed.RUNS,
+            current=current, native_context=lambda data, _: data, environment=ctx.environment, save=save,
+            request_route=ctx.request_route, after_execution=ctx.after_execution, decision=ctx.decision,
+            validate_model_text=validate_model)
         runner.run(index, policy)
 
     ctx.pins, ctx.save, ctx.current, ctx.run = pins, save, current, run

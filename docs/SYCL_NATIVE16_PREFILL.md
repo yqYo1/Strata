@@ -11617,6 +11617,12 @@ build. For the native comparison, use separate processes with the existing
 V4 wait ledger enabled in both arms and switch the new phase ledger only.
 Match the 118,785-token requests and check the phase sums before interpreting
 their elapsed time and per-thread fault counts.
+The native build at `591e81a55` passes the 139-object compiler and link
+inventory and the 11 executable identity checks. The
+[phase comparison controller](../bench/dflash2_cold_host_measure.py)
+checks each phase against the request interval and the nested V4 totals.
+Its counterbalanced plan records first-minus-subsequent deltas per process
+and requires each paired subsequent ratio to stay within five percent.
 
 The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
 at `38b2d252d` uses 54 synthetic services and 1,303 event records.
