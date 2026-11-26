@@ -715168,5 +715168,150 @@
     "complete": false,
     "ownership_closed": true,
     "active": false
+  },
+  "dflash2_decode_ranked_refill_checks_v2": {
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "native_source_commit": "ffc455c22c019428649d985b30086d7f8bf9572f",
+    "build_sha256": "7d97bdc58993e2a88437612605621263cb1758624cc28724b8a81099436ab205",
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-speed-v2/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "source_commit": "78fdc2e3dd464b5a5a950b8753dd82b3c45b584e",
+    "sources": {
+      "bench/dflash2_decode_ranked_refill_checks.py": "82954bd09ff043eee446dd68997e302902091d1dedc4a83be8de08a08cff0432",
+      "bench/dflash2_decode_ranked_refill_build.py": "8790915c928c4c6e78cfa145bf58608808bb0a33481bef99f6fa416c70e35ef5",
+      "bench/dflash2_primary_checks.py": "7e6d08905c41c942fa88d4d0461317d8812ee7861093f96dc938feeb9f97839b",
+      "tools/sycl/run_q6_columns.py": "49c1d4c85443aef538714e296027548b2acd1df4ced32d5231402b7cca4cdba4"
+    },
+    "plan": {
+      "order": [
+        "host",
+        "ranked-refill",
+        "ranked-refill-copy-failure",
+        "ranked-refill-publish-failure"
+      ],
+      "scope": "Same-build host lease checks and a 130-slot device cache with two replaced rows.",
+      "checks": "Read back prefix, borrowed payloads and both residency tables. Refuse invalid maps before copies. After separately injected transfer or publication failure, require blocked readers and the expected fail-stop marker. Require no new Xe fault or runtime validation warning in any case.",
+      "trace": "Require exactly the qualified pre-main null-platform query and reject every other UR/ZE error. The preserved V1 runner counted that query as an unexpected device error.",
+      "stop": "Stop on the first unexpected exit, changed premise or driver fault. Model RESTORE and speed are separate."
+    },
+    "cases": [
+      {
+        "name": "host",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-ranked-refill-build-v1/build/prefill_scratch_host_test",
+          "sha256": "2045275d9d6d54413f3a73ca31ba4673872b07adde72e3d1b8a0aa00ca778aa8",
+          "bytes": 143560
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-ranked-refill-build-v1/build/prefill_scratch_host_test"
+        ],
+        "expected_exit": 0,
+        "env_sha256": "6597e6bf94f6da9a1864bd459a752002358a21632f4bcab1e41efe5cb7bc083d",
+        "limits": {
+          "wall": 90,
+          "cpu": 120,
+          "rss_cap": 2147483648,
+          "text_cap": 131072,
+          "file_cap": 1048576,
+          "total_cap": 4194304
+        }
+      },
+      {
+        "name": "ranked-refill",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-ranked-refill-build-v1/build/sycl_prefill_scratch_test",
+          "sha256": "5e619eeb4adadd9a171178048d088c30a8d62a0de7c23c3f438a9a259b7042c1",
+          "bytes": 23773768
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-ranked-refill-build-v1/build/sycl_prefill_scratch_test",
+          "--case",
+          "ranked-refill"
+        ],
+        "expected_exit": 0,
+        "env_sha256": "5a0e9ca11e11a393e0f86d39f49425480ea3992b1b5037b71ec0a53389e8ba27",
+        "limits": {
+          "wall": 180,
+          "cpu": 360,
+          "rss_cap": 4294967296,
+          "text_cap": 33554432,
+          "file_cap": 67108864,
+          "total_cap": 83886080
+        }
+      },
+      {
+        "name": "ranked-refill-copy-failure",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-ranked-refill-build-v1/build/sycl_prefill_scratch_test",
+          "sha256": "5e619eeb4adadd9a171178048d088c30a8d62a0de7c23c3f438a9a259b7042c1",
+          "bytes": 23773768
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-ranked-refill-build-v1/build/sycl_prefill_scratch_test",
+          "--case",
+          "ranked-refill-copy-failure"
+        ],
+        "expected_exit": 1,
+        "env_sha256": "54be9f07295a79a13f6b63a9c7c5b70f6fb709c57a441df2ab2403863d832188",
+        "limits": {
+          "wall": 180,
+          "cpu": 360,
+          "rss_cap": 4294967296,
+          "text_cap": 33554432,
+          "file_cap": 67108864,
+          "total_cap": 83886080
+        }
+      },
+      {
+        "name": "ranked-refill-publish-failure",
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-ranked-refill-build-v1/build/sycl_prefill_scratch_test",
+          "sha256": "5e619eeb4adadd9a171178048d088c30a8d62a0de7c23c3f438a9a259b7042c1",
+          "bytes": 23773768
+        },
+        "command": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-ranked-refill-build-v1/build/sycl_prefill_scratch_test",
+          "--case",
+          "ranked-refill-publish-failure"
+        ],
+        "expected_exit": 1,
+        "env_sha256": "fb33cea9ee7028c800e42c68e9d12857992f9a08bee68ef75ad9b9dd4b3383b7",
+        "limits": {
+          "wall": 180,
+          "cpu": 360,
+          "rss_cap": 4294967296,
+          "text_cap": 33554432,
+          "file_cap": 67108864,
+          "total_cap": 83886080
+        }
+      }
+    ],
+    "stage": "prepared",
+    "outcomes": {},
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true,
+    "active": false
   }
 }
