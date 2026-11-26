@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstddef>
-#include <cstdint>
 
 namespace strata::kernels {
 
@@ -75,13 +74,6 @@ void native_q4_k_f32(const void* weights, const float* x, void* scratch_q8_1,
 
 void native_q6_k_mmvq(const void* weights, const void* x_q8_1, float* y,
                       int n_in, int n_out, int ncols, void* stream);
-
-// DFlash2 draft projection from the canonical Q6_K head. The device row map
-// lists one canonical weight row per output in draft vocabulary order.
-// Out-of-range map entries emit zero without accessing weights.
-void dflash2_q6_k_indexed_head(const void* weights, const std::int32_t* rows,
-                             const void* x_q8_1, float* y, int n_in,
-                             int weight_rows, int n_out, int ncols, void* stream);
 
 // Exact-layout Q6_K column specialization for 1,2,3,4,8 columns; other valid
 // column counts retain the original exact dispatch. Same pointer/shape/queue

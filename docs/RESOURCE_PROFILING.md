@@ -452,14 +452,14 @@ and indexed output bits at 256 and 2,560 input elements over seven draft
 widths, including tail, invalid row and canary cases. Head release already
 refuses any still-live DFlash2 owner, and the long request destroys that
 owner before release and binds the next owner after restoration. The
-[isolated build](../bench/dflash2_decode_indexed_head_build.py) overlays the
+[isolated build](https://github.com/yqYo1/Strata/blob/5a187fc59/bench/dflash2_decode_indexed_head_build.py) overlays the
 five changed sources and the previously measured memory observer, then
 rebuilds all primary targets with the same recipe. Configuration passes
 with 1,327 exact source inputs, 522 controller inputs and the original 11
 targets. The build verifies all 1,475 compiler inputs, 139 fresh objects
 and 11 executable identities. The `strata` SHA-256 is
 `0722edfc2fb1db9a0bc57c77ade047065cf16474de38c8fdec149c8d2f93bf23`.
-The [traced GPU fixture](../bench/dflash2_decode_indexed_head_fixture.py)
+The [traced GPU fixture](https://github.com/yqYo1/Strata/blob/5a187fc59/bench/dflash2_decode_indexed_head_fixture.py)
 binds the new test to this build and the retained loader and runtime.
 All 14 cases pass bitwise parity, invalid-row and output-canary checks.
 The traced native process exits normally, ownership closes and validation
@@ -471,7 +471,7 @@ SHA-256
 `13a6b856107cba6163b4e5b16c5358ad88925fc7d3febe9a55634d1fd3b90e0d`
 over the sorted state-relative path, byte-count and SHA-256 tuples.
 
-The [indexed head memory comparison](../bench/dflash2_decode_indexed_head_memory.py)
+The [indexed head memory comparison](https://github.com/yqYo1/Strata/blob/5a187fc59/bench/dflash2_decode_indexed_head_memory.py)
 uses the same executable, stock expert arena and two exact 126,977-token
 bodies in each arm. Each request checks its actual head path, drafter-owned
 bytes and all four memory boundaries. The gathered arm runs first and the
@@ -494,14 +494,14 @@ free bytes before prefill, then reaches the same after-refill value.
 
 The lowest indexed decode result leaves an 88,388,608-byte shortfall
 against the proposed expert budget. The allocation-probe gate fails.
-Keep the gathered selection. Retain this executable for a single matched
-diagnostic using the existing `client_resources.snapshot` reader at the
+Keep the gathered selection. The follow-up diagnostic used the same executable
+and the existing `client_resources.snapshot` reader at the
 owned prefill-only request gates. Compare deduplicated Xe client requested
 and resident VRAM with the SYCL free-memory marks. This tests whether
 driver allocation or residency changed despite the free-memory result.
 [DRM client memory counters](https://docs.kernel.org/gpu/drm-usage-stats.html#memory).
 
-The [Xe memory comparison](../bench/dflash2_decode_indexed_head_drm.py)
+The [Xe memory comparison](https://github.com/yqYo1/Strata/blob/5a187fc59/bench/dflash2_decode_indexed_head_drm.py)
 reverses the original process order and reuses the two exact 126,977-token
 requests in each arm. The host reads Xe counters at each existing begin and
 end gate while the client is waiting, for four snapshots per process. Retain
@@ -539,6 +539,19 @@ The root receipt and executable hashes are unchanged. The inventory contains
 146 files, 25,295,661 bytes,
 and hashes to `913d712ab541ffd026bfc802d358ab2a9d91536331ed26e4c96dfc1045e3e570`
 over the sorted state-relative path, byte-count and SHA-256 tuples.
+
+The indexed-head experiment is closed at `5a187fc59`. Its source-only change
+at `9866bec75` and the four one-off controllers are retired from the active
+tree. The original commits preserve the source and evidence. Verified the
+recovered Git projection, actual compiler and linker inputs, and all 11
+executable hashes before retiring the comparison generation. Retained the
+root receipts with verified hashes and the independently validated prefill
+and decode engines. The same sorted inventory format identifies these scopes.
+
+| Root and retired paths | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-decode-indexed-head-drm-v1/{host,0,1}` | 146 | 25301020 | `bdf3484ddc94ca87a5afdc94123eee6e783cba6770cc0fe5a68513bbcd85ea2a` |
+| `dflash2-decode-indexed-head-native-v1/{build,cache,owned,ownership.json,source,tmp}` | 1,523 | 224263473 | `f1252cd7fa60ceabbc4d208f8ddb7b3cbe805fa33f5c341bec0eb9e73e780cab` |
 
 The replay at `e3d371974` verifies 4,668,262 original stock CPU jobs.
 Training uses the first 3,242 verifier windows and evaluation uses the
