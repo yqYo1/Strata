@@ -395,13 +395,12 @@ decode free-memory sample is 179,888,128 bytes (171.6 MiB), leaving an
 Keep the stock expert arena and test the head allocation reduction first.
 Keep diagnostic durations out of the speed comparison.
 
-At `212cc99cb`, recover all 1,327 build inputs and the relocated recipe
-through the exact observed executable, including its 1,475 compiler inputs,
-139 objects and all 11 executable hashes. Both model owners are closed and
-both validated phase references remain in use. Retire the two scopes below
-after inventory verification. Preserve each root's `record.json` and the
-committed memory samples. Inventories hash sorted tuples of state-relative
-path, bytes and SHA-256.
+Recovered all 1,327 build inputs and the relocated recipe at `212cc99cb`,
+including 1,475 compiler inputs, 139 objects and all 11 executable hashes.
+Both model owners were closed when the two scopes below were retired.
+Each root now contains only `record.json`. Both retained phase executables
+and all four receipts match their pre-retirement hashes. Inventories hash
+sorted tuples of state-relative path, bytes and SHA-256.
 
 | Scope | Files | Bytes | Inventory SHA-256 |
 | --- | ---: | ---: | --- |
