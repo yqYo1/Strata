@@ -4,6 +4,7 @@ import fcntl
 from hashlib import sha256
 import json
 from pathlib import Path
+import re
 import sys
 
 sys.dont_write_bytecode = True
@@ -15,9 +16,11 @@ from strata_tokenizer import Tokenizer
 bank, basis, primary, ranked = kv.bank, kv.basis, kv.primary, kv.ranked
 require, validation = kv.require, kv.validation
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'dflash2_decode_kv_width3_admission_v1'
+KEY = 'dflash2_decode_kv_width3_admission_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 ORDER = kv.ORDER
+FIRST_ATTEMPT = 'f2b5bd202'
+FIRST_KEY = 'dflash2_decode_kv_width3_admission_v1'
 CAPTURE = 'b28a9372bc1943812a87d170402435cc1c7425f0'
 CAPTURE_KEY = 'dflash2_long_routing_holdout_v1'
 WORKLOAD = 'varied-prose'
@@ -26,7 +29,8 @@ PLAN = dict(order=list(ORDER), read_tokens=READ, output_cap=OUTPUT,
             scope='Same coherent binary and stock global expert placement. Switch only width-three KV at exec.',
             input='Recover the official thinking prompt byte-for-byte from the original calibration. '
                   'Send its rendered tokens through GEN with a bounded output cap.',
-            checks='Require fresh layer-major prefill, width-three and scalar fallback captures, '
+            checks='Bind layer-major prefill to its actual fresh read and generated counts. Require width-three '
+                   'and scalar fallback decode captures, '
                    'quiet validation, closed ownership and matched token IDs and draft counters.',
             limits='Route and parity only. Sustained bench.sh timing, 262144 fill and RESTORE are separate.')
 
@@ -94,12 +98,13 @@ def prompt(tokenizer):
 
 def routes(text, *, cooperative):
     expected = f'strata prefill policy: requested=throughput route=layer-major tokens={READ - 1} chunk={CHUNK}'
-    require(text.splitlines().count(expected) == 1, 'require the actual fresh layer-major prefill route')
+    headers = re.findall(primary.footer.HEADER, text, re.M)
+    require(text.splitlines().count(expected) == 1 and len(headers) == 1
+            and tuple(map(int, headers[0][:4])) == (READ, 0, READ, OUTPUT),
+            'require the actual fresh layer-major prefill and bounded generation')
     captured = kv.kv_routes(text, cooperative=cooperative, widths=(3,))
-    widths = {(r['phase'], r['width']) for r in captured}
-    require({('prompt', 1), ('decode', 3)} <= widths
-            and any(phase == 'decode' and width != 3 for phase, width in widths),
-            'require a finalized prompt, one width-three capture and a scalar decode fallback')
+    require(all(r['phase'] == 'decode' for r in captured) and any(r['width'] != 3 for r in captured),
+            'require dedicated long prefill and a scalar decode fallback alongside width three')
     return captured
 
 
@@ -128,6 +133,13 @@ def inputs(revision):
     require('--no-spec-split' in args, 'keep the verifier unsplit')
     ids, proof = prompt(Path(cfg['tokenizer']))
     binary = native['binaries']['strata']
+    original = bank.previous.historic(FIRST_ATTEMPT, FIRST_KEY)
+    old_control = original['outcomes']['scalar']
+    require(original == validation.committed(bank.RESULT, (FIRST_KEY,))
+            and original['stage'] == 'failed' and original['ownership_closed']
+            and old_control['native_exit_code'] == 0 and not old_control['fresh_faults']
+            and original['binary'] == binary and original['stock'] == profile and original['prompt'] == proof,
+            'preserve the original failed checker result and exact probe inputs')
     device = primary.speed.generation.model
     cases, environments = [], {}
     for index, arm in enumerate(ORDER):
@@ -142,10 +154,13 @@ def inputs(revision):
         environments[arm] = env
         cases.append(dict(arm=arm, root=str(root), command=[binary['path'], '--serve', *args],
                           environment_sha256=bank.signature(env), limits=device.LIMITS))
+    require(cases == [dict(c, root=str(ROOT / c['arm']), environment_sha256=cases[i]['environment_sha256'])
+                      for i, c in enumerate(original['cases'])], 'the original two native commands changed')
     return dict(source_commit=revision, source_inputs=dict(files=len(source), sha256=bank.signature(source)),
                 native_source_commit=native['native_source_commit'], build_sha256=bank.signature(build.builder.compact(native)),
                 binary=binary, boot=reference['boot'], driver=reference['driver'], stock=profile,
-                runtime_manifest=reference['runtime_manifest'], plan=PLAN, cases=cases, prompt=proof,
+                runtime_manifest=reference['runtime_manifest'], first_attempt_sha256=bank.signature(original),
+                plan=PLAN, cases=cases, prompt=proof,
                 read_tokens=READ, output_cap=OUTPUT), environments, (ids, OUTPUT), reference
 
 

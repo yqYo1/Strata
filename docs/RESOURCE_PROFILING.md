@@ -626,6 +626,28 @@ fixed in both arms. Require width three and at least one scalar fallback width
 in both actual traces. Keep the bounded output probe separate from the paired
 96K throughput and physical-context/RESTORE checks.
 
+The coherent build at `9f09133ae` checks 140 fresh objects, all 12 executable
+identities and zero uncovered inputs. The same-build verifier policy fixture
+passes at `ee148b6a7`. The [bounded model probe](../bench/dflash2_decode_kv_width3_admission.py)
+recreates the archived thinking request using the original 200- and 800-word
+calibration counts. Its HTTP body hash matches the archive. Both arms consume
+the same 33,287 rendered tokens through native GEN with a 48-token output cap.
+
+The original scalar attempt at `f2b5bd202` executes fresh layer-major
+prefill, emits 48 tokens, accepts 21/30 drafts and captures decode widths
+1, 3, 4 and 2. It exits normally with no fresh Xe fault. The checker
+incorrectly expected a verifier prompt capture on the dedicated long
+prefill path. Keep the failed outcome. The new plan binds the layer-major
+route to one native footer with 33,287 fresh input tokens and 48 outputs.
+It requires actual width-three and scalar fallback decode captures in both
+fresh processes with the same native commands and prompt.
+
+The [matched 96K controller](../bench/dflash2_decode_kv_width3_speed.py)
+requires closed same-binary admission. Bind both workloads to the previous
+96K request hashes. Validate scalar prompt captures in the short warm-ups
+and layer-major prefill in both long workloads. Require width-three and
+scalar fallback decode captures in each long request on the same binary.
+
 The earlier component result at `34cbaf29c` gives a control for the
 mechanism. With zero missing pages, median launch-through-completion time
 falls from 0.965 to 0.375 ms at width two and from 1.876 to 0.699 ms at width
