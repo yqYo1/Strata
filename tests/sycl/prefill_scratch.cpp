@@ -319,7 +319,92 @@ void loan_run(const std::string& mode) {
         throw;
     }
 }
+void ranked_refill_run(const std::string& mode) {
+    constexpr int32_t first = 128, slots = 130, experts = 132;
+    constexpr size_t slot_bytes = 256;
+    core::ExpertCache cache;
+    std::string err;
+    need(cache.open_sized(std::vector<int64_t>(slots, slot_bytes), 1, experts, err), "ranked refill cache allocation");
+    std::array<uint8_t, slot_bytes> original, replacement;
+    original.fill(0x2a); replacement.fill(0x5c);
+    std::vector<int32_t> stock(experts, core::kNotResident);
+    for (int32_t slot = 0; slot < slots; ++slot) {
+        need(cache.admit(0, slot) == slot && cache.fill_slot_queued(slot, original.data(), err), "ranked refill stock slot");
+        stock[size_t(slot)] = slot;
+    }
+    need(cache.sync_queued(err), "ranked refill stock drain");
+    auto ranked = stock;
+    ranked[128] = ranked[129] = core::kNotResident;
+    ranked[130] = 128; ranked[131] = 129;
+    sb::Allocation device_map(runtime, ranked.size() * sizeof(int32_t), sb::MemoryKind::Device);
+    auto publish = [&](const std::vector<int32_t>& map) {
+        return cudaMemcpy(device_map.data(), map.data(), map.size() * sizeof(int32_t), cudaMemcpyHostToDevice) == cudaSuccess;
+    };
+    auto mask = stock;
+    mask[128] = mask[129] = core::kNotResident;
+    cache.enable_scratch_loan_tracking();
+    const auto lease = cache.prepare_scratch_loan(first);
+    try {
+        need(cache.mask_scratch_loan(lease, [&] { return publish(mask); }) &&
+             cache.activate_scratch_loan(lease, [&] { return cudaDeviceSynchronize() == cudaSuccess; }) &&
+             cache.retire_scratch_loan(lease, [&] { return cudaDeviceSynchronize() == cudaSuccess; }),
+             "ranked refill checked lease retirement");
+        int calls = 0;
+        auto unexpected = [&] { ++calls; return true; };
+        auto wrong_prefix = ranked, duplicate = ranked, hole = ranked;
+        std::swap(wrong_prefix[0], wrong_prefix[130]);
+        duplicate[131] = duplicate[130];
+        hole[131] = core::kNotResident;
+        for (const auto* map : {&wrong_prefix, &duplicate, &hole})
+            need(!cache.refill_scratch_with_residency(lease, first, *map, unexpected, unexpected, err),
+                 "ranked refill accepted a wrong prefix or incomplete map");
+        need(!cache.refill_scratch_with_residency(lease, first + 1, ranked, unexpected, unexpected, err) &&
+             calls == 0 && lease.pending() && !cache.decode_ready(), "ranked refill accepted the wrong loan extent");
+        passed("ranked_refill_rejects_invalid_maps_before_copy");
+
+        const bool copy_failure = mode == "ranked-refill-copy-failure";
+        const bool publish_failure = mode == "ranked-refill-publish-failure";
+        bool publication_attempted = false;
+        const bool success = cache.refill_scratch_with_residency(lease, first, ranked, [&] {
+            rejects([&] { (void)cache.scratch_reader(); }, "ranked refill admitted readers during copying");
+            return cache.fill_slot_queued(128, replacement.data(), err) &&
+                   cache.fill_slot_queued(129, replacement.data(), err) && cache.sync_queued(err) && !copy_failure;
+        }, [&] {
+            publication_attempted = true;
+            rejects([&] { (void)cache.scratch_reader(); }, "ranked refill admitted readers during publication");
+            need(cache.slot_of(0, 128) == 128 && cache.slot_of(0, 130) == core::kNotResident,
+                 "ranked refill committed the CPU map before device publication");
+            return !publish_failure && publish(ranked);
+        }, err);
+        if (copy_failure || publish_failure) {
+            need(!success && publication_attempted == publish_failure && !cache.decode_ready() && lease.pending() &&
+                 cache.slot_of(0, 128) == 128 && cache.slot_of(0, 130) == core::kNotResident,
+                 "failed ranked refill published a mixed map");
+            rejects([&] { (void)cache.scratch_reader(); }, "failed ranked refill admitted readers");
+            std::cout << "prefill_ranked_refill failure=" << mode << " owners_live=1 status=PASS\n" << std::flush;
+            sb::cleanup_fail_stop("ranked refill fixture verified poisoned lease");
+        }
+        need(success && publication_attempted && cache.decode_ready() && !lease.pending(), "ranked refill did not commit");
+        std::vector<int32_t> observed(ranked.size());
+        check(cudaMemcpy(observed.data(), device_map.data(), observed.size() * sizeof(int32_t), cudaMemcpyDeviceToHost));
+        need(observed == ranked, "ranked refill device map differs");
+        for (int32_t expert = 0; expert < experts; ++expert)
+            need(cache.slot_of(0, expert) == ranked[size_t(expert)], "ranked refill CPU map differs");
+        for (int32_t slot = 0; slot < slots; ++slot)
+            need(cache.verify_slot(slot, (slot < first ? original : replacement).data(), err), "ranked refill payload differs");
+        { auto reader = cache.scratch_reader(); }
+        passed("ranked_refill_publishes_payload_and_both_maps");
+    } catch (...) {
+        if (lease.pending()) sb::cleanup_fail_stop("ranked refill fixture failed with live owners");
+        throw;
+    }
+}
+
 void run(const std::string& mode) {
+    if (mode == "ranked-refill" || mode == "ranked-refill-copy-failure" || mode == "ranked-refill-publish-failure") {
+        ranked_refill_run(mode);
+        return;
+    }
     if (mode.rfind("loan",0)==0) { loan_run(mode); return; }
     Session session; session.init();
     core::WeightTable weights;
@@ -425,7 +510,8 @@ void run(const std::string& mode) {
 }
 }
 int main(int argc, char** argv) try {
-    need(argc == 3 && std::string(argv[1]) == "--case", "use --case smoke/full/retirement/loan/loan-release-<phase>/loan-parent-close");
+    need(argc == 3 && std::string(argv[1]) == "--case",
+         "use --case smoke/full/retirement/loan/loan-release-<phase>/loan-parent-close/ranked-refill[-copy-failure|-publish-failure]");
     runtime = sb::runtime_for();
     run(argv[2]);
     runtime->wait();

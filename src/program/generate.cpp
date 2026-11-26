@@ -2724,6 +2724,13 @@ int main(int argc, char** argv) {
         std::any_of(o.expert_cache_remote.begin(),o.expert_cache_remote.end(),[](auto n){return n>0;}))) {
         std::fprintf(stderr,"cache scratch lease requires serve, native dense bank, profiled borrowing, spec4 with MTP or DFlash2 without MTP, and one GPU without token graphs/vision/remote experts\n"); return 2;
     }
+    const char* decode_refill_profile = std::getenv("STRATA_SYCL_DFLASH2_DECODE_REFILL_PROFILE");
+    if (decode_refill_profile && !*decode_refill_profile) decode_refill_profile = nullptr;
+    if (decode_refill_profile && (!use_df2 || !cache_scratch_lease_enabled || o.mmap_experts ||
+                                  (o.adapt_every > 0 && o.adapt_swaps > 0))) {
+        std::fprintf(stderr, "strata serve: DFlash2 decode refill requires a checked cache lease, resident RAM experts and fixed placement\n");
+        return 2;
+    }
 #endif
     const char* canonical_bank_switch=std::getenv("STRATA_PREFILL_CANONICAL_DENSE_BANK");
     const bool canonical_dense_bank_enabled=canonical_bank_switch && !std::strcmp(canonical_bank_switch,"1");
@@ -5108,6 +5115,54 @@ int main(int argc, char** argv) {
                 strata::kernels::cpu::expert_layout().max_blob).bytes_from(first);
         };
 #ifdef STRATA_ENABLE_SYCL
+        std::vector<int32_t> decode_refill_residency;
+        std::vector<const uint8_t*> decode_refill_sources;
+        std::vector<int64_t> decode_refill_sizes;
+        int32_t decode_refill_first_changed = -1;
+        if (decode_refill_profile) {
+            std::vector<std::pair<int32_t, int32_t>> decode_rank;
+            int64_t ranked_slots = 0;
+            const int64_t slots = xcache.slots();
+            if (!pf_borrow || !d_res || !srcp || host_res.empty() || xcache.per_layer_admission() ||
+                slots < 129 || slots > std::numeric_limits<int32_t>::max() || xcache.resident() != slots ||
+                profile.size() < size_t(slots) || host_res.size() > size_t(std::numeric_limits<int32_t>::max())) {
+                std::fprintf(stderr, "strata serve: DFlash2 decode refill requires a fully occupied global expert cache\n");
+                return 2;
+            }
+            if (!strata::core::read_expert_profile(decode_refill_profile, g.n_layers, g.n_expert,
+                                                   decode_rank, ranked_slots, err)) {
+                std::fprintf(stderr, "strata serve: DFlash2 decode refill: %s\n", err.c_str());
+                return 2;
+            }
+            if (ranked_slots < slots || decode_rank.size() < size_t(slots)) {
+                std::fprintf(stderr, "strata serve: DFlash2 decode refill profile cannot populate every slot\n");
+                return 2;
+            }
+            const auto& layout = strata::kernels::cpu::expert_layout();
+            decode_refill_residency.resize(host_res.size(), strata::core::kNotResident);
+            decode_refill_sources.reserve(size_t(slots));
+            decode_refill_sizes.reserve(size_t(slots));
+            for (int32_t slot = 0; slot < slots; ++slot) {
+                const auto [old_layer, old_expert] = profile[size_t(slot)];
+                const auto [layer, expert] = decode_rank[size_t(slot)];
+                const int64_t bytes = layout.blob_bytes(layer);
+                auto& target = decode_refill_residency[size_t(layer * g.n_expert + expert)];
+                const auto* source = srcp->blob(layer, expert);
+                if (!source || target != strata::core::kNotResident || bytes <= 0 ||
+                    bytes != int64_t(layout.blob_bytes(old_layer)) || xcache.slot_of(old_layer, old_expert) != slot ||
+                    (slot < 128 && (old_layer != layer || old_expert != expert))) {
+                    std::fprintf(stderr, "strata serve: DFlash2 decode refill profile disagrees with slot %d\n", slot);
+                    return 2;
+                }
+                if (decode_refill_first_changed < 0 && (old_layer != layer || old_expert != expert))
+                    decode_refill_first_changed = slot;
+                target = slot;
+                decode_refill_sources.push_back(source);
+                decode_refill_sizes.push_back(bytes);
+            }
+            std::fprintf(stderr, "strata DFlash2 decode refill: available slots=%lld first_changed=%d\n",
+                         (long long) slots, decode_refill_first_changed);
+        }
         const char* loan_audit_env = std::getenv("STRATA_SYCL_CACHE_LOAN_AUDIT");
         const bool loan_audit = loan_audit_env && std::strcmp(loan_audit_env, "1") == 0;
         if (loan_audit && (multi_gpu || !pf_borrow || d_res == nullptr || host_res.empty())) {
@@ -5126,29 +5181,34 @@ int main(int argc, char** argv) {
                          phase, actual.size(), free_bytes, total_bytes);
             return true;
         };
-        auto audit_refilled = [&](const PfPart& p, std::string& e) -> bool {
+        auto audit_refilled = [&](const PfPart& p, std::string& e,
+                                  const std::vector<int32_t>* replacement = nullptr) -> bool {
             if (!loan_audit) return true;
             std::vector<uint8_t> actual(strata::kernels::cpu::expert_layout().max_blob);
+            const auto& expected_map = replacement ? *replacement : host_res;
             uint64_t bytes = 0, rows = 0;
             // Include the unlent prefix: carving into a neighbouring expert is
             // an error even if all borrowed slots themselves refill correctly.
             for (int64_t l = p.lb; l < p.le; ++l)
                 for (int64_t ex = 0; ex < g.n_expert; ++ex) {
-                    const auto slot = host_res[size_t(l * g.n_expert + ex)];
+                    const auto slot = expected_map[size_t(l * g.n_expert + ex)];
                     if (slot < 0) continue;
                     const auto nb = strata::kernels::cpu::expert_layout().blob_bytes(l);
                     const auto* expected = srcp->blob(l, ex);
-                    if (slot >= p.cache->slots() || p.cache->slot_of(l, ex) != slot || !expected || nb > actual.size() ||
+                    if (slot >= p.cache->slots() || (!replacement && p.cache->slot_of(l, ex) != slot) ||
+                        !expected || nb > actual.size() ||
                         cudaMemcpy(actual.data(), p.cache->device_slot(slot), nb, cudaMemcpyDeviceToHost) != cudaSuccess ||
                         std::memcmp(actual.data(), expected, nb) != 0) {
                         e = "cache loan audit: refilled/prefix expert payload mismatch"; return false;
                     }
                     bytes += nb; ++rows;
                 }
-            for (const auto& [i, slot] : p.lent)
-                if (host_res[size_t(i)] != slot) { e = "cache loan audit: refill changed the slot"; return false; }
-            std::fprintf(stderr, "strata loan audit: phase=payload rows=%llu bytes=%llu lent=%zu same_slots=1 payload_match=1\n",
-                         (unsigned long long) rows, (unsigned long long) bytes, p.lent.size());
+            if (!replacement) {
+                for (const auto& [i, slot] : p.lent)
+                    if (host_res[size_t(i)] != slot) { e = "cache loan audit: refill changed the slot"; return false; }
+            }
+            std::fprintf(stderr, "strata loan audit: phase=payload rows=%llu bytes=%llu lent=%zu same_slots=%d payload_match=1\n",
+                         (unsigned long long) rows, (unsigned long long) bytes, p.lent.size(), int(!replacement));
             return true;
         };
 #endif
@@ -6672,6 +6732,35 @@ int main(int argc, char** argv) {
                 }
                 return true;
             };
+#ifdef STRATA_ENABLE_SYCL
+            auto refill_for_decode = [&](PfPart& p, std::string& e) -> bool {
+                const strata::core::OnDevice on(p.dev);
+                uint64_t uploaded = 0;
+                const auto transfer = [&] {
+                    for (int64_t slot = p.first_now; slot < p.cache->slots(); ++slot) {
+                        const auto* blob = decode_refill_sources[size_t(slot)];
+                        const int64_t bytes = decode_refill_sizes[size_t(slot)];
+                        if (!(refill_blocking() ? p.cache->fill_slot_blocking(int32_t(slot), blob, e, bytes)
+                                                 : p.cache->fill_slot_queued(int32_t(slot), blob, e, bytes)))
+                            return false;
+                        uploaded += uint64_t(bytes);
+                    }
+                    return p.cache->sync_queued(e) && audit_refilled(p, e, &decode_refill_residency);
+                };
+                const auto publish = [&] {
+                    std::copy(decode_refill_residency.begin(), decode_refill_residency.end(), host_res.begin());
+                    return res_upload("serve ranked cache refill", e) && audit_residency("refill", e);
+                };
+                if (!loan_call([&] {
+                    return p.cache->refill_scratch_with_residency(p.lease, p.first_now, decode_refill_residency,
+                                                                 transfer, publish, e);
+                }, e)) return false;
+                std::fprintf(stderr, "strata DFlash2 decode refill: published first=%d slots=%zu payload_bytes=%llu\n",
+                             p.first_now, p.lent.size(), (unsigned long long) uploaded);
+                p.lent.clear(); p.lent_chunk = 0; p.lease = {};
+                return true;
+            };
+#endif
             // lend the slots `tokens` batched prompt tokens need: the prompt path's buffers for min(chunk, tokens
             // rounded up to 256), laid out in the last of the slots it may borrow - per participant, out of that
             // participant's own cache, and marking only that participant's own layers
@@ -6891,7 +6980,21 @@ int main(int argc, char** argv) {
                     return 1;
                 }
             }
-            if (!refill(err)) {
+            bool decode_tail_applied = false;
+#ifdef STRATA_ENABLE_SYCL
+            if (decode_refill_first_changed >= 0 && !cancelled && !stop_req.load() && max_new > 0 && pf_parts.size() == 1) {
+                auto& p = pf_parts.front();
+                if (p.lease && p.first_now >= 128 && p.first_now <= decode_refill_first_changed &&
+                    p.lent.size() == size_t(p.cache->slots() - p.first_now)) {
+                    if (!refill_for_decode(p, err)) {
+                        std::printf("ERR publishing the DFlash2 decode profile failed: %s\n", err.c_str());
+                        return 1;
+                    }
+                    decode_tail_applied = true;
+                }
+            }
+#endif
+            if (!decode_tail_applied && !refill(err)) {
                 std::printf("ERR refilling a lent slot failed: %s\n", err.c_str());
                 return 1;
             }

@@ -44,6 +44,25 @@ void loan_test(const std::string& name) {
         need(state->publish_refilled(g,[&]{order.push_back(4);return true;}));
         need(state->readable() && order==std::vector<int>({1,2,3,4})); state->close();
         need(state->phase()==Phase::closed); rejects([&]{(void)state->read();});
+    } else if (name == "loan_checked_refill_validation") {
+        const auto generation = to_used();
+        int attempts = 0;
+        const auto reject = [&](uint64_t offset, uint64_t bytes) {
+            need(offset == 256 && bytes == 8192);
+            ++attempts;
+            return false;
+        };
+        rejects([&] { (void)state->begin_checked_refill(generation + 1, reject); });
+        need(attempts == 0 && !state->begin_checked_refill(generation, reject));
+        need(attempts == 1 && state->phase() == Phase::used);
+        rejects([&] { (void)state->read(); });
+        need(state->begin_checked_refill(generation, [](uint64_t offset, uint64_t bytes) {
+            return offset == 256 && bytes == 8192;
+        }));
+        rejects([&] { (void)state->begin_checked_refill(generation, reject); });
+        need(attempts == 1 && state->phase() == Phase::refilling);
+        need(state->publish_refilled(generation, [] { return true; }) && state->readable());
+        state->close();
     } else if(name=="loan_bounds") {
         for(auto [at,bytes]:std::array<std::pair<uint64_t,uint64_t>,5>{{{0,0},{1,256},{0x4000,1},{256,0x4000},{maximum,1}}})
             rejects([&]{(void)state->prepare(at,bytes);});
@@ -292,13 +311,13 @@ int main() try {
         "qsa_global_ordinal", "qsa_resident_plan", "qsa_stream_ring_formats", "qsa_bad_metadata",
         "qsa_product_overflow", "qsa_block_overflow", "qsa_tail_rounding",
         "borrowed_used_extent","borrowed_view_disjointness",
-        "loan_cycle","loan_bounds","loan_read_admission","loan_stale_generation","loan_wrong_order",
+        "loan_cycle","loan_checked_refill_validation","loan_bounds","loan_read_admission","loan_stale_generation","loan_wrong_order",
         "loan_callback_false","loan_callback_throw","loan_nested_transition","loan_poison_during_callback",
         "loan_reuse_masked_range","loan_writer_admission","loan_writer_refill_interval",
         "loan_writer_publication","loan_writer_exception","loan_writer_each_phase"};
     for (const auto* name : names) {
         test(name); std::cout << "prefill_scratch case=" << name << " status=PASS\n";
     }
-    std::cout << "prefill_scratch_fixture cases=39 status=PASS\n";
+    std::cout << "prefill_scratch_fixture cases=" << names.size() << " status=PASS\n";
     return 0;
 } catch (const std::exception& error) { std::cerr << error.what() << '\n'; return 1; }

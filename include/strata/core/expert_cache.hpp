@@ -32,6 +32,7 @@
 #include <string>
 #include <vector>
 #ifdef STRATA_ENABLE_SYCL
+#include <functional>
 #include "strata/core/cache_scratch_lease.hpp"
 #endif
 
@@ -127,6 +128,13 @@ public:
     template<class Complete> bool publish_scratch_refill(const CacheScratchLease& lease, Complete&& complete) const {
         return scratch_state(lease).publish_refilled(lease.generation(), std::forward<Complete>(complete));
     }
+    // Refill a fully occupied global cache tail with a different set of experts.
+    // Transfer must drain every payload write. Publish must finish the device
+    // table update. The CPU map commits before the lease reopens admission.
+    bool refill_scratch_with_residency(const CacheScratchLease& lease, int32_t first_slot,
+                                     const std::vector<int32_t>& snapshot,
+                                     const std::function<bool()>& transfer,
+                                     const std::function<bool()>& publish, std::string& err);
 #endif
     int64_t slots() const { return slots_; }
     /// Slots actually claimed.  Not the same as `slots()` - the cache does not evict, so a run that routes
@@ -203,6 +211,7 @@ public:
 
 private:
 #ifdef STRATA_ENABLE_SYCL
+    bool validate_residency(const std::vector<int32_t>& snapshot, std::string& err);
     std::shared_ptr<detail::CacheScratchState> scratch_state_;
     detail::CacheScratchState& scratch_state(const CacheScratchLease& lease) const {
         if (!scratch_state_ || lease.state_.get() != scratch_state_.get())

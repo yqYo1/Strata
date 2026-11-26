@@ -421,6 +421,60 @@ bool ExpertCache::replace_residency(const std::vector<int32_t>& snapshot, std::s
         err = "ExpertCache: adaptive residency requires a ready cache and matching geometry";
         return false;
     }
+    if (!validate_residency(snapshot, err)) return false;
+    std::copy(snapshot.begin(), snapshot.end(), residency_.begin());
+    return true;
+}
+
+bool ExpertCache::refill_scratch_with_residency(const CacheScratchLease& lease, int32_t first_slot,
+                                               const std::vector<int32_t>& snapshot,
+                                               const std::function<bool()>& transfer,
+                                               const std::function<bool()>& publish, std::string& err) {
+    if (!valid() || per_layer_ || next_free_ != slots_ || first_slot < 128 || first_slot >= slots_ ||
+        snapshot.size() != residency_.size() || residency_check_.size() != size_t(slots_)) {
+        err = "ExpertCache: ranked refill requires a full global cache and matching geometry";
+        return false;
+    }
+    auto& state = scratch_state(lease);
+    const auto offset = off_.empty() ? uint64_t(first_slot) * uint64_t(blob_) : off_[size_t(first_slot)];
+    if (!state.begin_checked_refill(lease.generation(), [&](uint64_t loan_start, uint64_t loan_bytes) {
+        if (loan_start != offset || loan_bytes != uint64_t(bytes()) - offset) {
+            err = "ExpertCache: ranked refill does not match the active lease tail";
+            return false;
+        }
+        if (!validate_residency(snapshot, err)) return false;
+        if (std::find(residency_check_.begin(), residency_check_.end(), uint8_t(0)) != residency_check_.end() ||
+            std::count_if(residency_.begin(), residency_.end(), [](int32_t slot) { return slot >= 0; }) != slots_) {
+            err = "ExpertCache: ranked refill requires both maps to fill the cache";
+            return false;
+        }
+        for (size_t i = 0; i < snapshot.size(); ++i) {
+            const auto old = residency_[i], next = snapshot[i];
+            if (old != next && ((old >= 0 && old < first_slot) || (next >= 0 && next < first_slot))) {
+                err = "ExpertCache: ranked refill changed an unborrowed slot";
+                return false;
+            }
+        }
+        return true;
+    })) return false;
+
+    try {
+        if (transfer()) {
+            return state.publish_refilled(lease.generation(), [&] {
+                if (!publish()) return false;
+                std::copy(snapshot.begin(), snapshot.end(), residency_.begin());
+                return true;
+            });
+        }
+    } catch (...) {
+        state.poison();
+        throw;
+    }
+    state.poison();
+    return false;
+}
+
+bool ExpertCache::validate_residency(const std::vector<int32_t>& snapshot, std::string& err) {
     std::fill(residency_check_.begin(), residency_check_.end(), uint8_t(0));
     for (size_t i = 0; i < snapshot.size(); ++i) {
         const int32_t slot = snapshot[i];
@@ -440,9 +494,6 @@ bool ExpertCache::replace_residency(const std::vector<int32_t>& snapshot, std::s
         }
         residency_check_[size_t(slot)] = 1;
     }
-    // Validate the whole snapshot first. A rejected publication must not partly
-    // change callback decisions; reuse the existing allocation on the hot path.
-    std::copy(snapshot.begin(), snapshot.end(), residency_.begin());
     return true;
 }
 #endif

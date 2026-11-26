@@ -142,11 +142,18 @@ public:
     template<class Drain> bool retire(uint64_t generation, Drain&& drain) {
         return transition(generation, Phase::exclusive, Phase::used, std::forward<Drain>(drain));
     }
-    void begin_refill(uint64_t generation) {
+    template<class Validate> bool begin_checked_refill(uint64_t generation, Validate&& validate) {
         std::lock_guard lock(mutex_); require(generation);
         if (phase_ != Phase::used || transition_active_ || writers_)
             throw std::logic_error("cache scratch: refill before checked retirement");
+        // Validate the host map while this generation still owns the tail.
+        // This callback cannot call back into the lease or wait on the GPU.
+        if (!std::forward<Validate>(validate)(offset_, length_)) return false;
         phase_ = Phase::refilling;
+        return true;
+    }
+    void begin_refill(uint64_t generation) {
+        (void)begin_checked_refill(generation, [](uint64_t, uint64_t) { return true; });
     }
     template<class Complete> bool publish_refilled(uint64_t generation, Complete&& complete) {
         return transition(generation, Phase::refilling, Phase::ready, std::forward<Complete>(complete));

@@ -1148,6 +1148,34 @@ Charge final refill and draft activation to prompt time as the existing
 server does. Bind intermediate window work and repeated request paths to
 their actual residency before making a phase-separation claim.
 
+The default-off `STRATA_SYCL_DFLASH2_DECODE_REFILL_PROFILE` path takes a
+STRP file and starts with the normal global profile. Startup validates every
+admitted slot, checks equal packed payload size at that slot, and retains
+source pointers from the immutable RAM arena. At a successful final handoff,
+the existing loan must cover the entire changed range. A refill under the
+lease validates both residency maps, submits and drains the replacement
+payloads, publishes the device table and commits the CPU table before
+reopening decode admission. Early window refills, cancellation and a
+partial loan preserve the current valid placement. Full-context fill with
+no output requested follows ordinary refill. After a successful switch,
+subsequent short requests can use the now-installed decode layout.
+
+Rebuild the affected engine and fixture sources together on the retained
+primary DFlash2 recipe. Run the host lease fixture and the small SYCL
+ranked-refill fixture with parameter validation. The device fixture covers
+wrong extent, changed prefix, missing or aliased slots, reader exclusion,
+payload and both tables, and fail-stop after an injected copy or publication
+failure. Proceed to the short and near-capacity RESTORE fixtures before
+clean timing. Include a fresh long request, a following short request and
+another fresh long request in the same process, plus a cancelled prefill and
+the physical 262,144-token fill. Bind the actual map before each prefill
+window and after each final refill. The two 96K thinking workloads need
+three matched independent process pairs. Keep the first-use and subsequent
+PP, client TTFT and TG measurements separate. Account for all final map
+and payload transfers, and require both workloads to keep their actual
+prefill work and pass phase-preservation gates. This prototype is original
+fork code. GPU, numerical and timing evidence remain pending.
+
 The first two closed blend processes also bound the benefit of draft yield
 at the current decode time. Let `e` be emitted tokens and `a` and `d`
 be accepted and offered drafts. In these completed spec4 requests, the
