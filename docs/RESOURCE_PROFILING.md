@@ -1185,6 +1185,10 @@ options, working directory and environment. Redirect source paths to the
 projection and replace `-o … -c` with `-fsyntax-only -MD -MF …`. Validate
 actual compiler dependency hashes against the committed project and retained
 external inputs. This check creates no native executable.
+The first syntax invocation stopped at the compiler's unused
+`-fsycl-id-queries-range=size_t` message. Keep the original flag. Accept only
+that exact driver warning, a zero exit and a verified dependency list on
+the retry.
 Proceed to the short and near-capacity RESTORE fixtures before
 clean timing. Include a fresh long request, a following short request and
 another fresh long request in the same process, plus a cancelled prefill and
