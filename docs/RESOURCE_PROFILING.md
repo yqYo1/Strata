@@ -610,7 +610,15 @@ the copy-once boundary before changing publication order. Source `c4bf3b970`
 passes the SYCL fixture's C++20 `-fsyntax-only` check with oneAPI 2026.2
 `icpx` and its verified CMake compiler arguments. The compiler command
 database SHA-256 is `30db253a89e4ddb66374934fcec2f79d3df27ce63fb5150c83998184b9546e67`.
-Linking, device parity and timing remain pending. [Fixture](../tests/sycl/decode_moe_combine.cpp)
+The component controller compiles one fixture source file and verifies the
+three unchanged archives from the retained serving build against the actual
+link inputs. Run traced validation first, then three independent timing
+processes with alternating pairs at 4, 10 and 20 resident hits. Advance a
+shape only when both launch-to-completion and publication-to-completion
+medians improve in every process. The controller keeps the serving executable
+unchanged. Linking, device parity and timing remain pending.
+[Fixture](../tests/sycl/decode_moe_combine.cpp) ·
+[Controller](../bench/dflash2_decode_result_copy.py).
 
 The event-query process at `65f0f927c` repeats the same work at 16.443 tok/s.
 The two resident wrappers each run 64,560 times without query or clock
