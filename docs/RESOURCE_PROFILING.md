@@ -317,6 +317,14 @@ prefill and first output timing. Finish the short native control before
 timing. A successful timing screen permits the separate full-context,
 RESTORE and quality checks.
 
+The reverse-order second pair closes with both owners reaped and no fresh
+Xe fault. Stock and grid emit 3,195 code tokens and 8,618 prose tokens.
+Stock to grid changes code TG from 16.333 to 16.298 tok/s (−0.21%) and
+prose TG from 11.636 to 11.676 tok/s (+0.35%). Code PP changes from
+941.59 to 934.02 tok/s and TTFT from 103.530 to 104.354 seconds. Prose PP
+changes from 1,040.19 to 1,041.07 tok/s and TTFT from 92.740 to 92.657
+seconds. Finish the third matched pair before deciding.
+
 Retired the raw comparison and admission output scopes below after verifying
 the closed owners and the compact committed decisions. Verified both root
 `record.json` files are unchanged. Both engine builds serve the current comparison.
@@ -1270,6 +1278,11 @@ The phase reader accepts four synthetic traces and rejects sixteen with
 changed map digests, failed payload checks, premature or extra publications,
 or a missing final handoff. The masked, stock and blended digests are
 `9377e60e8ad8ea63`, `9e0b070ebe90ab9b` and `68eea56314d4990b`.
+The [host controls](../bench/test_dflash2_decode_ranked_refill.py) at
+`2c8df018b` pass five tests. An in-process native-protocol peer confirms
+both STOP/recovery sequences, mask rejection and refusal to count a late
+STOP as prefill cancellation. The timing reader also refuses missing,
+early, late and wrong-size refill events.
 The actual candidate build and device qualification remain pending.
 
 After the native gates, the [timing runner](../bench/dflash2_decode_ranked_refill_speed.py)
