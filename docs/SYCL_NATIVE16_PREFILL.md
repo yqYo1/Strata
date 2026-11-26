@@ -11580,8 +11580,12 @@ process's subsequent median is 0.99978 times the control's. Within that
 observed process, the first prompt takes 10.755 seconds longer than the
 subsequent median. The disjoint unclassified host interval increases by
 10.734 wall seconds and 5.340 thread CPU seconds. Observed wait-wall time
-is 75.268–75.343 seconds in all three requests. Check whether the reverse
-pair reproduces the attribution before selecting a narrower probe.
+is 75.268–75.343 seconds in all three requests. The reverse-order observed
+process at `b4aaf76ad` also passes all three matched requests without a fresh
+Xe fault. Its first prefill is 10.335 seconds longer, with 10.804 additional
+unclassified wall seconds and 5.453 thread CPU seconds. The recorded wait
+interval ranges from 75.174 to 75.326 seconds. The final clean control
+will close the reverse-pair observer-cost comparison.
 
 The optional cold host phase observer uses the regular V4 wait and host
 ledger. `STRATA_PREFILL_COLD_HOST_PHASES=1` records the calling thread's
@@ -11592,6 +11596,9 @@ its phase subtotals nested in the original request ledger. A repeated or
 missing boundary makes the phase sample unavailable. The standalone host
 fixture uses `/usr/bin/g++ -std=c++17 -O2 -Wall -Wextra -Werror -pthread
 -Iinclude -Isrc/prefill tests/sycl/prefill_cold_host_phases.cpp`.
+All five host cases pass at `8a437b97a` with GCC 13.3.0. The fixture checks
+phase partition conservation against V4 waits, disabled output, wrong order,
+an open host scope, and incomplete results.
 Future native attribution requires the same clean and observed route,
 matching work and clock accounting, and a separate observer-cost check.
 The fault counters cover the calling thread. Use them together with the

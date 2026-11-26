@@ -378,9 +378,10 @@ from `3d75f7e91`. It generates only the stock global profile. Both loaders
 run the 32,769- and 253,919-token park/restore protocols with the same short
 handoff and 8,209-token resumed suffix. Require identical active state,
 output, full loan/refill and all 48 actual membership masks. Advance reranked
-profiles only after this control passes. Run the two host protocol controls
-before either GPU arm. Keep the generated stock profile for the next
-placement comparison once this check passes.
+profiles only after this control passes. The stock file and four native plans
+are pinned at `033583182`, and both owned host protocol cases pass. The
+native checks are next. Keep the generated stock profile for the next
+placement comparison once the native checks pass.
 
 After stock admission, the same controller's `--ranked prepare` action
 materializes the exact within-layer and cross-layer rerankings from the
