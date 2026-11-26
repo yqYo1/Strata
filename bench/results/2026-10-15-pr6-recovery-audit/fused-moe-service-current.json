@@ -682910,5 +682910,126 @@
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "dflash2_decode_result_copy_v1": {
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "native_source_commit": "968e71988953dca3d98037d3b3fec9f903bdfd6f",
+    "native_build_sha256": "d1edcc7793ea37788da8f60b863185d35a143413626866a44e9ca31f53278c4f",
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-speed-v2/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "source_commit": "f1dde67524f87716a44958ee7528f62f60c5ca7c",
+    "source_revision": "c4bf3b970d842f9d8dedc37887812b6f20fd8c6a",
+    "fixture_sha256": "a704d249a4b908733d778bcc4d859d6a2051023ab1f556bbde1884cccfcd4839",
+    "controller_sha256": "75f34cc3ae157b961c6c62b01a4c7843680d1c2e9c6824edb899d9dbc872ffcc",
+    "compile_database_sha256": "660138a4f65f93f17485225cad35b3155ba262644b14dca894013d1d8e1e5e4b",
+    "commands": [
+      [
+        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-DSTRATA_CPU_SERVICE_PROFILE=1",
+        "-DSTRATA_ENABLE_SYCL=1",
+        "-DSTRATA_VERSION=\"0.1.38\"",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/source/include",
+        "-I/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/source/include/strata/sycl/compat",
+        "-fsycl-id-queries-range=size_t",
+        "-Wno-error=deprecated-declarations",
+        "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++20",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-MD",
+        "-MF",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-result-copy-v1/fixture-build/decode_moe_combine.cpp.o.d",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-result-copy-v1/fixture-build/decode_moe_combine.cpp.o",
+        "-c",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-result-copy-v1/fixture-build/tests/sycl/decode_moe_combine.cpp"
+      ],
+      [
+        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-v",
+        "-fsycl-id-queries-range=size_t",
+        "-Wno-error=deprecated-declarations",
+        "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+        "-O3",
+        "-DNDEBUG",
+        "-Wl,-t",
+        "-fsycl",
+        "-fsycl-id-queries-range=size_t",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-result-copy-v1/fixture-build/decode_moe_combine.cpp.o",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-result-copy-v1/fixture-build/sycl_decode_moe_combine_test",
+        "libstrata_kernels.a",
+        "libstrata_core.a",
+        "libstrata_sycl_runtime.a"
+      ]
+    ],
+    "archives": {
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/build/libstrata_kernels.a": "8dfb867e6eda5562b08d582eaf8d80218bb81bbdb08584037f1d00a6f7a11dfa",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/build/libstrata_core.a": "848fe0d15ef0421dc7034b508eb29aae221cd80dd7050e63bce93b5c63f20468",
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/build/libstrata_sycl_runtime.a": "0f7f21d685f64f37e640c4cad3e3cfdf2c5163c8a0177aca129aed8c79dfbfd3"
+    },
+    "plan": {
+      "order": [
+        "validate",
+        "time-forward",
+        "time-reverse",
+        "time-forward"
+      ],
+      "hits": [
+        4,
+        10,
+        20
+      ],
+      "replays": 512,
+      "paired_batches": 4,
+      "copy_bytes_per_replay": 409600,
+      "budgets": {
+        "wall": 180,
+        "cpu": 600,
+        "rss_cap": 4294967296,
+        "text_cap": 25165824,
+        "file_cap": 33554432,
+        "total_cap": 67108864
+      },
+      "scope": "Same fused T4 reduction, inputs, hit map and ordered queue. Compare mapped reads with one complete pinned-host copy to device storage followed by the same graph.",
+      "acceptance": "Bit-exact scalar oracle, guards, poisoned source and invalid destination list before timing. Each batch must last at least 10 ms with at most 1% empty-clock cost. Report ratios per hit count and independent process. Keep all samples.",
+      "decision": "Advance a hit count only if every independent process has smaller median completion time both from launch and from CPU publication. This is component evidence.",
+      "retention": "Retire this fixture build and raw output at the comparison closure; keep the independently validated serving engine unchanged."
+    },
+    "parent_environment_sha256": "219f24b0aee14857ea319a4f935e82c4ea71449563bde6aacaaede56f16ecfd1",
+    "stage": "prepared",
+    "processes": [],
+    "complete": false,
+    "passed": false,
+    "ownership_closed": true,
+    "active": false
   }
 }
