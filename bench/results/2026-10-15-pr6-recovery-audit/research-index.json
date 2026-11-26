@@ -42331,5 +42331,27 @@
     "consumer": "Require held-out DFlash2 route/descriptor proof; otherwise use hot/rotating fixture only. Pair GU/full-pass timing with worker tails and fixed first-touch/cache-state controls.",
     "prerequisite": "A fixed held-out descriptor with realizable per-worker work/tail controls is required before the locality fixture run.",
     "schedulable_now": false
+  },
+  "dflash2-gdn-short-state-traffic-20261126": {
+    "classification": "decision_support",
+    "stage": "handoff_failed_reviewed",
+    "source_revision": "b7476a7fd43716ceaa9d7ead1a9fe74e53459872",
+    "native_source_commit": "968e71988953dca3d98037d3b3fec9f903bdfd6f",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "native Codex gpt-6-luna max",
+    "dispatch": "ctx_73c5cb4c19c6",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-gdn-short-state-traffic-20261126/report.md",
+    "report_bytes": 10186,
+    "report_sha256": "89006157387781d81da9486e6e6c7df9f37de4c81309050774c3e03f198024e2",
+    "worker_report_hash_attested": true,
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-gdn-short-state-traffic-20261126/review.json",
+    "review_sha256": "e078ddbdfebaba4c2eeaea25df7413530b0b0dfbae97f03d133c5f208763dc11",
+    "owners_closed": true,
+    "failure": "worker_done contained a mismatched IPC receipt hash; the report hash matches and the original live receipt is retained",
+    "schedulable_now": false,
+    "finding": "Widths 1–4 request 3 MiB FP32/layer read at verify plus read and write at commit (9 MiB); physical traffic and time are unknown.",
+    "correction": "IPC handoff only: report SHA matches; worker_done status hash omits `391` from the actual. Candidate needs one explicit schedule.",
+    "consumer": "After route proof, compare one state-only tile/publication variant with replay; check accepted state/history/output, rejected suffix, zero-accept fallback, and 262144/RESTORE before adoption.",
+    "retention": "Keep this conditional state-traffic proposal through a production GDN dispatch and request-clock check."
   }
 }
