@@ -42451,5 +42451,57 @@
       "replacement": "compact prior-scope extract"
     },
     "retention": "Conditional reference for the named follow-up; retain the report and compact digest through that check."
+  },
+  "xe2-exact-qsa-score-pruning-20261126": {
+    "classification": "knowledge_collection",
+    "source_revision": "e1eb59016061ff278368b70930a4df3dd9528d9c",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "dispatch": "ctx_98acea8b86e7",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/xe2-exact-qsa-score-pruning-20261126/report.md",
+    "report_bytes": 10838,
+    "report_sha256": "7a290e26cdec0017174d65aa862a5ab611de2c50c6d57ebf764523a7715a642d",
+    "worker_ipc_sha256": "81dacf0b38f4332abc97f5bec11238c5a50ad1ec778388e7cd90cfe966d55420",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-qsa-pruning-and-cache-admission-stream-20261126/review.json",
+    "review_sha256": "ab68a3bb05a2c4d96c96c403cc8533d21c85e56c9d485785b2bbf3f933cd2063",
+    "scope": "Hash matches; focused, novel; avoids prior grid/radix work and covers exactness, tails, ties, replay.",
+    "finding": "Real-valued bounds can false-prune FP32 scores; rounding must cover the actual reduction.",
+    "correction": "Savings are overstated: rejecting fraction f after one head saves 3f/4 total dots (75% rejection = 56.25%). Ball metadata is 0.37/1.01 MiB, not 0.24/0.65.",
+    "consumer": "Recalculate costs; estimate held-out prune rates with exact FP32, tail and tie checks before paired timing.",
+    "prerequisite": "Revisit after the bounded decode QSA grid model comparison identifies a remaining score-stage cost.",
+    "schedulable_now": false,
+    "owners_closed": true,
+    "previous_review": {
+      "exit_signal": 25,
+      "reason": "The first native reviewer stopped at its file-size limit before producing a digest.",
+      "replacement": "Bound the captured output outside the native reviewer."
+    },
+    "retention": "Retain the report and compact verdict for the named follow-up. Lifecycle receipts are temporary."
+  },
+  "variable-size-expert-cache-admission-20261126": {
+    "classification": "knowledge_collection",
+    "source_revision": "e1eb59016061ff278368b70930a4df3dd9528d9c",
+    "worker": "Orca gpt-6-luna medium",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "dispatch": "ctx_c81b784507a9",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/variable-size-expert-cache-admission-20261126/report.md",
+    "report_bytes": 8988,
+    "report_sha256": "3c98020a832865e219f42781542fa1036e9a8e71f8498c04dd214f5d9fccbc39",
+    "worker_ipc_sha256": "0da79c37c84fcdcd13f280606d80817bfdfcaac804ba7c73f009ef6c02f28bd5",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-qsa-pruning-and-cache-admission-stream-20261126/review.json",
+    "review_sha256": "ab68a3bb05a2c4d96c96c403cc8533d21c85e56c9d485785b2bbf3f933cd2063",
+    "scope": "Hash matches; focused and adds online admission/scan resistance beyond prior prefetch, cost replay and oracle scopes.",
+    "finding": "Useful comparison: cost per byte, TinyLFU admission and ARC adaptation; separates logical savings, transfer bytes and overlap.",
+    "correction": "No material error. These papers and vLLM's fixed-block LRU are analogies, not evidence of expert-cache gains.",
+    "consumer": "Compare frozen held-out policy arms with routed-row ranking; record forecast errors, bytes, misses and critical-path time; allow no replacement.",
+    "prerequisite": "Revisit once a fixed-work replacement trial can charge upload and restoration.",
+    "schedulable_now": false,
+    "owners_closed": true,
+    "previous_review": {
+      "exit_signal": 25,
+      "reason": "The first native reviewer stopped at its file-size limit before producing a digest.",
+      "replacement": "Bound the captured output outside the native reviewer."
+    },
+    "retention": "Retain the report and compact verdict for the named follow-up. Lifecycle receipts are temporary."
   }
 }
