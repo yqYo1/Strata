@@ -1162,7 +1162,7 @@ request's output reservation. After a successful switch,
 subsequent short requests can use the now-installed decode layout.
 
 The [isolated build](../bench/dflash2_decode_ranked_refill_build.py) applies
-the six-file change at `fa003a8f5` to the retained primary DFlash2 recipe.
+the six-file change through `4757120ec` to the retained primary DFlash2 recipe.
 The generator projection excludes the separate memory observer. Rebuild all
 affected objects and both same-build fixtures. The [fixture runner](../bench/dflash2_decode_ranked_refill_checks.py)
 checks the host lease fixture and runs the bounded SYCL ranked-refill cases
