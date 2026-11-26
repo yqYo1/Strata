@@ -523,7 +523,15 @@ It gives 941.0 PP and 15.96 TG tok/s. Prose gives 1,040.9 PP and 13.10 TG
 tok/s with 6,939 outputs and 2,679 of 3,901 accepted drafts. Its reasoning hash
 matches the preceding within-layer arm and its answer hash differs. Both
 requests keep the matched prefill dispatch and requested upload bytes. The
-next process is this pair's stock control.
+fourth process closes the reversed stock arm with normal exit and no fresh
+Xe fault. It repeats the stock code output and reasoning hashes at 939.2 PP
+and 16.05 TG tok/s. Prose gives 1,040.2 PP and 11.61 TG tok/s with 8,618
+outputs and 3,442 of 4,864 accepted drafts. The prefill route and upload bytes
+still match both arms. The within-layer TG ratios are 0.9979 and 0.9943 for
+code and 1.1594 and 1.1285 for prose so far. The frozen screen needs two TG
+wins on each workload, which the within-layer profile can no longer meet on
+code. Complete the third pair to measure the remaining spread and finish the
+recorded comparison without changing its criteria.
 
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
