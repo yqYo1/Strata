@@ -701216,7 +701216,7 @@
     "read_tokens": 82,
     "output_cap": 32,
     "wire_sha256": "a146499755ed4cd280b677e4b68c8d86dc4231007824c07ca247a37ffc6e9ee4",
-    "stage": "running",
+    "stage": "closed",
     "outcomes": {
       "host": {
         "arm": "host",
@@ -701309,10 +701309,85 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "grid": {
+        "arm": "grid",
+        "host_probe_accepted": true,
+        "request": {
+          "prompt": 82,
+          "generated": 32,
+          "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+          "accepted": 23,
+          "offered": 23,
+          "finish": "length"
+        },
+        "native_exit_code": 0,
+        "providers": {
+          "initialized_ELFs": 37,
+          "sha256": "6a7434323eb08cd14d77b43fc469d69e56f19655b51b9e450d41e0d4adc42424",
+          "required_providers_verified": true,
+          "source": "glibc constructors;not speed or hardware utilization"
+        },
+        "validation": {
+          "pid": 2899042,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "score_routes": [
+          {
+            "phase": "prompt",
+            "width": 4,
+            "reference_calls": 12,
+            "grid_calls": 0
+          },
+          {
+            "phase": "prompt",
+            "width": 1,
+            "reference_calls": 12,
+            "grid_calls": 0
+          },
+          {
+            "phase": "decode",
+            "width": 1,
+            "reference_calls": 0,
+            "grid_calls": 12
+          },
+          {
+            "phase": "decode",
+            "width": 2,
+            "reference_calls": 0,
+            "grid_calls": 12
+          },
+          {
+            "phase": "decode",
+            "width": 4,
+            "reference_calls": 0,
+            "grid_calls": 12
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     },
-    "complete": false,
-    "passed": false,
+    "complete": true,
+    "passed": true,
     "ownership_closed": true,
     "active": false
   }
