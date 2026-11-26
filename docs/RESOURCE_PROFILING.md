@@ -849,8 +849,16 @@ The host protocol checks pass. On Arc, the short case restores all 32,769
 parked tokens from RAM, reads 8,209 new tokens and reaches position 40,978.
 Both long requests return all 1,124 loaned slots with matching payloads, and
 the recorded decode membership matches the selected profile. Validation is
-quiet and the native process exits normally without a fresh Xe fault. The
-near-capacity case remains required.
+quiet and the native process exits normally without a fresh Xe fault.
+
+The near-capacity case restores 253,919 tokens, reads another 8,209 and
+emits one token at a 262,128-token prompt extent. The RAM snapshot checks
+3,607,695,360 KV bytes across 12 layers and 118,069,304 bytes of running
+state. Its two loan/refill operations match all 1,124 payloads and all three
+decode requests match the expected resident map. The process exits normally
+with quiet validation, closed ownership, unchanged model assets and no
+fresh Xe fault. Both native extents now qualify the frozen map for the
+clean generation comparison.
 
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
