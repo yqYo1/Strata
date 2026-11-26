@@ -194,6 +194,24 @@ intervals entirely removed. The calculation assumes overlap even for intervals
 whose dependencies may forbid it. Use it to prioritize cutting service time
 and increasing useful verifier yield together.
 
+In the retained Arc verifier at `968e71988`, a QSA layer scores blocks and
+then launches one 256-thread selection workgroup per query. With a step at
+96,204 cells, the selection path visits 24,052 scores in each of 32 threshold
+rounds and two emission passes, or 3,271,072 logical score bytes per query.
+At a 262,144-cell step the corresponding count is 8,913,032 bytes. These
+counts describe loop visits; the repeated scans can reuse cached scores.
+The SYCL build turns off the CUDA `STRATA_VERIFY_PROFILE` timer, so these
+source counts supply neither physical traffic nor GPU stage time.
+
+The radix histogram mapping available to the prefill selector scans the
+same scores in eight threshold rounds, with more group reductions. It is a
+candidate for a separate decode entry. A component comparison must keep the
+current score inputs, cell weighting, tie order, partial final blocks and
+exact selected IDs at verifier widths one through four. Compare the total
+score-to-selection time and the isolated selector time. The existing shared
+dispatcher also serves prefill and the single-token layer path, so a verifier
+trial needs a phase-specific call site.
+
 The independent worker-leaf bracket at `6bbd3e3e1` uses native source
 `96832af6f` with the same request, output, reasoning and draft counts. Its two
 observed runs use 156.12 and 156.24 CPU ms per emitted token across six expert
