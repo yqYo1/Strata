@@ -1806,6 +1806,12 @@ The isolated build is configured at `d15fe1cb6`. Its recorded inputs
 cover 1,327 project files, the six ranked-refill overlays on `968e71988`,
 the two original profile files and four generated build recipe files.
 Full compilation and device qualification are pending.
+The primary prefill executable supplies the ranked-refill baseline. The
+pending route-census comparison also checks that executable and the
+independent `96832af6f` decode build. Keep the two checked phase references
+and the ranked-refill candidate through this serialized comparison. Review
+the added generation at the first failed qualification gate or the closing
+timing decision, before starting another engine build.
 
 After the native gates, the [timing runner](../bench/dflash2_decode_ranked_refill_speed.py)
 uses one binary and the same starting profile for three matched independent
