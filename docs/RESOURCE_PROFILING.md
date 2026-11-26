@@ -582,6 +582,18 @@ capture only if both metrics fall against stock on both training workloads
 and the prose suffix. Code training has no holdout and the replay measures
 neither actual traffic nor throughput. Keep stock for serving.
 
+The replay on `7a5b12b5a` conserves the native stock counts and reproduces
+the prose-only global map's 2,013,072 suffix CPU jobs. The selection uses
+75% code weight and 25% prose weight with the original 1,256 slots and
+2,575,206,400 bytes. Relative to stock, CPU jobs and logical weight bytes
+fall by 17.57% and 17.74% on code training, 8.48% and 8.52% on prose
+training, and 9.24% and 9.37% on the reserved prose suffix. The two
+single-workload maps each raise CPU jobs on the other training request.
+This passes the replay gate. Check a separately captured current-route
+code workload and a distinct prose request before native placement or
+throughput testing. Keep the all-ratio counts and selected map digest in
+`dflash2_decode_blended_rank_replay_v1`.
+
 The [adaptive cost replay](../bench/dflash2_decode_adapt_cost_replay.py) extends
 that same 256-window cut. Keep the protected first 132 slots and the same
 96-swap and 197,913,600-byte caps. Compare early distinct jobs, routed rows
