@@ -508,9 +508,13 @@ void planner_width3_smoke(std::shared_ptr<Runtime> rt, sycl::queue &q) {
     pending_or_hold("width-three planner smoke", [&] { in.submit(f, 0, cooperative); });
     checked_all(rt, q, "width-three planner smoke completion");
     (void)check(f, in, expected, payload);
+    f.put(c.before, initial);
+    auto graph = capture(f, in, 0, cooperative);
+    (void)timed(f, in, 0, false, graph.get());
+    (void)check(f, in, expected, payload);
   }
   f.source_exact();
-  std::cout << "planner_width3_smoke=PASS direct_cases=2\n";
+  std::cout << "planner_width3_smoke=PASS direct_cases=2 graph_replays=2\n";
 }
 // Synthetic disjoint selections bound the miss range; the model's actual hit
 // distribution and inter-query overlap are not inferred from these cases.
@@ -536,7 +540,6 @@ Case planner_case(const Shape &s,int nq,int missing) {
 void planner_perf_validation(std::shared_ptr<Runtime> rt, sycl::queue &q,
                              const std::vector<int> &widths) {
   const bool width_three = std::find(widths.begin(), widths.end(), 3) != widths.end();
-  if (width_three) planner_width3_smoke(rt, q);
   const Shape s{65536,5120,4,2,256,kKvInt8};Fixture f(s,rt,q);
   if (width_three) {
     planner_context_graph(f, 3, false);
@@ -659,17 +662,19 @@ int main(int argc,char **argv) {
     }
     if(mode=="--help") {
       require(argc<=2,"help takes no extra args");
-      std::cout << "sycl_kv_copy_groups_bench --host-env|--validate|--validate-exhaustive|--planner-smoke|--planner-validate|--planner-benchmark scalar|cooperative|--planner-width3-validate|--planner-width3-benchmark scalar|cooperative|--benchmark GROUPS SAMPLES|--event-benchmark GROUPS SAMPLES|--graph-benchmark GROUPS SAMPLES|--graph-event-benchmark GROUPS SAMPLES\n";
+      std::cout << "sycl_kv_copy_groups_bench --host-env|--validate|--validate-exhaustive|--planner-smoke|--planner-validate|--planner-benchmark scalar|cooperative|--planner-width3-smoke|--planner-width3-validate|--planner-width3-benchmark scalar|cooperative|--benchmark GROUPS SAMPLES|--event-benchmark GROUPS SAMPLES|--graph-benchmark GROUPS SAMPLES|--graph-event-benchmark GROUPS SAMPLES\n";
       return 0;
     }
     const bool graph=mode=="--graph-benchmark"||mode=="--graph-event-benchmark";
     const bool events=mode=="--event-benchmark"||mode=="--graph-event-benchmark";
     const bool bench=mode=="--benchmark"||mode=="--event-benchmark"||graph;
     const bool smoke=mode=="--planner-smoke";
+    const bool width_three_smoke = mode == "--planner-width3-smoke";
     const bool width_three_validation = mode == "--planner-width3-validate";
     const bool width_three_timing = mode == "--planner-width3-benchmark";
     const bool planner_speed = mode == "--planner-benchmark" || width_three_timing;
-    const bool planner=mode=="--planner-validate"||smoke||planner_speed||width_three_validation;
+    const bool planner = mode == "--planner-validate" || smoke || planner_speed
+        || width_three_smoke || width_three_validation;
     require((bench&&argc==4)||(planner_speed&&argc==3)||
         ((mode=="--validate"||mode=="--validate-exhaustive"||planner)&&!planner_speed&&argc==2),"invalid arguments");
     if(planner_speed) require(std::string(argv[2])=="scalar"||std::string(argv[2])=="cooperative","planner arm required");
@@ -691,6 +696,7 @@ int main(int argc,char **argv) {
         ? std::vector<int>{3} : std::vector<int>{2, 4};
     if(planner_speed) planner_benchmark(rt,q,std::string(argv[2])=="cooperative",planner_widths);
     else if(smoke) planner_smoke(rt,q);
+    else if (width_three_smoke) planner_width3_smoke(rt, q);
     else if(bench) benchmark(rt,q,candidate,samples,events,graph);
     else if(!width_three_validation) validate(rt,q,mode=="--validate-exhaustive",startup_groups,planner);
     if(mode=="--planner-validate" || width_three_validation)

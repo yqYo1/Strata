@@ -441,18 +441,36 @@ bound below gives at most 1,542 simultaneously selected pages for three
 queries, within the stock 5,120 slots. These counts cover the archived 33K
 workload and do not predict 96K TG.
 
-After the current comparison, use `--planner-width3-validate` on the existing
-[Arc fixture](../tools/sycl/kv_copy_groups_bench.cpp). Both resolvers must
-match the CPU reference for the page maps, counters, K/V and scale payloads,
-and buffer guards. Check a bounded three-query case first, then replay the
-fixed-capacity graph with shared selections, zero and partial widths, the
-last physical cell, epoch rollover and a rejected width. Use the 5,120-slot
-shape for the shared timing cases with 0, 384 and 1,539 misses.
-`--planner-width3-benchmark scalar|cooperative` uses the existing warm-up,
-calibration and timer-overhead checks. Compare three counterbalanced
-process pairs. This fixture covers the KV input to attention. Validate
-downstream outputs and actual width-three dispatch in a separate same-binary
-model check after a component pass. Keep other widths and prefill fixed.
+After the current comparison, build the existing
+[Arc fixture](../tools/sycl/kv_copy_groups_bench.cpp) in a private component
+directory. The retained primary build has the three standalone compile
+commands for the fixture and both resolver translation units, plus its
+original `libstrata_sycl_runtime.a`. Both resolver sources, their public
+headers and the oracle header match `968e71988`, the compared `d1bdd6872`
+image and the current worktree. Reuse the retained runtime archive after
+checking the actual header and link-input census. Build only those three
+translation units, with the new committed fixture as the sole source overlay.
+
+Run `--planner-width3-smoke` first in a separate traced process. Require
+two direct cases and two graph replays before proceeding to
+`--planner-width3-validate` with parameter validation. Require five graph
+replays per resolver in that second process, including zero and partial widths,
+the last physical cell, epoch rollover and a rejected width. Require two
+exact replays per resolver and miss count in the 5,120-slot shape at 0, 384
+and 1,539 misses. Both resolvers must match the CPU reference for page maps,
+counters, K/V and scale payloads, and guards. Stop on a failure, including
+an input mismatch, provider warning, budget stop, unclosed owner or fresh
+Xe fault.
+
+Run `--planner-width3-benchmark scalar|cooperative` in three fresh process
+pairs, alternating scalar-first, cooperative-first, scalar-first. Keep all
+nine samples per process. Follow the existing warm-up, calibration and timer
+checks. Require every paired median completion-time ratio below one for all
+three miss counts before a model trial. The fixture covers the KV input to
+attention. Validate downstream outputs and actual width-three dispatch in a
+separate same-binary model check, with other widths and prefill fixed.
+Review the temporary component build and logs when the component decision
+closes.
 
 #### Width-four KV cache working set
 
