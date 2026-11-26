@@ -465,6 +465,17 @@ cooperative process's input hashes, generated counts, draft totals, KV
 footer totals and all 18 capture dispatch records. Compare this process
 with the following scalar process in the reverse-order pair.
 
+The reverse-order scalar process closes with quiet validation, matching assets
+and no fresh Xe fault. Its code request measures 939.920 PP, 103.683 s TTFT
+and 16.272 TG. The cooperative code request is 5.03% faster in TG at the
+same output and reasoning hashes, 3,195 outputs and 2,173/2,248 drafts. Its
+prefill is 0.10% slower and TTFT is 0.114 s longer. The scalar prose request
+measures 1,035.824 PP, 93.127 s TTFT and 11.601 TG. Cooperative prose TG is
+2.98% higher in this pair, with 8,618 outputs and 3,442/4,864 drafts versus
+9,371 and 3,771/5,378 for scalar. The prose rate includes changed generation
+work. Keep the original speed screen and report the work difference. The
+third pair is still pending.
+
 The archived prose trace at `b28a9372b` records a 33,287-token request
 with 11,783 outputs on the unsplit DFlash2 cap-four path. It uses the same
 262,144-cell logical and 20,480-cell resident K8V8 geometry. Replaying its
