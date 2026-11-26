@@ -382,9 +382,11 @@ profiles only after this control passes. The stock file and four native plans
 are pinned at `033583182`, and both owned host protocol cases pass. The
 per-layer stock arm parks 32,769 tokens, switches to a 33-token prompt,
 then restores and reads the 8,209-token suffix to reach 40,978. Its native
-process exits normally with its holder closed and no fresh Xe fault. Next
-run the identical global arm, then both near-capacity arms. Keep the
-generated profile for the placement comparison after native admission.
+process exits normally with its holder closed and no fresh Xe fault. The
+identical global arm passes with the same request states and outputs, snapshot
+payload, placement and loan/refill. Its owner closes normally with no fresh
+Xe fault. Run both near-capacity arms next. Keep the generated profile for
+the placement comparison after native admission.
 
 After stock admission, the same controller's `--ranked prepare` action
 materializes the exact within-layer and cross-layer rerankings from the
