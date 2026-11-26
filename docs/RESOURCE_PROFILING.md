@@ -685,6 +685,15 @@ separate observed runs. Keep reducing routed CPU work and measuring verifier
 service before choosing a larger locality rewrite. Physical DRAM traffic, the
 last worker's completion latency and model speed need separate evidence.
 
+The [closed CPU result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-expert-locality-current.json)
+at `0b7646e0c` retains all samples and the exact build recipe. The pending
+retirement covers `cpu-fixed-expert-locality-v1`. Recovered the project and
+GGML source from Git and verified the actual compiler and linker inputs,
+runtime identities and executable. The closed inventory has 110 files and
+16,503,343 bytes with SHA-256
+`9277f3d5034636228953e60f273a02269c494243834bfbcf3376cbee7d89f2b2`
+over the sorted compact JSON list of relative paths, sizes and file hashes.
+
 The [stock admission controller](../bench/dflash2_decode_stock_global_restore.py)
 uses the retained primary executable and recovers the original restore plans
 from `3d75f7e91`. It generates only the stock global profile. Both loaders
