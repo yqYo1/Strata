@@ -42227,5 +42227,39 @@
     "finding": "Retrieval cue: sparse host rows—preserve, compact before transfer, or merge for the consumer.",
     "correction": "Applicability: hypotheses only; no Xe2 winner established. Records concern: pin mutable “latest” SYCL/Level Zero docs and specify exact paper versions.",
     "consumer": "Fixture owner can use it to plan a matched comparison against the existing full-slab/event baseline."
+  },
+  "dflash2-selector-vram-and-precision-20261126": {
+    "classification": "decision_support",
+    "stage": "reviewed",
+    "source_commit": "35fcc191a6191e3de128fdcbd81a127119b8c42d",
+    "native_source_commit": "9866bec75d379342653a82f0d21523a1ae70af13",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-selector-vram-and-precision-20261126/report.md",
+    "report_sha256": "d6470b2179e00a1df7c99f604a0cf7fb966a4e9084c3f1dd527b2ff014b7a5eb",
+    "worker_report_hash_attested": true,
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-selector-and-logit-methods-20261126/review.json",
+    "review_sha256": "4a55fc2f111024f1b1da16240bb3d60b10dd3fddedfcb0942a5a44ca7718865e",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": false,
+    "finding": "Primary: pack sizing gives 254,279,680 B BF16 versus 71,516,160 B hypothetical Q4_0. Reasoning: persistent delta is 182,763,520 B (174.3 MiB).",
+    "correction": "Q4_0 reduces precision; no score/ID, draft-yield, target-quality or physical-allocation evidence supports quality or usable-capacity claims.",
+    "consumer": "Gate on Q4-capable loader, BF16/Q4 score and top-16 ID comparison, end-to-end yield/quality, and touched allocation; keep the delta hypothetical."
+  },
+  "dflash2-draft-logit-reduction-methods-20261126": {
+    "classification": "knowledge_collection",
+    "stage": "reviewed",
+    "source_commit": "35fcc191a6191e3de128fdcbd81a127119b8c42d",
+    "native_source_commit": "9866bec75d379342653a82f0d21523a1ae70af13",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/dflash2-draft-logit-reduction-methods-20261126/report.md",
+    "report_sha256": "beca85fa8ff193529a6b9877ba53f2cd3f121d51f93f708c36bddf967d46722c",
+    "worker_report_hash_attested": true,
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/review-dflash2-selector-and-logit-methods-20261126/review.json",
+    "review_sha256": "4a55fc2f111024f1b1da16240bb3d60b10dd3fddedfcb0942a5a44ca7718865e",
+    "reviewer": "native Codex gpt-6-luna max",
+    "owners_closed": true,
+    "schedulable_now": false,
+    "finding": "Primary: pinned flow calls indexed Q6_K then df2_topk. Reasoning: novelty is scoped to 106,299 draft rows and widths 1–7; savings remain a traffic bound.",
+    "correction": "No device timings, traffic or row-run census; alternate bitwise parity is unproven. Comparator breaks ties by row index, so token-ID order needs map-order proof.",
+    "consumer": "Retrieve by commit 35fcc191, 106,299-row draft Q6_K, widths 1–7, Top-16. Reopen with matched full-shape measurements and ordered-output parity."
   }
 }
