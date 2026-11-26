@@ -1350,6 +1350,26 @@ Require lower GU and total pool medians in all three pairs. This compares
 the exact single-stream entry with GGML through the production row-split
 pool, separate from the prior paired IQ3_S experiment.
 
+The [closed IQ3_S result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-expert-iq3s-single-current.json)
+uses source `38006368a` and a build with 633 verified compiler inputs.
+Each replay covers 201 expert jobs, 226 routed entries and 374,425,600
+bytes of unique packed weights. The check processes report zero candidate
+rows in the reference and exactly 103,680 in the candidate. All eight
+processes return the same guarded output digest and close normally.
+The six counter-free timing processes supply 30 eligible batches.
+
+| Pair | Gate/Up ms, reference → IQ3_S | Whole pool ms, reference → IQ3_S |
+| --- | ---: | ---: |
+| 1 | 15.812 → 15.487 | 21.217 → 20.961 |
+| 2, reverse order | 15.885 → 15.518 | 21.354 → 20.968 |
+| 3 | 15.846 → 15.160 | 21.208 → 20.455 |
+
+Paired geometric mean time falls 2.907% for Gate/Up and 2.192% for the
+whole pool. Both clocks improve in every pair. This passes the CPU
+component gate. An isolated model comparison must bind the production
+dispatch to the same format and keep prefill and expert placement fixed.
+The replay does not measure PCIe, GPU overlap or model throughput.
+
 The [closed CPU result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-expert-locality-current.json)
 at `0b7646e0c` retains all samples and the exact build recipe. Retired
 `cpu-fixed-expert-locality-v1` and verified its absence. Recovered the project and
