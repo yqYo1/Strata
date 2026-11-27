@@ -756633,8 +756633,53 @@
       "retention": "Retain the private fixture until its decision and original inputs are recoverable. Keep the committed batch samples and retire the closed raw output.",
       "clock_wrap": true
     },
-    "stage": "built",
-    "processes": [],
+    "stage": "smoke",
+    "processes": [
+      {
+        "stage": "smoke",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-scalar-clock-wrap-v1/fixture-build/sycl_kv_copy_groups_bench",
+          "--planner-clock-wrap-smoke"
+        ],
+        "environment_sha256": "0333c76fb91151e117765827b23a91207ad8832526b76e7fc5e99838e6d26da1",
+        "direct_cases": 3,
+        "graph_replays": 3,
+        "provider_sha256": "30e268ce9eb290b24d7eaba8ce15545e59e9c253e53902ef43edbd109ae6fb8b",
+        "traced_graph_replays": 3,
+        "host_probe_accepted": true,
+        "validation": {
+          "pid": 3273478,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_identity": {
+          "pid": 3273478,
+          "start_ticks": 416585198,
+          "sid": 3273478,
+          "pgid": 3273478
+        },
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      }
+    ],
     "complete": false,
     "passed": false,
     "ownership_closed": true,
