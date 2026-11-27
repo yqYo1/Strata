@@ -861,6 +861,15 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
     }
     const char* t4_audit = std::getenv("STRATA_SYCL_DECODE_T4_AUDIT");
     decode_t4_audit_ = t4_audit && std::strcmp(t4_audit, "1") == 0;
+    if (const char* text = std::getenv("STRATA_SYCL_DECODE_T4_PREFIX_HELP")) {
+        const std::string_view help(text);
+        if (help == "1" && decode_t4_schedule_ == DecodeT4Schedule::early) {
+            decode_t4_prefix_help_ = true;
+        } else if (help != "0") {
+            err = "verify: STRATA_SYCL_DECODE_T4_PREFIX_HELP needs 0 or 1 with the early T4 schedule";
+            return false;
+        }
+    }
     const char* early = std::getenv("STRATA_SYCL_VERIFY_PCIE_EARLY");
     early_pcie_ = early && std::strcmp(early, "1") == 0;
     const char* audit = std::getenv("STRATA_SYCL_VERIFY_PCIE_EARLY_AUDIT");
@@ -2094,6 +2103,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         cudaGraphExec_t first = nullptr;
         cudaError_t status = cudaSuccess;
         bool pool_ready = false, submitted = false, dispatch_completed = false;
+        int caller_prefix_jobs = 0;
 
         void submit_first() noexcept {
             if (submitted || !verifier->work_launched_ ||
@@ -2115,7 +2125,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         }
     };
     const auto* t4_pairs = decode_t4 ? &window_graphs_.at(input, T).first_pair : nullptr;
-    int t4_split_layers = 0, t4_pool_ready_layers = 0, t4_early_layers = 0;
+    int t4_split_layers = 0, t4_pool_ready_layers = 0, t4_early_layers = 0, t4_caller_prefix_jobs = 0;
 #endif
     const bool test_stall = g_test_stall > 0 && windows + 1 == g_test_stall;   // #267 test hook (off: false)
     for (int64_t k = 0; k < steps; ++k) {
@@ -2183,7 +2193,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         DecodeT4Pair pair{this};
         const GpuPlanSink::DecodeT4Publication publication{
             DecodeT4Pair::ready, &pair, decode_t4_schedule_ == DecodeT4Schedule::after_cpu,
-            &pair.dispatch_completed};
+            &pair.dispatch_completed, decode_t4_prefix_help_, decode_t4_audit_ ? &pair.caller_prefix_jobs : nullptr};
         if (t4_pairs) pair.first = (*t4_pairs)[size_t(k)];
 #endif
         progress_at("verify window: the CPU experts of layer", l);
@@ -2273,6 +2283,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
             ++t4_split_layers;
             t4_pool_ready_layers += pair.pool_ready;
             t4_early_layers += pair.submitted;
+            t4_caller_prefix_jobs += pair.caller_prefix_jobs;
             if (sink_.counts[2] != 0 || !pair.dispatch_completed)
                 pair.status = cudaErrorInvalidValue;
             if (pair.status == cudaSuccess && !pair.submitted)
@@ -2323,10 +2334,13 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
 #ifdef STRATA_ENABLE_SYCL
     if (sample_segments) segment_request->emit(pos0, g.qsa_interval);
 #ifdef STRATA_DECODE_EXPERT_SCHEDULE
-    if (decode_t4 && decode_t4_audit_)
+    if (decode_t4 && decode_t4_audit_) {
         std::fprintf(stderr, "DECODE_T4 mode=%s position=%lld layers=%lld split=%d pool_ready=%d early=%d\n",
                      decode_t4_schedule_ == DecodeT4Schedule::early ? "early" : "after-cpu",
                      (long long) pos0, (long long) steps, t4_split_layers, t4_pool_ready_layers, t4_early_layers);
+        std::fprintf(stderr, "DECODE_T4_CALLER_HELP position=%lld jobs=%d\n",
+                     (long long) pos0, t4_caller_prefix_jobs);
+    }
 #endif
 #endif
     window_scope.drained(); // Both stage streams completed; sampling below has no mapped spin waits.

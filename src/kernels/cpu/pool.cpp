@@ -526,8 +526,9 @@ void ExpertPool::wait_completed(const std::atomic<uint32_t>& completed, int n) {
 }
 
 template<bool PrefixOnly>
-void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch, uint32_t prefix_jobs) {
+int ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch, uint32_t prefix_jobs) {
     (void) id;
+    int completed = 0;
     for (;;) {
         const int ci = claim<PrefixOnly>(epoch, prefix_jobs);
         if (ci < 0) break;
@@ -613,7 +614,9 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch, uint32_t 
             }
         }
         done_.fetch_add(1, std::memory_order_release);
+        if constexpr (PrefixOnly) ++completed;
     }
+    return completed;
 }
 
 void ExpertPool::run_phase(int mode, int n_tasks) {
@@ -625,8 +628,10 @@ void ExpertPool::run_phase(int mode, int n_tasks) {
     const auto* publication = mode == kDecodeByExpert ? decode_publication_ : nullptr;
     if (host_works_ && !publication) drain(-1, host_scratch_, e);
     if (publication && !publication->after_all) {
-        if (host_works_ && publication->caller_helps_prefix)
-            drain<true>(-1, host_scratch_, e, static_cast<uint32_t>(publication->prefix_jobs));
+        if (host_works_ && publication->caller_helps_prefix) {
+            const int completed = drain<true>(-1, host_scratch_, e, static_cast<uint32_t>(publication->prefix_jobs));
+            if (publication->caller_prefix_jobs) *publication->caller_prefix_jobs = completed;
+        }
         wait_completed(decode_prefix_done_, publication->prefix_jobs);
         publication->ready(publication->context);
     }

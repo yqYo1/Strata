@@ -348,6 +348,7 @@ private:
     DecodeT4Schedule decode_t4_schedule_ = DecodeT4Schedule::stock;
     bool decode_t4_dispatch_ = false;
     bool decode_t4_audit_ = false;
+    bool decode_t4_prefix_help_ = false;
     bool decode_t4_window(VerifyInput input, int width) const noexcept {
         return decode_t4_dispatch_ && input == VerifyInput::decode && width == 4;
     }

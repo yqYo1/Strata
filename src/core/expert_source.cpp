@@ -2135,7 +2135,8 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
 #ifdef STRATA_DECODE_EXPERT_SCHEDULE
             if (t4) {
                 const ExpertPool::DecodePublication publication{
-                    first_pair_jobs, t4->ready, t4->context, t4->after_all};
+                    first_pair_jobs, t4->ready, t4->context, t4->after_all,
+                    t4->caller_helps_prefix, t4->caller_prefix_jobs};
                 if (njobs == 0) {
                     t4->ready(t4->context);
                     published = true;

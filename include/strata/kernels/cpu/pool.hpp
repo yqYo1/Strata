@@ -172,6 +172,7 @@ public:
         void* context;
         bool after_all;
         bool caller_helps_prefix = false;
+        int* caller_prefix_jobs = nullptr;
     };
     // Decode scheduler. Complete all three stages of an expert in one claim.
     // A publication assigns the callback to the caller. The caller may also
@@ -218,7 +219,7 @@ public:
 private:
     void worker(int id);
     template<bool PrefixOnly = false>
-    void drain(int id, ExpertScratch& scratch, uint32_t epoch, uint32_t prefix_jobs = 0);
+    int drain(int id, ExpertScratch& scratch, uint32_t epoch, uint32_t prefix_jobs = 0);
     void run_phase(int mode, int n_tasks);
 #ifdef STRATA_DECODE_EXPERT_SCHEDULE
     static constexpr int kDecodeByExpert = 7;

@@ -227,6 +227,8 @@ struct GpuPlanSink {
         void* context;
         bool after_all;
         bool* completed;
+        bool caller_helps_prefix;
+        int* caller_prefix_jobs;
     };
     // Borrowed only inside the synchronous width-four decode pool call.
     const DecodeT4Publication* decode_t4_publication = nullptr;

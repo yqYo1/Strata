@@ -521,12 +521,16 @@ struct ReplayBatch {
                     for (int t = 0; t < job.nt; ++t)
                         std::fill_n(job.out[t], cpu::H, std::numeric_limits<float>::quiet_NaN());
                 Readback check{jobs, expected, after_all ? total : cutoff};
+                const bool help = caller_helps_prefix && !after_all;
+                int caller_jobs = 0;
                 const cpu::ExpertPool::DecodePublication publication{
-                    cutoff, ready, &check, after_all, caller_helps_prefix && !after_all};
+                    cutoff, ready, &check, after_all, help, &caller_jobs};
                 require(pool.run_decode_native_by_expert(*format, jobs.data(), total, &publication),
                         "publication schedule refused a captured layer");
                 require(check.calls == 1 && check.exact && check.matches(total),
                         "publication callback or final result differs from serial native output");
+                require(caller_jobs >= 0 && caller_jobs <= (help ? cutoff : 0),
+                        "caller work exceeded the admitted publication prefix");
                 for (const auto& out : outputs) out->check();
                 ++cases;
             }

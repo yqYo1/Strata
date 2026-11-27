@@ -1581,6 +1581,15 @@ prefill, TTFT and whole decode. CPU replay accounts for the jobs and pool
 overhead. Measure the GPU overlap on the model route.
 [CPU replay result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-expert-prefix-help-current.json).
 
+The model selector `STRATA_SYCL_DECODE_T4_PREFIX_HELP=1` applies only with
+the early T4 schedule. The verifier owns the result count through the
+synchronous pool call. With the existing T4 audit active, a separate line
+records the caller's completed prefix jobs per checked width-four window.
+Require zero jobs in the control and positive participation on the enabled
+route, with unchanged prompt taps, active state and draft work in the short
+probe. For timing, keep the two-half GPU kernel choice fixed and compare
+the first-pair helper against the reserved caller on one new native build.
+
 The three earlier roots below have no active consumer beyond their receipts.
 The recovery audit verifies each earlier build's 210 Git project files,
 1,376 Git ggml files, 633 actual compiler dependencies, link inputs and
