@@ -1597,8 +1597,20 @@ The paired short probes compare the same 82-token body, exact state and
 work and verify actual caller participation. The long plan uses three
 96K pairs and keeps the existing runtime validation and owner gates.
 At `db885d640` the plan pins 1,337 project inputs. Configuration completes
-with SYCL enabled and the pinned oneAPI compiler. The coherent build and
-same-build host, Arc and model gates follow the active C2 comparison.
+with SYCL enabled and the pinned oneAPI compiler. The coherent build at
+`529948493` checks 141 fresh objects and 13 executables with zero uncovered
+inputs. The same-build host policy and traced Arc shared-plan checks pass
+at `3af39f5fa`. The combine fixture passes its numerical and buffer guards,
+loads the expected providers, and closes with quiet validation and no fresh
+Xe faults. The 82-input model plan at `5e602169e` compares the reserved
+caller and prefix help on the same engine, with 23 eligible layers and
+the original dense DPAS choices in both arms.
+Both 82-input/32-output processes reproduce the checked prompt taps,
+output, active inference state, draft totals and width sequence. Both
+retire seven width-four windows with 46 dense C4 calls. The caller
+completes zero prefix jobs in the reserved arm and 363 with help enabled.
+Both processes exit normally with quiet validation and no fresh Xe fault.
+Advance to the six-process 96K comparison on this exact executable.
 
 The closed roots below have no active consumer beyond their receipts.
 The recovery audit verifies each build's 210 Git project files,
