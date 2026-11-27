@@ -2269,6 +2269,15 @@ before installation. The short probe and the existing scratch fixtures
 cover different parts of this contract. Wall-speed runs omit map readback
 and payload sampling. The original ranked-refill result stays closed.
 
+The [96K timing controller](../bench/dflash2_decode_phase_placement_speed.py)
+uses the two original thinking workloads in three counterbalanced pairs.
+It binds the switch and restore to the client request's first nonempty
+output and completion timestamps. Both arms use the same stock startup
+profile. Compare prompt clocks independently of decode, including actual
+CPU expert work per output and draft acceptance. Admission requires the
+bounded checks on this exact executable. The first full-capacity and
+agent-session results remain separate qualification steps.
+
 The closed comparison at `a57499a15` is reachable on `feature/sycl`.
 The recovery audit matched 1,327 original source files, 520 committed
 build-control inputs, the compiler and link inputs, 141 fresh objects and
