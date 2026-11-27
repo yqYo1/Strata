@@ -11949,6 +11949,15 @@ The comparison retains first and subsequent prefill, client TTFT, decode
 rates, and observed draft acceptance. Agent-session coverage remains a
 separate validation step.
 
+The retained early-PLE build is pending a historical-input recovery check
+before the next generation is created. Its current reader rejected the
+predecessor at `10b4a06f4` because the whole `bench/sycl` pin includes three
+later CPU replay changes (`cpu_roofline/CMakeLists.txt`, `fixed_replay.py`
+and `main.cpp`). Recover the original committed helper bytes and confirm
+which inputs the original compilation and controller used. Keep the
+existing early-PLE build and its qualified samples until that comparison
+and the remaining continuation consumer are reviewed.
+
 The closed comparison at `bdfd43ec9` preserves the 12 requests and
 passes the PLE reader's admission. After verifying all four terminal
 receipts against the pushed record, retired `host` and `0`–`3` under
