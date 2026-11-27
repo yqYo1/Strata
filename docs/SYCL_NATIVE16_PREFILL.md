@@ -11824,6 +11824,16 @@ Both original receipts match. The inventories hash sorted state-relative
 paths, byte counts and file hashes. The next build uses these committed
 inputs to reconstruct the source and recipe.
 
+The early-read candidate completes the full pinned build. The object census
+matches all 139 original paths, with 11 newly linked executables and zero
+uncovered inputs. Run the [native checker](../bench/dflash2_prefill_ple_early_check.py)
+before timing. One process sends STOP after the layer-0 launch boundary and
+repeats the short request on the same server. A second process completes the
+original 82 / 122881 / 82 input sequence and checks active state, five DFlash2
+tap payloads and output against the previous direct-store result. These requests
+check scheduling and state handoff. Timing and physical full-context validation
+use separate runs.
+
 The closed comparison at `bdfd43ec9` preserves the 12 requests and
 passes the PLE reader's admission. After verifying all four terminal
 receipts against the pushed record, retired `host` and `0`–`3` under
