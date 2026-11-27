@@ -11791,6 +11791,13 @@ the first read's lifetime on cancellation, and the layer-1 and decode
 handoff before timing. Use a same-binary off/on comparison with separate
 first and subsequent timings. The original observer measures all 15
 gathers, so the candidate's first-gather savings remain to be measured.
+At `d7870f810`, the prefill translation unit passes a syntax-only check
+with the observed compile database, compiler and three committed overlays.
+All 804 compiler inputs verify against their original or candidate hashes.
+The dependency digest is
+`3f3a3f0b21ae1164b5966ab73b7118dde7e5dc211b462aef8362e55a8b474e2d`.
+The compiler exits normally with no warnings. Full build and model
+qualification remain open.
 
 The closed comparison at `bdfd43ec9` preserves the 12 requests and
 passes the PLE reader's admission. After verifying all four terminal
