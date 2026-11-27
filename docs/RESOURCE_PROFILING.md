@@ -1953,6 +1953,15 @@ These two samples establish that the declared median preservation gates
 will fail over three comparable pairs. Complete the fixed third pair to
 measure the spread and preserve the full comparison.
 
+The final stock process closes with quiet validation and no fresh Xe fault.
+Code again emits 3,195 tokens and measures 930.097 prefill tok/s, 104.828 s
+TTFT and 15.621 decode tok/s. The stock code decode range across three
+processes is 15.535–15.621 tok/s with identical outputs and draft counts.
+Prose emits 8,618 tokens and measures 1,033.543 prefill tok/s, 93.342 s TTFT
+and 11.157 decode tok/s. Across the three stock processes, prose has three
+distinct output hashes and 8,618–9,670 output tokens. Its decode range is
+11.157–11.218 tok/s. The final refill process completes the comparison.
+
 The first two closed blend processes also bound the benefit of draft yield
 at the current decode time. Let `e` be emitted tokens and `a` and `d`
 be accepted and offered drafts. In these completed spec4 requests, the
