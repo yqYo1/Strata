@@ -756633,7 +756633,7 @@
       "retention": "Retain the private fixture until its decision and original inputs are recoverable. Keep the committed batch samples and retire the closed raw output.",
       "clock_wrap": true
     },
-    "stage": "4",
+    "stage": "closed",
     "processes": [
       {
         "stage": "smoke",
@@ -758193,10 +758193,295 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      {
+        "stage": "5",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-scalar-clock-wrap-v1/fixture-build/sycl_kv_copy_groups_bench",
+          "--planner-clock-wrap-benchmark",
+          "clock-wrap"
+        ],
+        "environment_sha256": "513ba7a65d610032a2e0b2485aab3afe6aa3f44380453a5dd8768d6624d4e0cb",
+        "arm": "clock-wrap",
+        "samples": [
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 0,
+            "unique_pages": 1539,
+            "cooperative": false,
+            "clock_wrap": true,
+            "miss_pattern": "interleaved",
+            "rep": 0,
+            "calls": 1024,
+            "elapsed_ns": 1444403049,
+            "ns_per_call": 1410549.8525390625,
+            "clock_pair_ns": 26.472,
+            "timer_fraction": 9.383574764248508e-05,
+            "calibration_ns": 1444624118,
+            "warmup_ns": 560372748,
+            "requested_host_payload_bytes_per_call": 0,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 0,
+            "unique_pages": 1539,
+            "cooperative": false,
+            "clock_wrap": true,
+            "miss_pattern": "interleaved",
+            "rep": 1,
+            "calls": 1024,
+            "elapsed_ns": 1445474208,
+            "ns_per_call": 1411595.90625,
+            "clock_pair_ns": 26.472,
+            "timer_fraction": 9.376621128891151e-05,
+            "calibration_ns": 1444624118,
+            "warmup_ns": 560372748,
+            "requested_host_payload_bytes_per_call": 0,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 0,
+            "unique_pages": 1539,
+            "cooperative": false,
+            "clock_wrap": true,
+            "miss_pattern": "interleaved",
+            "rep": 2,
+            "calls": 1024,
+            "elapsed_ns": 1442697972,
+            "ns_per_call": 1408884.73828125,
+            "clock_pair_ns": 26.472,
+            "timer_fraction": 9.394664900797408e-05,
+            "calibration_ns": 1444624118,
+            "warmup_ns": 560372748,
+            "requested_host_payload_bytes_per_call": 0,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 16,
+            "unique_pages": 1539,
+            "cooperative": false,
+            "clock_wrap": true,
+            "miss_pattern": "interleaved",
+            "rep": 0,
+            "calls": 512,
+            "elapsed_ns": 1174423543,
+            "ns_per_call": 2293795.982421875,
+            "clock_pair_ns": 26.472,
+            "timer_fraction": 5.770347538068726e-05,
+            "calibration_ns": 1174081767,
+            "warmup_ns": 586784408,
+            "requested_host_payload_bytes_per_call": 67584,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 16,
+            "unique_pages": 1539,
+            "cooperative": false,
+            "clock_wrap": true,
+            "miss_pattern": "interleaved",
+            "rep": 1,
+            "calls": 512,
+            "elapsed_ns": 1173464332,
+            "ns_per_call": 2291922.5234375,
+            "clock_pair_ns": 26.472,
+            "timer_fraction": 5.775064324664962e-05,
+            "calibration_ns": 1174081767,
+            "warmup_ns": 586784408,
+            "requested_host_payload_bytes_per_call": 67584,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 16,
+            "unique_pages": 1539,
+            "cooperative": false,
+            "clock_wrap": true,
+            "miss_pattern": "interleaved",
+            "rep": 2,
+            "calls": 512,
+            "elapsed_ns": 1173315490,
+            "ns_per_call": 2291631.81640625,
+            "clock_pair_ns": 26.472,
+            "timer_fraction": 5.775796925684498e-05,
+            "calibration_ns": 1174081767,
+            "warmup_ns": 586784408,
+            "requested_host_payload_bytes_per_call": 67584,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 64,
+            "unique_pages": 1539,
+            "cooperative": false,
+            "clock_wrap": true,
+            "miss_pattern": "interleaved",
+            "rep": 0,
+            "calls": 512,
+            "elapsed_ns": 1201410729,
+            "ns_per_call": 2346505.330078125,
+            "clock_pair_ns": 26.472,
+            "timer_fraction": 5.6407287170148125e-05,
+            "calibration_ns": 1201739028,
+            "warmup_ns": 603287383,
+            "requested_host_payload_bytes_per_call": 270336,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 64,
+            "unique_pages": 1539,
+            "cooperative": false,
+            "clock_wrap": true,
+            "miss_pattern": "interleaved",
+            "rep": 1,
+            "calls": 512,
+            "elapsed_ns": 1201152430,
+            "ns_per_call": 2346000.83984375,
+            "clock_pair_ns": 26.472,
+            "timer_fraction": 5.6419417142585315e-05,
+            "calibration_ns": 1201739028,
+            "warmup_ns": 603287383,
+            "requested_host_payload_bytes_per_call": 270336,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 64,
+            "unique_pages": 1539,
+            "cooperative": false,
+            "clock_wrap": true,
+            "miss_pattern": "interleaved",
+            "rep": 2,
+            "calls": 512,
+            "elapsed_ns": 1200019306,
+            "ns_per_call": 2343787.70703125,
+            "clock_pair_ns": 26.472,
+            "timer_fraction": 5.647269144851575e-05,
+            "calibration_ns": 1201739028,
+            "warmup_ns": 603287383,
+            "requested_host_payload_bytes_per_call": 270336,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 384,
+            "unique_pages": 1539,
+            "cooperative": false,
+            "clock_wrap": true,
+            "miss_pattern": "interleaved",
+            "rep": 0,
+            "calls": 512,
+            "elapsed_ns": 1479777678,
+            "ns_per_call": 2890190.77734375,
+            "clock_pair_ns": 26.472,
+            "timer_fraction": 4.579628481191349e-05,
+            "calibration_ns": 1480036741,
+            "warmup_ns": 556047507,
+            "requested_host_payload_bytes_per_call": 1622016,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 384,
+            "unique_pages": 1539,
+            "cooperative": false,
+            "clock_wrap": true,
+            "miss_pattern": "interleaved",
+            "rep": 1,
+            "calls": 512,
+            "elapsed_ns": 1497844330,
+            "ns_per_call": 2925477.20703125,
+            "clock_pair_ns": 26.472,
+            "timer_fraction": 4.52439006128227e-05,
+            "calibration_ns": 1480036741,
+            "warmup_ns": 556047507,
+            "requested_host_payload_bytes_per_call": 1622016,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          },
+          {
+            "phase": "planner_sample",
+            "nq": 3,
+            "missing": 384,
+            "unique_pages": 1539,
+            "cooperative": false,
+            "clock_wrap": true,
+            "miss_pattern": "interleaved",
+            "rep": 2,
+            "calls": 512,
+            "elapsed_ns": 1479188314,
+            "ns_per_call": 2889039.67578125,
+            "clock_pair_ns": 26.472,
+            "timer_fraction": 4.581453176623731e-05,
+            "calibration_ns": 1480036741,
+            "warmup_ns": 556047507,
+            "requested_host_payload_bytes_per_call": 1622016,
+            "oracle_exact": true,
+            "graph_nodes": 2
+          }
+        ],
+        "provider_sha256": "30e268ce9eb290b24d7eaba8ce15545e59e9c253e53902ef43edbd109ae6fb8b",
+        "host_probe_accepted": true,
+        "validation": {
+          "pid": 3286432,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_identity": {
+          "pid": 3286432,
+          "start_ticks": 416622268,
+          "sid": 3286432,
+          "pgid": 3286432
+        },
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     ],
-    "complete": false,
-    "passed": false,
+    "complete": true,
+    "passed": true,
     "ownership_closed": true,
     "model_qualified": false,
     "binary": {
@@ -758206,6 +758491,80 @@
     },
     "build_receipt_sha256": "534cac2a6791dd510e74633aa7a74b5dcc5c28e8b07f1fda71442d90f1900399",
     "compiled_inputs": 672,
-    "linked_inputs": 25
+    "linked_inputs": 25,
+    "decision": {
+      "cells": [
+        {
+          "missing": 0,
+          "process_medians_ns": [
+            1412130.173828125,
+            1410399.904296875,
+            1407727.1767578125,
+            1412486.0791015625,
+            1411247.1650390625,
+            1410549.8525390625
+          ],
+          "paired_time_ratios": [
+            0.9987747096101208,
+            0.9966308323925026,
+            0.999505889175706
+          ],
+          "faster": true
+        },
+        {
+          "missing": 16,
+          "process_medians_ns": [
+            2953644.6796875,
+            2294335.275390625,
+            2292390.595703125,
+            2953741.26171875,
+            2953289.9921875,
+            2291922.5234375
+          ],
+          "paired_time_ratios": [
+            0.7767810702380658,
+            0.776097292411187,
+            0.7760573900634372
+          ],
+          "faster": true
+        },
+        {
+          "missing": 64,
+          "process_medians_ns": [
+            3015434.4375,
+            2344963.921875,
+            2347258.6796875,
+            3014658.6953125,
+            3013518.8125,
+            2346000.83984375
+          ],
+          "paired_time_ratios": [
+            0.7776537578509365,
+            0.7786150662220098,
+            0.7784921833282068
+          ],
+          "faster": true
+        },
+        {
+          "missing": 384,
+          "process_medians_ns": [
+            3613151.328125,
+            2890637.3671875,
+            2888661.853515625,
+            3616324.5078125,
+            3613676.8359375,
+            2890190.77734375
+          ],
+          "paired_time_ratios": [
+            0.8000321892655297,
+            0.7987839164530521,
+            0.7997922638242622
+          ],
+          "faster": true
+        }
+      ],
+      "zero_miss_preserved": true,
+      "eligible_for_model_check": true
+    }
   }
 }
