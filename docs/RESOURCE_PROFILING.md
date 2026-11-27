@@ -2595,8 +2595,20 @@ timing processes alternate between C4 and the existing two-column pair,
 with five eligible batches per arm and shape. Use the paired C4 times to
 price the split and the existing pair to screen shapes for a follow-up.
 The host reader accepts all six synthetic sample orders and rejects the
-wrong graph count, short batch and C4 arithmetic mismatch. Compile and
-runtime validation remain pending.
+wrong graph count, short batch and C4 arithmetic mismatch.
+
+The first fixture builds 14 translation units with 801 compiler inputs
+and 24 external linker inputs at `1e640f30e`. Its host check ends before
+recording stdout because the 8 MiB observer limit counts the entire build
+directory. The child exits zero and its session closes, but the observation
+fails at `cfca0c801` before any Arc execution. At `23022cd8a` each host or
+Arc check gets its own measured output directory. The C2 source and the
+comparison order are shared with the first fixture. Rebuild and verify the
+corrected plan. The first build has no remaining execution consumer. Retire it
+after recovering its source and recipe from the pushed primary with the
+original executable inputs verified. The closed 96K raw outputs also await
+the next serialized cleanup gap. The committed samples and hashes are at
+`2071d7722`.
 
 The controller at `00b3bde32` weights the four shape timing deltas using
 the original same-build capture at `4c324029d`. In fixture order,
