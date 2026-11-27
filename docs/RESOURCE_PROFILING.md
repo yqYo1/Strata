@@ -2325,8 +2325,13 @@ the first half's combine and next-layer pre-mixer. The standalone combine
 covers only about 0.15–0.18 ms for the measured width-four shapes, while
 the observed 82.26 ms of whole-window GPU completion averages 1.71 ms per
 layer over 48 layers. Keep stock segment and two-half-after-all controls
-to charge extra dispatch, event and synchronization costs. The existing
-shared/resident overlap stays enabled in all arms.
+to charge extra dispatch, event and synchronization costs. The measured
+production control uses five expert workers with caller participation.
+The readiness fixture reserves the caller, so first compare the stock
+schedule with and without caller participation. Use the reserved-caller
+stock schedule in the fixed-work overlap comparison to identify the cost
+of moving the caller out of CPU expert work. Keep the existing
+shared/resident overlap enabled in all arms.
 [Verifier](../src/core/verify.cpp).
 
 For a copy-once control, the full CPU result slab at `T=4`, `K=10` and

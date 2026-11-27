@@ -11929,12 +11929,15 @@ the commit wait and refill drain. Both fallback runs record zero early
 gathers, normal owner closure and no fresh Xe fault. All final model
 asset hashes match.
 
-The next same-binary check parks a 16,385-token prefix, switches to a
-33-token conversation and restores the first prefix from RAM. It appends
-118,785 fresh tokens to exercise the early read at a nonzero position.
-Require the same mode-16 suffix, direct writer, output IDs, active target
-state and KV work in both processes, with a single early read only in the
-enabled arm. Measure sustained and agent-session behavior separately.
+The same-binary live RESTORE comparison closes at `6819afd49`. Both
+processes park a 16,385-token prefix, switch to a 33-token conversation,
+restore the first prefix from RAM and append 118,785 fresh tokens in
+mode 16 with the direct writer. Output IDs, active target state, work
+counters and the 12 KV stage records and mirror digest match. The early
+arm gathers once and consumes 8,192 rows at layer 1. The control records
+zero early reads. Both processes exit normally with no fresh Xe faults.
+The selector remains opt-in pending the matched sustained generation,
+weak-draft and agent-session comparisons.
 [Live RESTORE controller](../bench/dflash2_prefill_ple_early_restore.py).
 
 The closed comparison at `bdfd43ec9` preserves the 12 requests and
