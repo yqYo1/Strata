@@ -786,7 +786,9 @@ the same run separated by an invalid boundary cell, and ordered misses
 among hits. Check the complete map, counters, copies and guarded inputs
 against the existing host oracle after direct execution and graph replay.
 Exercise the actual 65,536-page/5,120-slot K8V8 shape with parameter
-validation before clean timing.
+validation before clean timing. The `--planner-resident-batch-validate`
+fixture checks both resolvers at the physical final cell, after epoch
+rollover and malformed widths, and on the same four timing shapes.
 
 Compare `--planner-resident-batch-benchmark cooperative` and
 `--planner-resident-batch-benchmark resident-batch` at width three.

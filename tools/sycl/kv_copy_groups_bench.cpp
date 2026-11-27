@@ -357,7 +357,8 @@ void graph_contract(Fixture &f,bool cooperative=false) {
 }
 // Main-authored extension of the owned fixture/oracle. Keep the candidate's
 // graph parameters fixed while refreshing input contents and persistent state.
-void planner_context_graph(Fixture &f, int queries = 4, bool cooperative = true) {
+void planner_context_graph(Fixture &f, int queries = 4,
+                           Resolver resolver = decode_kv_stream_resolve_coalesced) {
   require((queries == 3 || queries == 4) && f.shape.blocks == 65536 &&
           f.shape.page == 4 && f.shape.slots >= 1025,
           "fixed physical-context planner fixture geometry");
@@ -374,7 +375,7 @@ void planner_context_graph(Fixture &f, int queries = 4, bool cooperative = true)
   Input in(f,base);
   f.put(base.before,initial_payload(f.shape,base.before));
   ex::command_graph<ex::graph_state::modifiable> graph(f.q.get_context(),f.q.get_device());
-  graph.begin_recording(f.q); in.submit(f,0,cooperative); graph.end_recording(f.q);
+  graph.begin_recording(f.q); in.submit(f,0,resolver); graph.end_recording(f.q);
   auto executable=graph.finalize();
   State previous=base.before;
   for(int pass=0;pass<5;++pass) {
@@ -395,8 +396,12 @@ void planner_context_graph(Fixture &f, int queries = 4, bool cooperative = true)
     });
     const auto fingerprint=check(f,in,expected,payload);
     std::cout << "{\"phase\":\"planner_context_graph\",\"fmt\":" << f.shape.fmt;
-    if (queries == 3)
-      std::cout << ",\"nq\":3,\"cooperative\":" << (cooperative ? "true" : "false");
+    if (queries == 3) {
+      std::cout << ",\"nq\":3,\"cooperative\":"
+                << (resolver == kv_stream_resolve_with_copy_groups ? "false" : "true");
+      if (resolver == decode_kv_stream_resolve_resident_batch)
+        std::cout << ",\"resident_batch\":true";
+    }
     std::cout
               << ",\"last_cell\":262143,\"replay\":" << pass
               << ",\"oracle_exact\":true,\"fingerprint_fnv64\":" << fingerprint << "}\n";
@@ -589,30 +594,42 @@ Case planner_case(const Shape &s, int nq, int missing, bool interleaved_misses =
   require(count==s.slots,"full initial cache");
   c.before.ctl[0]=9;c.before.ctl[1]=3917;return c;
 }
+std::vector<int> planner_miss_counts(int nq, bool interleaved_misses) {
+  if (interleaved_misses) return {0, 16, 64, 384};
+  return {0, 513 * nq / 4, 513 * nq};
+}
 void planner_perf_validation(std::shared_ptr<Runtime> rt, sycl::queue &q,
-                             const std::vector<int> &widths) {
+                             const std::vector<int> &widths, bool interleaved_misses) {
   const bool width_three = std::find(widths.begin(), widths.end(), 3) != widths.end();
   const Shape s{65536,5120,4,2,256,kKvInt8};Fixture f(s,rt,q);
+  const std::array<Resolver, 2> resolvers = interleaved_misses
+      ? std::array<Resolver, 2>{decode_kv_stream_resolve_coalesced, decode_kv_stream_resolve_resident_batch}
+      : std::array<Resolver, 2>{kv_stream_resolve_with_copy_groups, decode_kv_stream_resolve_coalesced};
   if (width_three) {
-    planner_context_graph(f, 3, false);
-    planner_context_graph(f, 3, true);
+    for (const auto resolver : resolvers)
+      planner_context_graph(f, 3, resolver);
   }
-  for(int nq:widths) for(int pattern:{0,1,2}) {
-    const int missing=pattern==0?0:pattern==1?513*nq/4:513*nq;
-    const auto c=planner_case(s,nq,missing);Input in(f,c);
+  for (int nq : widths) for (int missing : planner_miss_counts(nq, interleaved_misses)) {
+    const auto c = planner_case(s, nq, missing, interleaved_misses);
+    Input in(f,c);
     const auto expected=resolve(s,c),initial=c.before;
     const auto payload=expected_payload(s,initial,expected);
     require(!expected.ctl[3] && expected.ctl[2]==missing,"exact planned placement count");
-    for(bool cooperative:{false,true}) {
-      f.put(initial,initial_payload(s,initial));auto graph=capture(f,in,0,cooperative);
+    for (const auto resolver : resolvers) {
+      f.put(initial,initial_payload(s,initial));auto graph=capture(f,in,0,resolver);
       // Payload writes are idempotent; only map/control state is reset later.
       for(int replay=0;replay<2;++replay) {
         f.put_map(initial);(void)timed(f,in,0,false,graph.get());
         (void)check(f,in,expected,payload);
       }
       std::cout << "{\"phase\":\"planner_perf_cases\",\"nq\":" << nq
-        << ",\"missing\":" << missing << ",\"cooperative\":" << (cooperative?"true":"false")
-        << ",\"replays\":2,\"oracle_exact\":true}\n";
+        << ",\"missing\":" << missing << ",\"cooperative\":"
+        << (resolver == kv_stream_resolve_with_copy_groups ? "false" : "true");
+      if (resolver == decode_kv_stream_resolve_resident_batch)
+        std::cout << ",\"resident_batch\":true";
+      if (interleaved_misses)
+        std::cout << ",\"miss_pattern\":\"interleaved\"";
+      std::cout << ",\"replays\":2,\"oracle_exact\":true}\n";
     }
   }
   f.source_exact();
@@ -626,11 +643,8 @@ void planner_benchmark(std::shared_ptr<Runtime> rt, sycl::queue &q, Resolver res
                        const std::vector<int> &widths, bool interleaved_misses) {
   const Shape s{65536,5120,4,2,256,kKvInt8};Fixture f(s,rt,q);
   const double pair_ns=planner_clock_pair();size_t samples=0;
-  constexpr std::array<int, 4> hit_batch_misses{0, 16, 64, 384};
-  const size_t patterns = interleaved_misses ? hit_batch_misses.size() : 3;
-  for (int nq : widths) for (size_t pattern = 0; pattern < patterns; ++pattern) {
-    const std::array<int, 3> legacy_misses{0, 513 * nq / 4, 513 * nq};
-    const int missing = interleaved_misses ? hit_batch_misses[pattern] : legacy_misses[pattern];
+  const size_t patterns = planner_miss_counts(widths.front(), interleaved_misses).size();
+  for (int nq : widths) for (int missing : planner_miss_counts(nq, interleaved_misses)) {
     const auto c = planner_case(s, nq, missing, interleaved_misses);
     Input in(f,c);const auto expected=resolve(s,c);
     const auto payload=expected_payload(s,c.before,expected);
@@ -755,7 +769,8 @@ int main(int argc,char **argv) {
     if(mode=="--help") {
       require(argc<=2,"help takes no extra args");
       std::cout << "sycl_kv_copy_groups_bench --host-env|--validate|--validate-exhaustive|--planner-smoke|--planner-validate|--planner-benchmark scalar|cooperative|--planner-width3-smoke|--planner-width3-validate|--planner-width3-benchmark scalar|cooperative|--planner-width3-trace ARM MISSES|--benchmark GROUPS SAMPLES|--event-benchmark GROUPS SAMPLES|--graph-benchmark GROUPS SAMPLES|--graph-event-benchmark GROUPS SAMPLES\n";
-      std::cout << "--planner-resident-batch-smoke | --planner-resident-batch-benchmark cooperative|resident-batch\n";
+      std::cout << "--planner-resident-batch-smoke | --planner-resident-batch-validate | "
+                   "--planner-resident-batch-benchmark cooperative|resident-batch\n";
       return 0;
     }
     const bool graph=mode=="--graph-benchmark"||mode=="--graph-event-benchmark";
@@ -764,6 +779,7 @@ int main(int argc,char **argv) {
     const bool smoke=mode=="--planner-smoke";
     const bool width_three_smoke = mode == "--planner-width3-smoke";
     const bool resident_batch_smoke = mode == "--planner-resident-batch-smoke";
+    const bool resident_batch_validate = mode == "--planner-resident-batch-validate";
     const bool resident_batch_timing = mode == "--planner-resident-batch-benchmark";
     const bool width_three_validation = mode == "--planner-width3-validate";
     const bool width_three_timing = mode == "--planner-width3-benchmark";
@@ -771,7 +787,7 @@ int main(int argc,char **argv) {
     const bool planner_speed = mode == "--planner-benchmark" || width_three_timing || resident_batch_timing;
     const bool planner_arm = planner_speed || width_three_trace;
     const bool planner = mode == "--planner-validate" || smoke || planner_arm
-        || width_three_smoke || width_three_validation || resident_batch_smoke;
+        || width_three_smoke || width_three_validation || resident_batch_smoke || resident_batch_validate;
     require(((bench || width_three_trace) && argc == 4) || (planner_speed && argc == 3) ||
         ((mode == "--validate" || mode == "--validate-exhaustive" || planner) && !planner_arm && argc == 2),
         "invalid arguments");
@@ -799,7 +815,7 @@ int main(int argc,char **argv) {
         rt->device().get_info<sycl::info::device::name>().find("B570")!=std::string::npos,
         "planner screen requires the qualified B570/in-order/workgroup256 setup");
     std::cerr << "device=" << rt->device().get_info<sycl::info::device::name>() << "\n";
-    const auto planner_widths = width_three_validation || width_three_timing || resident_batch_timing
+    const auto planner_widths = width_three_validation || width_three_timing || resident_batch_timing || resident_batch_validate
         ? std::vector<int>{3} : std::vector<int>{2, 4};
     if (width_three_trace) planner_width3_trace(rt, q, arm == "cooperative", trace_misses);
     else if (planner_speed) {
@@ -812,9 +828,10 @@ int main(int argc,char **argv) {
     else if (width_three_smoke) planner_width3_smoke(rt, q);
     else if (resident_batch_smoke) planner_resident_batch_smoke(rt, q);
     else if(bench) benchmark(rt,q,candidate,samples,events,graph);
-    else if(!width_three_validation) validate(rt,q,mode=="--validate-exhaustive",startup_groups,planner);
-    if(mode=="--planner-validate" || width_three_validation)
-      planner_perf_validation(rt,q,planner_widths);
+    else if(!width_three_validation && !resident_batch_validate)
+      validate(rt,q,mode=="--validate-exhaustive",startup_groups,planner);
+    if(mode=="--planner-validate" || width_three_validation || resident_batch_validate)
+      planner_perf_validation(rt, q, planner_widths, resident_batch_validate);
     checked_all(rt,q,"final completion");
     if(planner) {
       std::cout << "KV_PLAN_WAIT\n" << std::flush;
