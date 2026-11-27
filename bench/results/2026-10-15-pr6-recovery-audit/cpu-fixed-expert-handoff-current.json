@@ -1,5 +1,5 @@
 {
-  "stage": "built",
+  "stage": "checked",
   "source_commit": "0c08d8c01bc7d140aa584c6447ef567ce2c58e78",
   "machine": {
     "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
@@ -299,7 +299,160 @@
     "file": 67108864,
     "total": 402653184
   },
-  "processes": [],
+  "processes": [
+    {
+      "round": 0,
+      "mode": "handoff-split",
+      "cores": 6,
+      "placement": {
+        "kind": "replay_placement",
+        "host_cpu": 0,
+        "workers": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "caller_computes": true
+      },
+      "owner": {
+        "pid": 1783597,
+        "direct_identity": {
+          "pid": 1783597,
+          "state": "R",
+          "ppid": 1783437,
+          "pgid": 1783597,
+          "sid": 1783597,
+          "start_ticks": 412646096,
+          "rss_bytes": 294912
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 0.863596314098686,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "errors": [],
+        "cleanup": [],
+        "peak_session_rss_bytes": 350138368
+      }
+    },
+    {
+      "round": 0,
+      "mode": "handoff-split",
+      "cores": 5,
+      "placement": {
+        "kind": "replay_placement",
+        "host_cpu": 0,
+        "workers": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "caller_computes": false
+      },
+      "owner": {
+        "pid": 1783627,
+        "direct_identity": {
+          "pid": 1783627,
+          "state": "R",
+          "ppid": 1783437,
+          "pgid": 1783627,
+          "sid": 1783627,
+          "start_ticks": 412646190,
+          "rss_bytes": 311296
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 0.807491272687912,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "errors": [],
+        "cleanup": [],
+        "peak_session_rss_bytes": 383983616
+      }
+    },
+    {
+      "round": 0,
+      "mode": "handoff-expert",
+      "cores": 5,
+      "placement": {
+        "kind": "replay_placement",
+        "host_cpu": 0,
+        "workers": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "caller_computes": false
+      },
+      "owner": {
+        "pid": 1783661,
+        "direct_identity": {
+          "pid": 1783661,
+          "state": "R",
+          "ppid": 1783437,
+          "pgid": 1783661,
+          "sid": 1783661,
+          "start_ticks": 412646280,
+          "rss_bytes": 311296
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 0.8107248386368155,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "errors": [],
+        "cleanup": [],
+        "peak_session_rss_bytes": 387072000
+      }
+    },
+    {
+      "round": 0,
+      "mode": "handoff-early",
+      "cores": 5,
+      "placement": {
+        "kind": "replay_placement",
+        "host_cpu": 0,
+        "workers": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "caller_computes": false
+      },
+      "owner": {
+        "pid": 1783691,
+        "direct_identity": {
+          "pid": 1783691,
+          "state": "R",
+          "ppid": 1783437,
+          "pgid": 1783691,
+          "sid": 1783691,
+          "start_ticks": 412646371,
+          "rss_bytes": 311296
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 0.914358071051538,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "errors": [],
+        "cleanup": [],
+        "peak_session_rss_bytes": 387211264
+      }
+    }
+  ],
   "active": false,
   "ownership_closed": true,
   "gpu_executed": false,
