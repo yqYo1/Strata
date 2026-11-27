@@ -26,5 +26,12 @@ void native_moe_combine_multi(const float* parts, const float* weights, const fl
 void decode_moe_combine_mapped_rows(const float* mapped_cpu_parts, const float* gpu_parts,
                                     const int32_t* gpu_rows, const int32_t* gpu_count,
                                     const float* weights, const float* shared, float* output, void* stream);
+// One half of the same four-token projection plan. The CPU allocation
+// contains only the selected two tokens. Resident row IDs and GPU parts
+// retain their full four-token indices. Weights, shared and output point
+// to the selected half.
+void decode_moe_combine_mapped_half(int first_token, const float* mapped_cpu_parts, const float* gpu_parts,
+                                   const int32_t* gpu_rows, const int32_t* gpu_count,
+                                   const float* weights, const float* shared, float* output, void* stream);
 #endif
 }

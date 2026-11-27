@@ -359,7 +359,7 @@ struct ReplayBatch {
     std::array<std::unique_ptr<Buffer>, replay_rows> acts;
     std::vector<std::unique_ptr<Buffer>> outputs;
     std::vector<cpu::ExpertJobMulti> jobs;
-#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
     std::vector<int> first_token;
 #endif
     const cpu::NativeFmt* format = nullptr;
@@ -398,7 +398,7 @@ struct ReplayBatch {
                 int row = 0;
                 in >> row;
                 require(!in.fail() && row > previous_row && row < width, "replay job row order");
-#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
                 if (t == 0) first_token.push_back(row);
 #endif
                 previous_row = row;
@@ -412,7 +412,7 @@ struct ReplayBatch {
 
     // The pool borrows these buffers until its synchronous retirement.
     void run(cpu::ExpertPool& pool, bool by_expert = false) {
-#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
         if (by_expert) {
             require(pool.run_decode_native_by_expert(*format, jobs.data(), static_cast<int>(jobs.size())),
                     "by-expert schedule refused the replay batch");
@@ -458,7 +458,7 @@ struct ReplayBatch {
         for (const auto& out : outputs) out->check();
     }
 
-#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
     int first_pair_prefix() const {
         const int total = static_cast<int>(jobs.size());
         const int prefix = static_cast<int>(std::count_if(first_token.begin(), first_token.end(),
@@ -644,7 +644,7 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
     require(in.eof(), "trailing replay instructions");
 
     const std::vector<int> worker_cores(topo.worker_cores.begin(), topo.worker_cores.begin() + workers);
-#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
     if (schedule == "publication") {
         verify_placement(topo.host_core, worker_cores);
         report_placement(topo.host_core, worker_cores, host_works);
@@ -666,7 +666,7 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
     }
 
     const bool handoff = schedule.starts_with("handoff-");
-#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
     const bool early = schedule == "handoff-early";
 #endif
     uint64_t jobs = 0, entries = 0, visits = 0, unique_blobs = 0, unique_bytes = 0;
@@ -686,7 +686,7 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
     auto validate = [&] {
         for (auto& batch : batches) {
             if (handoff && batch.width != 4) continue;
-#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
             if (early) {
                 batch.validate_publication(pool, false);
                 continue;
@@ -725,7 +725,7 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
                 require(selected.size() == 2, "expected two captured batches per scheduling shape");
                 const auto shape_fields = fields + ",\"gu\":" + std::to_string(gu)
                     + ",\"width\":" + std::to_string(width);
-#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
                 if (early) {
                     PublicationTiming stats;
                     const std::array<int, 2> prefixes{selected[0]->first_pair_prefix(), selected[1]->first_pair_prefix()};
@@ -748,7 +748,7 @@ int main(int argc,char** argv) try {
     std::cout<<std::setprecision(12);
     const auto topo=cpu::detect_cpu_topology(true);
     require(topo.host_core>=0 && topo.worker_cores.size()>=5,"six physical CPUs required");
-#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
     if (argc == 3 && std::string_view(argv[1]) == "replay-publication-check") {
         route_replay(argv[2], topo, 5, false, -1, false, "publication");
     } else if (argc == 6 && std::string_view(argv[1]) == "replay-handoff") {

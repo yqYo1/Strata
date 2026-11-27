@@ -2456,6 +2456,30 @@ at a given width, so a decode-only change in its value would also
 change the prompt-side replay's expected geometry.
 [Graph selection](../include/strata/core/verify_window_policy.hpp).
 
+The model candidate exposes the three schedules via
+`STRATA_SYCL_DECODE_T4_SCHEDULE=stock|after-cpu|early`. The stock setting
+is the default. The opt-in arms require a full DFlash2 verifier, a single
+local resident plan and no PCIe expert share. They retain one plan and
+CPU dispatch per layer. Graphs read separate pinned host halves, with a
+CPU copy from the original dispatcher output into each half. Include both
+copies in the integrated comparison. The early callback runs synchronously
+on the caller while the workers complete the second half. The second
+graph publishes next-layer routing only after the old dispatch and trace
+return. Prompt verification and other decode widths retain their original
+graph families. `STRATA_SYCL_DECODE_T4_AUDIT=1` records the actual
+by-expert readiness and early submission counts for each width-four
+decode window.
+
+The same-build shared-plan fixture compares the stock four-token
+copy/add/reduce graph with two half kernels using the same resident IDs.
+It tests a poisoned unpublished half and a queued handoff, with bitwise
+outputs, untouched guards and nine hit counts. Follow this with a traced
+small model comparison across the three schedules before measuring speed.
+Match prompt and decode state, routed work, valid rolling state and
+held-out output. Run longer sustained generation and full-context checks
+after parity.
+[T4 build controller](../bench/dflash2_decode_t4_build.py).
+
 For a copy-once control, the full CPU result slab at `T=4`, `K=10` and
 `N=2560` is 409,600 bytes per layer, or 19,660,800 across 48 layers. The
 6.292–6.485 GB/s large host-USM copy reference would move that payload in

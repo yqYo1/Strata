@@ -5801,6 +5801,13 @@ int main(int argc, char** argv) {
         }
         drive.d.plan = ver.plan_sink();
         drive.d.pcie_num = std::max(0, std::min(256, (int) (o.pcie_frac * 256.0 + 0.5)));
+#ifdef STRATA_ENABLE_SYCL
+        if (!ver.configure_decode_t4_dispatch(n_stages == 1 && !multi_gpu && drive.d.host_res &&
+            drive.d.pcie_num == 0 && !drive.d.peer && drive.d.remote_count == 0, err)) {
+            std::fprintf(stderr, "strata serve: %s\n", err.c_str());
+            return 1;
+        }
+#endif
         if (o.adapt_every > 0 && o.adapt_swaps > 0) drive.d.usage.assign((size_t) (g.n_layers * g.n_expert), 0.0f);
         // #477 --expert-profile-save: what the adaptive tier learned, kept across restarts (opt-in; off: `heat` stays
         // empty and nothing below runs).  It needs the adaptive tier's counts and the residency table.
@@ -8071,6 +8078,13 @@ int main(int argc, char** argv) {
         drive.d.pcie_num = (int) (o.pcie_frac * 256.0 + 0.5);
         if (drive.d.pcie_num < 0) drive.d.pcie_num = 0;
         if (drive.d.pcie_num > 256) drive.d.pcie_num = 256;
+#ifdef STRATA_ENABLE_SYCL
+        if (!ver.configure_decode_t4_dispatch(!multi_gpu && drive.d.host_res &&
+            drive.d.pcie_num == 0 && !drive.d.peer && drive.d.remote_count == 0, err)) {
+            std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+            return 1;
+        }
+#endif
         const int64_t pcie0 = drive.d.pcie_experts;
         // CS-T: the file tier since the decode began (the prompt path's copies are before this)
         const int64_t files0 = src.file_reads(), ram0 = src.ram_reads();

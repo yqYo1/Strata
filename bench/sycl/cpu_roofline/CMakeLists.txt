@@ -27,7 +27,7 @@ target_include_directories(expert_cpu PUBLIC "${STRATA_ROOT}/include" PRIVATE "$
 target_compile_definitions(expert_cpu PUBLIC STRATA_NATIVE_EXPERTS=1 STRATA_CPU_SERVICE_PROFILE=1)
 option(STRATA_CPU_EXPERT_SCHEDULE_TEST "Build the by-expert decode scheduling replay" OFF)
 if(STRATA_CPU_EXPERT_SCHEDULE_TEST)
-  target_compile_definitions(expert_cpu PUBLIC STRATA_CPU_EXPERT_SCHEDULE_TEST=1)
+  target_compile_definitions(expert_cpu PUBLIC STRATA_DECODE_EXPERT_SCHEDULE=1)
 endif()
 target_compile_options(expert_cpu PRIVATE -march=znver3 -mtune=znver3)
 set_source_files_properties(${CPU}/expert.cpp ${CPU}/iq_avx512.cpp PROPERTIES

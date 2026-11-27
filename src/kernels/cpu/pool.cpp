@@ -540,7 +540,7 @@ void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
             const int e = (int) i / parts_b_, part = (int) i % parts_b_;
             const int r0 = H * part / parts_b_, r1 = H * (part + 1) / parts_b_;
             s2_expert_down_rows(jobs_[e].blob, split_[(size_t) e].a2, jobs_[e].out, r0, r1);
-#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
         } else if (mode_ == kDecodeByExpert) {
             finish_decode_native_expert(id, i);
             if (decode_publication_ && i < static_cast<uint32_t>(decode_publication_->prefix_jobs))
@@ -616,16 +616,18 @@ void ExpertPool::run_phase(int mode, int n_tasks) {
     mode_ = mode;
     njobs_ = n_tasks;
     const uint32_t e = begin_batch(n_tasks);
-    if (host_works_) drain(-1, host_scratch_, e);
-#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
     const auto* publication = mode == kDecodeByExpert ? decode_publication_ : nullptr;
+    if (host_works_ && !publication) drain(-1, host_scratch_, e);
     if (publication && !publication->after_all) {
         wait_completed(decode_prefix_done_, publication->prefix_jobs);
         publication->ready(publication->context);
     }
+#else
+    if (host_works_) drain(-1, host_scratch_, e);
 #endif
     wait_done(n_tasks);
-#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
     if (publication && publication->after_all) publication->ready(publication->context);
 #endif
     wait_parked("after a phase");
@@ -732,7 +734,7 @@ void ExpertPool::run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs
     ms_drain_ += std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - t0).count();
 }
 
-#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
 void ExpertPool::finish_decode_native_expert(int id, unsigned expert) {
     (void) id;
     const ExpertJobMulti& job = mjobs_[expert];
@@ -773,7 +775,7 @@ bool ExpertPool::run_decode_native_by_expert(const NativeFmt& f, ExpertJobMulti*
         return false;
     for (int e = 0; e < n; ++e)
         if (jobs[e].nt < 1 || jobs[e].nt > MAXT) return false;
-    if (publication && (host_works_ || !publication->ready ||
+    if (publication && (!publication->ready ||
                         publication->prefix_jobs < 0 || publication->prefix_jobs > n)) return false;
 #ifdef STRATA_CPU_SERVICE_PROFILE
     service::Profile::BatchScope batch(service_profile_, NativeGuPhase::Decode);

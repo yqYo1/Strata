@@ -188,6 +188,9 @@ public:
     /// The GPU plan the pool writes each layer (VRAM hits + the PCIe share of the misses); give it to the
     /// dispatch (`ExpertDispatch::plan`) before the first `run`.
     GpuPlanSink* plan_sink() { return &sink_; }
+#ifdef STRATA_ENABLE_SYCL
+    bool configure_decode_t4_dispatch(bool local_plan_without_pcie, std::string& err);
+#endif
     /// Plan v0.3 P6: split the window into two token groups and pipeline the CPU experts of one with the GPU work
     /// of the other (default on).  Set before the first `run`.
     void set_split(bool on) { split_ = on; }
@@ -333,10 +336,20 @@ private:
     bool finish_expert_copies(std::string& err);
     friend struct VerifierRetirementTestAccess;
     std::atomic<uint32_t> reached_{0};
-    enum class SegmentKind { layer, resident, pcie };
+    enum class SegmentKind { layer, resident, pcie, first_pair };
     bool end_segment(int T, std::string& err, VerifyInput input, SegmentKind kind = SegmentKind::layer);
     void launch_work();
     void launch_pcie(int groups);
+    enum class DecodeT4Schedule { stock, after_cpu, early };
+    DecodeT4Schedule decode_t4_schedule_ = DecodeT4Schedule::stock;
+    bool decode_t4_dispatch_ = false;
+    bool decode_t4_audit_ = false;
+    bool decode_t4_window(VerifyInput input, int width) const noexcept {
+        return decode_t4_dispatch_ && input == VerifyInput::decode && width == 4;
+    }
+    static constexpr size_t decode_t4_half_floats = 2 * 10 * 2560;
+    float* decode_t4_cpu_[2]{};
+    float* decode_t4_device_[2]{};
 #endif
     cudaGraphExec_t commit_exec_ = nullptr;
 

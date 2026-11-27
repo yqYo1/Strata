@@ -164,16 +164,16 @@ public:
     /// Plan v0.3 P6: the same for a native pack's layer (ggml-cpu arithmetic, `nact` activations).
     void run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n,
                                 NativeGuPhase phase = NativeGuPhase::Decode);
-#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
     struct DecodePublication {
         int prefix_jobs;
         void (*ready)(void*) noexcept;
         void* context;
         bool after_all;
     };
-    // CPU fixture arm. Complete all three stages of an expert in one claim.
-    // The callback runs on the reserved caller and may read finished output
-    // rows. Borrowed buffers still need to live through full pool retirement.
+    // Decode scheduler. Complete all three stages of an expert in one claim.
+    // A publication reserves the caller for this epoch and exposes finished
+    // output rows. Borrowed buffers live through full pool retirement.
     bool run_decode_native_by_expert(const NativeFmt& f, ExpertJobMulti* jobs, int n,
                                      const DecodePublication* publication = nullptr);
 #endif
@@ -216,7 +216,7 @@ private:
     void worker(int id);
     void drain(int id, ExpertScratch& scratch, uint32_t epoch);
     void run_phase(int mode, int n_tasks);
-#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
     static constexpr int kDecodeByExpert = 7;
     void finish_decode_native_expert(int id, unsigned expert);
     const DecodePublication* decode_publication_ = nullptr;
@@ -300,7 +300,7 @@ private:
     std::vector<SplitBufMulti> split_multi_;
     PoolAffinity affinity_ = PoolAffinity::All;
     CpuTopology topo_;
-#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
     alignas(64) std::atomic<uint32_t> decode_prefix_done_{0};
 #endif
 };

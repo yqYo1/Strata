@@ -37,7 +37,7 @@ constexpr int split_metadata_entries = second_half_meta + half_rows + 1;
 constexpr int guard = 16, batches = 4, replays = 512;
 constexpr float sentinel = -7103.0f;
 using Clock = std::chrono::steady_clock;
-enum class Comparison { stock_to_mapped, mapped_to_copy, all_three, publication };
+enum class Comparison { stock_to_mapped, mapped_to_copy, all_three, publication, shared_plan };
 constexpr int stock_hit_counts[] = {0, 1, 2, 3, 4, 5, 10, 39, rows};
 constexpr int legacy_hit_counts[] = {0, 4, 10, 20, 39, rows};
 constexpr std::array<std::array<int, 3>, 6> three_arm_orders{{
@@ -108,7 +108,8 @@ float weight_value(int row) {
 void run(std::string_view mode, Comparison comparison) {
     const bool all_three = comparison == Comparison::all_three;
     const bool mapped_to_copy = comparison == Comparison::mapped_to_copy;
-    const bool publication = comparison == Comparison::publication;
+    const bool shared_plan = comparison == Comparison::shared_plan;
+    const bool publication = comparison == Comparison::publication || shared_plan;
     const int arm_count = all_three ? 3 : 2;
     const int copy_arm = all_three ? 2 : 1;
     const bool include_copy = all_three || mapped_to_copy;
@@ -120,7 +121,7 @@ void run(std::string_view mode, Comparison comparison) {
             half = Allocation(runtime, half_rows * columns * sizeof(float), MemoryKind::Host);
     Allocation gpu(runtime, parts * sizeof(float), MemoryKind::Device);
     Allocation assembled(runtime, parts * sizeof(float), MemoryKind::Device);
-    const int metadata_entries = publication ? split_metadata_entries : rows + 1;
+    const int metadata_entries = publication && !shared_plan ? split_metadata_entries : rows + 1;
     Allocation meta(runtime, metadata_entries * sizeof(int32_t), MemoryKind::Device);
     Allocation weights(runtime, rows * sizeof(float), MemoryKind::Device);
     Allocation shared(runtime, outputs * sizeof(float), MemoryKind::Device);
@@ -158,7 +159,16 @@ void run(std::string_view mode, Comparison comparison) {
     } else {
         capture_stock(0, cpu, 0, tokens, 0);
     }
-    if (publication) {
+    if (shared_plan) {
+        for (int half = 0; half < 2; ++half) {
+            const int first = half * half_tokens;
+            graphs.capture(half + 1, 1, [&](void* stream) {
+                decode_moe_combine_mapped_half(first, host_halves[half].as<float>(), device,
+                    hits + 1, hits, weights.as<float>() + first * experts,
+                    shared.as<float>() + first * columns, out + first * columns, stream);
+            });
+        }
+    } else if (publication) {
         capture_stock(1, host_halves[0].as<float>(), 0, half_tokens, first_half_meta);
         capture_stock(2, host_halves[1].as<float>(), half_tokens, half_tokens, second_half_meta);
     } else {
@@ -195,7 +205,7 @@ void run(std::string_view mode, Comparison comparison) {
             resident[row] = true;
             metadata[hit + 1] = row;
         }
-        if (publication) {
+        if (publication && !shared_plan) {
             for (int first : {0, half_rows}) {
                 const int offset = first == 0 ? first_half_meta : second_half_meta;
                 int cut_hits = 0;
@@ -355,17 +365,19 @@ int main(int argc, char** argv) {
         const bool compare_copy = argc == 3 && std::string_view(argv[2]) == "--compare-copy";
         const bool compare_stock = argc == 3 && std::string_view(argv[2]) == "--compare-stock";
         const bool publication = argc == 3 && std::string_view(argv[2]) == "--check-publication";
-        const std::string_view mode = (argc == 2 || compare_copy || compare_stock || publication) ? argv[1] : "";
-        require(!publication || mode == "validate", "publication fixture only supports validate");
+        const bool shared_plan = argc == 3 && std::string_view(argv[2]) == "--check-shared-plan";
+        const std::string_view mode = (argc == 2 || compare_copy || compare_stock || publication || shared_plan) ? argv[1] : "";
+        require(!(publication || shared_plan) || mode == "validate", "publication fixture only supports validate");
         require(mode == "validate" || mode == "time-forward" || mode == "time-reverse"
                 || (compare_stock && mode == "time-rotated"), "select a valid combine comparison and mode");
         Comparison comparison = Comparison::stock_to_mapped;
         if (compare_copy) comparison = Comparison::mapped_to_copy;
         if (compare_stock) comparison = Comparison::all_three;
         if (publication) comparison = Comparison::publication;
+        if (shared_plan) comparison = Comparison::shared_plan;
         run(mode, comparison);
         std::cout << "decode MoE combine numerical=PASS guards=PASS nodes="
-                  << (publication ? "3/3/3" : compare_stock ? "3/1/1" : compare_copy ? "1/1" : "3/1")
+                  << (publication ? "3/3/3" : (compare_stock || shared_plan) ? "3/1/1" : compare_copy ? "1/1" : "3/1")
                   << " completed=1\n";
     } catch (const std::exception& failure) {
         std::cerr << failure.what() << '\n';

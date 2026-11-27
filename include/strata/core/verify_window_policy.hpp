@@ -128,7 +128,7 @@ public:
     VerifyWindowGraphCache(const VerifyWindowGraphCache&) = delete;
     VerifyWindowGraphCache& operator=(const VerifyWindowGraphCache&) = delete;
     struct Window {
-        std::vector<Handle> layer, resident, pcie;
+        std::vector<Handle> layer, resident, pcie, first_pair;
         uint64_t kv_scalar_calls = 0, kv_coalesced_calls = 0;
         uint64_t qsa_reference_calls = 0, qsa_grid_calls = 0;
         uint64_t q6_reference_calls = 0, q6_columns_calls = 0, q6_centered_calls = 0,
@@ -169,7 +169,7 @@ public:
 
         template<class Destroy>
         void clear(Destroy&& destroy) {
-            for (auto* family : {&layer, &resident, &pcie}) {
+            for (auto* family : {&layer, &resident, &pcie, &first_pair}) {
                 for (auto& handle : *family) if (handle) {
                     destroy(handle);
                     handle = {};

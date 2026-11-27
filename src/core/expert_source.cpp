@@ -2064,7 +2064,16 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
         d.src->prefetch(d.layers, miss.data(), (int64_t) miss.size());
     }
     int njobs = 0;
-    for (int64_t t = 0; t < n_tok; ++t)
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
+    const auto* t4 = n_tok == 4 && d.native_gu_phase == NativeGuPhase::Decode &&
+        d.plan && n <= d.plan->cap && d.pcie_num == 0 && !d.peer && d.remote_count == 0 ?
+        d.plan->decode_t4_publication : nullptr;
+    int first_pair_jobs = 0;
+#endif
+    for (int64_t t = 0; t < n_tok; ++t) {
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
+        if (t4 && t == 2) first_pair_jobs = njobs;
+#endif
         for (int64_t j = 0; j < k; ++j) {
             const int64_t i = t * k + j;
             const int64_t e = ids[i];
@@ -2115,12 +2124,28 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
             ++jb.nt;
             ++d.multi_entries;
         }
+    }
     const auto c3 = std::chrono::steady_clock::now();
     pt("run", njobs);
     if (native) {
         // Native jobs borrow dispatch-owned buffers. Do not unwind them if completion throws.
         try {
-            d.pool->run_split_multi_native(lay.fmt[(size_t) d.layers], d.jobs_multi.data(), njobs, d.native_gu_phase);
+            const auto& fmt = lay.fmt[(size_t) d.layers];
+            bool published = false;
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
+            if (t4) {
+                const ExpertPool::DecodePublication publication{
+                    first_pair_jobs, t4->ready, t4->context, t4->after_all};
+                if (njobs == 0) {
+                    t4->ready(t4->context);
+                    published = true;
+                } else {
+                    published = d.pool->run_decode_native_by_expert(fmt, d.jobs_multi.data(), njobs, &publication);
+                }
+            }
+#endif
+            if (!published)
+                d.pool->run_split_multi_native(fmt, d.jobs_multi.data(), njobs, d.native_gu_phase);
         } catch (...) {
             std::fprintf(stderr, "strata: native expert pool failed before completion; retaining owners and aborting\n");
             strata::core::release_gpu_waits(stderr);
@@ -2167,6 +2192,9 @@ void expert_pool_dispatch_multi(ExpertDispatch& d, const float* x_f, const int32
     d.multi_misses += njobs;
     ++d.layers;
     d.experts += n_tok * k;
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
+    if (t4) *t4->completed = true;
+#endif
 }
 
 #ifdef STRATA_ENABLE_SYCL
