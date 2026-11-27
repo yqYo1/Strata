@@ -1403,9 +1403,23 @@ omits the test-only per-row selector counter.
 The [96K timing comparison](../bench/dflash2_decode_iq3s_speed.py) changes
 only this selector on the same executable. It uses three counterbalanced
 independent pairs with the fixed global expert map and the two thinking
-workloads. Check prompt time, TTFT and decode separately. Record matched and
-changed decode work for each pair. Physical context, RESTORE, agent sessions
-and weak draft acceptance remain qualification gates for this candidate.
+workloads. The six processes complete normally with all final assets checked
+and no fresh Xe fault. The table uses the paired geometric-mean change in
+decode throughput and the median paired changes in prompt time and TTFT.
+
+| Workload | Matched generated work | Decode tok/s | Prompt time | Client TTFT |
+| --- | ---: | ---: | ---: | ---: |
+| Code, 96,204 input tokens | 3 of 3 pairs | −0.754% | +0.442% | +0.424% |
+| Prose, 96,274 input tokens | 2 of 3 pairs | −0.420% | +1.072% | +1.073% |
+
+Code has one positive decode pair and prose has two. The last prose pair
+emits 8,618 GGML and 9,053 IQ3_S tokens, with different drafts and expert
+work. Treat that pair as workload throughput. The three GGML repeats span
+15.571–15.891 tok/s for code and 11.108–11.371 tok/s for prose. The comparison
+fails sustained gain, prompt-time preservation and TTFT preservation.
+Keep GGML on the selected model route. The compact result retains the six
+processes and the decision under `dflash2_decode_iq3s_speed_v1`. The CPU
+fixture's gain applies to its captured work.
 
 The timed CPU fixture has no live executable consumer. Its source and results
 are reachable from `feature/sycl` at `14180e833`. The recovery check matches
