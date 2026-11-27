@@ -1741,7 +1741,7 @@ existing cache-loan audit switch, the generator checks the CPU residency map
 and reads the GPU map at each prefill segment and after final refill. It emits
 the request, phase, span, masked-slot boundary and map digest. Keep this
 readback off for clean timing. Rebuild all affected objects and both same-build
-fixtures. The [fixture runner](../bench/dflash2_decode_ranked_refill_checks.py)
+fixtures. The fixture runner at `a57499a15`
 checks the host lease fixture and runs the bounded SYCL ranked-refill cases
 with parameter validation. The device fixture covers
 wrong extent, changed prefix, missing or aliased slots, reader exclusion,
@@ -1772,14 +1772,14 @@ files. The [repeat check](../bench/dflash2_candidate_sycl_syntax.py) at
 `a17905e15` passes both generator units for `ffc455c22`, with 809 and 810
 verified inputs and no compiler diagnostic. The full link and device runs
 remain pending.
-The [live RESTORE runner](../bench/dflash2_decode_ranked_refill_restore.py)
+The live RESTORE runner at `a57499a15`
 uses the previously checked request bodies on the new build. Compare stock
 and final ranked refill at each parked extent, 32,769 and 253,919 tokens.
 In each process check a fresh long prefill, an unrelated 33-token request
 and the restored prefix with an 8,209-token suffix. Bind the masked prefix,
 the full map used for the short prefill, and the final payload and map in
-order. The near-capacity request reaches 262,128 tokens. The [standalone
-context runner](../bench/dflash2_decode_ranked_refill_context.py) first checks
+order. The near-capacity request reaches 262,128 tokens. The standalone
+context runner first checks
 bounds and a 16,385-token handoff, then requires consuming the final slot of
 the 262,144-token context with zero output.
 
@@ -1797,7 +1797,7 @@ The phase reader accepts four synthetic traces and rejects sixteen with
 changed map digests, failed payload checks, premature or extra publications,
 or a missing final handoff. The masked, stock and blended digests are
 `9377e60e8ad8ea63`, `9e0b070ebe90ab9b` and `68eea56314d4990b`.
-The [host controls](../bench/test_dflash2_decode_ranked_refill.py) at
+The host controls at
 `2c8df018b` pass five tests. An in-process native-protocol peer confirms
 both STOP/recovery sequences, mask rejection and refusal to count a late
 STOP as prefill cancellation. The timing reader also refuses missing,
@@ -1889,7 +1889,7 @@ and the ranked-refill candidate through this serialized comparison. Review
 the added generation at the first failed qualification gate or the closing
 timing decision, before starting another engine build.
 
-After the native gates, the [timing runner](../bench/dflash2_decode_ranked_refill_speed.py)
+After the native gates, the timing runner at `a57499a15`
 uses one binary and the same starting profile for three matched independent
 process pairs. Enable only final ranked refill in the candidate. Confirm
 both actual long handoffs and the 2,321,664,000-byte payload publication,
@@ -1930,6 +1930,23 @@ Keep the stock path. The measured stock TTFT spans 0.404 s for code and
 0.987 s for prose. This comparison leaves the cause of the TTFT spread
 unresolved. The compact result retains all samples and the verdict under
 `dflash2_decode_ranked_refill_speed_v1`.
+
+The closed comparison at `a57499a15` is reachable on `feature/sycl`.
+The recovery audit matched 1,327 original source files, 520 committed
+build-control inputs, the compiler and link inputs, 141 fresh objects and
+13 executable identities. All six terminal process receipts match their
+committed outcomes. Retired the descendants below and verified both
+original `record.json` receipts and all 23 retained phase-reference
+executable identities. The inventory hashes include sorted state-relative
+paths, byte counts and file hashes. Removed the failed opt-in, its native
+fixture additions and the closed model runners. Recover them from
+`a57499a15`. The shared build-input reader serves the smaller-KV and IQ3_S
+trials.
+
+| Scope under tuning state | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-decode-ranked-refill-build-v1` | 1,527 | 248,016,088 | `65c426b434623d3344bc2f531d7d8dca3b7c49ee94941030cae58219db5c336a` |
+| `dflash2-decode-ranked-refill-speed-v1` | 436 | 90,756,554 | `693fdc4db0b6f43491f8a74c46207ea169db2c5aed808025d9c47bc078fdbb4a` |
 
 In the first pair, each completed verification window commits one token
 plus its accepted drafts. The last window can emit up to three fewer
