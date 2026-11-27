@@ -153,6 +153,16 @@ remain in force. Use the existing workload selector and one run for a bounded
 diagnostic; three eligible observations per workload are still needed for the
 strong/weak agreement pair.
 
+The retained DFlash2 engine's greedy 96K prose run has about 71% draft
+acceptance. The [sampled prose screen](../bench/dflash2_sampled_continuation.py)
+uses the same count-checked task, thinking and 16,384-token output budget with
+the `qwen-thinking` profile and seed 1. It records the client sampling plan
+and reconciles the native route and draft counts. Run one independent process
+to check whether acceptance enters the existing 40% weak band. A result in
+that band warrants separate repeat qualification on the same settings. Keep
+the sampling plan with the PP, TG and acceptance result. The screen is
+pending an available measurement slot.
+
 These client checks do not prove native split admission. Capture the actual
 per-request candidate admission, engine extent, placement, guard/drain and
 continued decode from the owned native process, and the selected arm's own
