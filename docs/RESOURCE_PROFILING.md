@@ -2547,45 +2547,30 @@ attributing a time difference to that ordering. A positive speed screen
 selects a separate clean comparison; clean performance, weak-draft and
 agent checks, physical-context and RESTORE qualification remain open.
 
-The first block of `dflash2_decode_t4_speed_v1` completes with quiet
-validation and no fresh Xe fault. Stock, deferred and early deliver
-16.139, 14.902 and 15.788 tok/s respectively, with equal checked prefill
-work. The two split schedules match output and reasoning hashes, all
-3,440 generated tokens, draft counts and expert work. Their 680 T4
-windows exercise 23 split steps each. Early publishes 15,640 halves and
-saves 12.945 seconds of decode against deferred. Stock emits 3,195 tokens
-with different draft work. Under the final-window emission bound, early
-averages 185.44–185.92 ms per verifier window against stock's
-193.14–193.70 ms, with fewer emitted tokens per window. Keep this as one
-observed block and finish the frozen repetitions.
+All nine processes of `dflash2_decode_t4_speed_v1` close normally with
+quiet validation, no fresh Xe faults and all 15 model assets verified.
+Each block matches checked prefill work across its three schedules.
+Each sample reads 96,204 fresh tokens. Client TTFT spans 103.542–104.397 s.
 
-The second deferred/early pair reproduces that subcomparison. Rates are
-14.917 and 15.794 tok/s with matching output and reasoning hashes, draft
-counts, expert work and 680 T4 windows. Early saves 12.795 seconds, a
-5.874% rate gain with no fresh Xe fault. The second stock process
-completes at 16.194 tok/s with 3,195 outputs, the original stock output
-hash and 2,173 of 2,248 drafts accepted. Prefill placement, KV work and
-requested H2D bytes match all three arms, with initial client TTFT of
-103.542, 104.028 and 103.591 seconds for stock, deferred and early.
-Early is 2.470% slower than stock in this block. Both completed blocks
-favor stock by model throughput. The predeclared two-of-three win against
-stock is out of reach, and the last block still measures the full
-counterbalanced ordering and repeatability. All six processes have exited
-normally without fresh Xe faults.
+| Block | Stock TG (tok/s) | Deferred TG (tok/s) | Early TG (tok/s) |
+| --- | ---: | ---: | ---: |
+| 1 | 16.139 | 14.902 | 15.788 |
+| 2 | 16.194 | 14.917 | 15.794 |
+| 3 | 16.313 | 14.844 | 15.798 |
 
-The third early process closes at 15.798 tok/s with 103.613 seconds TTFT.
-It repeats the other two early runs' output and reasoning hashes, 3,440
-output tokens, 2,268 of 2,376 drafts accepted, expert work and 15,640
-early submissions. The three early decode times span 217.749–217.894
-seconds. The third stock process closes at 16.313 tok/s with the same
-3,195 outputs, 2,173 of 2,248 drafts accepted and output hash as the two
-earlier stock runs. It matches the third early process's checked prefill
-work and 103.613-second TTFT. Stock wins the model-rate comparison in
-all three blocks. All eight finished processes exit normally with no
-fresh Xe fault. The final deferred process remains.
+The split schedules match output and reasoning hashes, 3,440 generated
+tokens, 2,268 of 2,376 drafts accepted and recorded expert work in all
+three blocks. Each exercises 23 split steps in each of 680 T4 windows.
+Early publishes 15,640 halves and saves 12.795–13.997 seconds against
+deferred. The paired geometric rate gain is 6.081%. Stock emits 3,195
+tokens and accepts 2,173 of 2,248 drafts in all three repeats. Under the
+final-window emission bound, early averages 185.32–185.92 ms per
+verifier window and stock 191.08–193.70 ms. Early emits fewer tokens per
+window and its geometric rate is 2.603% below stock. The predeclared speed
+screen fails. Keep stock selected. Continue with the isolated arithmetic
+check before considering another model trial.
 
-The first block selects arithmetic preservation as a follow-up component
-question. The existing Q6 DPAS tile shares integer dot and per-column FP32
+The existing Q6 DPAS tile shares integer dot and per-column FP32
 accumulation code across repeat counts. Check two canonical C2 launches
 against the corresponding columns of one C4 launch at the four actual
 dense shapes. Require bitwise output and guards with the original Q8
