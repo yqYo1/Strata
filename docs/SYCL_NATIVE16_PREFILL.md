@@ -11732,10 +11732,14 @@ mode16 path without an added queue drain. The existing command-service
 observer refuses mode16 before submission. The
 [window comparison controller](../bench/dflash2_cold_window_measure.py)
 compares the observer off and on using the verified 118,785-token workload
-and the original subsequent-request overhead gate. The existing host fixture's
-`--windows` mode covers a complete ragged tail, a missing tail and a row gap.
+and the original subsequent-request overhead gate. The GCC fixture
+preserves the eight original host cases and verifies a complete ragged
+tail, a missing tail and a row gap. The comparison reader accepts the
+fixture output and the expected mode16 record geometry of one full-row
+window per layer. Six controls reject missing rows, wrong window counts,
+overlapping subtotals, repeated records or data from a disabled observer.
 
-The closed V2 build and raw runs are retained in Git at `200ec7292`.
+The closed V2 build and run receipts are recoverable from Git at `200ec7292`.
 Recovery matches 1,328 project files, 525 build controls, the exact
 compiler/link inputs, 139 objects and 11 executable identities. Both
 original receipts and all 23 phase-reference executables match after
