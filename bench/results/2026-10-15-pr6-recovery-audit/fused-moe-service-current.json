@@ -754689,7 +754689,7 @@
       "STRATA_SYCL_PREFILL_GDN_CHUNK64": "0",
       "STRATA_SYCL_PREFILL_NATIVE16_BACKEND": "vllm"
     },
-    "stage": "running",
+    "stage": "failed",
     "outcomes": {
       "host": {
         "arm": "host",
@@ -754742,6 +754742,114 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "stock": {
+        "arm": "stock",
+        "host_probe_accepted": false,
+        "requests": [
+          {
+            "generated": 32,
+            "finish": "length",
+            "first_ns": 4153938735250576,
+            "stop_trigger_ns": null,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "prefixes": {
+              "32": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd"
+            },
+            "drafts": [
+              23,
+              23
+            ]
+          },
+          {
+            "generated": 640,
+            "finish": "length",
+            "first_ns": 4153945506711044,
+            "stop_trigger_ns": null,
+            "output_sha256": "aae91ef1cfacc558a0ed5437d7bde72394491c111b005a862c1202941332ed90",
+            "prefixes": {
+              "32": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+              "33": "ee22d6c6dfeb79a68d4f9bb66d6e4a7c96ff318f514594f81da88d73c156f5f8",
+              "34": "f9fd75b73bb4121979c87a9ad36d6186a7af61a55e410bb69676d9f7b1f1adce",
+              "35": "b772f92d201ae8c820e8e7fd73afbf2a88e90a8aa68120f388ab2e567117721b"
+            },
+            "drafts": [
+              316,
+              357
+            ]
+          },
+          {
+            "generated": 32,
+            "finish": "length",
+            "first_ns": 4153991419525264,
+            "stop_trigger_ns": null,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "prefixes": {
+              "32": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd"
+            },
+            "drafts": [
+              23,
+              23
+            ]
+          },
+          {
+            "generated": 640,
+            "finish": "length",
+            "first_ns": 4153997089140603,
+            "stop_trigger_ns": null,
+            "output_sha256": "964f43fe0a096f237c46672778212a6623a25953ac8a8b29c976d212083d747b",
+            "prefixes": {
+              "32": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+              "33": "ee22d6c6dfeb79a68d4f9bb66d6e4a7c96ff318f514594f81da88d73c156f5f8",
+              "34": "f9fd75b73bb4121979c87a9ad36d6186a7af61a55e410bb69676d9f7b1f1adce",
+              "35": "b772f92d201ae8c820e8e7fd73afbf2a88e90a8aa68120f388ab2e567117721b"
+            },
+            "drafts": [
+              341,
+              382
+            ]
+          },
+          {
+            "generated": 32,
+            "finish": "length",
+            "first_ns": 4154041651858493,
+            "stop_trigger_ns": null,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "prefixes": {
+              "32": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd"
+            },
+            "drafts": [
+              23,
+              23
+            ]
+          }
+        ],
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 2840916,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "error": "RuntimeError('unexpected initialized ELF/provider')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
       }
     },
     "complete": false,
