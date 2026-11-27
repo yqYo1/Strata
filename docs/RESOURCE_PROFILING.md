@@ -2303,8 +2303,9 @@ stock admission from `6f4782848`. Both older attempts are recoverable at
 `085f702ea` and `6f4782848`. The complete closed diagnostic at `3c0a8d8aa`
 supplies the timing admission. Its transition samples, comparisons and
 device evidence cover the decisions that used the raw diagnostic output.
-The closed raw output is eligible for retirement below, retaining each
-`record.json` and the coherent executable generation. Inventory hashes
+Retired the closed raw output under the measurement lock and verified each
+unchanged `record.json`. The coherent executable generation remains for
+timing. Inventory hashes
 cover the sorted relative file paths, sizes and hashes.
 
 | Diagnostic root and selected children | Files | Bytes | Inventory SHA-256 |
