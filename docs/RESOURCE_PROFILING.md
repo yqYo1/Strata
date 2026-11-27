@@ -1902,16 +1902,21 @@ from this executable's build before launch.
 The frontend checks pass at `af9c68a6a`. Run the fixed stock/refill,
 refill/stock and stock/refill process pairs on that plan.
 
-The first stock process closes normally with quiet validation and no new
-Xe fault. Both long requests use fresh inputs, the layer-major route and
-the stock expert map with zero alternate refill bytes.
+The first stock/refill pair closes normally with quiet validation and no
+fresh Xe faults. The requests match in fresh input and actual prefill work.
+The candidate publishes 2,321,664,000 bytes at each of the two long
+handoffs. Warmup requests keep the startup stock map.
 
 | Workload | Fresh input tokens | Generated tokens | Prefill tok/s | TTFT s | Decode tok/s | CPU expert misses per output |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Code | 96,204 | 3,195 | 932.545 | 104.545 | 15.604 | 354.84 |
-| Prose | 96,274 | 9,670 | 1,034.828 | 93.223 | 11.218 | 396.37 |
+| Code, stock → refill | 96,204 | 3,195 → 3,591 | 932.545 → 932.471 | 104.545 → 104.549 | 15.604 → 16.833 | 354.84 → 295.48 |
+| Prose, stock → refill | 96,274 | 9,670 → 8,212 | 1,034.828 → 1,028.080 | 93.223 → 93.838 | 11.218 → 11.244 | 396.37 → 361.11 |
 
-The first matched refill process uses these two samples as its baseline.
+Decode throughput rises by 7.875% for code and 0.232% for prose. CPU expert
+misses per output fall by 16.73% and 8.90%, respectively. Code prompt time
+increases by 8.1 ms and prose prompt time by 610.7 ms. The produced lengths
+and draft counts differ across layouts. Apply the decision after the two
+remaining pairs, starting with the reverse-order refill process.
 
 The first two closed blend processes also bound the benefit of draft yield
 at the current decode time. Let `e` be emitted tokens and `a` and `d`
