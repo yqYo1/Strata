@@ -448,12 +448,16 @@ void ExpertPool::worker(int id) {
     }
 }
 
-int ExpertPool::claim(uint32_t epoch) {
+template<bool PrefixOnly>
+int ExpertPool::claim(uint32_t epoch, uint32_t prefix_jobs) {
     uint64_t h = head_.load(std::memory_order_acquire);
     for (;;) {
         if ((uint32_t) (h >> 32) != epoch) return -1;               // not the batch this thread woke for
         const uint32_t n = (uint32_t) (h >> 16) & 0xffffu, i = (uint32_t) h & 0xffffu;
         if (i >= n) return -1;                                       // exhausted
+        if constexpr (PrefixOnly) {
+            if (i >= prefix_jobs) return -1;
+        }
         if (head_.compare_exchange_weak(h, h + 1, std::memory_order_acq_rel, std::memory_order_acquire))
             return (int) i;
     }
@@ -521,10 +525,11 @@ void ExpertPool::wait_completed(const std::atomic<uint32_t>& completed, int n) {
     }
 }
 
-void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch) {
+template<bool PrefixOnly>
+void ExpertPool::drain(int id, ExpertScratch& scratch, uint32_t epoch, uint32_t prefix_jobs) {
     (void) id;
     for (;;) {
-        const int ci = claim(epoch);
+        const int ci = claim<PrefixOnly>(epoch, prefix_jobs);
         if (ci < 0) break;
         const uint32_t i = (uint32_t) ci;
         if (id >= 0) wstate_[(size_t) id].store(ci, std::memory_order_relaxed);
@@ -620,6 +625,8 @@ void ExpertPool::run_phase(int mode, int n_tasks) {
     const auto* publication = mode == kDecodeByExpert ? decode_publication_ : nullptr;
     if (host_works_ && !publication) drain(-1, host_scratch_, e);
     if (publication && !publication->after_all) {
+        if (host_works_ && publication->caller_helps_prefix)
+            drain<true>(-1, host_scratch_, e, static_cast<uint32_t>(publication->prefix_jobs));
         wait_completed(decode_prefix_done_, publication->prefix_jobs);
         publication->ready(publication->context);
     }

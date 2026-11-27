@@ -65,7 +65,9 @@ SCHEDULE_SHAPES = ((0, 0), (18, 2), (18, 4), (21, 2), (21, 4))
 SCHEDULE_MODE = False
 PUBLICATION_MODE = False
 HANDOFF_MODE = False
+PREFIX_HELP_MODE = False
 HANDOFF_ARMS = ((6, 'handoff-split'), (5, 'handoff-split'), (5, 'handoff-expert'), (5, 'handoff-early'))
+PREFIX_HELP_ARMS = ((5, 'handoff-early'), (6, 'handoff-prefix-help'))
 SCHEDULE_PROTOCOL = (
     'Replay the same eight held-out width-two and width-four batches with six physical cores and the '
     'DFlash2 decode IQ3 pair selection. Use the same compiled expert arithmetic, inputs, weights and '
@@ -148,6 +150,29 @@ def select_handoff():
     CHECK_ORDER = [(0, *arm) for arm in HANDOFF_ARMS]
     ORDER = [(round_id, *arm) for round_id, arms in enumerate(
         (HANDOFF_ARMS, HANDOFF_ARMS[::-1], HANDOFF_ARMS[2:] + HANDOFF_ARMS[:2])) for arm in arms]
+
+
+def select_prefix_help():
+    global PREFIX_HELP_MODE, HANDOFF_ARMS, ROOT, BUILD, RESULT, PROTOCOL, CHECK_ORDER, ORDER
+    select_handoff()
+    PREFIX_HELP_MODE = True
+    HANDOFF_ARMS = PREFIX_HELP_ARMS
+    ROOT = B / 'cpu-fixed-expert-prefix-help-v1'
+    BUILD = ROOT / 'build'
+    RESULT = recipe.RESULT.with_name('cpu-fixed-expert-prefix-help-current.json')
+    PROTOCOL = (
+        'Replay the four captured width-four layers with the same five pinned workers and expert jobs. '
+        'Compare a reserved caller with one that claims only first-pair jobs before the same early callback. '
+        'Check captured, empty and complete prefixes, callback count, exact output, guards and affinity. '
+        'Measure first-pair readiness and full retirement separately for each format, using five eligible '
+        'samples per process across three independent pairs with reversed order in the second block. '
+        'A format advances when readiness improves in at least two pairs with a paired geometric mean '
+        'below one and geometric mean full retirement time at most equal to the control. '
+        'These CPU-only timings exclude GPU submission and overlap.'
+    )
+    CHECK_ORDER = [(0, *arm) for arm in HANDOFF_ARMS]
+    ORDER = [(round_id, *arm) for round_id, arms in enumerate(
+        (HANDOFF_ARMS, HANDOFF_ARMS[::-1], HANDOFF_ARMS)) for arm in arms]
 
 
 def atomic_json(path, data):
@@ -445,7 +470,7 @@ def summaries(row, text, mode, cores, timed):
          and placement['caller_computes'] == (cores == 6), 'replay caller and worker placement')
     result = dict(mode=mode, cores=cores, placement=placement)
     schedule = mode in SCHEDULE_ARMS or HANDOFF_MODE
-    early = mode == 'handoff-early'
+    early = mode in ('handoff-early', 'handoff-prefix-help')
     if schedule:
         need(((cores, mode) in HANDOFF_ARMS if HANDOFF_MODE else cores == 6)
              and all(v.get('schedule') == mode for v in
@@ -509,7 +534,7 @@ def summaries(row, text, mode, cores, timed):
                 phases = [sample[k] for k in ('gu_s', 'q_s', 'down_s')]
                 need(all(math.isfinite(v) and v >= 0 for v in phases) and sum(phases) <= sample['wall_s'] + .001,
                      'bounded disjoint pool stage times')
-                if mode in ('by-expert', 'handoff-expert', 'handoff-early'):
+                if early or mode in ('by-expert', 'handoff-expert'):
                     need(phases == [0, 0, 0], 'by-expert work has no disjoint stage clocks')
             if early:
                 prefix, tail = sample['prefix_s'], sample['tail_s']
@@ -626,6 +651,8 @@ def execute(stage):
                           for x in measured}) == len(ORDER), 'independent replay process count')
                 if LOCALITY_MODE:
                     row['locality_pairs'] = locality_pairs(measured)
+                elif PREFIX_HELP_MODE:
+                    row['prefix_help_result'] = prefix_help_result(measured)
                 elif HANDOFF_MODE:
                     row['handoff_result'] = handoff_result(measured)
                 elif SCHEDULE_MODE:
@@ -642,7 +669,8 @@ def execute(stage):
     finally:
         row.update(active=bool(owner.active), ownership_closed=not owner.active and all(owned.closed(e) for e in owner.commands))
         save(row)
-    result = next((row[k] for k in ('locality_pairs', 'schedule_result', 'handoff_result', 'medians_s_per_pass')
+    result = next((row[k] for k in ('locality_pairs', 'schedule_result', 'handoff_result', 'prefix_help_result',
+                                    'medians_s_per_pass')
                    if k in row), {})
     print(row['stage'], result, flush=True)
 
@@ -704,6 +732,29 @@ def handoff_result(measured):
     return shapes
 
 
+def prefix_help_result(measured):
+    formats = (18, 21)
+    pairs = {gu: [] for gu in formats}
+    for a, b in zip(measured[::2], measured[1::2], strict=True):
+        arms = {(x['cores'], x['mode']): x['schedule_cells'] for x in (a, b)}
+        need(a['round'] == b['round'] and set(arms) == set(PREFIX_HELP_ARMS), 'unmatched prefix-helper pair')
+        reserved, helper = (arms[arm] for arm in PREFIX_HELP_ARMS)
+        for gu, control, candidate in zip(formats, reserved, helper, strict=True):
+            need(all((cell['gu'], cell['width']) == (gu, 4) for cell in (control, candidate)),
+                 'wrong timed prefix-helper format')
+            pairs[gu].append(dict(
+                ready=candidate['prefix_s_per_pass'] / control['prefix_s_per_pass'],
+                retirement=candidate['median_s_per_pass'] / control['median_s_per_pass']))
+    results = []
+    for gu, trials in pairs.items():
+        need(len(trials) == 3, 'three independent prefix-helper pairs required')
+        ready = statistics.geometric_mean(pair['ready'] for pair in trials)
+        retirement = statistics.geometric_mean(pair['retirement'] for pair in trials)
+        results.append(dict(gu=gu, pairs=trials, ready_ratio=ready, retirement_ratio=retirement,
+                            eligible=ready < 1 and retirement <= 1 and sum(pair['ready'] < 1 for pair in trials) >= 2))
+    return results
+
+
 if __name__ == '__main__':
     if sys.argv[1:2] == ['--locality']:
         sys.argv.pop(1)
@@ -717,6 +768,9 @@ if __name__ == '__main__':
     elif sys.argv[1:2] == ['--handoff']:
         sys.argv.pop(1)
         select_handoff()
+    elif sys.argv[1:2] == ['--prefix-help']:
+        sys.argv.pop(1)
+        select_prefix_help()
     stages = ('prepare', 'build', 'check') if PUBLICATION_MODE else ('prepare', 'build', 'check', 'measure')
     need(sys.executable == '/home/yayoi/.local/share/strata-sycl/venv/bin/python3' and len(sys.argv) == 2
          and sys.argv[1] in stages, 'pinned Python and one declared CPU replay stage required')

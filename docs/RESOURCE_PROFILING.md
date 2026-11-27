@@ -1560,6 +1560,14 @@ Keep `cpu-fixed-expert-handoff-v1` as the current fixed-work CPU
 reference through the combined replay. The earlier scheduling result
 supplies its width-four eligibility from Git.
 
+The `--prefix-help` comparison reuses those 137 jobs and five pinned
+workers. The caller may claim only first-pair dependencies and publishes
+after the same completion counter reaches the original prefix length.
+Compare against the reserved caller in three independent pairs for each
+format. Record first-pair readiness and full pool retirement separately.
+Exercise the bounded claim in the CPU fixture first. Prepare, commit
+and run the CPU replay at a closed boundary between 96K comparison blocks.
+
 The three earlier roots below have no active consumer beyond their receipts.
 The recovery audit verifies each earlier build's 210 Git project files,
 1,376 Git ggml files, 633 actual compiler dependencies, link inputs and
@@ -2693,6 +2701,11 @@ rejects an expert-profile path inherited from the primary worktree. The
 fix at `e70438a35` verifies the profile and launcher bytes and uses the
 isolated worktree's paths for all arms. The nine plans are fixed at
 `41af84337`.
+The stock process at `6bdeddaf0` verifies 645 width-four replays, 81
+C4 calls and no C2 calls. It reads 96,204 fresh tokens in 102.295 s,
+reaches client TTFT in 103.634 s and emits 3,195 tokens at 16.301 tok/s.
+It accepts 2,173 of 2,248 drafts, exits normally and records no fresh Xe
+fault. Complete the original early and early C2 arms of this block next.
 [Original model result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The first build at `8bd19a9b9` compiles and links all three named targets.

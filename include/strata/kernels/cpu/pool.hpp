@@ -171,10 +171,12 @@ public:
         void (*ready)(void*) noexcept;
         void* context;
         bool after_all;
+        bool caller_helps_prefix = false;
     };
     // Decode scheduler. Complete all three stages of an expert in one claim.
-    // A publication reserves the caller for this epoch and exposes finished
-    // output rows. Borrowed buffers live through full pool retirement.
+    // A publication assigns the callback to the caller. The caller may also
+    // help with the prefix, publishing as soon as that prefix is complete.
+    // Borrowed buffers live through full pool retirement.
     bool run_decode_native_by_expert(const NativeFmt& f, ExpertJobMulti* jobs, int n,
                                      const DecodePublication* publication = nullptr);
 #endif
@@ -215,15 +217,17 @@ public:
 
 private:
     void worker(int id);
-    void drain(int id, ExpertScratch& scratch, uint32_t epoch);
+    template<bool PrefixOnly = false>
+    void drain(int id, ExpertScratch& scratch, uint32_t epoch, uint32_t prefix_jobs = 0);
     void run_phase(int mode, int n_tasks);
 #ifdef STRATA_DECODE_EXPERT_SCHEDULE
     static constexpr int kDecodeByExpert = 7;
     void finish_decode_native_expert(int id, unsigned expert);
     const DecodePublication* decode_publication_ = nullptr;
 #endif
-    /// Claim the next job of batch `epoch`, or -1 (that batch is exhausted, or it is not the current one).
-    int claim(uint32_t epoch);
+    /// Claim the next job of the current batch, optionally restricting the caller to the ready prefix.
+    template<bool PrefixOnly = false>
+    int claim(uint32_t epoch, uint32_t prefix_jobs = 0);
     /// Publish the batch whose description the caller has just written: reset `done`, then `head`, then the epoch.
     uint32_t begin_batch(int n);
     /// The host's waits, bounded by `kStall`.

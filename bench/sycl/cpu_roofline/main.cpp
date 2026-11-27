@@ -468,12 +468,12 @@ struct ReplayBatch {
         return prefix;
     }
 
-    void time_publication(cpu::ExpertPool& pool, int prefix, PublicationTiming& stats) {
+    void time_publication(cpu::ExpertPool& pool, int prefix, bool caller_helps_prefix, PublicationTiming& stats) {
         Clock::time_point ready;
         const auto publish = +[](void* context) noexcept {
             *static_cast<Clock::time_point*>(context) = Clock::now();
         };
-        const cpu::ExpertPool::DecodePublication publication{prefix, publish, &ready, false};
+        const cpu::ExpertPool::DecodePublication publication{prefix, publish, &ready, false, caller_helps_prefix};
         const auto start = Clock::now();
         require(pool.run_decode_native_by_expert(*format, jobs.data(), static_cast<int>(jobs.size()), &publication),
                 "timed publication refused the replay batch");
@@ -484,7 +484,7 @@ struct ReplayBatch {
         ++stats.calls;
     }
 
-    void validate_publication(cpu::ExpertPool& pool, bool report = true) {
+    void validate_publication(cpu::ExpertPool& pool, bool report = true, bool caller_helps_prefix = false) {
         const int total = static_cast<int>(jobs.size());
         const int prefix = first_pair_prefix();
         validate(pool, true);
@@ -521,7 +521,8 @@ struct ReplayBatch {
                     for (int t = 0; t < job.nt; ++t)
                         std::fill_n(job.out[t], cpu::H, std::numeric_limits<float>::quiet_NaN());
                 Readback check{jobs, expected, after_all ? total : cutoff};
-                const cpu::ExpertPool::DecodePublication publication{cutoff, ready, &check, after_all};
+                const cpu::ExpertPool::DecodePublication publication{
+                    cutoff, ready, &check, after_all, caller_helps_prefix && !after_all};
                 require(pool.run_decode_native_by_expert(*format, jobs.data(), total, &publication),
                         "publication schedule refused a captured layer");
                 require(check.calls == 1 && check.exact && check.matches(total),
@@ -667,7 +668,8 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
 
     const bool handoff = schedule.starts_with("handoff-");
 #ifdef STRATA_DECODE_EXPERT_SCHEDULE
-    const bool early = schedule == "handoff-early";
+    const bool caller_helps_prefix = schedule == "handoff-prefix-help";
+    const bool early = schedule == "handoff-early" || caller_helps_prefix;
 #endif
     uint64_t jobs = 0, entries = 0, visits = 0, unique_blobs = 0, unique_bytes = 0;
     size_t replay_count = 0;
@@ -688,7 +690,7 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
             if (handoff && batch.width != 4) continue;
 #ifdef STRATA_DECODE_EXPERT_SCHEDULE
             if (early) {
-                batch.validate_publication(pool, false);
+                batch.validate_publication(pool, false, caller_helps_prefix);
                 continue;
             }
 #endif
@@ -731,7 +733,7 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
                     const std::array<int, 2> prefixes{selected[0]->first_pair_prefix(), selected[1]->first_pair_prefix()};
                     measure([&] {
                         for (size_t i = 0; i < selected.size(); ++i)
-                            selected[i]->time_publication(pool, prefixes[i], stats);
+                            selected[i]->time_publication(pool, prefixes[i], caller_helps_prefix, stats);
                     }, shape_bytes, shape_jobs, shape_fields, &pool, true, &stats);
                     continue;
                 }
@@ -754,8 +756,10 @@ int main(int argc,char** argv) try {
     } else if (argc == 6 && std::string_view(argv[1]) == "replay-handoff") {
         const std::string_view arm(argv[3]), mode(argv[5]);
         const std::string_view threads(argv[4]);
-        require((arm == "handoff-split" || arm == "handoff-expert" || arm == "handoff-early") &&
-                (threads == "5" || (threads == "6" && arm == "handoff-split")) &&
+        const bool prefix_help = arm == "handoff-prefix-help";
+        const bool existing_arm = arm == "handoff-split" || arm == "handoff-expert" || arm == "handoff-early";
+        require(((prefix_help && threads == "6") || (existing_arm &&
+                (threads == "5" || (threads == "6" && arm == "handoff-split")))) &&
                 (mode == "measure" || mode == "check"), "width-four handoff replay arm");
         route_replay(argv[2], topo, threads == "6" ? 6 : 5, mode == "measure", -1, false, arm);
     } else if (argc == 5 && std::string_view(argv[1]) == "replay-schedule") {
