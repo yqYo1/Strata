@@ -2004,6 +2004,27 @@ asset hashes match. The frozen map passes the two-workload gate for live
 placement validation. Serving keeps the measured stock placement while the
 candidate's native RESTORE and clean throughput remain open.
 
+At 70 output tok/s, the same 96K routes would request the following
+logical full-expert volumes. The replay holds the original outputs and
+routing fixed when it substitutes the blended membership.
+
+| 96K workload | Stock MB/output | Blend MB/output | Stock GB/s at 70 | Blend GB/s at 70 |
+| --- | ---: | ---: | ---: | ---: |
+| Code | 723.9 | 597.0 | 50.67 | 41.79 |
+| Prose | 812.9 | 737.2 | 56.90 | 51.60 |
+
+The separate 1 GiB continuous-read medians are 42.27 GB/s on three cores
+and 39.30 GB/s on six. If every job reads its full blob from DRAM, the
+more favorable rate leaves 603.9 MB per output. The blended code route
+nearly uses that budget and the prose route still needs 18.1% less
+payload. At the six-core reference the corresponding reductions are
+5.9% and 23.8%. Cache reuse, partial loads and the actual expert access
+pattern can change the physical cost, and the calculation budgets the
+entire read rate to expert weights. Prioritize reducing bytes per output
+alongside CPU kernel time and GPU verifier time.
+[96K replay](https://github.com/yqYo1/Strata/commit/a7c068890dec4f57c71dc7cd7ccb58039463b9bb)
+· [RAM calibration](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json).
+
 The [native placement controller](../bench/dflash2_decode_stock_global_restore.py)
 uses the exact capture decision and reconstructs the selected profile before
 preparing it. Preserve the stock control's 1,256 physical slots, slot widths
