@@ -72,6 +72,13 @@ def baseline():
     row = build.retained.baseline()
     row['base_physical_context_sha256'] = row.pop('physical_context_sha256')
     if C2:
+        config = row['configuration']
+        launcher = bank.P / 'tools/sycl/engine_once.py'
+        original = Path(config['exe'])
+        require(original == Path(config['cwd']) / 'tools/sycl/engine_once.py'
+                and bank.sha(original) == bank.sha(launcher), 'the benchmark launcher differs from the control')
+        row['configuration'] = dict(config, exe=str(launcher), cwd=str(bank.P),
+                                    args=model.local_profile_args(config['args']))
         row['validated_dflash2_args'] = model.local_profile_args(row['validated_dflash2_args'])
         row['checked_c4_shapes'] = {arm: proof['outcomes'][arm]['dense_capture'] for arm in C2_ARMS}
         row['checked_c2_shapes'] = proof['plan']['c2_counts']
