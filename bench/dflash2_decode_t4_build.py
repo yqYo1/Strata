@@ -27,6 +27,7 @@ C2_KEY = 'q6_t4_c2_component_build_v2'
 C2_NATIVE = 'dflash2_decode_t4_c2_native_v1'
 C2_VERIFY_SHAPES = ['6144x2560', '2560x6144', '2560x10240', '2560x12288']
 C2_KERNEL = 'src/kernels/sycl/q6_dpas_component'
+C2_LAUNCHER = 'bench/dflash2_decode_t4_model.py'
 
 
 def select_c2_generation():
@@ -50,7 +51,7 @@ def c2_component():
     return dict(result_sha256=bank.signature(proof), source_commit=revision, shapes=C2_VERIFY_SHAPES)
 
 
-def inputs(revision):
+def inputs(revision, *, allow_c2_launcher_update=False):
     fallback = retained.baseline()
     parent = bank.previous.read(primary.ROOT / 'record.json')
     cpu_path = bank.RESULT.with_name('cpu-fixed-expert-handoff-current.json').relative_to(bank.P)
@@ -80,11 +81,20 @@ def inputs(revision):
     candidate = {}
     if KEY == C2_NATIVE:
         candidate['c2_component'] = c2_component()
-        controls.extend(('bench/dflash2_decode_t4_check.py', 'bench/dflash2_decode_t4_model.py',
+        controls.extend(('bench/dflash2_decode_t4_check.py', C2_LAUNCHER,
                          'data/expert-profile.bin'))
     pins = source.pin(bank.P, [*primary.PREFIXES, *controls])['source_sha256']
     payload = dict(source.blobs(bank.P, revision, pins))
-    require(bank.stage.hashed(payload) == pins, 'commit the exact T4 candidate and controllers')
+    frozen_pins = bank.stage.hashed(payload)
+    if allow_c2_launcher_update:
+        # The model recipe can fix a launch-only controller while the engine
+        # build, its materialized sources and actual compiler inputs stay pinned.
+        changed = {path for path, digest in frozen_pins.items() if digest != pins[path]}
+        require(KEY == C2_NATIVE and frozen_pins.keys() == pins.keys()
+                and changed <= {THIS, C2_LAUNCHER}, 'unexpected change to the compiled C2 candidate')
+        pins = frozen_pins
+    else:
+        require(frozen_pins == pins, 'commit the exact T4 candidate and controllers')
     old, new = str(primary.ROOT), str(ROOT)
     args = [a.replace(old, new) for a in parent['recipe']['configure']]
     env = {k: v.replace(old, new) for k, v in parent['recipe']['environment'].items()}
@@ -100,11 +110,13 @@ def inputs(revision):
                 recipe=dict(configure=args, environment=env, targets=list(TARGETS)), **candidate), payload, original
 
 
-def check(row, committed=True):
+def check(row, committed=True, *, allow_c2_launcher_update=False):
+    if allow_c2_launcher_update:
+        require(retained.closed(row, 'built'), 'use the closed C2 build for a launcher correction')
     if committed:
         require(validation.committed(bank.RESULT, (KEY,)) == builder.compact(row),
                 'commit the previous build stage')
-    fields, _, original = inputs(row['source_commit'])
+    fields, _, original = inputs(row['source_commit'], allow_c2_launcher_update=allow_c2_launcher_update)
     require(all(row[k] == v for k, v in fields.items())
             and builder.guards.driver_guard() == row['driver']
             and {p.relative_to(TREE).as_posix() for p in TREE.rglob('*') if p.is_file()} == fields['source_files'].keys()
@@ -114,6 +126,10 @@ def check(row, committed=True):
     if row['stage'] == 'built':
         proof = row['actual_inputs']
         required = (*REQUIRED, C2_KERNEL + '.cpp') if KEY == C2_NATIVE else REQUIRED
+        if allow_c2_launcher_update:
+            require(all(str(TREE / p) not in proof[kind] for p in (THIS, C2_LAUNCHER)
+                        for kind in bank.previous.ACTUAL),
+                    'launcher correction must preserve all compiled and linked inputs')
         require(not proof['partial_archive_reuse'] and proof['uncovered'] == 0
                 and all(proof['compiled'].get(str(TREE / p)) == row['source_files'][p] for p in required)
                 and all(bank.sha(p) == h for kind in bank.previous.ACTUAL for p, h in proof[kind].items())

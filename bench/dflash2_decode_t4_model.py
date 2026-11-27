@@ -50,7 +50,7 @@ def local_profile_args(args):
 
 def inputs(revision):
     native = bank.previous.read(build.ROOT / 'record.json')
-    build.check(native)
+    build.check(native, allow_c2_launcher_update=C2_DPAS)
     device = validation.committed(bank.RESULT, (arc.KEY,))
     signature = bank.signature(build.builder.compact(native))
     require(build.retained.closed(device, 'closed') and device['native_build_sha256'] == signature
@@ -78,7 +78,7 @@ def inputs(revision):
         env[name] = {k: v.replace(str(tap.ROOT / 'smoke'), str(ROOT / name))
                      for k, v in envs['smoke'].items()}
         env[name].update(STRATA_SYCL_DECODE_T4_SCHEDULE=schedule, STRATA_SYCL_DECODE_T4_AUDIT='1')
-        env[name]['STRATA_SYCL_DECODE_Q6_DPAS_DENSE'] = str(int(PRODUCTION_DPAS))
+        env[name]['STRATA_SYCL_DECODE_Q6_DPAS_DENSE'] = str(int(PRODUCTION_DPAS or C2_DPAS))
         cases[name] = dict(old['cases']['smoke'], environment_sha256=bank.signature(env[name]))
     plan = {k: old[k] for k in ('boot', 'driver', 'runtime_manifest', 'native_validation_probe',
                                 'dflash2_assets', 'model_assets_sha256')}
