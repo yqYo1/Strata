@@ -1,5 +1,5 @@
 {
-  "stage": "built",
+  "stage": "closed",
   "source_commit": "0014921fe294264efb9ffa26b65cf4dfec6108fb",
   "machine": {
     "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
@@ -222,7 +222,83 @@
     "file": 67108864,
     "total": 402653184
   },
-  "processes": [],
+  "processes": [
+    {
+      "round": 0,
+      "placement": {
+        "kind": "replay_placement",
+        "host_cpu": 0,
+        "workers": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "caller_computes": false
+      },
+      "slices": [
+        {
+          "kind": "publication_input",
+          "jobs": 36,
+          "gu": 18,
+          "prefix_jobs": 19,
+          "logical_bytes": 78336000,
+          "cases": 8,
+          "bitwise": true
+        },
+        {
+          "kind": "publication_input",
+          "jobs": 35,
+          "gu": 21,
+          "prefix_jobs": 20,
+          "logical_bytes": 81536000,
+          "cases": 8,
+          "bitwise": true
+        },
+        {
+          "kind": "publication_input",
+          "jobs": 35,
+          "gu": 18,
+          "prefix_jobs": 18,
+          "logical_bytes": 76160000,
+          "cases": 8,
+          "bitwise": true
+        },
+        {
+          "kind": "publication_input",
+          "jobs": 31,
+          "gu": 21,
+          "prefix_jobs": 17,
+          "logical_bytes": 72217600,
+          "cases": 8,
+          "bitwise": true
+        }
+      ],
+      "gpu_executed": false,
+      "owner": {
+        "pid": 1725908,
+        "direct_identity": {
+          "pid": 1725908,
+          "state": "R",
+          "ppid": 1725774,
+          "pgid": 1725908,
+          "sid": 1725908,
+          "start_ticks": 412502807,
+          "rss_bytes": 294912
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 0.9516242109239101,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "errors": [],
+        "cleanup": [],
+        "peak_session_rss_bytes": 370536448
+      }
+    }
+  ],
   "active": false,
   "ownership_closed": true,
   "gpu_executed": false,
@@ -304,6 +380,9 @@
     "/usr/lib/x86_64-linux-gnu/libc.so.6": "3a15d66867d83762c7f2f1e37359cb8f6c5743edb369c65285cb0b1c4f7498bf",
     "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "c20a2dc8917c755f02b94049356320fe1f62ac7d9f8994731f807d9df39302da"
   },
+  "complete": true,
+  "passed": true,
+  "publication_cpu_correctness_qualified": true,
   "project_inputs": {
     "files": 210,
     "aggregate_sha256": "41475ba141e3111f0df7112b0705e29ffe916ccf07a6b381b5c753b84e40b825"
