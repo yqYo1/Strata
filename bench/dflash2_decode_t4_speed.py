@@ -12,6 +12,9 @@ import dflash2_primary_continuation as primary
 
 build, bank, require, validation = model.build, model.bank, model.require, model.validation
 PRODUCTION = 'dflash2_decode_t4_production_dpas_v1'
+C2_MODEL = 'dflash2_decode_t4_c2_model_v1'
+C2_ARMS = ('stock', 'early', 'early-c2')
+C2 = False
 REFERENCE = '9261c4b44'
 KEY = 'dflash2_decode_t4_speed_v1'
 ROOT = bank.B / KEY.replace('_', '-')
@@ -22,6 +25,11 @@ ORDER = ('stock', 'after-cpu', 'early', 'after-cpu', 'early', 'stock', 'early', 
 COMPARISONS = (('early', 'after-cpu'), ('early', 'stock'), ('after-cpu', 'stock'))
 SCHEDULE = 'STRATA_SYCL_DECODE_T4_SCHEDULE'
 AUDIT = 'STRATA_SYCL_DECODE_T4_AUDIT'
+Q6_AUDIT = 'STRATA_SYCL_Q6_ROUTE_AUDIT'
+DECODE_T4_CAPTURE = re.compile(
+    r'^strata Q6_ROUTE request=\d+ device=0 phase=decode tokens=4 capture_id=(\d+) '
+    r'scope=live_capture_cumulative native_half_enabled=[01] complete=([01]) shapes=\d+ '
+    r'cache_hits=\d+ replay_started=(\d+) replay_completed=(\d+)$', re.M)
 PLAN = dict(order=list(ORDER), workload=WORKLOAD, input_case=primary.continuation.INPUT_CASE,
     comparison='Three counterbalanced blocks on one executable. Compare stock with deferred to price the '
                'split and compare early with deferred to isolate its submission order. Keep production DPAS on.',
@@ -53,15 +61,20 @@ def reference():
 
 def baseline():
     native = bank.previous.read(build.ROOT / 'record.json')
-    build.check(native)
-    proof = validation.committed(bank.RESULT, (PRODUCTION,))
+    build.check(native, allow_c2_launcher_update=C2)
+    proof = validation.committed(bank.RESULT, (C2_MODEL if C2 else PRODUCTION,))
     identity = bank.signature(build.builder.compact(native))
     binary = native['binaries']['strata']
-    require(build.retained.closed(proof, 'closed') and proof['production_dpas_preserved']
+    qualified = 'c2_short_qualified' if C2 else 'production_dpas_preserved'
+    require(build.retained.closed(proof, 'closed') and proof[qualified]
             and proof['plan']['native_build_sha256'] == identity and proof['plan']['binary'] == binary
-            and proof['plan']['dense_dpas'] == '1', 'close the production DPAS model comparison first')
+            and proof['plan']['dense_dpas'] == '1', 'close the matched short DPAS model comparison first')
     row = build.retained.baseline()
     row['base_physical_context_sha256'] = row.pop('physical_context_sha256')
+    if C2:
+        row['validated_dflash2_args'] = model.local_profile_args(row['validated_dflash2_args'])
+        row['checked_c4_shapes'] = {arm: proof['outcomes'][arm]['dense_capture'] for arm in C2_ARMS}
+        row['checked_c2_shapes'] = proof['plan']['c2_counts']
     return dict(row, binary=binary, native_source_commit=native['native_source_commit'],
                 native_build_sha256=identity, native_context_qualified=False,
                 production_dpas_proof=bank.signature(proof), split_layers=proof['plan']['split_layers'],
@@ -72,8 +85,13 @@ def environment(row, plan):
     env = primary.curve.environment(row, plan)
     require(SCHEDULE not in env and AUDIT not in env
             and env.get('STRATA_SYCL_DECODE_Q6_DPAS_DENSE') == '1'
-            and env.get('STRATA_SYCL_Q6_ROUTE_AUDIT', '0') == '0', 'unexpected inherited T4 or DPAS selector')
-    return dict(env, **{SCHEDULE: plan['arm'], AUDIT: '1'})
+            and model.C2_SELECTOR not in env and env.get(Q6_AUDIT, '0') == '0',
+            'unexpected inherited T4 or DPAS selector')
+    arm = plan['arm']
+    env.update({SCHEDULE: arm.removesuffix('-c2'), AUDIT: '1'})
+    if C2:
+        env.update({Q6_AUDIT: '1', model.C2_SELECTOR: str(int(arm == 'early-c2'))})
+    return env
 
 
 def command(plan):
@@ -105,12 +123,37 @@ def split_windows(frame, sample, arm, layers):
     return dict(width4_windows=len(records), early_submissions=len(records) * early_layers)
 
 
+def matched_c2_capture(frame, earlier, arm, row, t4):
+    captures = DECODE_T4_CAPTURE.findall(frame)
+    require(len(captures) == 1, 'require the long request width-four audit')
+    identifier, complete, started, completed = map(int, captures[0])
+    previous = DECODE_T4_CAPTURE.findall(earlier)
+    before = int(previous[-1][3]) if previous and int(previous[-1][0]) == identifier else 0
+    replays = completed - before
+    require(identifier > 0 and complete == 1 and started == completed and replays > 0
+            and (arm == 'stock' or replays == t4['width4_windows']),
+            'the timed width-four replays are missing or disagree with the schedule audit')
+    c4 = model.dense_capture(frame)
+    require(c4 == row['checked_c4_shapes'][arm], 'the retained C4 calls changed')
+    c2 = []
+    if arm == 'early-c2':
+        c2 = model.dense_capture(frame, 2)
+        require(c2 == row['checked_c2_shapes'], 'the timed C2 call set changed')
+    else:
+        require(not re.search(r'(?m)^strata Q6_DPAS_DENSE .* nc=2 ', frame), 'the control captured C2')
+    return dict(width4_replays=replays, c4=c4, c2=c2)
+
+
 def routes(text, samples, arm):
     out = primary.routes(text, samples, 'dflash2', workloads=WORKLOADS)
     headers = list(re.finditer(primary.footer.HEADER, text, re.M))
-    frame = text[headers[-2].end() if len(headers) > 1 else 0:headers[-1].start()]
-    expected = bank.previous.read(ROOT / 'record.json')['split_layers']
-    out[WORKLOAD]['t4'] = split_windows(frame, samples[-1], arm, expected)
+    start = headers[-2].end() if len(headers) > 1 else 0
+    frame = text[start:headers[-1].start()]
+    row = bank.previous.read(ROOT / 'record.json')
+    t4 = split_windows(frame, samples[-1], arm.removesuffix('-c2'), row['split_layers'])
+    if C2:
+        t4['dense'] = matched_c2_capture(frame, text[:start], arm, row, t4)
+    out[WORKLOAD]['t4'] = t4
     return out
 
 
@@ -122,6 +165,8 @@ def decision(processes):
             'the speed screen requires nine independent accepted processes')
     prefill_fields = ('residual_gpu_rows', 'direct_pieces', 'kv', 'bank_h2d_requested_bytes', 'placement_preserved')
     decode_fields = ('generated_tokens', 'drafts_accepted', 'drafts_offered', 'output_sha256')
+    if C2:
+        decode_fields += ('reasoning_sha256',)
     records = []
     for offset in range(0, len(ORDER), 3):
         block = {p['arm']: p for p in processes[offset:offset + 3]}
@@ -141,10 +186,11 @@ def decision(processes):
     times = {name: dict(tg_geomean=math.exp(statistics.mean(math.log(v['ratios'][name]['tg']) for v in records)),
                         faster=sum(v['ratios'][name]['tg'] > 1 for v in records))
              for name in records[0]['ratios']}
+    gates = [f'{candidate}/{control}' for candidate, control in COMPARISONS[:2]]
     return dict(blocks=records, summary=times, speed_screen_passed=all(r['matched_prefill'] for r in records)
                 and all(times[name]['tg_geomean'] > 1 and times[name]['faster'] >= 2
-                        for name in ('early/after-cpu', 'early/stock')),
-                timing_only_work_matched=all(r['same_decode_work']['early/after-cpu'] for r in records),
+                        for name in gates),
+                timing_only_work_matched=all(r['same_decode_work'][gates[0]] for r in records),
                 clean_speed_qualified=False, adopted=False)
 
 
@@ -167,7 +213,7 @@ def experiment():
 
     def check_environment(row):
         environments = [{k: v.replace(plan['root'], '<process>') for k, v in environment(row, plan).items()
-                         if k != SCHEDULE} for plan in row['plans']]
+                         if k not in (SCHEDULE, model.C2_SELECTOR)} for plan in row['plans']]
         require(all(env == environments[0] for env in environments), 'another launch setting varies by schedule')
         return current(row)
 
@@ -175,5 +221,28 @@ def experiment():
     return ctx
 
 
+def select_c2_experiment():
+    global C2, KEY, ROOT, ORDER, COMPARISONS, PLAN
+    C2 = True
+    build.select_c2_generation()
+    KEY = 'dflash2_decode_t4_c2_speed_v1'
+    ROOT = bank.B / KEY.replace('_', '-')
+    arms = dict(zip(('stock', 'after-cpu', 'early'), C2_ARMS, strict=True))
+    ORDER = tuple(arms[arm] for arm in ORDER)
+    COMPARISONS = tuple((arms[a], arms[b]) for a, b in COMPARISONS)
+    PLAN = dict(PLAN, order=list(ORDER),
+        comparison='Three counterbalanced blocks on the same image. Compare C2 with the existing early '
+                   'scheduler to isolate the kernel change, and with stock to measure the net effect.',
+        scope='One thinking-enabled long-code request per process after four short warm-ups. Enable the '
+              'T4 and Q6 route audits in every arm. The clean speed, task, agent and context gates are separate.',
+        eligibility=PLAN['eligibility'] + ' Require width-four replay deltas and the checked C4 and C2 call sets.',
+        decision='Advance to a separate clean comparison when early C2 beats both references in at least '
+                 'two pairs each with geometric mean ratios above one and equal logical prefill work. '
+                 'Preserve first-long PP, TTFT, native draft counts, outputs and work for every sample.')
+
+
 if __name__ == '__main__':
+    if sys.argv[1:2] == ['--c2']:
+        sys.argv.pop(1)
+        select_c2_experiment()
     primary.clock.main(experiment())
