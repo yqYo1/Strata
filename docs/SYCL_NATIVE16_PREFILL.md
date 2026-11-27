@@ -11704,6 +11704,26 @@ The 1,359 files total 20,148,569 bytes and hash to
 `9ffbd208057967470546cec4f50f6719b8160943fb48c543863877000598620b`
 over sorted state-relative paths, byte counts and SHA-256 values.
 
+All four V2 processes complete normally with matching model assets and no
+fresh Xe faults. The detailed/coarse subsequent-duration ratios are
+0.997254 and 0.999751, within the predeclared 5% observer limit. The
+first-duration ratios are 1.019010 and 0.999481 and remain descriptive.
+In the detailed processes, the first request adds 13.224 and 10.825 seconds
+of unclassified wall time inside `run_impl` and 5.667 and 5.558 seconds
+of unclassified caller CPU time. The largest first-request layer is index
+1 in both processes, at 7.746 and 5.465 seconds. On subsequent requests the
+largest layer is below 0.237 seconds. Preparation and retirement changes in
+unclassified time are below 4 ms.
+
+The frozen environment enables `STRATA_SYCL_PARALLEL_IQ_DEQUANT=1`.
+The model manifest places the first IQ2_S Gate/Up and Q2_0 Down at index 1.
+The compiled mode16 accumulator calls the type-specific dequantization
+wrappers there. Check their first host-side call duration at matching work
+before selecting a kernel warm-up change. The existing MoE command-service
+observer refuses the split accumulator before submission, so use bounded
+host observations without an extra queue drain. Keep first-use and
+subsequent-request clocks separate.
+
 The closed observer generation and outputs were retired after verifying all
 1,328 original source files against Git, the configure and build recipe, 139
 actual objects and all 11 executable identities. The observer build receipt
