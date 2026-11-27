@@ -2602,13 +2602,18 @@ and 24 external linker inputs at `1e640f30e`. Its host check ends before
 recording stdout because the 8 MiB observer limit counts the entire build
 directory. The child exits zero and its session closes, but the observation
 fails at `cfca0c801` before any Arc execution. At `23022cd8a` each host or
-Arc check gets its own measured output directory. The C2 source and the
-comparison order are shared with the first fixture. Rebuild and verify the
-corrected plan. The first build has no remaining execution consumer. Retire it
-after recovering its source and recipe from the pushed primary with the
-original executable inputs verified. The closed 96K raw outputs also await
-the next serialized cleanup gap. The committed samples and hashes are at
-`2071d7722`.
+Arc check gets its own measured output directory. The corrected build at
+`21945b65a` reproduces the first executable's SHA-256 with 14 translation
+units, 801 compiler inputs and 24 external link inputs. All 46 host controls
+pass at `b9a302b33`. At `d3d5970b7` the Arc fixture passes all ten bitwise
+C4 comparisons and 20 isolated-half launches with intact inputs and
+canaries, quiet validation, verified providers and no fresh Xe faults.
+The timing plan admits six fresh standalone processes on that same build.
+
+The first build has no remaining execution consumer. Retire it after
+recovering its source and recipe from the pushed primary with the original
+executable inputs verified. The closed 96K raw outputs also await the next
+serialized cleanup gap. The committed samples and hashes are at `2071d7722`.
 
 The controller at `00b3bde32` weights the four shape timing deltas using
 the original same-build capture at `4c324029d`. In fixture order,
@@ -2617,6 +2622,23 @@ calls. At one canonical payload per call these 35 calls total 550,502,400
 bytes. Keep the shape gates unchanged. The weighted deltas describe
 isolated matrix replays using the short capture counts. Actual VRAM
 traffic, long-request reuse and overlapped time must be measured separately.
+
+The first two timing processes close at `b522b55c9` and `94fbbdd11` with
+40 eligible batches each and no fresh Xe fault. Times below are median
+microseconds per completed four-column replay. Each reference has its own
+same-process C2 pair.
+
+| Matrix | C4 | C2 pair | Existing column pair | C2 pair |
+| --- | ---: | ---: | ---: | ---: |
+| 6144×2560 | 196.17 | 319.20 | 368.69 | 319.80 |
+| 2560×6144 | 144.04 | 201.36 | 379.89 | 201.81 |
+| 2560×10240 | 204.95 | 320.46 | 727.04 | 321.39 |
+| 2560×12288 | 254.07 | 421.63 | 876.81 | 421.53 |
+
+The weighted fixture delta is +3.993 ms against C4 and −6.203 ms against
+the existing columns pair using the static capture counts. Per-shape times
+and both deltas describe one repetition per reference. Complete the
+counterbalanced runs before selecting shapes for a model candidate.
 [Original model result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The first build at `8bd19a9b9` compiles and links all three named targets.
