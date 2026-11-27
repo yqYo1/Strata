@@ -2269,6 +2269,16 @@ before installation. The short probe and the existing scratch fixtures
 cover different parts of this contract. Wall-speed runs omit map readback
 and payload sampling. The original ranked-refill result stays closed.
 
+The coherent placement build at `d6488e9f5` has 136 fresh objects,
+1,478 compiler inputs and ten executable identities. The host fixture
+passes 39 cases. The first Arc launch, recorded at `085f702ea`, stops
+before binding the current cache ticket because its layout lacks the
+scratch alias required by `Prefill::bind_cache_scratch_lease`. The fixture
+exits with owners retained and records no fresh Xe fault. The
+[corrected launch](../bench/dflash2_decode_phase_placement_check_v2.py)
+supplies the existing fixture settings before exec. It reuses the exact
+engine and fixtures, and preserves the original failed result.
+
 The [96K timing controller](../bench/dflash2_decode_phase_placement_speed.py)
 uses the two original thinking workloads in three counterbalanced pairs.
 It binds the switch and restore to the client request's first nonempty

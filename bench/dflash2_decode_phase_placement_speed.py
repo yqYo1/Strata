@@ -7,6 +7,7 @@ import sys
 
 sys.dont_write_bytecode = True
 import dflash2_decode_phase_placement_check as checked
+import dflash2_decode_phase_placement_check_v2 as fixture_launch
 import dflash2_primary_continuation as primary
 
 build, bank, require, validation = checked.build, checked.bank, checked.require, checked.validation
@@ -31,7 +32,7 @@ PLAN = dict(primary.PLAN, order=list(ORDER),
 def baseline():
     native = bank.previous.read(build.ROOT / 'record.json')
     build.check(native)
-    proof = validation.committed(bank.RESULT, (checked.KEY,))
+    proof = validation.committed(bank.RESULT, (fixture_launch.KEY,))
     binary = native['binaries']['strata']
     identity = bank.signature(build.builder.compact(native))
     require(build.retained.closed(proof, 'closed') and proof['build_sha256'] == identity
@@ -149,7 +150,7 @@ def experiment():
 
     def pins(revision):
         results = base_pins(revision)
-        for path in (THIS, checked.THIS, checked.stock.THIS, build.THIS):
+        for path in (THIS, checked.THIS, checked.stock.THIS, build.THIS, fixture_launch.THIS):
             file = bank.P / path
             require(file.read_bytes() == validation.git('show', revision + ':' + path), 'commit timing input: ' + path)
             results[path] = bank.sha(file)
