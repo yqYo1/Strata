@@ -1538,10 +1538,29 @@ headroom against stock with caller participation in each block. GPU graph
 costs and actual overlap need their own measurement.
 [CPU replay controller](../bench/sycl/cpu_roofline/fixed_replay.py).
 
-Keep the completed `cpu-fixed-expert-schedule-v2` CPU build as the
-fixed-work reference for the reserved-caller comparison. Its verified
-executable hash also matches the earlier publication and schedule builds.
-The two earlier roots have no active consumer beyond their receipts.
+The replay at `7d38b0680` closes all 12 timed processes with 120
+eligible samples and exact work, guards, affinity and numerical results.
+Each format row sums two captured layers. The values are medians over
+the three independent blocks, in milliseconds.
+
+| Format | Stock with caller | Stock reserved caller | By-expert reserved caller | Early reserved caller | Early readiness | Time after readiness | Ideal headroom versus stock |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| IQ3_XXS | 5.402 | 6.073 | 5.731 | 5.747 | 3.126 | 2.638 | 2.272 |
+| IQ3_S | 6.026 | 6.833 | 6.857 | 6.818 | 4.059 | 2.767 | 1.962 |
+
+The early arm costs 0.346–0.390 ms more than stock for IQ3_XXS and
+0.774–0.812 ms more for IQ3_S across the matched blocks. The integrated
+trial must recover those intervals and charge the extra GPU work and
+submission costs. Both formats have positive CPU-only headroom in all
+three blocks. The replay keeps the early strategy eligible for a
+combined CPU/Arc test.
+[Handoff result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-expert-handoff-current.json).
+
+Keep `cpu-fixed-expert-handoff-v1` as the current fixed-work CPU
+reference through the combined replay. The earlier scheduling result
+supplies its width-four eligibility from Git.
+
+The three earlier roots below have no active consumer beyond their receipts.
 The recovery audit verifies each earlier build's 210 Git project files,
 1,376 Git ggml files, 633 actual compiler dependencies, link inputs and
 original recipe. The retired paths are the contents below except
@@ -1552,6 +1571,7 @@ counts and file SHA-256 values.
 | --- | --- | ---: | ---: | --- |
 | `cpu-fixed-expert-publication-v1` | `62d23a297` | 79 | 16,136,713 | `63b4355c9268d912b3c3448a5786e4129ed4174f3d45be6a70d5d764f8082c61` |
 | `cpu-fixed-expert-schedule-v1` | `8191a29dd` | 83 | 16,143,593 | `6240dc46daa4c91ee0471b02c219501acf93436287399d5f61e60c8875cd8021` |
+| `cpu-fixed-expert-schedule-v2` | `b4500d7f5` | 93 | 16,194,661 | `db394a41c71bbd10808009fd95b87c591444e57c9340c0a0669781790c260840` |
 
 The [stock admission controller](../bench/dflash2_decode_stock_global_restore.py)
 uses the retained primary executable and recovers the original restore plans
@@ -2420,6 +2440,21 @@ actual graph and recurrent work and time the two-half control through
 its own completion events.
 [CPU dispatcher](../src/core/expert_source.cpp) and
 [server trace](../src/program/generate.cpp).
+
+For the first coupled replay, keep one width-four CPU dispatch and one
+resident plan per layer. Queue the first combine and first-half
+next-layer math from the readiness callback, then queue the second
+combine and next-layer math at pool retirement. Publish both halves'
+next-layer IDs after the old layer's CPU dispatch and routing trace
+return. Use disjoint host result allocations and preserve ordered
+completion through the second graph. Compare with the same pair of
+graphs submitted after retirement and with the stock four-token graph.
+Charge capture/submit counts and the reduction in shared weight reuse.
+Carry the decode-only selection with the captured graph family. The
+legacy `groups_[T]` slot is shared by prompt and decode graph captures
+at a given width, so a decode-only change in its value would also
+change the prompt-side replay's expected geometry.
+[Graph selection](../include/strata/core/verify_window_policy.hpp).
 
 For a copy-once control, the full CPU result slab at `T=4`, `K=10` and
 `N=2560` is 409,600 bytes per layer, or 19,660,800 across 48 layers. The
