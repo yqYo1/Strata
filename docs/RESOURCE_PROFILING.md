@@ -2525,14 +2525,27 @@ submits 161 halves before full CPU retirement and the deferred arm submits
 none early. All three processes exit normally with no fresh Xe fault.
 The clocks in this observed short test are diagnostic only.
 
-On the same executable, restore the production dense DPAS setting and
-audit actual width-four dense calls. Check that the stock run reproduces
-its original short control, both split schedules retain the same reduced
-set of dense calls, and early and deferred runs match with the same
-arithmetic. Compare their prompt tap payloads with stock and record any
-different stock/split state in the receipt. Then use a separate repeated
-model comparison to charge copy and scheduling costs, dense-kernel changes
-and weight reuse. Preserve prefill independently.
+The same-executable production-DPAS comparison closes at `4c324029d`.
+Stock reproduces its original short control and captures 81 non-head C4
+dense DPAS calls across four shapes. Both split schedules retain 46 calls
+across those shapes and match each other in output, active state, prompt
+taps and width trajectory. Stock and split agree in output, prompt taps
+and widths. Their GDN, QSA tail, pooled index and KV digests differ under
+the different arithmetic paths. The two split schedules exercise all seven
+width-four windows with 23 split steps. Early submits 161 times before
+CPU retirement, while deferred submits none early. All three processes
+exit normally with quiet validation and no fresh Xe fault.
+
+The [long-code T4 controller](../bench/dflash2_decode_t4_speed.py)
+compares stock, deferred and early in three counterbalanced blocks. It
+pins the verified 96,204-input thinking-on body and uses the current
+`bench.sh` server route with production DPAS. Each process has one sustained
+generation after warm-up. The per-window T4 audit checks actual split
+steps and charges its cost. Report logical prefill work and first-long
+TTFT independently, and match early/deferred decode work before
+attributing a time difference to that ordering. A positive speed screen
+selects a separate clean comparison; clean performance, weak-draft and
+agent checks, physical-context and RESTORE qualification remain open.
 [Original model result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The first build at `8bd19a9b9` compiles and links all three named targets.
