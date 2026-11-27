@@ -23,6 +23,31 @@ REQUIRED = ('src/program/generate.cpp', 'src/core/verify.cpp', 'src/core/expert_
 CPU_EVIDENCE = '7d38b06800cf6eb344e5a9215ec2bf3efd03eb8f'
 ARC_EVIDENCE = 'd7c710d12'
 Q6_EVIDENCE, Q6_KEY = '697559569', 'dflash2_decode_t4_q6_control_v1'
+C2_KEY = 'q6_t4_c2_component_build_v2'
+C2_NATIVE = 'dflash2_decode_t4_c2_native_v1'
+C2_VERIFY_SHAPES = ['6144x2560', '2560x6144', '2560x10240', '2560x12288']
+C2_KERNEL = 'src/kernels/sycl/q6_dpas_component'
+
+
+def select_c2_generation():
+    global KEY, ROOT, TREE
+    KEY = C2_NATIVE
+    ROOT = bank.B / KEY.replace('_', '-')
+    TREE = ROOT / 'source'
+
+
+def c2_component():
+    proof = validation.committed(bank.RESULT, (C2_KEY,))
+    require(retained.closed(proof, 'closed') and proof['numerical']['passed']
+            and proof['decision']['eligible_shapes'] == C2_VERIFY_SHAPES
+            and len(proof['timing']) == 6 and all(
+                t['passed'] and t['ownership_closed'] and t['native_exit_code'] == 0 and t['fresh_faults'] == []
+                for t in proof['timing']), 'close the four-shape C2 component comparison first')
+    revision = proof['project']['revision']
+    require(proof['binary']['source_commit'] == revision and all(
+        source.git(bank.P, 'show', revision + ':' + path) == (bank.P / path).read_bytes()
+        for path in (C2_KERNEL + '.cpp', C2_KERNEL + '.hpp')), 'use the component-tested C2 kernel source')
+    return dict(result_sha256=bank.signature(proof), source_commit=revision, shapes=C2_VERIFY_SHAPES)
 
 
 def inputs(revision):
@@ -51,7 +76,13 @@ def inputs(revision):
                 == pin['source_sha256']
                 and all(bank.sha(root / p) == h for p, h in pin['source_sha256'].items()),
                 'pinned dependency changed')
-    pins = source.pin(bank.P, [*primary.PREFIXES, THIS, fixture.THIS, retained.THIS])['source_sha256']
+    controls = [THIS, fixture.THIS, retained.THIS]
+    candidate = {}
+    if KEY == C2_NATIVE:
+        candidate['c2_component'] = c2_component()
+        controls.extend(('bench/dflash2_decode_t4_check.py', 'bench/dflash2_decode_t4_model.py',
+                         'data/expert-profile.bin'))
+    pins = source.pin(bank.P, [*primary.PREFIXES, *controls])['source_sha256']
     payload = dict(source.blobs(bank.P, revision, pins))
     require(bank.stage.hashed(payload) == pins, 'commit the exact T4 candidate and controllers')
     old, new = str(primary.ROOT), str(ROOT)
@@ -59,14 +90,14 @@ def inputs(revision):
     env = {k: v.replace(old, new) for k, v in parent['recipe']['environment'].items()}
     require(args[2:5] == [str(TREE), '-B', str(ROOT / 'build')], 'unexpected primary build recipe')
     return dict(source_commit=revision, native_source_commit=revision, source_files=pins,
-                controller_sources={p: pins[p] for p in (THIS, fixture.THIS, retained.THIS)},
+                controller_sources={p: pins[p] for p in controls},
                 foundation=parent['foundation'], external_inputs=parent['external_inputs'],
                 build_tools=parent['build_tools'], driver=parent['driver'],
                 retained_binary=fallback['binary'], runtime_manifest=fallback['runtime_manifest'],
                 native_validation_probe=fallback['native_validation_probe'],
                 cpu_evidence_sha256=hashlib.sha256(cpu_raw).hexdigest(),
                 arc_evidence_sha256=bank.signature(arc),
-                recipe=dict(configure=args, environment=env, targets=list(TARGETS))), payload, original
+                recipe=dict(configure=args, environment=env, targets=list(TARGETS)), **candidate), payload, original
 
 
 def check(row, committed=True):
@@ -82,8 +113,9 @@ def check(row, committed=True):
             'T4 source, recipe or runtime changed')
     if row['stage'] == 'built':
         proof = row['actual_inputs']
+        required = (*REQUIRED, C2_KERNEL + '.cpp') if KEY == C2_NATIVE else REQUIRED
         require(not proof['partial_archive_reuse'] and proof['uncovered'] == 0
-                and all(proof['compiled'].get(str(TREE / p)) == row['source_files'][p] for p in REQUIRED)
+                and all(proof['compiled'].get(str(TREE / p)) == row['source_files'][p] for p in required)
                 and all(bank.sha(p) == h for kind in bank.previous.ACTUAL for p, h in proof[kind].items())
                 and set(row['binaries']) == set(TARGETS)
                 and all(bank.sha(b['path']) == b['sha256'] and Path(b['path']).stat().st_size == b['bytes']
@@ -124,11 +156,18 @@ def prepare():
                          first_device='Shared-plan half-combine check with validation before any model run.',
                          model='Commit a bounded same-binary parity plan before model execution.',
                          retention='Keep the existing speed reference and this candidate through parity.'))
+    if KEY == C2_NATIVE:
+        row['plan'].update(selection='C2 only in the four qualified Q6 shapes within split T4 decode.',
+                           numerical_reference=C2_KEY,
+                           retention='Keep the existing long-prefill and T4 references through the C2 trial.')
     check(row, committed=False)
     save(row)
 
 
 if __name__ == '__main__':
+    if sys.argv[1:2] == ['--c2']:
+        sys.argv.pop(1)
+        select_c2_generation()
     action, = sys.argv[1:]
     require(sys.executable == bank.basis.reference.model.PYTHON
             and action in ('prepare', 'configure', 'compile'), 'one pinned T4 build stage')

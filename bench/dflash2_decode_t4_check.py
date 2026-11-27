@@ -22,6 +22,13 @@ HOST_LIMITS = dict(wall=30, cpu=30, rss_cap=1 << 30, text_cap=256 << 10,
                    file_cap=1 << 20, total_cap=4 << 20)
 
 
+def select_c2_generation():
+    global KEY, ROOT
+    build.select_c2_generation()
+    KEY = 'dflash2_decode_t4_c2_shared_plan_v1'
+    ROOT = bank.B / KEY.replace('_', '-')
+
+
 def fields(revision):
     native = bank.previous.read(build.ROOT / 'record.json')
     require(build.retained.closed(native, 'built'), 'require the closed coherent T4 build')
@@ -111,6 +118,9 @@ def execute():
 
 
 if __name__ == '__main__':
+    if sys.argv[1:2] == ['--c2']:
+        sys.argv.pop(1)
+        select_c2_generation()
     action, = sys.argv[1:]
     require(sys.executable == bank.basis.reference.model.PYTHON
             and action in ('prepare', 'validate'), 'one pinned shared-plan check stage')
