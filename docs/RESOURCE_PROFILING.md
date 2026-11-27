@@ -2577,8 +2577,12 @@ The third early process closes at 15.798 tok/s with 103.613 seconds TTFT.
 It repeats the other two early runs' output and reasoning hashes, 3,440
 output tokens, 2,268 of 2,376 drafts accepted, expert work and 15,640
 early submissions. The three early decode times span 217.749–217.894
-seconds. All seven finished processes exit normally with no fresh Xe
-fault. The third stock and deferred processes remain.
+seconds. The third stock process closes at 16.313 tok/s with the same
+3,195 outputs, 2,173 of 2,248 drafts accepted and output hash as the two
+earlier stock runs. It matches the third early process's checked prefill
+work and 103.613-second TTFT. Stock wins the model-rate comparison in
+all three blocks. All eight finished processes exit normally with no
+fresh Xe fault. The final deferred process remains.
 
 The first block selects arithmetic preservation as a follow-up component
 question. The existing Q6 DPAS tile shares integer dot and per-column FP32
@@ -2595,11 +2599,12 @@ The isolated component source is `88c34b4a5` with build and Arc checks at
 `f910436e5` and the timing controller at `b79dd7ee3` on the local
 `verify/t4-c2-dpas` worktree. It adds canonical
 C2 to the existing Q6 fixture and uses two independent, one-node graph
-submissions for split arms. The first-half check requires C4 bits for the first two columns
-and untouched poison in the second half. The ten numerical cases include
-an unpadded output shape. The production verifier is unchanged. This
-worktree's next consumer is the standalone component build and Arc
-verification after the frozen 96K cohort closes. The controller recovers
+submissions for split arms. The isolation control at `c96980b21` runs
+each half with the other half's Q8 blocks zeroed. It requires C4 bits
+for the active columns, an untouched canary in the inactive output and
+unchanged inputs. The ten numerical cases include 20 isolated launches
+and an unpadded output shape. The standalone component build and Arc
+verification follow closure of the frozen 96K cohort. The controller recovers
 the T4 build recipe and prior checked Arc safety environment. The six
 timing processes alternate between C4 and the existing two-column pair,
 with five eligible batches per arm and shape. Use the paired C4 times to
