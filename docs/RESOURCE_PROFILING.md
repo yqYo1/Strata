@@ -2562,8 +2562,16 @@ observed block and finish the frozen repetitions.
 The second deferred/early pair reproduces that subcomparison. Rates are
 14.917 and 15.794 tok/s with matching output and reasoning hashes, draft
 counts, expert work and 680 T4 windows. Early saves 12.795 seconds, a
-5.874% rate gain with no fresh Xe fault. The second block's stock sample
-is still pending.
+5.874% rate gain with no fresh Xe fault. The second stock process
+completes at 16.194 tok/s with 3,195 outputs, the original stock output
+hash and 2,173 of 2,248 drafts accepted. Prefill placement, KV work and
+requested H2D bytes match all three arms, with initial client TTFT of
+103.542, 104.028 and 103.591 seconds for stock, deferred and early.
+Early is 2.470% slower than stock in this block. Both completed blocks
+favor stock by model throughput. The predeclared two-of-three win against
+stock is out of reach, and the last block still measures the full
+counterbalanced ordering and repeatability. All six processes have exited
+normally without fresh Xe faults.
 
 The first block selects arithmetic preservation as a follow-up component
 question. The existing Q6 DPAS tile shares integer dot and per-column FP32
@@ -2577,16 +2585,21 @@ draft yield. This is a new candidate; restored yield and model speed
 remain unmeasured.
 
 The isolated component source is `88c34b4a5` with build and Arc checks at
-`f910436e5` on the local `verify/t4-c2-dpas` worktree. It adds canonical
+`f910436e5` and the timing controller at `b79dd7ee3` on the local
+`verify/t4-c2-dpas` worktree. It adds canonical
 C2 to the existing Q6 fixture and uses two independent, one-node graph
 submissions for split arms. The first-half check requires C4 bits for the first two columns
 and untouched poison in the second half. The ten numerical cases include
 an unpadded output shape. The production verifier is unchanged. This
 worktree's next consumer is the standalone component build and Arc
 verification after the frozen 96K cohort closes. The controller recovers
-the T4 build recipe and prior checked Arc safety environment. The source
-and reference binding checks pass. Compile and runtime validation remain
-pending.
+the T4 build recipe and prior checked Arc safety environment. The six
+timing processes alternate between C4 and the existing two-column pair,
+with five eligible batches per arm and shape. Use the paired C4 times to
+price the split and the existing pair to screen shapes for a follow-up.
+The host reader accepts all six synthetic sample orders and rejects the
+wrong graph count, short batch and C4 arithmetic mismatch. Compile and
+runtime validation remain pending.
 [Original model result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The first build at `8bd19a9b9` compiles and links all three named targets.
