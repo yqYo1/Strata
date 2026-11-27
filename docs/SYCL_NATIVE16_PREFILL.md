@@ -11773,6 +11773,17 @@ The standard length workload repeats a deterministic word stream with
 distinct run tags, and the PLE row cache persists across those requests.
 Use varied text and the standard workload to evaluate a scheduling change.
 
+The closed comparison at `bdfd43ec9` preserves the 12 requests and
+passes the PLE reader's admission. After verifying all four terminal
+receipts against the pushed record, retired `host` and `0`–`3` under
+`dflash2-cold-layer-windows-v1`. This removed 288 files and 50,351,489
+bytes. The sorted state-relative paths, byte counts and file hashes give
+inventory SHA-256
+`625e2ba90b35dbcc695d2ef647b0d0bd835dd0dfed89b4a3d1b90ac26a6fdc62`.
+The original `record.json` and all 34 executables across the two phase
+references and the layer-window build used for PLE match their original
+hashes.
+
 The closed V2 build and run receipts are recoverable from Git at `200ec7292`.
 Recovery matches 1,328 project files, 525 build controls, the exact
 compiler/link inputs, 139 objects and 11 executable identities. Both
