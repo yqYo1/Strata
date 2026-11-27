@@ -1642,10 +1642,10 @@ or raw-output consumer. The placement build reads its predecessor's
 committed recipe and source identity. The retirement audit recovered the
 1,337 native project files, matched 1,481 compiler inputs and 30 link
 inputs and verified all 13 executable sizes and hashes. The primary
-reference remains selected and matches its original executable. The
-approved retirement covers the following paths, leaving both `record.json`
-receipts. Each inventory hashes sorted relative paths, byte counts and
-file hashes.
+reference remains selected and matches its original executable. Under
+the measurement lock, retired the following paths and verified that
+only the unchanged `record.json` remains in each root. Each inventory
+hashes sorted relative paths, byte counts and file hashes.
 
 | Root and paths selected for retirement | Files | Bytes | Inventory SHA-256 |
 | --- | ---: | ---: | --- |
