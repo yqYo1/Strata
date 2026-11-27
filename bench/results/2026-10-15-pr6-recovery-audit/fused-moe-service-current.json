@@ -733139,5 +733139,420 @@
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "dflash2_cold_ple_wait_v1": {
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "configuration": {
+      "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
+      "args": [
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-context",
+        "262144",
+        "--kv",
+        "int8",
+        "--kv-resident",
+        "20480",
+        "--expert-cache",
+        "1256",
+        "--expert-profile",
+        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--pcie-frac",
+        "0",
+        "--adapt-swaps",
+        "0",
+        "--conversation-cache-mib",
+        "0",
+        "--prompt-cache",
+        "0",
+        "--turn-token",
+        "-1",
+        "--suffix-draft",
+        "0",
+        "--greedy",
+        "--no-spec-split",
+        "--short-read",
+        "128",
+        "--spec",
+        "4",
+        "--prefill",
+        "8192",
+        "--vram-reserve-mib",
+        "1500",
+        "--no-coupled-draft",
+        "--no-token-graph",
+        "--prefill-strategy",
+        "throughput",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt"
+      ],
+      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
+      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq3_s-primary",
+      "aliases": [
+        "strata"
+      ],
+      "host": "127.0.0.1",
+      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-model-entry-arm1-v1/engine.stderr",
+      "engine_silence_s": 480,
+      "parallel": 1,
+      "open_browser": false,
+      "env": {},
+      "family": "qwen",
+      "backend": "sycl"
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-speed-v2/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "template": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "ordinary_control": {
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-ordinary-bank-comparison-v1/1",
+      "environment_sha256": "5990eab9654303568db3c00994aafcc93671f5e549f6420fdaa10aae86d3999b"
+    },
+    "dflash2_assets": {
+      "/home/yayoi/.local/share/strata-sycl/dflash2/qwen3.8-flash-next-dflash2.q4_0.pack": "cda40d62d0eb8f37ed6e272142641a1d2f0de4a32f9e14d0416e7a71534849f1",
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin": "b1e1d3a7a9e4bf862dcd5923ce661fb59bbd07907e594df5cf86a62ac235cb91"
+    },
+    "validated_dflash2_args": [
+      "--pack",
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+      "--native",
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "--max-context",
+      "262144",
+      "--kv",
+      "int8",
+      "--kv-resident",
+      "20480",
+      "--expert-cache",
+      "1256",
+      "--expert-profile",
+      "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
+      "--expert-cache-per-layer",
+      "--pool-workers",
+      "5",
+      "--pcie-frac",
+      "0",
+      "--adapt-swaps",
+      "0",
+      "--conversation-cache-mib",
+      "0",
+      "--turn-token",
+      "-1",
+      "--suffix-draft",
+      "0",
+      "--greedy",
+      "--no-spec-split",
+      "--short-read",
+      "128",
+      "--prefill",
+      "8192",
+      "--vram-reserve-mib",
+      "1500",
+      "--no-coupled-draft",
+      "--no-token-graph",
+      "--prefill-strategy",
+      "throughput",
+      "--spec",
+      "4",
+      "--prompt-cache",
+      "1",
+      "--prompt-cache-every",
+      "0",
+      "--draft",
+      "dflash2",
+      "--draft-model",
+      "/home/yayoi/.local/share/strata-sycl/dflash2/qwen3.8-flash-next-dflash2.q4_0.pack",
+      "--draft-fallback",
+      "none",
+      "--mtp-draft-vocab",
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin",
+      "--draft-conf",
+      "0.6"
+    ],
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cold-layer-windows-native-v1/build/strata",
+      "sha256": "d0d4a2c25c21fa1ca1b05205845e387783a993286bee44baf7a6d64886bdad25",
+      "bytes": 26705656
+    },
+    "native_source_commit": "8f1f62a25a1f94e05aacf8d53a6242706e595e31",
+    "native_build_sha256": "dd94ad8a161dd168158deda9981df40212fa2de53b27c7ac12fdcb351d0aa178",
+    "reference_evidence": "ad8652973c8f025e73bd07bc791a9976a55e20a9",
+    "python_contract": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v4/runtime.json",
+      "sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
+      "files": 3597,
+      "bytes": 270975442
+    },
+    "python_selected": {
+      "workspace_venv": false,
+      "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+      "file": {
+        "realpath": "/usr/bin/python3.12",
+        "dev": 29,
+        "ino": 774532,
+        "bytes": 8020928,
+        "mtime_ns": 1788171506000000000,
+        "ctime_ns": 1790581701420197973,
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      }
+    },
+    "selected_arm": "retain",
+    "selection_sha256": "e11f8ba2578f2e7d80a25ab117140cdfb0cb35effd759e8a618886655673cf77",
+    "request_hashes": {
+      "118785": [
+        "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
+        "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d",
+        "f952766eccc6720b841e5091c55231ae6d505e82bd53259c17062b9a19a2515f"
+      ]
+    },
+    "frozen_prefill_work": [
+      {
+        "work": {
+          "windows": "48",
+          "dequants": "18974",
+          "jobs": "23978",
+          "source_H2D_bytes": "228065280",
+          "GPU_resident_windows_only": "1",
+          "operator_max": "8192",
+          "maximum_rows": "118784"
+        },
+        "uploads": {
+          "uploads": "18974",
+          "requested_H2D_bytes": "38726553600",
+          "permanent_hits": "0",
+          "permanent_slots": "31",
+          "total_slots": "32",
+          "final_drain": "checked"
+        },
+        "kv": {
+          "reloaded": 645120,
+          "reused": 1935360
+        },
+        "fixed_bytes": 3902964736,
+        "direct_pieces": 720,
+        "native_request": [
+          118785,
+          0,
+          118785,
+          24,
+          13,
+          15
+        ]
+      },
+      {
+        "work": {
+          "windows": "48",
+          "dequants": "18902",
+          "jobs": "23912",
+          "source_H2D_bytes": "228065280",
+          "GPU_resident_windows_only": "1",
+          "operator_max": "8192",
+          "maximum_rows": "118784"
+        },
+        "uploads": {
+          "uploads": "18902",
+          "requested_H2D_bytes": "38591923200",
+          "permanent_hits": "0",
+          "permanent_slots": "31",
+          "total_slots": "32",
+          "final_drain": "checked"
+        },
+        "kv": {
+          "reloaded": 645120,
+          "reused": 1935360
+        },
+        "fixed_bytes": 3902964736,
+        "direct_pieces": 720,
+        "native_request": [
+          118785,
+          0,
+          118785,
+          24,
+          13,
+          15
+        ]
+      },
+      {
+        "work": {
+          "windows": "48",
+          "dequants": "18907",
+          "jobs": "23923",
+          "source_H2D_bytes": "228065280",
+          "GPU_resident_windows_only": "1",
+          "operator_max": "8192",
+          "maximum_rows": "118784"
+        },
+        "uploads": {
+          "uploads": "18907",
+          "requested_H2D_bytes": "38600499200",
+          "permanent_hits": "0",
+          "permanent_slots": "31",
+          "total_slots": "32",
+          "final_drain": "checked"
+        },
+        "kv": {
+          "reloaded": 645120,
+          "reused": 1935360
+        },
+        "fixed_bytes": 3902964736,
+        "direct_pieces": 720,
+        "native_request": [
+          118785,
+          0,
+          118785,
+          24,
+          13,
+          16
+        ]
+      }
+    ],
+    "base_physical_context_sha256": "88f091162a4694cfbcce148e5732a3fb6c16a0b6fd964617064396792dc46fb1",
+    "native_context_qualified": false,
+    "window_evidence_sha256": "231369a7b6a385248db28fe86ccde92bd7a662d61d3cc8f52b7658a3a542064d",
+    "stage": "prepared",
+    "source_commit": "bdfd43ec9e8b7d7ae9db757323415a008b76928a",
+    "host_passed": false,
+    "ownership_closed": true,
+    "active": false,
+    "passed": false,
+    "complete": false,
+    "plans": [
+      {
+        "index": 0,
+        "arm": "ple",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cold-ple-wait-v1/0",
+        "port": 39611,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cold-layer-windows-native-v1/build/strata",
+          "sha256": "d0d4a2c25c21fa1ca1b05205845e387783a993286bee44baf7a6d64886bdad25",
+          "bytes": 26705656
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cold-ple-wait-v1/0/config.json",
+          "--port",
+          "39611",
+          "--prefill-exact-tokens",
+          "118785",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cold-ple-wait-v1/0/bench"
+        ],
+        "generated": {
+          "config.json": "63c7a094457e2b95b4dbc77684fa1b9caa6a219db1f79a59600716fed49c8913",
+          "plan.json": "5145e59f8059dfd8eb281c93e62cbee721dddd3bc42ba548c3b397aeb0368067"
+        },
+        "environment_sha256": "37c1b71fd1da87d4208cac50a481be776c679c82c68b4ae9ec32d56ec0ec9e98",
+        "read": 118785,
+        "heads": 1,
+        "kv_arm": "retain"
+      },
+      {
+        "index": 1,
+        "arm": "ple",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cold-ple-wait-v1/1",
+        "port": 57385,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cold-layer-windows-native-v1/build/strata",
+          "sha256": "d0d4a2c25c21fa1ca1b05205845e387783a993286bee44baf7a6d64886bdad25",
+          "bytes": 26705656
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cold-ple-wait-v1/1/config.json",
+          "--port",
+          "57385",
+          "--prefill-exact-tokens",
+          "118785",
+          "--think",
+          "--runs",
+          "3",
+          "--profile-request-gates",
+          "--workload-id",
+          "native_gdn_20261018",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-cold-ple-wait-v1/1/bench"
+        ],
+        "generated": {
+          "config.json": "84b684dd2f2b73bcf0b97c8eb7702a788731de89c71952d76311372929afd574",
+          "plan.json": "5145e59f8059dfd8eb281c93e62cbee721dddd3bc42ba548c3b397aeb0368067"
+        },
+        "environment_sha256": "eacb3e784ea9264b2ff30e91e3bb7e8eeb0a0d258ef1f0a2b70b73c1ba0a3fb2",
+        "read": 118785,
+        "heads": 1,
+        "kv_arm": "retain"
+      }
+    ],
+    "processes": [],
+    "budgets": {
+      "wall": 5400,
+      "cpu": 21600,
+      "rss_cap": 111669149696,
+      "text_cap": 25165824,
+      "file_cap": 67108864,
+      "total_cap": 167772160
+    },
+    "plan": {
+      "order": [
+        "ple",
+        "ple"
+      ],
+      "read": 118785,
+      "requests_per_process": 3,
+      "scope": "Two independent processes on the closed layer-window binary. Keep all prior observers active and enable only the existing PLE wait clock before exec.",
+      "accounting": "Require every Direct I/O gather in the layer-1 slice. Bound the future wait inside the unclassified remainder and the inclusive PLE clock inside the layer remainder.",
+      "decision": "Compare first and subsequent waits within each process. Check subsequent duration against the two closed window-observed processes as a historical reference. Use the nested waits to select prefill scheduling work. Collect clean performance in a separate comparison.",
+      "stop": "Stop on changed work, incomplete accounting, invalid owner exit or new device fault."
+    },
+    "source_inputs": {
+      "files": 825,
+      "sha256": "fc4625119195a111199249bd97d61c620a1b6cf83186080af4701098a2e26185"
+    },
+    "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   }
 }
