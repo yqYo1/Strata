@@ -2746,16 +2746,26 @@ at `b982ab202` repeats these work counts and closes cleanly, at 16.256,
 Early C2 is 0.064% slower and 0.654% faster than stock in the two blocks.
 The third C2 process at `1568885fe` gives 16.359 tok/s and 104.148 s
 client TTFT. All three C2 processes match the logical work, output,
-reasoning digest and 2,173/2,248 draft totals. The final two controls
-complete the counterbalanced comparison.
+reasoning digest and 2,173/2,248 draft totals. The final stock process at
+`777788110` gives 16.195 tok/s and 104.697 s TTFT with the same output and
+draft totals and no fresh Xe fault. C2 is 1.013% faster in this pair, for
+two wins and a geometric mean gain of 0.533% across the three stock pairs.
+The final original-early process is required to close the comparison.
 
 Relative to early, the two C2 processes spend 1.441 and 2.212 extra seconds
 inside the first long native prompt. Their extra client TTFT beyond that
 clock is 0.002 and 0.005 seconds. Prefill rows, attention pieces, KV pages
 and requested H2D bytes match. The C2 dispatch checks decode phase and
-two-column split geometry. The prompt-time difference remains open;
-continue the third block on the frozen plan.
+two-column split geometry. The prompt-time difference remains open and
+requires a separate clean check if C2 passes the observed comparison.
 [Original model result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
+
+The merge preflight at `1568885fe` and `261914182` finds six disjoint C2
+result keys and four conflicting benchmark controllers. A source merge
+would change eleven inputs pinned by the configured caller-help build.
+Preserve the exact C2 evidence and source ancestry at comparison closure.
+Keep the configured caller-help source inputs fixed through its comparison,
+with C2 source adoption governed by the subsequent model gates.
 
 The first build at `8bd19a9b9` compiles and links all three named targets.
 Its build audit fails because that plan omitted the existing fixture
