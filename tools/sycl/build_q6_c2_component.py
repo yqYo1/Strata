@@ -82,12 +82,13 @@ def timing_plan(ctx):
     arc = numerical_plan(ctx)
     env = dict(arc['environment'], UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION')
     env.pop('UR_LOG_TRACING')
+    validation_log = env.pop('UR_LOG_VALIDATION')
     return dict(stages=[
         dict(mode=f'time-{i}', reference=reference, repetition=repetition,
              command=[arc['command'][0], f'--time-split-c2-{reference}', str(repetition)],
-             environment=dict(env, UR_LOG_VALIDATION=env['UR_LOG_VALIDATION'].replace(
-                 '/validation.log', f'/time-{i}-validation.log')))
+             validation_log=validation_log.replace('/validation.log', f'/time-{i}-validation.log'))
         for i, (reference, repetition) in enumerate(ORDER)],
+        environment=env,
         shapes=[list(shape) for shape in TIMED_SHAPES], limits=dict(ARC_LIMITS, wall=300),
         scope='Two independent one-node graph launches versus canonical C4 and versus the existing '
               'two-launch column path, on repeated matrices. Preserve parameter validation and runtime safety.',
@@ -110,7 +111,9 @@ def closed_comparison(identity):
                 and entry['native_exit_code'] == 0 and entry['fresh_faults'] == []
                 for entry in row['processes']),
             'close and publish all nine owned model processes before the standalone comparison')
-    return dict(commit=revision, result_sha256=bank.signature(row), decision=row['decision'])
+    return dict(commit=revision, result_sha256=bank.signature(row), processes=len(row['processes']),
+                speed_screen_passed=row['decision']['speed_screen_passed'],
+                timing_only_work_matched=row['decision']['timing_only_work_matched'])
 
 
 def dense_capture(identity):
@@ -310,9 +313,11 @@ def run_arc(ctx, mode):
     identity = row['selected_native']
     timing = mode != 'check'
     if timing:
-        stages = row['plan']['timing']['stages']
+        schedule = row['plan']['timing']
+        stages = schedule['stages']
         index = [stage['mode'] for stage in stages].index(mode)
-        plan = dict(stages[index], limits=row['plan']['timing']['limits'])
+        plan = dict(stages[index], limits=schedule['limits'])
+        plan['environment'] = dict(schedule['environment'], UR_LOG_VALIDATION=plan['validation_log'])
         require(row.get('numerical', {}).get('passed') and len(row['timing']) == index
                 and all(v['passed'] for v in row['timing']), 'commit numerical and all prior timing outcomes first')
     else:
