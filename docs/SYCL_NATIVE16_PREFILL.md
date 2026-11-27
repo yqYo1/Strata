@@ -11739,6 +11739,26 @@ fixture output and the expected mode16 record geometry of one full-row
 window per layer. Six controls reject missing rows, wrong window counts,
 overlapping subtotals, repeated records or data from a disabled observer.
 
+The first detailed process completes all three matched requests, exits
+normally and records no fresh Xe fault. First prefill takes 124.112 seconds.
+The later requests take 113.267 and 113.299 seconds. Their median is
+1.000299 times the paired control's median. At layer index 1, first use adds
+5.294 seconds of unclassified wall time. The MoE window adds 0.976 ms,
+handoff changes by less than 1 µs, and the rest of the layer adds 5.293
+seconds with 1.272 ms of calling-thread CPU time. The MoE window accounts
+for 872 of the 886 additional minor faults at this layer. Complete the
+reverse pair before using these intervals to select a change.
+
+The exact diagnostic executable already contains the PLE wait observer.
+The layer-major path starts the first PLE gather within the layer-1 slice,
+then waits for each result in that slice. If the reverse pair reproduces the
+delay outside the MoE window and handoff, measure the exposed
+`future_get_ms` with the existing observer before changing I/O scheduling.
+The standard length workload repeats a deterministic word stream with
+distinct run tags. Its zero model-prefix reuse does not reset the separately
+owned PLE row cache. A PLE change needs a further comparison on varied text
+as well as the standard workload.
+
 The closed V2 build and run receipts are recoverable from Git at `200ec7292`.
 Recovery matches 1,328 project files, 525 build controls, the exact
 compiler/link inputs, 139 objects and 11 executable identities. Both
