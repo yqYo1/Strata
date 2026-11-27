@@ -14,7 +14,7 @@ import dflash2_primary_tap_payload as tap
 bank, require = build.bank, build.require
 validation, model, owners = tap.validation, tap.model, tap.owners
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'dflash2_prefill_ple_early_check_v2'
+KEY = 'dflash2_prefill_ple_early_check_v3'
 ROOT = bank.B / KEY.replace('_', '-')
 REFERENCE = '63c0c6353737c2fb4dc5ade7b1d6aa68da59531d'
 ORDER = ('cancel', 'direct')
@@ -54,7 +54,8 @@ def inputs(revision, ctx):
         'boot', 'driver', 'runtime_manifest', 'native_validation_probe', 'dflash2_assets', 'model_assets_sha256')}
     binary = native['binaries']['strata']
     plan.update(source_commit=revision, source_inputs_sha256=bank.signature(pins), reference=REFERENCE,
-                native_source_commit=build.PATCH, native_build_sha256=bank.signature(build.builder.compact(native)),
+                native_source_commit=native['native_source_commit'],
+                native_build_sha256=bank.signature(build.builder.compact(native)),
                 binary=binary, command=[binary['path'], *old['command'][1:]], cases=cases, order=list(ORDER),
                 stop_deadline_s=STOP_DEADLINE,
                 scope='Send STOP after the traced layer-0 gather issue, then repeat the short '

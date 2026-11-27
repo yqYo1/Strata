@@ -15,7 +15,7 @@ from engine_once import native_environment
 bank, basis, require = capacity.bank, capacity.basis, capacity.require
 timing, build = capacity.timing, capacity.build
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'dflash2_prefill_ple_early_restore_v1'
+KEY = 'dflash2_prefill_ple_early_restore_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 ORDER = ('host', 'stock', 'early')
 PREFIX = 16385
