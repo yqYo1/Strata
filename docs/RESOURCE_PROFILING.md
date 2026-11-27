@@ -2491,6 +2491,18 @@ Its build audit fails because that plan omitted the existing fixture
 translation units needed by the shared Gemm and MoE class-definition
 census. It has no runtime evidence. The revised plan includes the
 complete primary fixture target set and the T4 policy and combine tests.
+The revised build at `032690088` completes 141 fresh objects and 13
+executables with zero uncovered inputs. The three-way model comparison
+uses this single executable with each schedule selected before startup.
+
+The original V1 result remains recoverable at `8bd19a9b9`. Its retirement
+audit matches all 1,334 materialized project files to Git and verifies
+127 objects, 1,470 compiled inputs, the generated header and 39 link
+inputs against the original recipe. The closed V1 root has no next
+consumer. Its build, source and logs account for 1,510 files and
+147,318,485 bytes, excluding `record.json`, with inventory SHA-256
+`b31f90d3e58815ac2646479212d28f788ab448d700c883ed147bdbec9eb6763f`.
+Keep V2 and the measured DFlash2 fallback through the bounded comparison.
 
 For a copy-once control, the full CPU result slab at `T=4`, `K=10` and
 `N=2560` is 409,600 bytes per layer, or 19,660,800 across 48 layers. The
