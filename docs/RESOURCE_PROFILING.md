@@ -2478,12 +2478,15 @@ in these opt-in modes before changing state or starting GPU work.
 
 The same-build shared-plan fixture compares the stock four-token
 copy/add/reduce graph with two half kernels using the same resident IDs.
-It tests a poisoned unpublished half and a queued handoff, with bitwise
-outputs, untouched guards and nine hit counts. Follow this with a traced
-small model comparison across the three schedules before measuring speed.
-Match prompt and decode state, routed work, valid rolling state and
-held-out output. Run longer sustained generation and full-context checks
-after parity.
+At `674402992` it passes the poisoned unpublished half and queued
+handoff checks, with bitwise outputs and untouched guards at nine hit
+counts and two input seeds. The same-build host graph-policy test also
+passes. The expected Level Zero providers load, parameter validation is
+quiet and both processes close without a fresh Xe fault. The traced
+82-input/32-output model comparison checks the three schedules before
+integrated timing. It pins zero PCIe share and sends the original
+request body without overrides. Run sustained generation and full-context
+checks after parity.
 [T4 build controller](../bench/dflash2_decode_t4_build.py).
 
 The first build at `8bd19a9b9` compiles and links all three named targets.
