@@ -836,6 +836,15 @@ measure actual evictions and usable throughput in an HTTP model request
 before claiming a model-level gain. Keep prompt dispatch independent.
 [Exact comparison and decision](https://github.com/yqYo1/Strata/commit/1b671df2e1f23f2f9743817966f171232f5d05f8).
 
+The scalar comparison consumes the committed decision and original
+`decode-kv-clock-wrap-v1/record.json`. Its own fixture will use the
+retained primary runtime archive. The recovery audit matches 234 pinned
+inputs, four original commands, 672 compiler inputs, 25 link inputs
+and all eight terminal outcomes. Retire the fixture build and
+`{smoke,validate,0,1,2,3,4,5}` under that root. The 76 files total
+2,396,527 bytes with sorted path, size and content-hash inventory SHA-256
+`e64cdb96ffd62cab0725d0c0b6c72863f5ef1be11aaa90e27e28de15d3870c33`.
+
 #### Width-four KV cache working set
 
 The retained K8V8 verifier at `968e71988` scores four-cell blocks and
