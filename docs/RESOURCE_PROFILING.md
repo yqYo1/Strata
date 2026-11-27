@@ -1902,65 +1902,43 @@ from this executable's build before launch.
 The frontend checks pass at `af9c68a6a`. Run the fixed stock/refill,
 refill/stock and stock/refill process pairs on that plan.
 
-The first stock/refill pair closes normally with quiet validation and no
-fresh Xe faults. The requests match in fresh input and actual prefill work.
-The candidate publishes 2,321,664,000 bytes at each of the two long
-handoffs. Warmup requests keep the startup stock map.
+All six independent processes exit normally with quiet validation and no
+fresh Xe faults. Paired requests match in fresh input and actual prefill
+work. In each candidate process, the two long handoffs each publish
+2,321,664,000 bytes. The short warmups use the stock map.
 
-| Workload | Fresh input tokens | Generated tokens | Prefill tok/s | TTFT s | Decode tok/s | CPU expert misses per output |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Code, stock → refill | 96,204 | 3,195 → 3,591 | 932.545 → 932.471 | 104.545 → 104.549 | 15.604 → 16.833 | 354.84 → 295.48 |
-| Prose, stock → refill | 96,274 | 9,670 → 8,212 | 1,034.828 → 1,028.080 | 93.223 → 93.838 | 11.218 → 11.244 | 396.37 → 361.11 |
-
-Decode throughput rises by 7.875% for code and 0.232% for prose. CPU expert
-misses per output fall by 16.73% and 8.90%, respectively. Code prompt time
-increases by 8.1 ms and prose prompt time by 610.7 ms. The produced lengths
-and draft counts differ across layouts. Apply the decision after the two
-remaining pairs, starting with the reverse-order refill process.
-
-For this pair, each completed verification window commits one token plus
-its accepted drafts. The last window can emit up to three fewer tokens at
-spec4. The verifier window count is between emitted minus accepted and
-that count plus three. Dividing the measured decode time and output count
-by these bounds, the refill arm's average window takes 11.15–11.63% less
-time for code and 3.98–4.08% less for prose. Output per window also falls
-4.16–4.67% and 3.75–3.86%, respectively. The lower output per window
-offsets most of the prose timing gain in this pair.
-
-The reverse-order refill process repeats the first refill's request, output
-and reasoning hashes, draft counters, expert work and handoff bytes.
-It closes normally with quiet validation and no fresh Xe fault. Code measures
-930.479 prefill tok/s, 104.769 s TTFT and 16.789 decode tok/s. Prose measures
-1,036.069 prefill tok/s, 93.116 s TTFT and 11.500 decode tok/s. Compared with
-the first refill process, its decode rate is 0.26% lower for code and 2.27%
-higher for prose.
-
-The reverse-order stock process closes the second pair with normal exit,
-quiet validation and no fresh Xe fault. The two arms match the fresh
-inputs and prefill work.
-
-| Workload | Generated tokens, stock → refill | Prefill tok/s, stock → refill | TTFT s, stock → refill | Decode tok/s, stock → refill |
+| Workload and pair | Generated tokens, stock → refill | Prefill tok/s, stock → refill | TTFT s, stock → refill | Decode tok/s, stock → refill |
 | --- | ---: | ---: | ---: | ---: |
-| Code | 3,195 → 3,591 | 933.658 → 930.479 | 104.424 → 104.769 | 15.535 → 16.789 |
-| Prose | 8,743 → 8,212 | 1,024.013 → 1,036.069 | 94.210 → 93.116 | 11.184 → 11.500 |
+| Code 1 | 3,195 → 3,591 | 932.545 → 932.471 | 104.545 → 104.549 | 15.604 → 16.833 |
+| Code 2, reverse order | 3,195 → 3,591 | 933.658 → 930.479 | 104.424 → 104.769 | 15.535 → 16.789 |
+| Code 3 | 3,195 → 3,591 | 930.097 → 932.845 | 104.828 → 104.516 | 15.621 → 16.616 |
+| Prose 1 | 9,670 → 8,212 | 1,034.828 → 1,028.080 | 93.223 → 93.838 | 11.218 → 11.244 |
+| Prose 2, reverse order | 8,743 → 8,212 | 1,024.013 → 1,036.069 | 94.210 → 93.116 | 11.184 → 11.500 |
+| Prose 3 | 8,618 → 8,212 | 1,033.543 → 1,033.014 | 93.342 → 93.389 | 11.157 → 11.427 |
 
-Decode gains 8.077% for code and 2.819% for prose. CPU expert misses per
-output fall 16.73% and 8.94%. The two stock code processes match their
-output and reasoning hashes and draft counts. The second stock prose
-process produces 8,743 tokens, compared with 9,670 in the first process.
-The first two paired code prompt-time and TTFT ratios both exceed one.
-These two samples establish that the declared median preservation gates
-will fail over three comparable pairs. Complete the fixed third pair to
-measure the spread and preserve the full comparison.
+Decode improves in all three pairs. The paired geometric gains are 7.437%
+for code and 1.819% for prose. Median CPU expert misses per output fall
+from 354.84 to 295.48 for code and 396.57 to 361.11 for prose. Each layout
+repeats its code output and draft counts in all three runs. The candidate's
+prose outputs and draft counts also repeat, while the stock runs record
+three distinct output hashes and the lengths above.
 
-The final stock process closes with quiet validation and no fresh Xe fault.
-Code again emits 3,195 tokens and measures 930.097 prefill tok/s, 104.828 s
-TTFT and 15.621 decode tok/s. The stock code decode range across three
-processes is 15.535–15.621 tok/s with identical outputs and draft counts.
-Prose emits 8,618 tokens and measures 1,033.543 prefill tok/s, 93.342 s TTFT
-and 11.157 decode tok/s. Across the three stock processes, prose has three
-distinct output hashes and 8,618–9,670 output tokens. Its decode range is
-11.157–11.218 tok/s. The final refill process completes the comparison.
+The median paired prompt-time increases are 0.00785% for code and
+0.05121% for prose. The median paired TTFT increases are 0.00383% and
+0.05035%, respectively. The preregistered preservation gates both fail.
+Keep the stock path. The measured stock TTFT spans 0.404 s for code and
+0.987 s for prose. This comparison leaves the cause of the TTFT spread
+unresolved. The compact result retains all samples and the verdict under
+`dflash2_decode_ranked_refill_speed_v1`.
+
+In the first pair, each completed verification window commits one token
+plus its accepted drafts. The last window can emit up to three fewer
+tokens at spec4. The verifier window count is between emitted minus
+accepted and that count plus three. Dividing the measured decode time and
+output count by those bounds, the refill arm's average window takes
+11.15–11.63% less time for code and 3.98–4.08% less for prose. Output per
+window also falls 4.16–4.67% and 3.75–3.86%, respectively. The lower output
+per window offsets most of the prose timing gain in this pair.
 
 The first two closed blend processes also bound the benefit of draft yield
 at the current decode time. Let `e` be emitted tokens and `a` and `d`
