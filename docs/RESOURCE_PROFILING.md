@@ -2509,14 +2509,30 @@ Both processes exit normally with no fresh Xe fault. This resolves the
 checked short-sample difference under matched arithmetic. Production
 DPAS-on inference and sustained throughput still need separate checks.
 
-The next capture selects the split from the CPU pool's supported-format
+The selective capture chooses the split from the CPU pool's supported-format
 predicate. The model manifest has 14
 IQ3_XXS/IQ4_NL and nine IQ3_S/IQ4_NL layers eligible for the current pool
 contract. The other 25 steps retain the original four-column post and
-next-layer pre-mixer. Check actual publication counts and numerical parity
-with DPAS off in all three arms. Then use the production DPAS settings in a
-new repeated model comparison to charge the copy and scheduling costs and
-the changes in math and weight reuse. Preserve prefill separately.
+next-layer pre-mixer. V3 at `2dac4cbf2` builds 141 fresh objects and 13
+executables with zero uncovered inputs. Its host policy and Arc same-plan
+numerical, buffer-guard and completion checks close at `460628c2a`.
+
+The 82-input, 32-output model comparison closes at `4a36122ad`. With
+dense DPAS disabled in all three arms, output IDs, active state digests,
+prompt tap payloads, draft counts and width trajectories agree. Each of
+seven width-four windows uses exactly 23 split steps; the early arm
+submits 161 halves before full CPU retirement and the deferred arm submits
+none early. All three processes exit normally with no fresh Xe fault.
+The clocks in this observed short test are diagnostic only.
+
+On the same executable, restore the production dense DPAS setting and
+audit actual width-four dense calls. Check that the stock run reproduces
+its original short control, both split schedules retain the same reduced
+set of dense calls, and early and deferred runs match with the same
+arithmetic. Compare their prompt tap payloads with stock and record any
+different stock/split state in the receipt. Then use a separate repeated
+model comparison to charge copy and scheduling costs, dense-kernel changes
+and weight reuse. Preserve prefill independently.
 [Original model result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The first build at `8bd19a9b9` compiles and links all three named targets.

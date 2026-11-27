@@ -15,8 +15,25 @@ KEY = 'dflash2_decode_t4_model_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 ORDER = ('stock', 'after-cpu', 'early')
+MATCHED_CONTROL, MATCHED_KEY = '4a36122ad', KEY
+DPAS_STOCK_REFERENCE = 'e36f293d5'
+PRODUCTION_DPAS = False
 T4 = re.compile(r'^DECODE_T4 mode=(\S+) position=(\d+) layers=(\d+) split=(\d+) pool_ready=(\d+) early=(\d+)$',
                 re.M)
+DENSE_CAPTURE = re.compile(r'^strata Q6_DPAS_DENSE request=(\d+) device=0 phase=decode tokens=4 '
+                           r'capture_id=(\d+) ni=(\d+) no=(\d+) nc=4 layout=canonical extra_weight_bytes=0 '
+                           r'canonical_table_excludes_dpas=1 calls=(\d+) complete=(\d+)$', re.M)
+STATE_FIELDS = ('requests', 'states', 'tap_payloads', 'widths')
+
+
+def dense_capture(log):
+    samples = [tuple(map(int, m)) for m in DENSE_CAPTURE.findall(log)]
+    require(len(samples) == 4 and len({(r, c) for r, c, *_ in samples}) == 1
+            and len({(ni, no) for _, _, ni, no, _, _ in samples}) == 4
+            and all(c > 0 and complete == 1 for _, c, _, _, _, complete in samples)
+            and any(calls > 0 for _, _, _, _, calls, _ in samples),
+            'require a complete actual width-four dense DPAS capture')
+    return sorted([ni, no, calls] for _, _, ni, no, calls, _ in samples)
 
 
 def inputs(revision):
@@ -45,7 +62,7 @@ def inputs(revision):
         env[name] = {k: v.replace(str(tap.ROOT / 'smoke'), str(ROOT / name))
                      for k, v in envs['smoke'].items()}
         env[name].update(STRATA_SYCL_DECODE_T4_SCHEDULE=name, STRATA_SYCL_DECODE_T4_AUDIT='1')
-        env[name]['STRATA_SYCL_DECODE_Q6_DPAS_DENSE'] = '0'
+        env[name]['STRATA_SYCL_DECODE_Q6_DPAS_DENSE'] = str(int(PRODUCTION_DPAS))
         cases[name] = dict(old['cases']['smoke'], environment_sha256=bank.signature(env[name]))
     plan = {k: old[k] for k in ('boot', 'driver', 'runtime_manifest', 'native_validation_probe',
                                 'dflash2_assets', 'model_assets_sha256')}
@@ -55,6 +72,24 @@ def inputs(revision):
                 split_layers=next(iter(ready)), dense_dpas='0', numerical_reference=build.Q6_EVIDENCE,
                 scope='Replay the original 82-input/32-output DFlash2 request. Use matched dense DPAS off '
                       'to check mixed stock and split dispatch, active state, prompt taps and output.')
+    if PRODUCTION_DPAS:
+        control = bank.previous.historic(MATCHED_CONTROL, MATCHED_KEY)
+        require(build.retained.closed(control, 'closed') and control['plan']['native_build_sha256'] == signature
+                and control['plan']['binary'] == binary, 'pass the same-build DPAS-off model control first')
+        original_root = bank.B / MATCHED_KEY.replace('_', '-')
+        for name in ORDER:
+            normalized = {k: v.replace(str(ROOT / name), str(original_root / name)) for k, v in env[name].items()}
+            normalized['STRATA_SYCL_DECODE_Q6_DPAS_DENSE'] = '0'
+            original = control['plan']['cases'][name]
+            require(bank.signature(normalized) == original['environment_sha256']
+                    and cases[name]['wire'] == original['wire'] and cases[name]['limits'] == original['limits'],
+                    'reproduce the exact diagnostic inputs before enabling production DPAS')
+            env[name]['STRATA_SYCL_Q6_ROUTE_AUDIT'] = '1'
+            cases[name]['environment_sha256'] = bank.signature(env[name])
+        plan.update(dense_dpas='1', matched_control=MATCHED_CONTROL, stock_reference=DPAS_STOCK_REFERENCE,
+                    scope='Same short request and executable with the production dense DPAS selector restored. '
+                          'Count the actual width-four DPAS calls. Check exact early/deferred parity with shared '
+                          'arithmetic and preserve stock prompt taps. Record stock/split differences.')
     return plan, base, env, requests[0]
 
 
@@ -109,6 +144,13 @@ def run(row, model_base, name, env, request):
                         and early == (expected if name == 'early' else 0)
                         for mode, _, layers, split, ready, early in t4)),
                 'the actual width-four schedule was not exercised')
+        if PRODUCTION_DPAS:
+            observed['dense_capture'] = dense_capture(log)
+            if name == 'stock':
+                reference = bank.previous.historic(DPAS_STOCK_REFERENCE, 'dflash2_decode_t4_model_v1')
+                current = dict(observed, widths=[list(item) for item in widths])
+                require(all(reference['outcomes']['stock'][k] == current[k] for k in STATE_FIELDS),
+                        'the production stock control did not reproduce the original short execution')
         require(all(bank.sha(p) == h for p, h in plan['dflash2_assets'].items()), 'draft assets changed')
         tap.basis.comparison.shared.models.model_pins(model_base['configuration'], model_base['model_assets'],
                                                      full=name == ORDER[-1])
@@ -123,11 +165,22 @@ def run(row, model_base, name, env, request):
         row.update(active=bool(owner.active), ownership_closed=observed['ownership_closed'],
                    stage='partial' if observed['passed'] else 'failed')
         if name == ORDER[-1] and observed['passed']:
-            checks = ('requests', 'states', 'tap_payloads', 'widths')
             pairs = zip(ORDER, ORDER[1:])
-            row['comparison'] = {f'{a}/{b}': {k: row['outcomes'][a][k] == row['outcomes'][b][k] for k in checks}
+            row['comparison'] = {f'{a}/{b}': {k: row['outcomes'][a][k] == row['outcomes'][b][k] for k in STATE_FIELDS}
                                  for a, b in pairs}
-            row['passed'] = all(all(checks.values()) for checks in row['comparison'].values())
+            if PRODUCTION_DPAS:
+                stock = row['outcomes']['stock']['dense_capture']
+                deferred = row['outcomes']['after-cpu']['dense_capture']
+                early = row['outcomes']['early']['dense_capture']
+                retained = all(a[:2] == b[:2] and b[2] <= a[2] for a, b in zip(stock, deferred, strict=True))
+                stock_calls = sum(item[2] for item in stock)
+                split_calls = sum(item[2] for item in early)
+                row['production_dpas_preserved'] = (retained and deferred == early and 0 < split_calls < stock_calls)
+                row['passed'] = (row['production_dpas_preserved']
+                    and row['comparison']['stock/after-cpu']['tap_payloads']
+                    and all(row['comparison']['after-cpu/early'].values()))
+            else:
+                row['passed'] = all(all(checks.values()) for checks in row['comparison'].values())
             row.update(stage='closed', complete=True)
         save(row)
     print(name, observed['passed'], observed.get('error'), row.get('comparison', {}), flush=True)
@@ -135,6 +188,11 @@ def run(row, model_base, name, env, request):
 
 
 if __name__ == '__main__':
+    if sys.argv[1:2] == ['--production-dpas']:
+        sys.argv.pop(1)
+        PRODUCTION_DPAS = True
+        KEY = 'dflash2_decode_t4_production_dpas_v1'
+        ROOT = bank.B / KEY.replace('_', '-')
     action, = sys.argv[1:]
     require(sys.executable == tap.basis.reference.model.PYTHON and action in ('prepare', *ORDER),
             'one pinned T4 model check stage')
