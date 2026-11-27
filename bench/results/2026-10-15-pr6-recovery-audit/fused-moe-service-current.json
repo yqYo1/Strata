@@ -736735,7 +736735,7 @@
       "stop_deadline_s": 150,
       "scope": "Send STOP after the traced layer-0 gather issue, then repeat the short request on the same server. A fresh process completes the original direct-writer short/long/short requests and checks target state, taps and token IDs."
     },
-    "stage": "partial",
+    "stage": "closed",
     "outcomes": {
       "cancel": {
         "complete": true,
@@ -736846,11 +736846,180 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "direct": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "native_identity": {
+          "pid": 1491807,
+          "start_ticks": 411856243
+        },
+        "tap_payloads": [
+          {
+            "prompt": 82,
+            "first": 0,
+            "rows": 81,
+            "width": 2560,
+            "readback_bytes": 4147200,
+            "layer_digests": {
+              "5": "ccca5b76e361a98d",
+              "15": "ecabd168a31c99ea",
+              "25": "c2830715533c6d35",
+              "35": "6c7282e5768ae508",
+              "45": "ed7e4c50369e8ea0"
+            }
+          },
+          {
+            "prompt": 122881,
+            "first": 120834,
+            "rows": 2046,
+            "width": 2560,
+            "readback_bytes": 104755200,
+            "layer_digests": {
+              "5": "36793d4118030beb",
+              "15": "8b91eac8a876c7e9",
+              "25": "6440a7e781163448",
+              "35": "8e20c048686a4c0b",
+              "45": "03d964aee876a80b"
+            }
+          },
+          {
+            "prompt": 82,
+            "first": 0,
+            "rows": 81,
+            "width": 2560,
+            "readback_bytes": 4147200,
+            "layer_digests": {
+              "5": "ccca5b76e361a98d",
+              "15": "ecabd168a31c99ea",
+              "25": "c2830715533c6d35",
+              "35": "6c7282e5768ae508",
+              "45": "ed7e4c50369e8ea0"
+            }
+          }
+        ],
+        "states": [
+          {
+            "L": "114",
+            "gdn": "4f5ea7ff8b50a528",
+            "ple": "658c6b4cf144dfa8",
+            "tail": "60845c54dfa17711",
+            "pooled": "cd5a74ed9881eb7e",
+            "kv": "928417f78152ab15",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          },
+          {
+            "L": "122913",
+            "gdn": "b51752c8f06d8cbc",
+            "ple": "2fcd3e3d1fc3f7b4",
+            "tail": "f41393cfdfb0aaeb",
+            "pooled": "a2c5ecd0f00fa5b5",
+            "kv": "39f4010ae5f92133",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          },
+          {
+            "L": "114",
+            "gdn": "4f5ea7ff8b50a528",
+            "ple": "658c6b4cf144dfa8",
+            "tail": "60845c54dfa17711",
+            "pooled": "cd5a74ed9881eb7e",
+            "kv": "928417f78152ab15",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          }
+        ],
+        "validation": {
+          "pid": 1491807,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "route": {
+          "kv": {
+            "reloaded_pages": 645120,
+            "reused_pages": 1935360
+          },
+          "work": {
+            "windows": "48",
+            "dequants": "23813",
+            "jobs": "26628",
+            "source_H2D_bytes": "235929600",
+            "GPU_resident_windows_only": "1",
+            "operator_max": "8192",
+            "maximum_rows": "122880"
+          },
+          "uploads": {
+            "uploads": "23813",
+            "requested_H2D_bytes": "48769305600",
+            "permanent_hits": "0",
+            "permanent_slots": "31",
+            "total_slots": "32",
+            "final_drain": "checked"
+          },
+          "target_rows": 122880,
+          "direct_pieces": 720,
+          "tap_vram_bytes": 845776220,
+          "native_request": [
+            122881,
+            0,
+            122881,
+            32,
+            23,
+            25
+          ]
+        },
+        "requests": [
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          },
+          {
+            "prompt": 122881,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 25,
+            "finish": "length"
+          },
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          }
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     },
     "active": false,
-    "complete": false,
-    "passed": false,
+    "complete": true,
+    "passed": true,
     "ownership_closed": true,
     "speed_eligible": false
   }

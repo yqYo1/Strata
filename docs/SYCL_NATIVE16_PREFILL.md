@@ -11840,8 +11840,8 @@ STOP occurred before layer 1 with zero prompt tokens committed. The two
 The complete 122,881-input request reached all 48 layers and emitted 32
 outputs with zero early gathers. The dense-phase trace showed 48 layer
 activations. V1 excludes the installed dense callback from early scheduling.
-Its STOP result establishes server recovery. The outstanding-gather lifetime and timed cohort
-requires a new native proof. The failed direct trace hashes to
+Its STOP result establishes server recovery. The outstanding-gather lifetime
+and timed cohort require a new native proof. The failed direct trace hashes to
 `7ca9c9c94e2be75e032ee40c4382b3187789ccb2c3226d26ba1513fa85dfc2bd`.
 
 The closed V1 results are at `6db247db7`. The recovery audit matches the
@@ -11864,6 +11864,22 @@ PLE key and waits before uploading the first rows. The future is destroyed
 before the request exits, including cancellation. The traced start marker
 now precedes STOP, and the complete request must show exactly one layer-1
 consumption and subsequent restoration of the full dense weights.
+
+The V2 build at `b95065187` matches 139 fresh objects and 11 executables
+with zero uncovered inputs. In the V2 STOP process at `3507e137d`, the
+122,881-token request reaches the issue marker and exits before layer 1 with
+zero read and generated tokens. Its 9.904-second prompt interval includes
+preparation, STOP and gather retirement. The same process then reproduces
+the 82-token control's 32 output IDs, active state and draft tap payloads.
+It exits normally with quiet validation and no fresh Xe fault.
+
+The separate completion process issues one read at layer 0 and consumes
+8,192 rows at layer 1. It restores the full dense bank after all 48 layer
+activations. The 82 / 122,881 / 82 inputs each emit 32 tokens; all output
+IDs, active state digests, five draft tap digests and checked work match
+the original direct-writer run. Both V2 owners exit normally, validation
+is quiet, model hashes match and no fresh Xe fault appears. The traced
+outcomes qualify the scheduling check and enable the untraced comparison.
 
 The [same-binary timing controller](../bench/dflash2_prefill_ple_early_speed.py)
 requires both V2 native outcomes before admission. It counterbalances three
