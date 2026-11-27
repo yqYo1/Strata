@@ -1382,6 +1382,13 @@ before clean model timing. The separate route-census phase reference
 remains needed through its pending comparison. Retire this temporary
 candidate at a failed model gate or closing timing decision.
 
+The isolated build finishes with 140 fresh objects from 135 translation
+units and 12 executable identities. Run its existing `iq_single_exact_test`
+once without arguments in the pinned build environment, with a 30-second
+wall limit. Require normal closed ownership, no diagnostic stderr and the
+exact 384 single and 80 paired GGML parity and row-canary result. This host
+fixture uses the same CPU library as the serving executable.
+
 The timed CPU fixture has no live executable consumer. Its source and results
 are reachable from `feature/sycl` at `14180e833`. The recovery check matches
 210 project inputs, 1,376 GGML inputs, all 633 actual compiler inputs, the
