@@ -1524,6 +1524,21 @@ caller in this fixture. Measure the same width-four work with the
 caller reserved before attributing an overlap gain to the early callback.
 [CPU scheduling results](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-expert-schedule-current.json).
 
+Keep the completed `cpu-fixed-expert-schedule-v2` CPU build as the
+fixed-work reference for the reserved-caller comparison. Its verified
+executable hash also matches the earlier publication and schedule builds.
+The two earlier roots have no active consumer beyond their receipts.
+The recovery audit verifies each earlier build's 210 Git project files,
+1,376 Git ggml files, 633 actual compiler dependencies, link inputs and
+original recipe. The retired paths are the contents below except
+`record.json`, with inventory hashes over sorted relative paths, byte
+counts and file SHA-256 values.
+
+| CPU fixture root | Original result | Files | Bytes | Inventory SHA-256 |
+| --- | --- | ---: | ---: | --- |
+| `cpu-fixed-expert-publication-v1` | `62d23a297` | 79 | 16,136,713 | `63b4355c9268d912b3c3448a5786e4129ed4174f3d45be6a70d5d764f8082c61` |
+| `cpu-fixed-expert-schedule-v1` | `8191a29dd` | 83 | 16,143,593 | `6240dc46daa4c91ee0471b02c219501acf93436287399d5f61e60c8875cd8021` |
+
 The [stock admission controller](../bench/dflash2_decode_stock_global_restore.py)
 uses the retained primary executable and recovers the original restore plans
 from `3d75f7e91`. It generates only the stock global profile. Both loaders
