@@ -11773,7 +11773,13 @@ requests with normal ownership closure and no fresh Xe fault. Its 15 gathers
 spend 5262.815 ms waiting for their result on the first request and 33.888
 and 56.275 ms on the two later requests. The first-use increase is
 5.217734 seconds of the layer remainder's 5.221782 seconds, leaving 4.048 ms
-after subtraction. The second independent observation remains pending.
+after subtraction. The second independent process records 5225.751, 37.469
+and 57.429 ms of exposed PLE wait. Its first-use increase is 5.178302
+seconds against a 5.178276-second increase in the layer remainder.
+Both processes close normally and all six requests match the pinned route,
+with no fresh Xe fault and unchanged final model hashes. The subsequent
+duration ratios to the historical windows processes are 0.999858 and
+0.996989, within the declared range.
 The standard length workload repeats a deterministic word stream with
 distinct run tags, and the PLE row cache persists across those requests.
 Use varied text and the standard workload to evaluate a scheduling change.
@@ -11785,8 +11791,10 @@ host buffers. The layer-1 reader consumes the future before issuing its
 existing upload and the next gather. A request-local future joins the host
 read when layer 0 exits early. Admission requires the existing direct PLE
 binding and the relocated mode-16 workspace.
-Build the three-file delta against the exact observed source and rebuild
-all users of the changed prefill class declaration. Check actual dispatch,
+The [early PLE build controller](../bench/dflash2_prefill_ple_early_build.py)
+recovers the observed source and applies the three-file delta. It requires
+the repeated PLE attribution and rebuilds the original set of 139 objects.
+Check actual dispatch,
 the first read's lifetime on cancellation, and the layer-1 and decode
 handoff before timing. Use a same-binary off/on comparison with separate
 first and subsequent timings. The original observer measures all 15
