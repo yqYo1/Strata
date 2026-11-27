@@ -2312,10 +2312,22 @@ The selected verifier at `968e71988` can split a decode window into two
 groups for `T >= 2`. In its SYCL path the host synchronizes the current
 segment, calls the expert pool, retires copies and then submits the next
 segment. Plan publication can launch that group's shared and resident work
-while the CPU callback runs. Splitting still changes the 48 host completion
-steps to 96 and leaves next-segment submission after the callback. Use the
-planned fixed-work publication test to isolate readiness and the downstream
-interval before selecting a new split-window schedule. [Verifier](../src/core/verify.cpp)
+while the CPU callback runs. `--spec-split` changes the 48 host completion
+steps to 96 and leaves next-segment submission after each group callback.
+On the fixed width-four capture, visiting each shared CPU expert in both
+callbacks would raise the job count from 1,208,973 to 1,459,827 and logical
+packed work by 515,667,072,000 bytes, or 20.92%. The actual CPU traffic and
+executed routes can vary when switching the verifier.
+
+Use one four-token dispatch and publish the two halves independently
+while keeping the shared experts in the same jobs. Timing needs to include
+the first half's combine and next-layer pre-mixer. The standalone combine
+covers only about 0.15–0.18 ms for the measured width-four shapes, while
+the observed 82.26 ms of whole-window GPU completion averages 1.71 ms per
+layer over 48 layers. Keep stock segment and two-half-after-all controls
+to charge extra dispatch, event and synchronization costs. The existing
+shared/resident overlap stays enabled in all arms.
+[Verifier](../src/core/verify.cpp).
 
 For a copy-once control, the full CPU result slab at `T=4`, `K=10` and
 `N=2560` is 409,600 bytes per layer, or 19,660,800 across 48 layers. The
