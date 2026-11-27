@@ -1,5 +1,5 @@
 {
-  "stage": "built",
+  "stage": "checked",
   "source_commit": "e70bcf500d1714e738fcfd154ab7d0c90d018e3b",
   "machine": {
     "boot_id": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
@@ -259,7 +259,84 @@
     "file": 67108864,
     "total": 402653184
   },
-  "processes": [],
+  "processes": [
+    {
+      "round": 0,
+      "mode": "handoff-early",
+      "cores": 5,
+      "placement": {
+        "kind": "replay_placement",
+        "host_cpu": 0,
+        "workers": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "caller_computes": false
+      },
+      "owner": {
+        "pid": 2415351,
+        "direct_identity": {
+          "pid": 2415351,
+          "state": "R",
+          "ppid": 2415198,
+          "pgid": 2415351,
+          "sid": 2415351,
+          "start_ticks": 414299948,
+          "rss_bytes": 294912
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 0.9283164171501994,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "errors": [],
+        "cleanup": [],
+        "peak_session_rss_bytes": 368336896
+      }
+    },
+    {
+      "round": 0,
+      "mode": "handoff-prefix-help",
+      "cores": 6,
+      "placement": {
+        "kind": "replay_placement",
+        "host_cpu": 0,
+        "workers": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "caller_computes": true
+      },
+      "owner": {
+        "pid": 2415389,
+        "direct_identity": {
+          "pid": 2415389,
+          "state": "R",
+          "ppid": 2415198,
+          "pgid": 2415389,
+          "sid": 2415389,
+          "start_ticks": 414300048,
+          "rss_bytes": 450560
+        },
+        "exit_code": 0,
+        "elapsed_seconds": 0.9121643421240151,
+        "observation_complete": true,
+        "direct_child_reaped": true,
+        "session_empty": true,
+        "session_anchored": true,
+        "errors": [],
+        "cleanup": [],
+        "peak_session_rss_bytes": 384036864
+      }
+    }
+  ],
   "active": false,
   "ownership_closed": true,
   "gpu_executed": false,
