@@ -1596,9 +1596,12 @@ native difference from the original recipe and both measured CPU formats.
 The paired short probes compare the same 82-token body, exact state and
 work and verify actual caller participation. The long plan uses three
 96K pairs and keeps the existing runtime validation and owner gates.
+At `db885d640` the plan pins 1,337 project inputs. Configuration completes
+with SYCL enabled and the pinned oneAPI compiler. The coherent build and
+same-build host, Arc and model gates follow the active C2 comparison.
 
-The three earlier roots below have no active consumer beyond their receipts.
-The recovery audit verifies each earlier build's 210 Git project files,
+The closed roots below have no active consumer beyond their receipts.
+The recovery audit verifies each build's 210 Git project files,
 1,376 Git ggml files, 633 actual compiler dependencies, link inputs and
 original recipe. The retired paths are the contents below except
 `record.json`, with inventory hashes over sorted relative paths, byte
@@ -1609,6 +1612,7 @@ counts and file SHA-256 values.
 | `cpu-fixed-expert-publication-v1` | `62d23a297` | 79 | 16,136,713 | `63b4355c9268d912b3c3448a5786e4129ed4174f3d45be6a70d5d764f8082c61` |
 | `cpu-fixed-expert-schedule-v1` | `8191a29dd` | 83 | 16,143,593 | `6240dc46daa4c91ee0471b02c219501acf93436287399d5f61e60c8875cd8021` |
 | `cpu-fixed-expert-schedule-v2` | `b4500d7f5` | 93 | 16,194,661 | `db394a41c71bbd10808009fd95b87c591444e57c9340c0a0669781790c260840` |
+| `cpu-fixed-expert-prefix-help-v1` | `2c6c66ec8` | 93 | 16,207,455 | `dbe3307b024d5588973a0bb0b9d6b22c163a6589b88fe38762152c7f43a21710` |
 
 The [stock admission controller](../bench/dflash2_decode_stock_global_restore.py)
 uses the retained primary executable and recovers the original restore plans
@@ -2736,8 +2740,17 @@ prefill work and no fresh Xe faults. Stock, early and early C2 give
 and 105.187 seconds. Early C2 matches the stock output and reasoning
 hashes, 3,195 emitted tokens, 2,173/2,248 accepted drafts and 645 width-four
 replays. Its capture records 46 C4 and 70 C2 calls. Early emits 3,440 tokens,
-accepts 2,268/2,376 drafts and replays width four 680 times. Continue the
-remaining two blocks to decide whether any model speed gain repeats.
+accepts 2,268/2,376 drafts and replays width four 680 times. The second block
+at `b982ab202` repeats these work counts and closes cleanly, at 16.256,
+15.705 and 16.362 tok/s with client TTFT of 103.437, 103.360 and 105.577 s.
+Early C2 is 0.064% slower and 0.654% faster than stock in the two blocks.
+
+Relative to early, the two C2 processes spend 1.441 and 2.212 extra seconds
+inside the first long native prompt. Their extra client TTFT beyond that
+clock is 0.002 and 0.005 seconds. Prefill rows, attention pieces, KV pages
+and requested H2D bytes match. The C2 dispatch checks decode phase and
+two-column split geometry. The prompt-time difference remains open;
+continue the third block on the frozen plan.
 [Original model result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The first build at `8bd19a9b9` compiles and links all three named targets.
