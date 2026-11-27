@@ -11768,7 +11768,12 @@ duration reference from an earlier measurement period. Three replays with
 real archived request frames and synthetic PLE markers pass. Ten malformed
 or out-of-scope records are rejected. The environment comparison confirms
 that only the PLE selector changes, and admission refuses the unfinished
-layer-window comparison. Actual PLE clocks remain pending.
+layer-window comparison. The first Direct I/O process completes all three
+requests with normal ownership closure and no fresh Xe fault. Its 15 gathers
+spend 5262.815 ms waiting for their result on the first request and 33.888
+and 56.275 ms on the two later requests. The first-use increase is
+5.217734 seconds of the layer remainder's 5.221782 seconds, leaving 4.048 ms
+after subtraction. The second independent observation remains pending.
 The standard length workload repeats a deterministic word stream with
 distinct run tags, and the PLE row cache persists across those requests.
 Use varied text and the standard workload to evaluate a scheduling change.
