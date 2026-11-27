@@ -2535,17 +2535,17 @@ inputs against the original recipe. The closed V1 root has no next
 consumer. Its build, source and logs account for 1,510 files and
 147,318,485 bytes, excluding `record.json`, with inventory SHA-256
 `b31f90d3e58815ac2646479212d28f788ab448d700c883ed147bdbec9eb6763f`.
-Keep V2 and the measured DFlash2 fallback through the bounded comparison.
 The V2 comparison and matched DPAS diagnostic are now closed. Its rebuild
 audit matches 1,334 original project files, 141 objects, 13 executables,
 1,481 compiled inputs and 30 external link inputs against the source and
 recipe at `032690088`. The V3 candidate uses the same component proof and
 build target set. V2 has no further execution consumer. Its 1,534
-superseded files total 236,458,958 bytes with inventory SHA-256
+retired files totaled 236,458,958 bytes with inventory SHA-256
 `2ccf8cb8df3968f50857c40eac247978b1434b6799d1c0df95e1b673d6849e0f`,
-excluding the retained `record.json`. Retire them after the V2 evidence is
-reachable from the pushed primary. The measured DFlash2 fallback remains
-the speed reference.
+excluding the retained `record.json`. The exact V2 build, source, cache,
+temporary and ownership files were retired under the measurement lock after
+verifying reachability on the pushed primary, closure and matching inventory.
+The original receipt and measured DFlash2 fallback were reverified afterward.
 
 For a copy-once control, the full CPU result slab at `T=4`, `K=10` and
 `N=2560` is 409,600 bytes per layer, or 19,660,800 across 48 layers. The
