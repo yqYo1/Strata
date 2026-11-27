@@ -2569,6 +2569,16 @@ kernel pair and against C4 to price repeated weight traversal. If this
 passes, scope C2 to the eligible split decode steps and recheck long
 draft yield. This is a new candidate; restored yield and model speed
 remain unmeasured.
+
+The isolated component source is `88c34b4a5` on the local
+`verify/t4-c2-dpas` worktree. It adds canonical C2 to the existing Q6
+fixture and uses two independent, one-node graph submissions for split
+arms. The first-half check requires C4 bits for the first two columns
+and untouched poison in the second half. The ten numerical cases include
+an unpadded output shape. The production verifier is unchanged. This
+worktree's next consumer is the standalone component build and Arc
+verification after the frozen 96K cohort closes. Compile and runtime
+validation remain pending.
 [Original model result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The first build at `8bd19a9b9` compiles and links all three named targets.
