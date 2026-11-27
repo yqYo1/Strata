@@ -2612,8 +2612,13 @@ The timing plan admits six fresh standalone processes on that same build.
 
 The first build has no remaining execution consumer. Retire it after
 recovering its source and recipe from the pushed primary with the original
-executable inputs verified. The closed 96K raw outputs also await the next
-serialized cleanup gap. The committed samples and hashes are at `2071d7722`.
+executable inputs verified. The closed 96K cohort's nine terminal outcomes
+match the pushed `2071d7722` evidence. The C2 plan reads that evidence.
+Retired `dflash2-decode-t4-speed-v1/{0–8,host}` after checking those outcomes.
+The inventory covers 652
+files and 136,089,477 bytes. The SHA-256 of sorted relative paths, sizes and
+file hashes is `b45a1e765c4a71cb8e4962eeac573402994b35c82b979b19562f724d653ab28b`.
+The retained record and V3 executable match their original SHA-256 values.
 
 The controller at `00b3bde32` weights the four shape timing deltas using
 the original same-build capture at `4c324029d`. In fixture order,
@@ -2623,22 +2628,33 @@ bytes. Keep the shape gates unchanged. The weighted deltas describe
 isolated matrix replays using the short capture counts. Actual VRAM
 traffic, long-request reuse and overlapped time must be measured separately.
 
-The first two timing processes close at `b522b55c9` and `94fbbdd11` with
-40 eligible batches each and no fresh Xe fault. Times below are median
-microseconds per completed four-column replay. Each reference has its own
-same-process C2 pair.
+All six timing processes close at `a5b13036e` with 240 eligible batches,
+quiet validation and no fresh Xe faults. The table gives geometric means of
+paired process-median times per completed four-column replay.
 
-| Matrix | C4 | C2 pair | Existing column pair | C2 pair |
-| --- | ---: | ---: | ---: | ---: |
-| 6144×2560 | 196.17 | 319.20 | 368.69 | 319.80 |
-| 2560×6144 | 144.04 | 201.36 | 379.89 | 201.81 |
-| 2560×10240 | 204.95 | 320.46 | 727.04 | 321.39 |
-| 2560×12288 | 254.07 | 421.63 | 876.81 | 421.53 |
+| Matrix | C2 pair / C4 | C2 pair / existing column pair |
+| --- | ---: | ---: |
+| 6144×2560 | 1.613 | 0.867 |
+| 2560×6144 | 1.420 | 0.531 |
+| 2560×10240 | 1.559 | 0.442 |
+| 2560×12288 | 1.655 | 0.481 |
 
-The weighted fixture delta is +3.993 ms against C4 and −6.203 ms against
-the existing columns pair using the static capture counts. Per-shape times
-and both deltas describe one repetition per reference. Complete the
-counterbalanced runs before selecting shapes for a model candidate.
+All four shapes beat the existing split kernels in all three process pairs.
+The static capture weighting gives +3.920 to +3.993 ms against C4 and
+−6.208 to −6.203 ms against the existing split kernels. These are sums of
+fixture times at the captured shape counts. Measure actual model wall time
+and draft yield with the new route.
+
+The scoped dispatcher at `d5589d27f` uses the verified C2 implementation for
+these four shapes only in half-width projections of an opt-in split T4
+decode graph. Its width-two counts are separate from the width-four count.
+The build and short-model plan at `1000f7a42` require the original stock and
+early controls with C2 disabled, followed by deferred and early C2. The
+same-build host and Arc checks precede replay. The short-model diagnostic
+checks the 46 retained C4 calls and the 70 C2 calls from the displaced
+projections, prompt taps and matched C2 scheduling. Stock-to-C2 state and
+draft differences inform the later long-input trial. The coherent engine
+and fixture build pins all 1,338 inputs at `6f17a3302` in the same worktree.
 [Original model result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The first build at `8bd19a9b9` compiles and links all three named targets.
