@@ -764,6 +764,51 @@ separate unprofiled samples for the speed decision. Physical PCIe traffic
 and model TG remain unmeasured in this fixture. Retire complete traces
 after reviewing the build and log dependencies.
 
+#### Resident KV tiles at decode width three
+
+The component at `dfb6f604c` uses a group reduction to count consecutive
+resident runs in each 256-cell tile. Invalid IDs and misses take the
+reference ordered scan. Both arms keep the same victim policy, copy graph
+and 65,536 logical pages by 5,120 resident slots. The fixture validates
+three direct and graph smoke cases, five paired full-context graph replays
+through cell 262,143, and eight interleaved-miss cases against the oracle.
+All eight independent validation and timing processes passed their runtime
+and ownership checks with no fresh Xe fault.
+
+| Missing pages of 1,539 | Cooperative process medians (µs) | Resident-batch process medians (µs) | Paired time ratios |
+| ---: | --- | --- | --- |
+| 0 | 528.62, 531.66, 528.75 | 78.89, 78.60, 79.14 | 0.14924, 0.14784, 0.14967 |
+| 16 | 2,139.77, 2,142.36, 2,139.61 | 1,979.63, 1,978.03, 1,979.77 | 0.92516, 0.92330, 0.92529 |
+| 64 | 2,203.38, 2,203.27, 2,203.64 | 2,215.02, 2,215.74, 2,214.03 | 1.00528, 1.00566, 1.00471 |
+| 384 | 2,826.20, 2,827.40, 2,824.46 | 2,837.26, 2,837.98, 2,837.83 | 1.00391, 1.00374, 1.00474 |
+
+The timed envelope includes graph launch and completion. Map resets and
+oracle checks are outside it. The 64- and 384-miss cases miss the
+predeclared gate in all three pairs. Close this version at the component
+stage. The measured model route and default selection stay stock.
+[Exact inputs and results](https://github.com/yqYo1/Strata/commit/11dff2bb5d7e6db8f8628d007efc7b39f0bbbafb).
+
+The 16-miss case adds about 1.61 ms in the cooperative reference over the
+all-hit case. Its 67,584 requested payload bytes correspond to about
+10.4–10.7 µs at the separate bulk H2D reference rate. The synthetic initial
+map sets the reference bit in every resident slot, so the first miss can
+require an entire second-chance sweep. The resolver advances the clock
+hand using a variable 64-bit remainder on each visited slot. Test replacing
+that expression with an increment and conditional wrap as an isolated
+change. Check exact hand, reference bits and victim order for wrap, protected
+slots and overflow before timing. The small copy estimate does not measure
+scattered device reads or establish how often this initial state occurs in
+the model.
+
+The fixture and eight case directories can be retired after the recorded
+inputs are recoverable from the pushed `feature/sycl`. The audit matches
+234 pinned build inputs, the four compiler and link commands, 672 actual
+compiler inputs, 25 link inputs and all terminal outcomes. Keep
+`decode-kv-resident-batch-v1/record.json`. Retire the fixture build and
+`{smoke,validate,0,1,2,3,4,5}` beneath that root. Its 76 files total
+2,524,016 bytes with sorted path, size and content-hash inventory SHA-256
+`1f7a46c38891fe54548e4eea09a22b30ddae2d8245fa923601d8a9ab3dfb2d68`.
+
 #### Width-four KV cache working set
 
 The retained K8V8 verifier at `968e71988` scores four-cell blocks and
