@@ -2308,6 +2308,14 @@ CPU-only readiness check for the isolated build. The Arc fixture separately
 exercises host-to-device visibility and ordered completion.
 [C++ atomic ordering](https://eel.is/c++draft/atomics.order).
 
+The CPU check at `62d23a297` passes all 32 bitwise cases across the four
+captured slices with 137 expert jobs and 308,249,600 logical packed bytes.
+The pinned five workers execute the CPU jobs while the reserved caller
+observes readiness. The process exits normally. This establishes the
+readiness contract for these inputs; Arc visibility and overlap remain
+pending.
+[CPU check record](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-expert-publication-current.json).
+
 The selected verifier at `968e71988` can split a decode window into two
 groups for `T >= 2`. In its SYCL path the host synchronizes the current
 segment, calls the expert pool, retires copies and then submits the next
