@@ -11729,9 +11729,10 @@ inside `run_impl`, leaving the remaining interval identifiable from the
 enclosing layer time. Require complete ordered coverage of the window rows
 and count wall time, caller CPU time and page faults. This uses the actual
 mode16 path without an added queue drain. The existing command-service
-observer refuses mode16 before submission. Compare the new observer off
-and on using the verified 118,785-token workload and the original
-subsequent-request overhead gate. The existing host fixture's
+observer refuses mode16 before submission. The
+[window comparison controller](../bench/dflash2_cold_window_measure.py)
+compares the observer off and on using the verified 118,785-token workload
+and the original subsequent-request overhead gate. The existing host fixture's
 `--windows` mode covers a complete ragged tail, a missing tail and a row gap.
 
 The closed V2 build and raw runs are retained in Git at `200ec7292`.
