@@ -2243,8 +2243,12 @@ The caller-help campaign is closed and its extra executable is retired.
 The source-only preflight at `d43350b2a` verified 1,338 project inputs,
 the two pinned dependencies, the four planned targets and both ranking
 profile hashes. The preflight did not configure, compile or execute a GPU
-fixture. Reconcile the remaining retained PLE and decode-reference consumers
-before starting the next build generation.
+fixture. The closed early-PLE executable was retired after exact recipe
+recovery. Use that build slot for placement and keep the validated primary
+binary. The independent `dflash2-prefill-kv-stage-native-v1` decode reference
+remains pinned by the existing route-census plan. Select and retire the
+placement generation at its first failed validation or after its comparison
+before starting another generation.
 
 The [bounded check](../bench/dflash2_decode_phase_placement_check.py) starts
 with the scratch host and Arc checks for fill ranges and retirement. It
