@@ -11900,6 +11900,27 @@ synthetic consumption cases and twelve invalid or observer-enabled frames
 exercise the route gate. The paired decision accepts a repeated first gain
 and rejects the same gain with a 3% subsequent-time increase.
 
+All six clean processes close at `a213dd223` with 18 matched requests,
+zero reused tokens, quiet validation, verified final model assets and no
+fresh Xe fault. Each early request records one layer-1 consumption. The
+stock requests record zero.
+
+| Pair | First PP, stock → early (tok/s) | First PP time saved | First client TTFT saved | Subsequent PP time ratio |
+| --- | ---: | ---: | ---: | ---: |
+| Stock first | 956.8 → 967.0 | 1.321 s | 1.327 s | 0.999027 |
+| Early first | 958.9 → 963.5 | 0.591 s | 0.586 s | 0.999054 |
+| Stock first | 950.7 → 975.1 | 3.129 s | 3.132 s | 1.000128 |
+
+The paired median ratios are 0.989360 for first prefill and 0.989330 for
+first client TTFT. Subsequent PP and TTFT ratios are 0.999054 and 0.999017.
+The candidate passes the repeatability and subsequent-preservation screens.
+Its six subsequent requests run at 1,048.0–1,050.1 tok/s. The three first
+requests run at 963.5–975.1 tok/s. Advance to the same-build standalone
+physical final-slot check with the early selector enabled. Verify the
+16,385-input handoff and the 262,144-input fallback on the original token
+bodies. Live RESTORE and sustained generation remain open.
+[Physical-context controller](../bench/dflash2_prefill_ple_early_capacity.py).
+
 The closed comparison at `bdfd43ec9` preserves the 12 requests and
 passes the PLE reader's admission. After verifying all four terminal
 receipts against the pushed record, retired `host` and `0`–`3` under
