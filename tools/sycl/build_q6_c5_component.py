@@ -146,7 +146,7 @@ def prepare(ctx):
     ctx.save(row)
 
 
-def host(ctx):
+def host(ctx, extra_controls=()):
     root = ctx.ROOT
     row = json.loads((root / 'record.json').read_text())
     ctx.current(row)
@@ -160,6 +160,7 @@ def host(ctx):
                 ('--host-c5', 'HOST_C5 passed=1 cases=10 GPU=0')]
     if ctx.PACKED:
         controls.append(('--host-packed-c5', 'HOST_PACKED_C5 passed=1 cases=7 GPU=0'))
+    controls.extend(extra_controls)
     outcomes = []
     try:
         require(row['plan']['initial_native_checks'][:len(controls)] == [flag for flag, _ in controls],
