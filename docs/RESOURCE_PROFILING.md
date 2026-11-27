@@ -1850,7 +1850,15 @@ output and restore the original map and payload. Each is followed by a fresh
 successful 32,769-token read is the only request to publish the ranked
 tail. The owner closes normally with quiet validation, no fresh Xe fault
 and all 15 model asset hashes checked. This closes live RESTORE and
-cancellation qualification. The standalone physical full fill is separate.
+cancellation qualification.
+
+The same-build standalone diagnostic passes the 16,385-token check with
+16,384 batched rows on the GPU and four expected output IDs. Its full
+case consumes all 262,144 context tokens. It batches 262,143 rows, with
+122,880 in VRAM and 139,263 in host RAM. It verifies the final physical
+slot, emits zero output tokens, exits normally and records no fresh Xe
+fault. The diagnostic uses the stock profile without a serving cache loan.
+The live tests above qualify the separate ranked handoff.
 
 Retired the closed device fixture traces after the first live pair and
 verified both original `record.json` files are unchanged. The failed V1
@@ -1877,8 +1885,9 @@ both actual long handoffs and the 2,321,664,000-byte payload publication,
 and check that the short warmups leave the startup map in place. Keep the
 first-use and subsequent PP, client TTFT and TG measurements separate.
 Require both workloads to keep their actual prefill work and pass the phase
-preservation gates. This prototype is original fork code. GPU, numerical
-and timing evidence remain pending.
+preservation gates. This prototype is original fork code. The speed
+controller requires the closed live RESTORE and physical-context receipts
+from this executable's build before launch.
 
 The first two closed blend processes also bound the benefit of draft yield
 at the current decode time. Let `e` be emitted tokens and `a` and `d`
