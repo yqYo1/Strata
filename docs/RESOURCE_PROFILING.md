@@ -2170,11 +2170,29 @@ both placement costs included.
 Start with a component check for changed-slot sizes, reader retirement,
 CPU and GPU map publication, cancellation and partial-copy failure.
 Recover the original profile and the stock control from `a57499a15`.
-Keep ordinary adaptive swaps off in both arms. Before a long comparison,
-verify that the stock prefix, prefill and early decode are matched, and
-that two successive requests on the same process begin with the stock
-map. The long comparison uses code and prose in independent matched
-processes with equal inputs and reports draft totals and task output.
+Check RAM residency for both experts at every changed slot. The current
+resident source can keep only part of the loan tail in RAM when the
+budget is tight. Require the actual resident sources and stable lifetimes
+before evaluating the two-copy estimate. Preserve the stock route when
+that admission fails. Keep ordinary adaptive swaps off in both arms.
+[Resident tail selection](../src/core/expert_source.cpp#L1343) ·
+[Resident source check](../src/core/expert_source.cpp#L1610).
+
+Use the existing validated slot extent and copy retirement checks and
+publish both maps before admitting another verifier window. The fixed
+cache's adaptive publication already validates its CPU map and uploads
+the device table. Verify the graph consumes the new mapping and each
+payload before reusing the captured route. At request completion the
+reported native decode interval currently ends before final commit
+retirement. Account for the restore and its wait in an effective decode
+clock and measure client completion separately.
+[Residency publication](../src/program/generate.cpp#L4900) ·
+[Decode clock](../src/program/generate.cpp#L7180).
+
+Before a long comparison, verify that the stock prefix, prefill and early
+decode match, and that two successive requests on the same process begin
+with the stock map. The long comparison uses code and prose in independent
+matched processes with equal inputs and reports draft totals and task output.
 Run this separately from the caller-help scheduling change.
 
 The closed comparison at `a57499a15` is reachable on `feature/sycl`.
