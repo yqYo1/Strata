@@ -2645,6 +2645,13 @@ The static capture weighting gives +3.920 to +3.993 ms against C4 and
 fixture times at the captured shape counts. Measure actual model wall time
 and draft yield with the new route.
 
+The median projected saving of 6.203 ms per split window would remove
+4.218 s over the original 680 T4 windows. With the same 3,440 generated
+tokens and all other work held fixed, that gives 16.106 tok/s. Matching the
+stock median of 16.194 tok/s at that output count would need 5.379 s off
+the original early median. The 1.161 s difference makes the long trial's
+actual window counts, draft yield and overlap material to the decision.
+
 The scoped dispatcher at `d5589d27f` uses the verified C2 implementation for
 these four shapes only in half-width projections of an opt-in split T4
 decode graph. Its width-two counts are separate from the width-four count.
@@ -2655,6 +2662,21 @@ checks the 46 retained C4 calls and the 70 C2 calls from the displaced
 projections, prompt taps and matched C2 scheduling. Stock-to-C2 state and
 draft differences inform the later long-input trial. The coherent engine
 and fixture build pins all 1,338 inputs at `6f17a3302` in the same worktree.
+
+The build at `bb12fe362` covers 141 fresh objects and 13 executables with
+zero uncovered inputs. The same-build CPU policy and traced Arc shared-plan
+checks pass at `a3a0fcce9`, with quiet validation and no fresh Xe fault.
+The first model preparation stops before native launch. The C2 harness
+selects dense C4 off while the original production controls select it on.
+The archived environments and token bodies agree after correcting that
+single selector. The launcher correction at `4ab1d0806` verifies the
+original materialized sources, actual compiler and link inputs, and all
+executable identities. The two corrected Python controllers have separate
+launch provenance. The corrected four-arm plan is committed at
+`898b236e2`. The stock control at `18aed6534` reproduces the original
+request and state hashes, prompt taps, width sequence and 81 dense C4
+calls. It exits normally with no fresh Xe fault. The next control runs
+early submission with C2 disabled, before either C2 arm.
 [Original model result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The first build at `8bd19a9b9` compiles and links all three named targets.
