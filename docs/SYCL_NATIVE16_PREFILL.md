@@ -11847,14 +11847,35 @@ requires a new native proof. The failed direct trace hashes to
 The closed V1 results are at `6db247db7`. The recovery audit matches the
 1,328 source files, 529 build controls, compiler and link inputs,
 139 objects, 11 executables and both terminal process receipts. Its engine
-and captured output have no remaining measurement consumer. Retire the
-following V1 descendants, keeping each original `record.json` and both
-phase references. Hashes cover sorted relative paths, sizes and file hashes.
+and captured output had no remaining measurement consumer. The following
+V1 descendants are retired. Both original `record.json` files and all
+23 executables of the retained phase references match their original hashes.
+The inventory hashes cover sorted relative paths, sizes and file hashes.
 
 | State root | Files | Bytes | Inventory SHA-256 |
 | --- | ---: | ---: | --- |
 | `dflash2-prefill-ple-early-native-v1` | 1,524 | 223,824,818 | `4b9c9b37b049c52c2eb491d9674eff0e635d6e02c7a9729f286577bc5c3deba1` |
 | `dflash2-prefill-ple-early-check-v1` | 105 | 24,197,682 | `d003d68135a51778c6942f3415b7f5fcab3236ced3c33bb01edc64ca95e9dd4f` |
+
+V2 at `8a2a6c4b2` binds the host PLE table and copies the n-gram constants
+for the background gather. The dense callback can continue activating each
+layer's GPU weights. The existing layer-1 consumer still checks its active
+PLE key and waits before uploading the first rows. The future is destroyed
+before the request exits, including cancellation. The traced start marker
+now precedes STOP, and the complete request must show exactly one layer-1
+consumption and subsequent restoration of the full dense weights.
+
+The [same-binary timing controller](../bench/dflash2_prefill_ple_early_speed.py)
+requires both V2 native outcomes before admission. It counterbalances three
+pairs at 118,785 inputs and separates each process's first prompt from two
+subsequent fresh prompts. Both first prefill and client TTFT must improve in
+at least two pairs and have median ratios below one. The two subsequent
+median ratios may be at most 1.01 for this screening stage. Track 1,000 tok/s
+and broader model validation independently.
+Replay of three original request frames matches the committed work. Three
+synthetic consumption cases and twelve invalid or observer-enabled frames
+exercise the route gate. The paired decision accepts a repeated first gain
+and rejects the same gain with a 3% subsequent-time increase.
 
 The closed comparison at `bdfd43ec9` preserves the 12 requests and
 passes the PLE reader's admission. After verifying all four terminal

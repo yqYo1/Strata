@@ -10,10 +10,14 @@ window, bank, wait, require = ple.window, ple.bank, ple.wait, ple.require
 base_build = window.build
 builder, source = base_build.builder, base_build.source
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'dflash2_prefill_ple_early_native_v1'
+KEY = 'dflash2_prefill_ple_early_native_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 TREE = ROOT / 'source'
-PATCH = 'd7870f810fd42e49b9000c338f4bb241a1d3c0bf'
+PREIMAGE = '24ea4aff0c17f38e1cd5efbe0b0ce371bab2dd28'
+PATCH = '8a2a6c4b2fc70b3465bee13555b2f83e961dfb57'
+REJECTED = '6db247db794b3f4dd7cdd002c5ef66bf67552a21'
+V1_CHECK = 'dflash2_prefill_ple_early_check_v1'
+V1_NATIVE = 'dflash2_prefill_ple_early_native_v1'
 OVERLAYS = ('include/strata/prefill/prefill.hpp', 'src/prefill/layer_major.inc', 'src/prefill/prefill.cpp')
 
 
@@ -48,7 +52,7 @@ def recover_predecessor(row):
 def inputs(revision):
     predecessor, evidence = observed_build()
     fields, payload, original = recover_predecessor(predecessor)
-    before = dict(source.blobs(bank.P, PATCH + '^', OVERLAYS))
+    before = dict(source.blobs(bank.P, PREIMAGE, OVERLAYS))
     after = dict(source.blobs(bank.P, PATCH, OVERLAYS))
     require(all(payload[p] == before[p] and after[p] != before[p] for p in OVERLAYS),
             'apply the scheduling patch only to its exact observed preimages')
@@ -80,6 +84,16 @@ def prepare(ctx):
             'inspect the existing candidate generation before preparing')
     require({p.name for p in window.BUILD_ROOT.iterdir()} == {'record.json'},
             'retire the closed diagnostic generation before preparing the candidate')
+    previous_check = bank.previous.historic(REJECTED, V1_CHECK)
+    previous_build = bank.previous.historic(REJECTED, V1_NATIVE)
+    for key in (V1_CHECK, V1_NATIVE):
+        path = bank.B / key.replace('_', '-')
+        require({p.name for p in path.iterdir()} == {'record.json'}, 'retire the failed V1 candidate')
+    require(previous_check['stage'] == 'failed' and previous_check['ownership_closed']
+            and not previous_check['active']
+            and previous_check['plan']['binary'] == previous_build['binaries']['strata']
+            and previous_check['outcomes']['direct']['error'] == "RuntimeError('first gather did not reach layer 1')",
+            'preserve the original missed scheduling outcome')
     revision = source.git(bank.P, 'rev-parse', 'HEAD').decode().strip()
     fields, payload, _, _ = inputs(revision)
     ROOT.mkdir(mode=0o700)
@@ -90,8 +104,8 @@ def prepare(ctx):
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(raw)
     row = dict(fields, stage='prepared', commands=[], active=False, passed=False, complete=False,
-               ownership_closed=True, scope='Fresh observed-engine build with the three early PLE inputs. '
-                   'Compare the first host gather off/on on the same executable.',
+               ownership_closed=True, scope='Fresh observed-engine build with the dense-bank-safe early PLE inputs. '
+                   'Verify actual issuance before STOP and consumption at layer 1 before comparing off/on.',
                retention='Keep for dispatch, cancellation, handoff and matched prefill measurements. '
                    'Review at the first failed gate or comparison closure.')
     ctx.check(row, committed=False)

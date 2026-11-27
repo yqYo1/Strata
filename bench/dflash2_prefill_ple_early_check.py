@@ -14,13 +14,14 @@ import dflash2_primary_tap_payload as tap
 bank, require = build.bank, build.require
 validation, model, owners = tap.validation, tap.model, tap.owners
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'dflash2_prefill_ple_early_check_v1'
+KEY = 'dflash2_prefill_ple_early_check_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 REFERENCE = '63c0c6353737c2fb4dc5ade7b1d6aa68da59531d'
 ORDER = ('cancel', 'direct')
 SELECTOR = 'STRATA_SYCL_PREFILL_PLE_EARLY_READ'
 LAYER0 = 'strata trace: layer-major layer 0 of 48: loading 512 experts'
 LAYER1 = 'strata trace: layer-major layer 1 of 48: loading 512 experts'
+ISSUED = 'strata trace: prefill PLE early read issued layer=0'
 CONSUMED = 'strata prefill PLE early read: rows=8192 issue_layer=0 consume_layer=1'
 STOP_DEADLINE = 150
 
@@ -56,7 +57,7 @@ def inputs(revision, ctx):
                 native_source_commit=build.PATCH, native_build_sha256=bank.signature(build.builder.compact(native)),
                 binary=binary, command=[binary['path'], *old['command'][1:]], cases=cases, order=list(ORDER),
                 stop_deadline_s=STOP_DEADLINE,
-                scope='Send STOP at the layer-0 trace after the scheduled gather, then repeat the short '
+                scope='Send STOP after the traced layer-0 gather issue, then repeat the short '
                       'request on the same server. A fresh process completes the original direct-writer '
                       'short/long/short requests and checks target state, taps and token IDs.')
     return plan, base, environments, requests, expected
@@ -67,7 +68,7 @@ def stop_at_layer_zero(io, log, ids, output):
     data = model.wire(ids, output)
     for p in range(0, len(data), 256 << 10):
         io.send(data[p:p + (256 << 10)])
-    marker = (LAYER0 + '\n').encode()
+    marker = (ISSUED + '\n').encode()
     deadline = time.monotonic() + STOP_DEADLINE
     last = b''
     with log.open('rb') as stream:
@@ -75,7 +76,7 @@ def stop_at_layer_zero(io, log, ids, output):
         while marker not in last:
             io.poll()
             require(time.monotonic() < deadline and not io.exit_watch.poll(0),
-                    'did not reach the layer-0 cancellation boundary')
+                    'did not observe the first gather issue before cancellation')
             block = stream.read(64 << 10)
             if block:
                 last = last[-len(marker):] + block
@@ -95,15 +96,20 @@ def stop_at_layer_zero(io, log, ids, output):
 
 def inspect(log, pid, plan, name, responses, reference):
     requests = list(tap.taps.REQUEST.finditer(log))
-    require([int(match[1]) for match in requests] == list(tap.taps.PROMPTS),
+    require([tuple(map(int, match.groups())) for match in requests] == [(p, 0) for p in tap.taps.PROMPTS],
             'unexpected actual native diagnostic prompts')
     middle = log[requests[1].start():requests[2].start()]
     require(log.count('strata generate: PLE on, table ') == 1 and middle.count(LAYER0) == 1
+            and middle.count(ISSUED) == log.count(ISSUED) == 1 and middle.index(ISSUED) < middle.index(LAYER0)
+            and 'strata prefill dense: phase=bank residency=Bank activations=0 ' in middle
             and 'strata MoE window configuration: requested_mode=16 effective_mode=16 maximum_rows=122880 ' in middle,
-            'the long request did not admit the measured mode-16 route')
+            'the long request did not issue the read on the dense-bank mode-16 route')
     fields = ('requests', 'states', 'tap_payloads')
     if name == 'direct':
-        require(middle.count(CONSUMED) == log.count(CONSUMED) == 1, 'first gather did not reach layer 1')
+        require(middle.count(LAYER1) == 1 and middle.count(CONSUMED) == log.count(CONSUMED) == 1
+                and middle.index(LAYER1) < middle.index(CONSUMED)
+                and 'strata prefill dense: phase=restored residency=Full activations=48 ' in middle,
+                'first gather did not reach layer 1 or the dense phase did not restore')
         evidence = tap.inspect(log, pid, plan, 'direct', responses)
         outcome = dict(evidence, requests=responses)
         require(all(outcome[k] == reference[k] for k in (*fields, 'route')),
