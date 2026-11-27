@@ -10,7 +10,7 @@ import dflash2_prefill_ple_early_check as check
 build, bank, require = check.build, check.bank, check.require
 wait = build.wait
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'dflash2_prefill_ple_early_speed_v1'
+KEY = 'dflash2_prefill_ple_early_speed_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 ORDER = ('stock', 'early', 'early', 'stock', 'stock', 'early')
 WARM_LIMIT = 1.01
@@ -52,12 +52,12 @@ def baseline(ctx):
     require(native['base_binary'] == row['binary'] and native['base_build_sha256'] == row['native_build_sha256']
             and plan['binary'] == native['binaries']['strata']
             and plan['native_build_sha256'] == identity
-            and plan['native_source_commit'] == native['overlay_commit'] == build.PATCH
+            and plan['native_source_commit'] == native['native_source_commit'] == build.SOURCE
             and all(plan[k] == row[k] for k in (
                 'boot', 'driver', 'runtime_manifest', 'native_validation_probe', 'dflash2_assets')),
             'the speed input must use the exact checked engine and live model configuration')
     row['base_physical_context_sha256'] = row.pop('physical_context_sha256')
-    return dict(row, binary=plan['binary'], native_source_commit=build.PATCH, native_build_sha256=identity,
+    return dict(row, binary=plan['binary'], native_source_commit=build.SOURCE, native_build_sha256=identity,
                 native_context_qualified=False, ple_check_sha256=bank.signature(proof))
 
 

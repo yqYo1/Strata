@@ -11,7 +11,7 @@ import dflash2_primary_context as physical
 bank, basis, require = physical.bank, physical.basis, physical.require
 build, SELECTOR = timing.build, timing.check.SELECTOR
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'dflash2_prefill_ple_early_capacity_v1'
+KEY = 'dflash2_prefill_ple_early_capacity_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 PLAN = dict(order=physical.PLAN['order'],
             scope='The measured early-read engine with its selector enabled on the original standalone inputs.',

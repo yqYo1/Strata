@@ -11962,12 +11962,15 @@ final-slot and RESTORE receipts remain reachable on `feature/sycl`.
 The source projection at `8f539f82e38e1ec2c3e4285a29928aa1a32f4ea3`
 adds the four original observer and scheduling files to `968e71988`.
 All 1,328 files selected by the original build manifest match their saved
-SHA-256 values from this single Git tree. Use that manifest to materialize
-the source after the 96K decode KV comparison closes. Build in a fresh
-owned directory and record the resulting executable identities. If they
-differ from the original, rerun the short route and STOP checks, paired
-first-request timing, physical last-slot and live RESTORE before the
-sustained comparison. The sustained run still has no live owner.
+SHA-256 values from this single Git tree. The
+[rebuild controller](../bench/dflash2_prefill_ple_early_build.py) checks the
+archived build, timing, final-slot and RESTORE receipts. It stages the pinned
+source in a fresh owned directory with the original compiler and dependency
+recipe, and checks the complete object and executable sets. After the 96K
+decode KV comparison closes, rebuild and record the resulting executable
+identities. The new generation has its own short route and STOP, paired
+first-request timing, physical last-slot and live RESTORE receipts before it
+can enter sustained generation. The rebuild and sustained run are pending.
 
 The retirement under the measurement lock removed `build`, `cache`, `owned`,
 `ownership.json`, `source` and `tmp` from `dflash2-prefill-ple-early-native-v2`.

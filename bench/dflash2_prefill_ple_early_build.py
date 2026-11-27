@@ -1,99 +1,86 @@
-"""Build the first-gather scheduling change on the measured PLE source."""
+"""Rebuild the measured early PLE engine from its committed source projection."""
 
 from pathlib import Path
 import sys
 
 sys.dont_write_bytecode = True
 import dflash2_cold_ple_measure as ple
+import dflash2_decode_ranked_refill_build as retained_inputs
 
 window, bank, wait, require = ple.window, ple.bank, ple.wait, ple.require
 base_build = window.build
 builder, source = base_build.builder, base_build.source
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'dflash2_prefill_ple_early_native_v2'
+KEY = 'dflash2_prefill_ple_early_native_v3'
 ROOT = bank.B / KEY.replace('_', '-')
 TREE = ROOT / 'source'
-PREIMAGE = '24ea4aff0c17f38e1cd5efbe0b0ce371bab2dd28'
+SOURCE = '8f539f82e38e1ec2c3e4285a29928aa1a32f4ea3'
 PATCH = '8a2a6c4b2fc70b3465bee13555b2f83e961dfb57'
-REJECTED = '6db247db794b3f4dd7cdd002c5ef66bf67552a21'
-V1_CHECK = 'dflash2_prefill_ple_early_check_v1'
-V1_NATIVE = 'dflash2_prefill_ple_early_native_v1'
+ARCHIVE = '6819afd49'
+ARCHIVE_KEY = 'dflash2_prefill_ple_early_native_v2'
+ARCHIVE_ROOT = bank.B / ARCHIVE_KEY.replace('_', '-')
+TIMING_KEY = 'dflash2_prefill_ple_early_speed_v1'
+CAPACITY_KEY = 'dflash2_prefill_ple_early_capacity_v1'
+RESTORE_KEY = 'dflash2_prefill_ple_early_restore_v1'
+RECIPE_SHA256 = 'b1cc47c1b8888ea4a807f8a7bfa9cfed5dc1c28ac07a456a8b667085267c70ef'
 OVERLAYS = ('include/strata/prefill/prefill.hpp', 'src/prefill/layer_major.inc', 'src/prefill/prefill.cpp')
 
 
-def observed_build():
-    row = bank.previous.read(window.BUILD_ROOT / 'record.json')
-    evidence = ple.reference()
-    proof = wait.basis.validation.committed(bank.RESULT, (ple.KEY,))
-    compact = builder.compact(row)
-    require(wait.retained.closed(row, 'built')
-            and compact == wait.basis.validation.committed(bank.RESULT, (window.BUILD_KEY,))
-            and wait.retained.closed(proof, 'closed')
-            and proof['binary'] == row['binaries']['strata']
-            and proof['native_source_commit'] == window.SOURCE
-            and proof['native_build_sha256'] == bank.signature(compact)
-            and proof['window_evidence_sha256'] == bank.signature(evidence)
-            and proof['decision'] == ple.decision(proof['processes'])
-            and proof['decision']['historical_warm_gate'],
-            'require two closed PLE observations on the exact predecessor')
-    delays = proof['decision']['first_minus_subsequent']
-    require(len(delays) == 2 and all(v['exposed_wait_s'] > abs(v['unclassified_after_wait_s'])
-                                    for v in delays.values()), 'require repeated exposed PLE wait')
-    return row, proof
-
-
-def recover_predecessor(row):
-    fields, payload, original, _ = window.inputs(row['source_commit'])
-    require(all(row[k] == v for k, v in fields.items()),
-            'recover the original observed source, compiler and recipe')
-    return fields, payload, original
+def archived_build():
+    row = bank.previous.read(ARCHIVE_ROOT / 'record.json')
+    compact = bank.previous.historic(ARCHIVE, ARCHIVE_KEY)
+    speed, capacity, restore = (bank.previous.historic(ARCHIVE, key)
+                                for key in (TIMING_KEY, CAPACITY_KEY, RESTORE_KEY))
+    identity = bank.signature(compact)
+    require(wait.retained.closed(row, 'built') and builder.compact(row) == compact
+            and row['overlay_commit'] == PATCH and bank.signature(row['recipe']) == RECIPE_SHA256
+            and all(wait.retained.closed(p, 'closed') and p['native_build_sha256'] == identity
+                    and p['native_source_commit'] == PATCH for p in (speed, capacity, restore))
+            and restore['binary'] == speed['binary'] == row['binaries']['strata']
+            and capacity['binary'] == row['binaries']['strata_full_context_diagnostic']
+            and speed['decision']['advance'] and capacity['outcomes']['full-copy']['final_slot_consumed']
+            and restore['physical_sha256'] == bank.signature(capacity)
+            and restore['timing_sha256'] == capacity['timing_sha256'] == bank.signature(speed),
+            'recover the original source, build recipe and qualified PLE results')
+    return row, identity
 
 
 def inputs(revision):
-    predecessor, evidence = observed_build()
-    fields, payload, original = recover_predecessor(predecessor)
-    before = dict(source.blobs(bank.P, PREIMAGE, OVERLAYS))
-    after = dict(source.blobs(bank.P, PATCH, OVERLAYS))
-    require(all(payload[p] == before[p] and after[p] != before[p] for p in OVERLAYS),
-            'apply the scheduling patch only to its exact observed preimages')
-    payload.update(after)
-    hashes = bank.stage.hashed(payload)
-    controls = source.pin(bank.P, [*predecessor['controller_sources'], ple.THIS, THIS])['source_sha256']
-    require(bank.stage.hashed(dict(source.blobs(bank.P, revision, controls))) == controls,
-            'commit the early PLE controller and its complete inputs')
+    archive, identity = archived_build()
+    controllers = (*archive['controller_sources'], retained_inputs.THIS)
+    reference, base, original, _, controls = retained_inputs.retained_build_inputs(revision, controllers)
+    require(archive['foundation'] == base['foundation'] and archive['driver'] == reference['driver']
+            and archive['build_tools'] == base['build_tools'] and archive['external_inputs'] == base['external_inputs']
+            and archive['base_binary'] == reference['binary']
+            and archive['base_build_sha256'] == reference['native_build_sha256']
+            and archive['native_base_commit'] == reference['native_source_commit']
+            and controls.keys() == set(controllers), 'keep the measured compiler, runtime and fallback')
+    files = archive['source_files']
+    payload = dict(source.blobs(bank.P, SOURCE, files))
+    require(bank.stage.hashed(payload) == files and archive['overlays'] == {p: files[p] for p in OVERLAYS},
+            'the projected Git source must recover all original native inputs')
 
-    old, new = str(window.BUILD_ROOT), str(ROOT)
-    recipe = predecessor['recipe']
+    old, new = str(ARCHIVE_ROOT), str(ROOT)
+    recipe = archive['recipe']
     args = [arg.replace(old, new) for arg in recipe['configure']]
     require(args[2:5] == [str(TREE), '-B', str(ROOT / 'build')]
             and recipe['targets'] == base_build.primary.TARGETS, 'relocate only the observed build paths')
-    fields.update(source_commit=revision, overlay_commit=PATCH, source_files=hashes,
-                  overlays={p: hashes[p] for p in OVERLAYS}, controller_sources=controls,
-                  observed_build_sha256=bank.signature(builder.compact(predecessor)),
-                  ple_evidence_sha256=bank.signature(evidence),
-                  fresh_object_paths_sha256=bank.signature(
-                      sorted(str(Path(p).relative_to(window.BUILD_ROOT / 'build'))
-                             for p in predecessor['actual_inputs']['objects'])),
+    objects = sorted(str(Path(p).relative_to(ARCHIVE_ROOT / 'build')) for p in archive['actual_inputs']['objects'])
+    preserved = ('native_base_commit', 'overlay_commit', 'source_files', 'overlays', 'foundation', 'external_inputs',
+                 'build_tools', 'driver', 'base_binary', 'base_build_sha256')
+    fields = {k: archive[k] for k in preserved}
+    fields.update(source_commit=revision, native_source_commit=SOURCE, controller_sources=controls,
+                  original_build_sha256=identity, fresh_object_paths_sha256=bank.signature(objects),
                   recipe=dict(configure=args, targets=recipe['targets'],
                               environment={k: v.replace(old, new) for k, v in recipe['environment'].items()}))
-    return fields, payload, original, predecessor
+    return fields, payload, original, archive
 
 
 def prepare(ctx):
     require(not ROOT.exists() and KEY not in bank.basis.validation.committed(bank.RESULT),
             'inspect the existing candidate generation before preparing')
-    require({p.name for p in window.BUILD_ROOT.iterdir()} == {'record.json'},
-            'retire the closed diagnostic generation before preparing the candidate')
-    previous_check = bank.previous.historic(REJECTED, V1_CHECK)
-    previous_build = bank.previous.historic(REJECTED, V1_NATIVE)
-    for key in (V1_CHECK, V1_NATIVE):
-        path = bank.B / key.replace('_', '-')
-        require({p.name for p in path.iterdir()} == {'record.json'}, 'retire the failed V1 candidate')
-    require(previous_check['stage'] == 'failed' and previous_check['ownership_closed']
-            and not previous_check['active']
-            and previous_check['plan']['binary'] == previous_build['binaries']['strata']
-            and previous_check['outcomes']['direct']['error'] == "RuntimeError('first gather did not reach layer 1')",
-            'preserve the original missed scheduling outcome')
+    require({p.name for p in ARCHIVE_ROOT.iterdir()} == {'record.json'},
+            'the archived generation should contain only its sealed build receipt')
     revision = source.git(bank.P, 'rev-parse', 'HEAD').decode().strip()
     fields, payload, _, _ = inputs(revision)
     ROOT.mkdir(mode=0o700)
@@ -104,16 +91,15 @@ def prepare(ctx):
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(raw)
     row = dict(fields, stage='prepared', commands=[], active=False, passed=False, complete=False,
-               ownership_closed=True, scope='Fresh observed-engine build with the dense-bank-safe early PLE inputs. '
-                   'Verify actual issuance before STOP and consumption at layer 1 before comparing off/on.',
-               retention='Keep for dispatch, cancellation, handoff and matched prefill measurements. '
+               ownership_closed=True, scope='Rebuild every original early PLE translation unit. Check the exact '
+                   'new executable through STOP, consumption, paired prefill, physical capacity and live RESTORE.',
+               retention='Keep through the same-build checks and sustained generation comparison. '
                    'Review at the first failed gate or comparison closure.')
     ctx.check(row, committed=False)
     ctx.save(row)
 
 
 def context():
-    window.select_build()
     ctx = bank.basis.core.source.device.load_module('early_ple_build', base_build.__file__)
     ctx.KEY, ctx.ROOT, ctx.TREE, ctx.OVERLAYS = KEY, ROOT, TREE, OVERLAYS
     ctx.inputs = inputs
@@ -134,4 +120,5 @@ def context():
 
 if __name__ == '__main__':
     action, = sys.argv[1:]
+    require(sys.executable == bank.basis.reference.model.PYTHON, 'use the pinned build controller interpreter')
     context().main(action)
