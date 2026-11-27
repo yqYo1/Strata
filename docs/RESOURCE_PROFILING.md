@@ -2573,6 +2573,13 @@ stock is out of reach, and the last block still measures the full
 counterbalanced ordering and repeatability. All six processes have exited
 normally without fresh Xe faults.
 
+The third early process closes at 15.798 tok/s with 103.613 seconds TTFT.
+It repeats the other two early runs' output and reasoning hashes, 3,440
+output tokens, 2,268 of 2,376 drafts accepted, expert work and 15,640
+early submissions. The three early decode times span 217.749–217.894
+seconds. All seven finished processes exit normally with no fresh Xe
+fault. The third stock and deferred processes remain.
+
 The first block selects arithmetic preservation as a follow-up component
 question. The existing Q6 DPAS tile shares integer dot and per-column FP32
 accumulation code across repeat counts. Check two canonical C2 launches
@@ -2600,6 +2607,14 @@ price the split and the existing pair to screen shapes for a follow-up.
 The host reader accepts all six synthetic sample orders and rejects the
 wrong graph count, short batch and C4 arithmetic mismatch. Compile and
 runtime validation remain pending.
+
+The controller at `00b3bde32` weights the four shape timing deltas using
+the original same-build capture at `4c324029d`. In fixture order,
+6144×2560, 2560×6144, 2560×10240 and 2560×12288 lose 19, 6, 7 and 3 C4
+calls. At one canonical payload per call these 35 calls total 550,502,400
+bytes. Keep the shape gates unchanged. The weighted deltas describe
+isolated matrix replays using the short capture counts. Actual VRAM
+traffic, long-request reuse and overlapped time must be measured separately.
 [Original model result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The first build at `8bd19a9b9` compiles and links all three named targets.
