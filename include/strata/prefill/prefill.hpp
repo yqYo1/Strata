@@ -153,7 +153,9 @@ public:
     }
 
 private:
-    bool run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err);
+    struct FirstPleRead;
+    bool run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err,
+                  FirstPleRead* first_ple = nullptr);
     bool run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, std::string& err);
 #if defined(STRATA_ENABLE_SYCL)
     bool run_moe_window(int64_t layer, int64_t first_row, int64_t rows, std::string& err);
