@@ -2769,6 +2769,28 @@ remain in that commit. A source merge would change eleven inputs pinned
 by the configured caller-help build. Keep that source fixed through the
 caller-help comparison and defer the C2 code to its own model gates.
 
+The next engine test uses the configured caller-help build. The closed C2
+generation has no executable consumer during that comparison. The original
+build audit recovers 1,338 project inputs and matches 1,481 compiler inputs,
+30 link inputs, 141 objects and 13 executables. Each standalone C2 fixture
+recovers 935 project inputs, 801 compiler inputs and 24 link inputs with its
+original configure arguments and inherited environment. The archive records
+all six results and the original source is reachable from the pushed primary
+at `139436647`. Under the measurement lock, retired 2,548 files totaling
+515,751,447 bytes and rechecked each receipt and the validated fallback.
+Removed the finished local worktree and branch. Reopen C2 from the original
+commits with a new measurement plan. The inventory excludes `record.json`;
+hashes cover sorted relative paths, sizes and hashes.
+
+| Root | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-decode-t4-c2-native-v1` | 1,538 | 236,862,121 | `4e5e90e2957ce66b001c118d5105c6db5e813acab7fcd9e541720c6aa5a5aa74` |
+| `dflash2-decode-t4-c2-shared-plan-v1` | 11 | 524,810 | `a4cfca0c9207cb187040b6d7bfce8e925d4d3327550b5f1ef788bcb62ba3a51d` |
+| `dflash2-decode-t4-c2-model-v1` | 184 | 46,219,991 | `38c1a801ac4390df01648f7c146dcebe469a7143b6a702b671506bf0f1c9aa38` |
+| `dflash2-decode-t4-c2-speed-v1` | 652 | 136,492,064 | `921d83c29c3d37a56b0fd3e2fee2e0289de2d085c9ed18d6e8379c5d237dcda6` |
+| `q6-t4-c2-component-v1` | 57 | 40,962,430 | `c1ac7a99136e9626c4b848e09eb3d2f7f26c2aef51c8f637314e8e36baffc49e` |
+| `q6-t4-c2-component-v2` | 106 | 54,690,031 | `1550ba01cc28595ff4aec5d43965f3d95dbdc8fcf9ba6c4db5505b944e248fb5` |
+
 The first build at `8bd19a9b9` compiles and links all three named targets.
 Its build audit fails because that plan omitted the existing fixture
 translation units needed by the shared Gemm and MoE class-definition
