@@ -1388,6 +1388,10 @@ once without arguments in the pinned build environment, with a 30-second
 wall limit. Require normal closed ownership, no diagnostic stderr and the
 exact 384 single and 80 paired GGML parity and row-canary result. This host
 fixture uses the same CPU library as the serving executable.
+It exits zero and returns that exact result with empty stderr and closed
+ownership. The compact proof pins it to the serving executable's build
+receipt under `dflash2_decode_iq3s_parity_v1`. The bounded model checks
+and repeated timing comparison remain open.
 
 The timed CPU fixture has no live executable consumer. Its source and results
 are reachable from `feature/sycl` at `14180e833`. The recovery check matches
