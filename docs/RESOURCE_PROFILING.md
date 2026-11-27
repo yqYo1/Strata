@@ -2734,38 +2734,40 @@ rejects an expert-profile path inherited from the primary worktree. The
 fix at `e70438a35` verifies the profile and launcher bytes and uses the
 isolated worktree's paths for all arms. The nine plans are fixed at
 `41af84337`.
-The first block closes at `bf2ba21b7` with matching prompt bodies and
-prefill work and no fresh Xe faults. Stock, early and early C2 give
-16.301, 15.710 and 16.290 tok/s, with client TTFT of 103.634, 103.744
-and 105.187 seconds. Early C2 matches the stock output and reasoning
-hashes, 3,195 emitted tokens, 2,173/2,248 accepted drafts and 645 width-four
-replays. Its capture records 46 C4 and 70 C2 calls. Early emits 3,440 tokens,
-accepts 2,268/2,376 drafts and replays width four 680 times. The second block
-at `b982ab202` repeats these work counts and closes cleanly, at 16.256,
-15.705 and 16.362 tok/s with client TTFT of 103.437, 103.360 and 105.577 s.
-Early C2 is 0.064% slower and 0.654% faster than stock in the two blocks.
-The third C2 process at `1568885fe` gives 16.359 tok/s and 104.148 s
-client TTFT. All three C2 processes match the logical work, output,
-reasoning digest and 2,173/2,248 draft totals. The final stock process at
-`777788110` gives 16.195 tok/s and 104.697 s TTFT with the same output and
-draft totals and no fresh Xe fault. C2 is 1.013% faster in this pair, for
-two wins and a geometric mean gain of 0.533% across the three stock pairs.
-The final original-early process is required to close the comparison.
+The nine independent processes close at `b0511aac7` with matching prompt
+bodies and prefill work, normal exits, verified model assets and no fresh
+Xe faults. Decode rates are as follows, in the original block order.
 
-Relative to early, the two C2 processes spend 1.441 and 2.212 extra seconds
-inside the first long native prompt. Their extra client TTFT beyond that
-clock is 0.002 and 0.005 seconds. Prefill rows, attention pieces, KV pages
-and requested H2D bytes match. The C2 dispatch checks decode phase and
-two-column split geometry. The prompt-time difference remains open and
-requires a separate clean check if C2 passes the observed comparison.
+| Arm | Decode in each block (tok/s) | Median (tok/s) |
+| --- | --- | ---: |
+| Stock | 16.301 / 16.256 / 16.195 | 16.256 |
+| Early | 15.710 / 15.705 / 15.842 | 15.710 |
+| Early C2 | 16.290 / 16.362 / 16.359 | 16.359 |
+
+C2 passes the observed screen with two of three wins and a geometric
+mean gain of 0.533% versus stock. The stock and C2 processes match output
+and reasoning, 3,195 emitted tokens, 2,173/2,248 accepted drafts and 645
+width-four replays. C2 captures 46 C4 and 70 C2 calls. C2 wins all three
+comparisons with early (geometric mean gain 3.712%). Early emits 3,440,
+3,440 and 3,300 tokens, with 2,268/2,376, 2,268/2,376 and 2,213/2,337
+accepted drafts. Its comparison includes the different decode work.
+
+Relative to stock, C2 TTFT moves by +1.553, +2.140 and −0.549 seconds;
+the native prompt clock moves by +1.515, +2.114 and −0.560 seconds.
+Prefill rows, attention pieces, KV pages and requested H2D bytes match.
+The C2 dispatch checks decode phase and two-column split geometry. Keep
+the stock route selected. A separate comparison needs the two observers
+disabled, a matched long-code control and evidence for the timed route.
+Confirm prefill and TTFT preservation before considering sustained prose,
+agent-session and capacity/RESTORE qualification.
 [Original model result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
-The merge preflight at `1568885fe` and `261914182` finds six disjoint C2
-result keys and four conflicting benchmark controllers. A source merge
-would change eleven inputs pinned by the configured caller-help build.
-Preserve the exact C2 evidence and source ancestry at comparison closure.
-Keep the configured caller-help source inputs fixed through its comparison,
-with C2 source adoption governed by the subsequent model gates.
+The results merge preserves `b0511aac7` and its original native source
+`1000f7a42`. The main result keeps the exact long-code decision and
+individual samples. The original component, build and short-model records
+remain in that commit. A source merge would change eleven inputs pinned
+by the configured caller-help build. Keep that source fixed through the
+caller-help comparison and defer the C2 code to its own model gates.
 
 The first build at `8bd19a9b9` compiles and links all three named targets.
 Its build audit fails because that plan omitted the existing fixture
