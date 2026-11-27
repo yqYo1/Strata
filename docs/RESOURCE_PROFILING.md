@@ -1933,7 +1933,25 @@ It closes normally with quiet validation and no fresh Xe fault. Code measures
 930.479 prefill tok/s, 104.769 s TTFT and 16.789 decode tok/s. Prose measures
 1,036.069 prefill tok/s, 93.116 s TTFT and 11.500 decode tok/s. Compared with
 the first refill process, its decode rate is 0.26% lower for code and 2.27%
-higher for prose. The reverse-order stock process completes this pair.
+higher for prose.
+
+The reverse-order stock process closes the second pair with normal exit,
+quiet validation and no fresh Xe fault. The two arms match the fresh
+inputs and prefill work.
+
+| Workload | Generated tokens, stock → refill | Prefill tok/s, stock → refill | TTFT s, stock → refill | Decode tok/s, stock → refill |
+| --- | ---: | ---: | ---: | ---: |
+| Code | 3,195 → 3,591 | 933.658 → 930.479 | 104.424 → 104.769 | 15.535 → 16.789 |
+| Prose | 8,743 → 8,212 | 1,024.013 → 1,036.069 | 94.210 → 93.116 | 11.184 → 11.500 |
+
+Decode gains 8.077% for code and 2.819% for prose. CPU expert misses per
+output fall 16.73% and 8.94%. The two stock code processes match their
+output and reasoning hashes and draft counts. The second stock prose
+process produces 8,743 tokens, compared with 9,670 in the first process.
+The first two paired code prompt-time and TTFT ratios both exceed one.
+These two samples establish that the declared median preservation gates
+will fail over three comparable pairs. Complete the fixed third pair to
+measure the spread and preserve the full comparison.
 
 The first two closed blend processes also bound the benefit of draft yield
 at the current decode time. Let `e` be emitted tokens and `a` and `d`
