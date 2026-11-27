@@ -11,6 +11,7 @@ import dflash2_decode_t4_build as build
 bank, require, validation = build.bank, build.require, build.validation
 KEY = 'dflash2_decode_t4_shared_plan_v2'
 ROOT = bank.B / KEY.replace('_', '-')
+PREFIX_HELP_KEY = 'dflash2_decode_t4_prefix_help_shared_plan_v1'
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 SUMMARY = 'decode MoE combine numerical=PASS guards=PASS nodes=3/1/1 completed=1'
 HOST = 'sycl_verify_window_policy_test'
@@ -111,6 +112,11 @@ def execute():
 
 
 if __name__ == '__main__':
+    if sys.argv[1:2] == ['--prefix-help']:
+        sys.argv.pop(1)
+        build.select_prefix_help_generation()
+        KEY = PREFIX_HELP_KEY
+        ROOT = bank.B / KEY.replace('_', '-')
     action, = sys.argv[1:]
     require(sys.executable == bank.basis.reference.model.PYTHON
             and action in ('prepare', 'validate'), 'one pinned shared-plan check stage')

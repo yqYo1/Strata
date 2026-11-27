@@ -18,6 +18,11 @@ ORDER = ('stock', 'after-cpu', 'early')
 MATCHED_CONTROL, MATCHED_KEY = '4a36122ad', KEY
 DPAS_STOCK_REFERENCE = 'e36f293d5'
 PRODUCTION_DPAS = False
+PREFIX_HELP = False
+PREFIX_SELECTOR = 'STRATA_SYCL_DECODE_T4_PREFIX_HELP'
+PREFIX_CONTROL = 'dflash2_decode_t4_production_dpas_v1'
+PREFIX_HELP_KEY = 'dflash2_decode_t4_prefix_help_model_v1'
+CALLER_HELP = re.compile(r'^DECODE_T4_CALLER_HELP position=(\d+) jobs=(\d+)$', re.M)
 T4 = re.compile(r'^DECODE_T4 mode=(\S+) position=(\d+) layers=(\d+) split=(\d+) pool_ready=(\d+) early=(\d+)$',
                 re.M)
 DENSE_CAPTURE = re.compile(r'^strata Q6_DPAS_DENSE request=(\d+) device=0 phase=decode tokens=4 '
@@ -34,6 +39,17 @@ def dense_capture(log):
             and any(calls > 0 for _, _, _, _, calls, _ in samples),
             'require a complete actual width-four dense DPAS capture')
     return sorted([ni, no, calls] for _, _, ni, no, calls, _ in samples)
+
+
+def caller_jobs(log, positions, layers, enabled):
+    records = [tuple(map(int, fields)) for fields in CALLER_HELP.findall(log)]
+    require(positions and [position for position, _ in records] == positions
+            and len(records) == log.count('DECODE_T4_CALLER_HELP ')
+            and all(jobs <= layers * 2 * 10 for _, jobs in records),
+            'caller job audit differs from the width-four publication windows')
+    total = sum(jobs for _, jobs in records)
+    require((total > 0) == enabled, 'actual caller participation differs from the planned arm')
+    return total
 
 
 def inputs(revision):
@@ -61,8 +77,11 @@ def inputs(revision):
     for name in ORDER:
         env[name] = {k: v.replace(str(tap.ROOT / 'smoke'), str(ROOT / name))
                      for k, v in envs['smoke'].items()}
-        env[name].update(STRATA_SYCL_DECODE_T4_SCHEDULE=name, STRATA_SYCL_DECODE_T4_AUDIT='1')
-        env[name]['STRATA_SYCL_DECODE_Q6_DPAS_DENSE'] = str(int(PRODUCTION_DPAS))
+        env[name].update(STRATA_SYCL_DECODE_T4_SCHEDULE='early' if PREFIX_HELP else name,
+                         STRATA_SYCL_DECODE_T4_AUDIT='1')
+        env[name]['STRATA_SYCL_DECODE_Q6_DPAS_DENSE'] = str(int(PRODUCTION_DPAS or PREFIX_HELP))
+        if PREFIX_HELP:
+            env[name].update({PREFIX_SELECTOR: str(int(name == 'prefix-help')), 'STRATA_SYCL_Q6_ROUTE_AUDIT': '1'})
         cases[name] = dict(old['cases']['smoke'], environment_sha256=bank.signature(env[name]))
     plan = {k: old[k] for k in ('boot', 'driver', 'runtime_manifest', 'native_validation_probe',
                                 'dflash2_assets', 'model_assets_sha256')}
@@ -72,7 +91,21 @@ def inputs(revision):
                 split_layers=next(iter(ready)), dense_dpas='0', numerical_reference=build.Q6_EVIDENCE,
                 scope='Replay the original 82-input/32-output DFlash2 request. Use matched dense DPAS off '
                       'to check mixed stock and split dispatch, active state, prompt taps and output.')
-    if PRODUCTION_DPAS:
+    if PREFIX_HELP:
+        prior = validation.committed(bank.RESULT, (PREFIX_CONTROL,))
+        require(build.retained.closed(prior, 'closed') and prior['production_dpas_preserved']
+                and prior['plan']['native_source_commit'] == build.PREFIX_HELP_REFERENCE
+                and prior['plan']['split_layers'] == plan['split_layers']
+                and prior['plan']['cases']['early']['wire'] == cases[ORDER[0]]['wire'],
+                'require the original same-request early schedule control')
+        normalized = [{k: v.replace(str(ROOT / name), '<case>') for k, v in env[name].items()
+                       if k != PREFIX_SELECTOR} for name in ORDER]
+        require(normalized[0] == normalized[1], 'another launch setting differs between prefix-help arms')
+        plan.update(dense_dpas='1', prefix_control_sha256=bank.signature(prior),
+                    reference_early={key: prior['outcomes']['early'][key] for key in (*STATE_FIELDS, 'dense_capture')},
+                    scope='Compare a reserved caller with first-pair help on the same early T4 graph, '
+                          'with matched dense DPAS on. Verify actual caller work, state, taps and output.')
+    elif PRODUCTION_DPAS:
         control = bank.previous.historic(MATCHED_CONTROL, MATCHED_KEY)
         require(build.retained.closed(control, 'closed') and control['plan']['native_build_sha256'] == signature
                 and control['plan']['binary'] == binary, 'pass the same-build DPAS-off model control first')
@@ -138,15 +171,22 @@ def run(row, model_base, name, env, request):
               for mode, pos, layers, split, ready, early in T4.findall(log)]
         positions = [pos for pos, width in widths if width == 4]
         expected = plan['split_layers']
+        schedule = 'early' if PREFIX_HELP else name
         require(positions and (not t4 if name == 'stock' else
                 [p for _, p, *_ in t4] == positions
-                and all(mode == name and layers == 48 and split == ready == expected
-                        and early == (expected if name == 'early' else 0)
+                and all(mode == schedule and layers == 48 and split == ready == expected
+                        and early == (expected if schedule == 'early' else 0)
                         for mode, _, layers, split, ready, early in t4)),
                 'the actual width-four schedule was not exercised')
-        if PRODUCTION_DPAS:
+        if PREFIX_HELP:
+            observed['caller_prefix_jobs'] = caller_jobs(log, positions, expected, name == 'prefix-help')
+        if PRODUCTION_DPAS or PREFIX_HELP:
             observed['dense_capture'] = dense_capture(log)
-            if name == 'stock':
+            if PREFIX_HELP and name == ORDER[0]:
+                current = dict(observed, widths=[list(item) for item in widths])
+                require(all(current[key] == val for key, val in plan['reference_early'].items()),
+                        'the reserved caller did not reproduce the original early T4 route')
+            elif name == 'stock':
                 reference = bank.previous.historic(DPAS_STOCK_REFERENCE, 'dflash2_decode_t4_model_v1')
                 current = dict(observed, widths=[list(item) for item in widths])
                 require(all(reference['outcomes']['stock'][k] == current[k] for k in STATE_FIELDS),
@@ -168,7 +208,13 @@ def run(row, model_base, name, env, request):
             pairs = zip(ORDER, ORDER[1:])
             row['comparison'] = {f'{a}/{b}': {k: row['outcomes'][a][k] == row['outcomes'][b][k] for k in STATE_FIELDS}
                                  for a, b in pairs}
-            if PRODUCTION_DPAS:
+            if PREFIX_HELP:
+                early = row['outcomes'][ORDER[0]]
+                row['prefix_help_model_qualified'] = (all(row['comparison'][f'{ORDER[0]}/{name}'].values())
+                    and early['dense_capture'] == observed['dense_capture']
+                    and early['publications'] == observed['publications'])
+                row['passed'] = row['prefix_help_model_qualified']
+            elif PRODUCTION_DPAS:
                 stock = row['outcomes']['stock']['dense_capture']
                 deferred = row['outcomes']['after-cpu']['dense_capture']
                 early = row['outcomes']['early']['dense_capture']
@@ -185,10 +231,20 @@ def run(row, model_base, name, env, request):
         save(row)
     print(name, observed['passed'], observed.get('error'), row.get('comparison', {}), flush=True)
     require(observed['passed'], observed.get('error', 'model owner or device gate failed'))
+    if PREFIX_HELP and name == ORDER[-1]:
+        require(row['passed'], 'caller prefix help changed the checked model work or state')
 
 
 if __name__ == '__main__':
-    if sys.argv[1:2] == ['--production-dpas']:
+    if sys.argv[1:2] == ['--prefix-help']:
+        sys.argv.pop(1)
+        PREFIX_HELP = True
+        build.select_prefix_help_generation()
+        arc.KEY = arc.PREFIX_HELP_KEY
+        KEY = PREFIX_HELP_KEY
+        ROOT = bank.B / KEY.replace('_', '-')
+        ORDER = ('reserved', 'prefix-help')
+    elif sys.argv[1:2] == ['--production-dpas']:
         sys.argv.pop(1)
         PRODUCTION_DPAS = True
         KEY = 'dflash2_decode_t4_production_dpas_v1'

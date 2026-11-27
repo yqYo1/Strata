@@ -1589,6 +1589,13 @@ Require zero jobs in the control and positive participation on the enabled
 route, with unchanged prompt taps, active state and draft work in the short
 probe. For timing, keep the two-half GPU kernel choice fixed and compare
 the first-pair helper against the reserved caller on one new native build.
+The `--prefix-help` build, shared-plan check, short model and 96K timing
+stages reuse the existing T4 controllers. The initial isolation uses the
+original early T4 kernels in both arms. The build checks the six-file
+native difference from the original recipe and both measured CPU formats.
+The paired short probes compare the same 82-token body, exact state and
+work and verify actual caller participation. The long plan uses three
+96K pairs and keeps the existing runtime validation and owner gates.
 
 The three earlier roots below have no active consumer beyond their receipts.
 The recovery audit verifies each earlier build's 210 Git project files,

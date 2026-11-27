@@ -12,6 +12,7 @@ import dflash2_primary_continuation as primary
 
 build, bank, require, validation = model.build, model.bank, model.require, model.validation
 PRODUCTION = 'dflash2_decode_t4_production_dpas_v1'
+PREFIX_HELP = False
 REFERENCE = '9261c4b44'
 KEY = 'dflash2_decode_t4_speed_v1'
 ROOT = bank.B / KEY.replace('_', '-')
@@ -54,18 +55,23 @@ def reference():
 def baseline():
     native = bank.previous.read(build.ROOT / 'record.json')
     build.check(native)
-    proof = validation.committed(bank.RESULT, (PRODUCTION,))
+    proof_key = model.PREFIX_HELP_KEY if PREFIX_HELP else PRODUCTION
+    qualified_key = 'prefix_help_model_qualified' if PREFIX_HELP else 'production_dpas_preserved'
+    proof = validation.committed(bank.RESULT, (proof_key,))
     identity = bank.signature(build.builder.compact(native))
     binary = native['binaries']['strata']
-    require(build.retained.closed(proof, 'closed') and proof['production_dpas_preserved']
+    require(build.retained.closed(proof, 'closed') and proof[qualified_key]
             and proof['plan']['native_build_sha256'] == identity and proof['plan']['binary'] == binary
-            and proof['plan']['dense_dpas'] == '1', 'close the production DPAS model comparison first')
+            and proof['plan']['dense_dpas'] == '1', 'close the corresponding same-build T4 model check first')
     row = build.retained.baseline()
     row['base_physical_context_sha256'] = row.pop('physical_context_sha256')
-    return dict(row, binary=binary, native_source_commit=native['native_source_commit'],
-                native_build_sha256=identity, native_context_qualified=False,
-                production_dpas_proof=bank.signature(proof), split_layers=proof['plan']['split_layers'],
-                request_reference=reference())
+    row.update(binary=binary, native_source_commit=native['native_source_commit'],
+               native_build_sha256=identity, native_context_qualified=False,
+               production_dpas_proof=bank.signature(proof), split_layers=proof['plan']['split_layers'],
+               request_reference=reference())
+    if PREFIX_HELP:
+        row['prefix_help_dense_capture'] = proof['outcomes']['reserved']['dense_capture']
+    return row
 
 
 def environment(row, plan):
@@ -73,6 +79,10 @@ def environment(row, plan):
     require(SCHEDULE not in env and AUDIT not in env
             and env.get('STRATA_SYCL_DECODE_Q6_DPAS_DENSE') == '1'
             and env.get('STRATA_SYCL_Q6_ROUTE_AUDIT', '0') == '0', 'unexpected inherited T4 or DPAS selector')
+    if PREFIX_HELP:
+        require(model.PREFIX_SELECTOR not in env, 'unexpected inherited prefix-help selector')
+        return dict(env, **{SCHEDULE: 'early', AUDIT: '1', 'STRATA_SYCL_Q6_ROUTE_AUDIT': '1',
+                            model.PREFIX_SELECTOR: str(int(plan['arm'] == 'prefix-help'))})
     return dict(env, **{SCHEDULE: plan['arm'], AUDIT: '1'})
 
 
@@ -109,8 +119,16 @@ def routes(text, samples, arm):
     out = primary.routes(text, samples, 'dflash2', workloads=WORKLOADS)
     headers = list(re.finditer(primary.footer.HEADER, text, re.M))
     frame = text[headers[-2].end() if len(headers) > 1 else 0:headers[-1].start()]
-    expected = bank.previous.read(ROOT / 'record.json')['split_layers']
-    out[WORKLOAD]['t4'] = split_windows(frame, samples[-1], arm, expected)
+    row = bank.previous.read(ROOT / 'record.json')
+    expected = row['split_layers']
+    scope = split_windows(frame, samples[-1], 'early' if PREFIX_HELP else arm, expected)
+    if PREFIX_HELP:
+        positions = [int(position) for _, position, *_ in model.T4.findall(frame)]
+        scope['caller_prefix_jobs'] = model.caller_jobs(frame, positions, expected, arm == 'prefix-help')
+        scope['dense_capture'] = model.dense_capture(frame)
+        require(scope['dense_capture'] == row['prefix_help_dense_capture'],
+                'the actual dense graph differs from the paired short proof')
+    out[WORKLOAD]['t4'] = scope
     return out
 
 
@@ -148,12 +166,41 @@ def decision(processes):
                 clean_speed_qualified=False, adopted=False)
 
 
+def prefix_help_decision(processes):
+    require(tuple(p['arm'] for p in processes) == ORDER and all(
+            p['complete'] and p['passed'] and p['ownership_closed'] and p['native_exit_code'] == 0
+            and not p['fresh_faults'] for p in processes)
+            and len({(p['native_identity']['pid'], p['native_identity']['start_ticks'])
+                     for p in processes}) == len(ORDER), 'six independent prefix-help processes required')
+    prefill_keys = ('residual_gpu_rows', 'direct_pieces', 'kv', 'bank_h2d_requested_bytes', 'placement_preserved')
+    decode_keys = ('generated_tokens', 'drafts_accepted', 'drafts_offered', 'output_sha256', 'reasoning_sha256')
+    route_keys = ('width4_windows', 'early_submissions', 'dense_capture')
+    pairs = []
+    for left, right in zip(processes[::2], processes[1::2], strict=True):
+        control, helper = (left, right) if left['arm'] == 'reserved' else (right, left)
+        a, b = (p['evidence']['samples'][-1] for p in (control, helper))
+        before, after = (p['routes'][WORKLOAD] for p in (control, helper))
+        rates = [p['evidence']['decode_rates'][WORKLOAD] for p in (control, helper)]
+        pairs.append(dict(tg=rates, tg_ratio=rates[1] / rates[0], prefill_time_ratio=b['prompt_ms'] / a['prompt_ms'],
+                          ttft_ratio=b['ttft_s'] / a['ttft_s'], caller_prefix_jobs=after['t4']['caller_prefix_jobs'],
+                          matched_prefill=all(before[k] == after[k] for k in prefill_keys),
+                          matched_decode_work=all(a[k] == b[k] for k in decode_keys)
+                          and before['expert_work'] == after['expert_work']
+                          and all(before['t4'][k] == after['t4'][k] for k in route_keys)))
+    gain = statistics.geometric_mean(p['tg_ratio'] for p in pairs)
+    return dict(pairs=pairs, tg_geomean=gain, speed_screen_passed=(gain > 1
+                and sum(p['tg_ratio'] > 1 for p in pairs) >= 2
+                and all(p['matched_prefill'] and p['matched_decode_work'] for p in pairs)),
+                clean_speed_qualified=False, adopted=False)
+
+
 def experiment():
     ctx = primary.experiment()
     base_pins, current = ctx.pins, ctx.current
     ctx.ROOT, ctx.KEY, ctx.THIS, ctx.ORDER = ROOT, KEY, THIS, ORDER
     ctx.baseline, ctx.environment, ctx.command, ctx.routes = baseline, environment, command, routes
-    ctx.evidence_reader.read_complete_suite, ctx.evidence_reader.decide = read_subset, decision
+    ctx.evidence_reader.read_complete_suite = read_subset
+    ctx.evidence_reader.decide = prefix_help_decision if PREFIX_HELP else decision
     ctx.protocol = PLAN
 
     def pins(revision):
@@ -166,8 +213,9 @@ def experiment():
         return sources
 
     def check_environment(row):
+        selector = model.PREFIX_SELECTOR if PREFIX_HELP else SCHEDULE
         environments = [{k: v.replace(plan['root'], '<process>') for k, v in environment(row, plan).items()
-                         if k != SCHEDULE} for plan in row['plans']]
+                         if k != selector} for plan in row['plans']]
         require(all(env == environments[0] for env in environments), 'another launch setting varies by schedule')
         return current(row)
 
@@ -175,5 +223,26 @@ def experiment():
     return ctx
 
 
+def select_prefix_help():
+    global PREFIX_HELP, KEY, ROOT, ORDER, PLAN
+    PREFIX_HELP = True
+    build.select_prefix_help_generation()
+    KEY = 'dflash2_decode_t4_prefix_help_speed_v1'
+    ROOT = bank.B / KEY.replace('_', '-')
+    ORDER = ('reserved', 'prefix-help', 'prefix-help', 'reserved', 'reserved', 'prefix-help')
+    PLAN = dict(PLAN, order=list(ORDER),
+        comparison='Three counterbalanced pairs on one executable with the same early split T4 graph. '
+                   'Select only the caller claim policy before exec.',
+        scope='One 96K thinking-enabled code request per fresh server after the same four warm-up requests. '
+              'Enable the T4 and Q6 route audits in every arm. Keep the clean and broader model gates separate.',
+        eligibility=PLAN['eligibility'] + ' Match the short dense capture, with zero caller jobs in controls '
+                    'and positive caller work in the candidate.',
+        decision='Advance to a clean test if at least two pairs improve and the geometric mean TG ratio '
+                 'exceeds one with matched prefill and decode work. Report draft counts and both prefill clocks.')
+
+
 if __name__ == '__main__':
+    if sys.argv[1:2] == ['--prefix-help']:
+        sys.argv.pop(1)
+        select_prefix_help()
     primary.clock.main(experiment())

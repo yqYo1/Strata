@@ -23,6 +23,41 @@ REQUIRED = ('src/program/generate.cpp', 'src/core/verify.cpp', 'src/core/expert_
 CPU_EVIDENCE = '7d38b06800cf6eb344e5a9215ec2bf3efd03eb8f'
 ARC_EVIDENCE = 'd7c710d12'
 Q6_EVIDENCE, Q6_KEY = '697559569', 'dflash2_decode_t4_q6_control_v1'
+PREFIX_HELP_NATIVE = 'dflash2_decode_t4_prefix_help_native_v1'
+PREFIX_HELP_CPU = '2c6c66ec82185b90faaa06684c57e13159717bc4'
+PREFIX_HELP_SOURCE = '896f328535093d00c6b398fd22316577b2f45ceb'
+PREFIX_HELP_REFERENCE = '4273c6292eeda5b2407c57e2cf15aed80e7f40a5'
+PREFIX_HELP_FILES = ('include/strata/core/expert_source.hpp', 'include/strata/core/verify.hpp',
+                     'include/strata/kernels/cpu/pool.hpp', 'src/core/expert_source.cpp',
+                     'src/core/verify.cpp', 'src/kernels/cpu/pool.cpp')
+
+
+def select_prefix_help_generation():
+    global KEY, ROOT, TREE
+    KEY = PREFIX_HELP_NATIVE
+    ROOT = bank.B / KEY.replace('_', '-')
+    TREE = ROOT / 'source'
+
+
+def prefix_help_component(revision):
+    path = bank.RESULT.with_name('cpu-fixed-expert-prefix-help-current.json').relative_to(bank.P)
+    raw = source.git(bank.P, 'show', f'{PREFIX_HELP_CPU}:{path}')
+    proof = json.loads(raw)
+    timed = proof['processes'][2:]
+    require(proof['stage'] == 'closed' and proof['ownership_closed'] and not proof['active']
+            and not proof['gpu_executed'] and len(timed) == 6
+            and all(p['owner']['exit_code'] == 0 and len(p['samples']) == 10 for p in timed)
+            and [(f['gu'], f['eligible']) for f in proof['prefix_help_result']] == [(18, True), (21, True)],
+            'close the measured first-pair CPU replay in both formats')
+    require(all(source.git(bank.P, 'show', f'{revision}:{path}')
+                == source.git(bank.P, 'show', f'{PREFIX_HELP_SOURCE}:{path}')
+                for path in PREFIX_HELP_FILES), 'commit the reviewed T4 prefix-help model projection')
+    changed = source.git(bank.P, 'diff', '--name-only', PREFIX_HELP_REFERENCE, revision, '--',
+                         'CMakeLists.txt', 'cmake', 'include', 'src', 'third_party', 'tests').decode().splitlines()
+    require(set(changed) == set(PREFIX_HELP_FILES), 'preserve the original early T4 native source outside the helper')
+    return dict(result_commit=PREFIX_HELP_CPU, result_sha256=hashlib.sha256(raw).hexdigest(),
+                source_revision=proof['source_commit'], reviewed_model_projection=PREFIX_HELP_SOURCE,
+                reference_native_source=PREFIX_HELP_REFERENCE)
 
 
 def inputs(revision):
@@ -51,7 +86,13 @@ def inputs(revision):
                 == pin['source_sha256']
                 and all(bank.sha(root / p) == h for p, h in pin['source_sha256'].items()),
                 'pinned dependency changed')
-    pins = source.pin(bank.P, [*primary.PREFIXES, THIS, fixture.THIS, retained.THIS])['source_sha256']
+    controls = [THIS, fixture.THIS, retained.THIS]
+    candidate = {}
+    if KEY == PREFIX_HELP_NATIVE:
+        candidate['prefix_help_component'] = prefix_help_component(revision)
+        controls.extend(('bench/dflash2_decode_t4_check.py', 'bench/dflash2_decode_t4_model.py',
+                         'data/expert-profile.bin'))
+    pins = source.pin(bank.P, [*primary.PREFIXES, *controls])['source_sha256']
     payload = dict(source.blobs(bank.P, revision, pins))
     require(bank.stage.hashed(payload) == pins, 'commit the exact T4 candidate and controllers')
     old, new = str(primary.ROOT), str(ROOT)
@@ -59,14 +100,14 @@ def inputs(revision):
     env = {k: v.replace(old, new) for k, v in parent['recipe']['environment'].items()}
     require(args[2:5] == [str(TREE), '-B', str(ROOT / 'build')], 'unexpected primary build recipe')
     return dict(source_commit=revision, native_source_commit=revision, source_files=pins,
-                controller_sources={p: pins[p] for p in (THIS, fixture.THIS, retained.THIS)},
+                controller_sources={p: pins[p] for p in controls},
                 foundation=parent['foundation'], external_inputs=parent['external_inputs'],
                 build_tools=parent['build_tools'], driver=parent['driver'],
                 retained_binary=fallback['binary'], runtime_manifest=fallback['runtime_manifest'],
                 native_validation_probe=fallback['native_validation_probe'],
                 cpu_evidence_sha256=hashlib.sha256(cpu_raw).hexdigest(),
                 arc_evidence_sha256=bank.signature(arc),
-                recipe=dict(configure=args, environment=env, targets=list(TARGETS))), payload, original
+                recipe=dict(configure=args, environment=env, targets=list(TARGETS)), **candidate), payload, original
 
 
 def check(row, committed=True):
@@ -124,11 +165,18 @@ def prepare():
                          first_device='Shared-plan half-combine check with validation before any model run.',
                          model='Commit a bounded same-binary parity plan before model execution.',
                          retention='Keep the existing speed reference and this candidate through parity.'))
+    if KEY == PREFIX_HELP_NATIVE:
+        row['plan'].update(schedules=['early'],
+                           selection='Compare a reserved caller with first-pair help on the same split graphs.',
+                           numerical_reference=PREFIX_HELP_CPU)
     check(row, committed=False)
     save(row)
 
 
 if __name__ == '__main__':
+    if sys.argv[1:2] == ['--prefix-help']:
+        sys.argv.pop(1)
+        select_prefix_help_generation()
     action, = sys.argv[1:]
     require(sys.executable == bank.basis.reference.model.PYTHON
             and action in ('prepare', 'configure', 'compile'), 'one pinned T4 build stage')
