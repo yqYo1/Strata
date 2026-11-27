@@ -6235,6 +6235,12 @@ int main(int argc, char** argv) {
                     // unknown keys are skipped: the ids start at the first token without '='
                 }
             }
+#ifdef STRATA_ENABLE_SYCL
+            if (!ver.decode_t4_accepts_pcie_share(req_pcie_frac)) {
+                std::printf("ERR decode T4 schedule requires zero PCIe expert share\n");
+                continue;
+            }
+#endif
             std::string emb_path;
             if (geni && endp != nullptr) {
                 while (*endp == ' ') ++endp;

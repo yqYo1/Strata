@@ -13,11 +13,11 @@ import dflash2_primary_retained as retained
 primary = retained.PRIMARY
 bank, builder, require = primary.bank, primary.builder, primary.require
 source, validation = bank.stage.source, bank.basis.validation
-KEY = 'dflash2_decode_t4_native_v1'
+KEY = 'dflash2_decode_t4_native_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 TREE = ROOT / 'source'
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-TARGETS = ('strata', fixture.TARGET, 'sycl_verify_window_policy_test')
+TARGETS = tuple(dict.fromkeys((*primary.TARGETS, fixture.TARGET, 'sycl_verify_window_policy_test')))
 REQUIRED = ('src/program/generate.cpp', 'src/core/verify.cpp', 'src/core/expert_source.cpp',
             'src/kernels/cpu/pool.cpp', 'src/kernels/sycl/shared_expert.cpp', fixture.FIXTURE)
 CPU_EVIDENCE = '7d38b06800cf6eb344e5a9215ec2bf3efd03eb8f'
@@ -102,6 +102,10 @@ def save(row):
 def prepare():
     require(not ROOT.exists() and KEY not in validation.committed(bank.RESULT),
             'one fresh T4 build generation')
+    previous = bank.previous.historic('8bd19a9b9', 'dflash2_decode_t4_native_v1')
+    require(previous['stage'] == 'failed' and previous['ownership_closed'] and not previous['active']
+            and previous['error'] == "RuntimeError('complete fresh engine and the declared set of Gemm includers required')",
+            'close the original dependency census failure first')
     revision = source.git(bank.P, 'rev-parse', 'HEAD').decode().strip()
     fields, payload, _ = inputs(revision)
     ROOT.mkdir(mode=0o700)

@@ -2468,7 +2468,8 @@ graph publishes next-layer routing only after the old dispatch and trace
 return. Prompt verification and other decode widths retain their original
 graph families. `STRATA_SYCL_DECODE_T4_AUDIT=1` records the actual
 by-expert readiness and early submission counts for each width-four
-decode window.
+decode window. Request admission rejects a positive PCIe expert share
+in these opt-in modes before changing state or starting GPU work.
 
 The same-build shared-plan fixture compares the stock four-token
 copy/add/reduce graph with two half kernels using the same resident IDs.
@@ -2479,6 +2480,12 @@ Match prompt and decode state, routed work, valid rolling state and
 held-out output. Run longer sustained generation and full-context checks
 after parity.
 [T4 build controller](../bench/dflash2_decode_t4_build.py).
+
+The first build at `8bd19a9b9` compiles and links all three named targets.
+Its build audit fails because that plan omitted the existing fixture
+translation units needed by the shared Gemm and MoE class-definition
+census. It has no runtime evidence. The revised plan includes the
+complete primary fixture target set and the T4 policy and combine tests.
 
 For a copy-once control, the full CPU result slab at `T=4`, `K=10` and
 `N=2560` is 409,600 bytes per layer, or 19,660,800 across 48 layers. The

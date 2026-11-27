@@ -190,6 +190,10 @@ public:
     GpuPlanSink* plan_sink() { return &sink_; }
 #ifdef STRATA_ENABLE_SYCL
     bool configure_decode_t4_dispatch(bool local_plan_without_pcie, std::string& err);
+    bool decode_t4_accepts_pcie_share(double fraction) const noexcept {
+        // A share smaller than half of one 1/256 unit rounds to zero.
+        return !decode_t4_dispatch_ || (fraction >= 0.0 && fraction < 0.5 / 256.0);
+    }
 #endif
     /// Plan v0.3 P6: split the window into two token groups and pipeline the CPU experts of one with the GPU work
     /// of the other (default on).  Set before the first `run`.
