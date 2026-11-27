@@ -862,6 +862,15 @@ measure actual evictions and usable throughput in model requests before
 claiming a model-level gain.
 [Exact scalar comparison and decision](https://github.com/yqYo1/Strata/commit/9a20db11dc6043cd12e128e61e2afc3c72721176).
 
+The scalar fixture retirement audit recovers 234 pinned inputs and
+four build commands, matches 672 compiler and 25 link inputs, and
+reconciles all eight terminal outcomes. Keep the original
+`decode-kv-scalar-clock-wrap-v1/record.json` for model-test admission.
+Retire `{fixture-build,smoke,validate,0,1,2,3,4,5}` under that root.
+The 76 files total 2,895,019 bytes with sorted path, size and content-hash
+inventory SHA-256
+`e88302672c429678a4b1214aa1de75d3adf00ae4623c6a04864ec06949e6a62b`.
+
 #### Width-four KV cache working set
 
 The retained K8V8 verifier at `968e71988` scores four-cell blocks and
