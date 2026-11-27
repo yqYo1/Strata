@@ -28,8 +28,11 @@ TARGETS = ['strata', 'strata_full_context_diagnostic', 'prefill_scratch_host_tes
 
 def inputs(revision):
     baseline = retained.baseline()
-    parent = bank.previous.historic(PARENT_RECORD, PARENT_KEY)
-    require(retained.closed(parent, 'built') and parent['native_source_commit'] == PARENT_SOURCE,
+    parent_root = bank.B / PARENT_KEY.replace('_', '-')
+    parent = bank.previous.read(parent_root / 'record.json')
+    committed_parent = bank.previous.historic(PARENT_RECORD, PARENT_KEY)
+    require(builder.compact(parent) == committed_parent and retained.closed(parent, 'built')
+            and parent['native_source_commit'] == PARENT_SOURCE,
             'require the original coherent source and recipe for the 96K caller-help engine')
     changed = source.git(bank.P, 'diff', '--name-only', PARENT_SOURCE, revision, '--', *NATIVE).decode().splitlines()
     require(changed == [GENERATOR], 'decode placement must change only the serving generator')
@@ -48,7 +51,7 @@ def inputs(revision):
     require(bank.stage.hashed(payload) == files, 'commit the exact placement source and controllers')
 
     recipe = parent['recipe']
-    old = str(bank.B / PARENT_KEY.replace('_', '-'))
+    old = str(parent_root)
     new = str(ROOT)
     args = [arg.replace(old, new) for arg in recipe['configure']]
     require(args[2:5] == [str(TREE), '-B', str(ROOT / 'build')], 'parent recipe has unexpected build paths')
