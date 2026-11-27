@@ -30,6 +30,8 @@ PREFIXES = ('CMakeLists.txt', 'cmake', 'src', 'include', 'third_party', 'bench/s
 CONTROL = ('--host-split-c2', 'HOST_SPLIT_C2 passed=1 cases=5 GPU=0')
 ARC_GATE = 'dflash2_decode_t4_shared_plan_v2'
 T4_SPEED = 'dflash2_decode_t4_speed_v1'
+CAPTURE_COMMIT = '4c324029d'
+CAPTURE_KEY = 'dflash2_decode_t4_production_dpas_v1'
 SHAPES = ((512, 33), (6144, 2560), (2560, 6144), (2560, 10240), (2560, 12288))
 TIMED_SHAPES = SHAPES[1:]
 ORDER = (('c4', 0), ('columns', 0), ('columns', 1), ('c4', 1), ('c4', 2), ('columns', 2))
@@ -111,6 +113,29 @@ def closed_comparison(identity):
     return dict(commit=revision, result_sha256=bank.signature(row), decision=row['decision'])
 
 
+def dense_capture(identity):
+    bank = source_build.bank
+    row = bank.previous.historic(CAPTURE_COMMIT, CAPTURE_KEY)
+    require(source_build.retained.closed(row, 'closed') and row['production_dpas_preserved']
+            and row['plan']['binary'] == identity['reference_binary'],
+            'the dense capture must be from the same production DPAS engine')
+    tables = {arm: {(k, n): count for k, n, count in row['outcomes'][arm]['dense_capture']}
+              for arm in ('stock', 'after-cpu', 'early')}
+    require(tables['early'] == tables['after-cpu']
+            and all(set(table) == set(TIMED_SHAPES) for table in tables.values()),
+            'the original capture must match the two split routes and four timing shapes')
+    shapes = []
+    for k, n in TIMED_SHAPES:
+        displaced = tables['stock'][k, n] - tables['early'][k, n]
+        require(displaced > 0, 'the split must displace stock C4 calls at every captured shape')
+        shapes.append(dict(shape=f'{k}x{n}', displaced=displaced,
+                           payload_bytes=displaced * n * (k // 256) * 210))
+    return dict(commit=CAPTURE_COMMIT, result_sha256=bank.signature(row), shapes=shapes,
+                scope='Static C4 calls displaced in one checked width-four capture. Payload assumes one '
+                      'canonical weight visit per displaced call. Hardware traffic and long-request '
+                      'route frequency require separate observations.')
+
+
 def context():
     ctx = existing.context()
     ctx.ROOT, ctx.KEY = ROOT, KEY
@@ -146,6 +171,7 @@ def prepare(ctx):
             'prepare one fresh C2 component build')
     native, compiler, identity = reference()
     cohort = closed_comparison(identity)
+    capture = dense_capture(identity)
     previous_root = str(source_build.ROOT)
     args = [value.replace(previous_root + '/source', str(P)).replace(previous_root, str(ROOT))
             for value in native['recipe']['configure']]
@@ -163,6 +189,7 @@ def prepare(ctx):
                plan=dict(compile_target=ctx.TARGET, initial_native_checks=['--host', '--host-c5', CONTROL[0]],
                          scope='Build the fixture only with the retained production DPC++ recipe.',
                          arc=numerical_plan(ctx), timing=timing_plan(ctx), closed_model_comparison=cohort,
+                         dense_capture=capture,
                          next='Commit the same-build Arc bitwise and guard check before timing either control.'),
                timing=[],
                retention='One standalone fixture through the C2 component decision. No serving engine build.')
@@ -244,7 +271,7 @@ def read_timing(lines, reference, repetition):
                 numerical_cases=numerical_cases)
 
 
-def decide(outcomes):
+def decide(outcomes, capture):
     require(tuple((v['reference'], v['repetition']) for v in outcomes) == ORDER
             and all(v['passed'] for v in outcomes), 'six accepted timing processes required')
     summary = {}
@@ -259,8 +286,20 @@ def decide(outcomes):
                                           geometric_ratio=statistics.geometric_mean(ratios),
                                           faster=sum(r < 1 for r in ratios))
         summary[shape] = comparisons
+    counts = {item['shape']: item['displaced'] for item in capture['shapes']}
+    require(counts.keys() == summary.keys() and all(count > 0 for count in counts.values()),
+            'complete captured shape weights required')
+    fixture_projection = []
+    for outcome in outcomes:
+        medians = outcome['evidence']['median_ns_per_four_columns']
+        delta = sum(count * (medians[shape][1] - medians[shape][0]) for shape, count in counts.items())
+        fixture_projection.append(dict(reference=outcome['reference'], repetition=outcome['repetition'],
+                                       candidate_minus_reference_ns=delta))
     return dict(shapes=summary, eligible_shapes=[shape for shape, values in summary.items()
                 if values['columns']['faster'] >= 2 and values['columns']['geometric_ratio'] < 1],
+                capture_weighted_fixture_deltas=fixture_projection,
+                projection_scope='Sum of isolated repeated-matrix deltas for the displaced capture counts. '
+                                 'Context, graph overlap, cache and other model work are outside this projection.',
                 model_speed_qualified=False, model_draft_yield_qualified=False, adopted=False)
 
 
@@ -332,7 +371,7 @@ def run_arc(ctx, mode):
         if not outcome['passed']:
             row.update(stage='failed', passed=False, complete=False)
         elif len(row['timing']) == len(ORDER):
-            row.update(stage='closed', complete=True, decision=decide(row['timing']))
+            row.update(stage='closed', complete=True, decision=decide(row['timing'], row['plan']['dense_capture']))
         ctx.save(row)
     require(outcome['passed'], outcome.get('error', 'C2 runtime, timing or ownership gate failed'))
 
