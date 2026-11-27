@@ -1918,6 +1918,23 @@ increases by 8.1 ms and prose prompt time by 610.7 ms. The produced lengths
 and draft counts differ across layouts. Apply the decision after the two
 remaining pairs, starting with the reverse-order refill process.
 
+For this pair, each completed verification window commits one token plus
+its accepted drafts. The last window can emit up to three fewer tokens at
+spec4. The verifier window count is between emitted minus accepted and
+that count plus three. Dividing the measured decode time and output count
+by these bounds, the refill arm's average window takes 11.15–11.63% less
+time for code and 3.98–4.08% less for prose. Output per window also falls
+4.16–4.67% and 3.75–3.86%, respectively. The lower output per window
+offsets most of the prose timing gain in this pair.
+
+The reverse-order refill process repeats the first refill's request, output
+and reasoning hashes, draft counters, expert work and handoff bytes.
+It closes normally with quiet validation and no fresh Xe fault. Code measures
+930.479 prefill tok/s, 104.769 s TTFT and 16.789 decode tok/s. Prose measures
+1,036.069 prefill tok/s, 93.116 s TTFT and 11.500 decode tok/s. Compared with
+the first refill process, its decode rate is 0.26% lower for code and 2.27%
+higher for prose. The reverse-order stock process completes this pair.
+
 The first two closed blend processes also bound the benefit of draft yield
 at the current decode time. Let `e` be emitted tokens and `a` and `d`
 be accepted and offered drafts. In these completed spec4 requests, the
