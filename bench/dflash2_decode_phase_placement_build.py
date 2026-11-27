@@ -19,7 +19,7 @@ PARENT_KEY = 'dflash2_decode_t4_prefix_help_native_v1'
 PARENT_SOURCE = '2919b3531b9f8f37c97866591a63ea1464d81058'
 NATIVE = ('CMakeLists.txt', 'cmake', 'include', 'src', 'third_party', 'tests')
 GENERATOR = 'src/program/generate.cpp'
-CONTROLLERS = (THIS, retained.THIS, 'bench/dflash2_primary_prefill_speed.py',
+CONTROLLERS = (THIS, retained.THIS, 'bench/dflash2_decode_phase_placement_check.py', 'bench/dflash2_primary_prefill_speed.py',
                'bench/dflash2_primary_checks.py', 'bench/dflash2_primary_context.py', 'data/expert-profile.bin')
 REQUIRED = (GENERATOR, 'src/core/expert_cache.cpp', 'src/core/verify.cpp',
             'tests/core/prefill_scratch_test.cpp', 'tests/sycl/prefill_scratch.cpp')

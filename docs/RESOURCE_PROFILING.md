@@ -2241,9 +2241,11 @@ Set the same T4 schedule and caller policy in both placement arms.
 Compile after the active caller-help campaign closes and the extra
 generation is reviewed for retirement.
 
-Start with the scratch host and bounded Arc checks for fill ranges and
-retirement. Then use the unchanged small model prompt with enough output
-budget to cross the 32-token switch. Enable
+The [bounded check](../bench/dflash2_decode_phase_placement_check.py) starts
+with the scratch host and Arc checks for fill ranges and retirement. It
+adds one distinct leading token to the original 82-token thinking prompt
+for each request, checks zero prefix reuse and sets a 640-output cap on the
+requests that must cross the 32-token switch. Enable
 `STRATA_SYCL_DFLASH2_DECODE_PHASE_AUDIT=1` for this probe. It reads back the
 whole published device map and samples both ends of the replaced-slot list
 at install and restore. Check two successive requests, a stop after install,
