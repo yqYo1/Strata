@@ -11949,14 +11949,25 @@ The comparison retains first and subsequent prefill, client TTFT, decode
 rates, and observed draft acceptance. Agent-session coverage remains a
 separate validation step.
 
-The retained early-PLE build is pending a historical-input recovery check
-before the next generation is created. Its current reader rejected the
-predecessor at `10b4a06f4` because the whole `bench/sycl` pin includes three
-later CPU replay changes (`cpu_roofline/CMakeLists.txt`, `fixed_replay.py`
-and `main.cpp`). Recover the original committed helper bytes and confirm
-which inputs the original compilation and controller used. Keep the
-existing early-PLE build and its qualified samples until that comparison
-and the remaining continuation consumer are reviewed.
+The early-PLE build recovery uses the historical checkout at `6819afd49`.
+Its original reader verifies 1,328 project files, 529 controller inputs,
+1,479 compiler inputs, 139 fresh objects and all 11 executable identities.
+The recovered recipe SHA-256 is
+`b1cc47c1b8888ea4a807f8a7bfa9cfed5dc1c28ac07a456a8b667085267c70ef`.
+The earlier worktree comparison encountered three later CPU replay edits.
+The historical checkout passes the same admission without changing those
+inputs. Source commit `58236dac5`, overlay `8a2a6c4b2` and all closed timing,
+final-slot and RESTORE receipts remain reachable on `feature/sycl`.
+
+The sustained early-PLE comparison has no prepared plan or live owner.
+Defer it until the decode placement comparison closes. Reproduce the
+exact build or qualify a new one when the PLE comparison resumes. The
+retirement decision covers `build`, `cache`, `owned`, `ownership.json`,
+`source` and `tmp` under `dflash2-prefill-ple-early-native-v2`. It selects
+1,524 files totaling 223,826,316 bytes. The SHA-256 of the inventory sorted
+by relative path with file sizes and hashes is
+`c389e9b65e3aa889750bab062c21033e05549b3abebbe45572698e85f5a1d390`.
+Keep the original `record.json` and the two separate phase references.
 
 The closed comparison at `bdfd43ec9` preserves the 12 requests and
 passes the PLE reader's admission. After verifying all four terminal
