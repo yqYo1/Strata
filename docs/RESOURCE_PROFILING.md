@@ -1617,8 +1617,7 @@ drafts, expert work, verifier windows and logical prefill work. Both
 arms generate 3,440 tokens and accept 2,268 of 2,376 drafts. Caller work
 goes from zero to 40,393 prefix jobs. Decode improves from 15.400 to
 15.908 tok/s (+3.30%), prefill from 939.11 to 941.96 tok/s and client
-TTFT from 103.811 to 103.498 s. Both owners close without a fresh Xe
-fault. Repeat with the reversed order and finish the three-pair screen.
+TTFT from 103.811 to 103.498 s. Both owners close without a fresh Xe fault.
 The reverse-order pair closes at 15.679 tok/s reserved and 15.976 tok/s
 with help. The request, visible answer and logical prefill work match.
 The reserved arm generates 3,440 tokens, accepts 2,268 of 2,376 drafts
@@ -1626,9 +1625,16 @@ and replays 680 width-four windows. The helper arm has different reasoning,
 generates 3,358 tokens, accepts 2,236 of 2,327 drafts and replays 667
 width-four windows. Client TTFT is 103.465 s reserved and 103.626 s with
 help. The observed rate rises 1.89%, with different decode work. This
-pair fails the matched-work requirement of the speed screen. Both owners
-close without a fresh Xe fault. Finish the planned third pair to record
-whether the work difference recurs.
+pair fails the matched-work requirement of the speed screen.
+
+The final pair matches decode work and improves from 15.751 to 15.921 tok/s
+(+1.08%). Prefill falls from 940.28 to 908.91 tok/s and client TTFT rises
+from 103.687 to 107.233 s with the same logical prefill work. All six
+independent processes close successfully with no fresh Xe fault. The
+geometric-mean TG ratio is 1.02089 across all three pairs and includes the
+unequal second pair. The predeclared fixed-work speed screen fails. Keep
+the selected reference and use stock scheduling for the separate placement
+trial. This audited result does not qualify clean throughput.
 [Original samples](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The 96K controller reads the compact short-model proof and the coherent
