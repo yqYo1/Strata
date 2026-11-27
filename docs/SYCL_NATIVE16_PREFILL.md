@@ -11784,6 +11784,13 @@ The standard length workload repeats a deterministic word stream with
 distinct run tags, and the PLE row cache persists across those requests.
 Use varied text and the standard workload to evaluate a scheduling change.
 
+The Qwen IQ3_S PLE table occupies 26.82 GiB. The reverse-order timing
+engine had a 15.71 GiB locked-memory limit and the host reported
+33.91 GiB available in one prefill startup snapshot. The existing
+`--ple-io ram` path would fall back to touching pageable pages under
+that limit. A comparison using that mode needs separate startup timing
+and actual page-residency evidence before attributing a gain to RAM.
+
 The first scheduling candidate issues the first Direct I/O gather at layer
 0 under `STRATA_SYCL_PREFILL_PLE_EARLY_READ=1` on the recovered mode-16
 prefill source. Both arms use the same gather function and existing two
