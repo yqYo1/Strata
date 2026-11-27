@@ -756633,7 +756633,7 @@
       "retention": "Retain the private fixture until its decision and original inputs are recoverable. Keep the committed batch samples and retire the closed raw output.",
       "clock_wrap": true
     },
-    "stage": "smoke",
+    "stage": "validate",
     "processes": [
       {
         "stage": "smoke",
@@ -756664,6 +756664,132 @@
           "start_ticks": 416585198,
           "sid": 3273478,
           "pgid": 3273478
+        },
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
+      },
+      {
+        "stage": "validate",
+        "argv": [
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-kv-scalar-clock-wrap-v1/fixture-build/sycl_kv_copy_groups_bench",
+          "--planner-clock-wrap-validate"
+        ],
+        "environment_sha256": "d269bf3a06ab76b91dc1fe60b1dd584dcda020567c2ea716c19ba9d4fccb0e95",
+        "graph_fingerprints": [
+          1733011624505392910,
+          11969949509791534883,
+          3287452364046770679,
+          5112703831475762793,
+          18068875654498574754
+        ],
+        "exact_miss_cases": [
+          {
+            "phase": "planner_perf_cases",
+            "nq": 3,
+            "missing": 0,
+            "cooperative": false,
+            "replays": 2,
+            "oracle_exact": true,
+            "miss_pattern": "interleaved"
+          },
+          {
+            "phase": "planner_perf_cases",
+            "nq": 3,
+            "missing": 0,
+            "cooperative": false,
+            "replays": 2,
+            "oracle_exact": true,
+            "miss_pattern": "interleaved",
+            "clock_wrap": true
+          },
+          {
+            "phase": "planner_perf_cases",
+            "nq": 3,
+            "missing": 16,
+            "cooperative": false,
+            "replays": 2,
+            "oracle_exact": true,
+            "miss_pattern": "interleaved"
+          },
+          {
+            "phase": "planner_perf_cases",
+            "nq": 3,
+            "missing": 16,
+            "cooperative": false,
+            "replays": 2,
+            "oracle_exact": true,
+            "miss_pattern": "interleaved",
+            "clock_wrap": true
+          },
+          {
+            "phase": "planner_perf_cases",
+            "nq": 3,
+            "missing": 64,
+            "cooperative": false,
+            "replays": 2,
+            "oracle_exact": true,
+            "miss_pattern": "interleaved"
+          },
+          {
+            "phase": "planner_perf_cases",
+            "nq": 3,
+            "missing": 64,
+            "cooperative": false,
+            "replays": 2,
+            "oracle_exact": true,
+            "miss_pattern": "interleaved",
+            "clock_wrap": true
+          },
+          {
+            "phase": "planner_perf_cases",
+            "nq": 3,
+            "missing": 384,
+            "cooperative": false,
+            "replays": 2,
+            "oracle_exact": true,
+            "miss_pattern": "interleaved"
+          },
+          {
+            "phase": "planner_perf_cases",
+            "nq": 3,
+            "missing": 384,
+            "cooperative": false,
+            "replays": 2,
+            "oracle_exact": true,
+            "miss_pattern": "interleaved",
+            "clock_wrap": true
+          }
+        ],
+        "provider_sha256": "30e268ce9eb290b24d7eaba8ce15545e59e9c253e53902ef43edbd109ae6fb8b",
+        "host_probe_accepted": true,
+        "validation": {
+          "pid": 3275362,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "native_identity": {
+          "pid": 3275362,
+          "start_ticks": 416590537,
+          "sid": 3275362,
+          "pgid": 3275362
         },
         "native_exit_code": 0,
         "ownership_closed": true,
