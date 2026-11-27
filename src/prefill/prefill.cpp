@@ -913,7 +913,8 @@ struct Prefill::Impl {
     float* ple_emb_host[2] = {};             // pinned, double-buffered: the next chunk's rows are read while this
     cudaEvent_t ple_copied[2] = {};          // one runs; the event marks that buffer's upload done
     std::vector<uint32_t> ple_rows[2];
-    bool gather_ple_chunk(const int64_t* tokens, int64_t n, int64_t first, int buffer,
+    bool gather_ple_chunk(strata::kernels::PleTable& table, const strata::kernels::PleConsts& consts,
+                          const int64_t* tokens, int64_t n, int64_t first, int buffer,
                           const int32_t (&initial_prev)[2], std::string& err) {
         const int64_t rows = std::min(T, n - first);
         auto previous = [&](int64_t i) {
@@ -921,15 +922,14 @@ struct Prefill::Impl {
         };
         int32_t prev[2] = {previous(first), previous(first + 1)};
         auto* output_rows = ple_rows[buffer].data();
-        const auto& ple = ss->ple;
         for (int64_t row = 0; row < rows; ++row) {
             const int32_t token = static_cast<int32_t>(tokens[first + row]);
-            strata::kernels::ngram_rows(&token, prev, 1, ple.consts,
+            strata::kernels::ngram_rows(&token, prev, 1, consts,
                                         output_rows + row * strata::kernels::PLE_N_HEADS);
             prev[0] = prev[1];
             prev[1] = token;
         }
-        return ple.table->gather_batch(output_rows, static_cast<size_t>(rows), ple_emb_host[buffer], err);
+        return table.gather_batch(output_rows, static_cast<size_t>(rows), ple_emb_host[buffer], err);
     }
     float* ple_norm = nullptr;
     uint8_t* region = nullptr;               // the attention/MoE scratch region (idle while the PLE block runs)
@@ -2485,8 +2485,8 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                            (prefill_ple_weights.key_bf16 != nullptr || prefill_ple_weights.key_native_data != nullptr) &&
                            m.region_bytes / ((uint64_t) (3 * strata::kernels::NG_HC_DIM + N + 4) * 4 + (uint64_t) N * 2 + 4096) >= 64;
     const int32_t prev0[2] = {prev[0], prev[1]};
-    auto ple_gather = [&m, tokens, n, prev0](int64_t c0, int buf, std::string& e) {
-        return m.gather_ple_chunk(tokens, n, c0, buf, prev0, e);
+    auto ple_gather = [&m, &prefill_ple, tokens, n, prev0](int64_t c0, int buf, std::string& e) {
+        return m.gather_ple_chunk(*prefill_ple.table, prefill_ple.consts, tokens, n, c0, buf, prev0, e);
     };
     std::string ple_next_err;
     std::future<bool> ple_next;             // declared after everything it reads: an early return waits for it

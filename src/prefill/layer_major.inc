@@ -1086,14 +1086,22 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         if (window_context && window_context->pending_prefix_upload) {
             err = "prefill prefix expert upload: pending publication at layer boundary"; return false;
         }
+        auto* const ple_table = ss.ple.table;
         if (layer == 0 && early_ple_read && effective_window_mode == 16 &&
-            relocated_job_buffers_on && !activate_native_dense_layer && ss.ple.ready() &&
-            ss.ple.table->mode() == strata::kernels::PleIo::Direct) {
-            // The current request owns both host buffers. Layer 0 has no PLE
-            // reader. Carry its first read to layer 1 before starting read 2.
-            first_ple.result = std::async(std::launch::async, [&m, tokens, n, initial_prev, &first_ple] {
-                return m.gather_ple_chunk(tokens, n, 0, 0, initial_prev, first_ple.error);
-            });
+            relocated_job_buffers_on && ple_table && ple_table->is_open() &&
+            ple_table->mode() == strata::kernels::PleIo::Direct &&
+            (activate_native_dense_layer || ss.ple.ready())) {
+            // The table and row IDs are host inputs owned for this request.
+            // Native dense activation may replace the layer-1 device key.
+            // run_impl still checks that key before consuming these rows.
+            first_ple.result = std::async(std::launch::async,
+                [&m, tokens, n, initial_prev, ple_table, consts = ss.ple.consts, &first_ple] {
+                    return m.gather_ple_chunk(*ple_table, consts, tokens, n, 0, 0, initial_prev, first_ple.error);
+                });
+            if (std::getenv("STRATA_TRACE")) {
+                std::fprintf(stderr, "strata trace: prefill PLE early read issued layer=0\n");
+                std::fflush(stderr);
+            }
         }
         if (std::getenv("STRATA_TRACE")) {
             std::fprintf(stderr, "strata trace: layer-major layer %lld of %lld: loading %lld experts\n",
