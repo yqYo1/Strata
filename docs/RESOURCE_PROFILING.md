@@ -1612,6 +1612,15 @@ completes zero prefix jobs in the reserved arm and 363 with help enabled.
 Both processes exit normally with quiet validation and no fresh Xe fault.
 Advance to the six-process 96K comparison on this exact executable.
 
+The first 96,204-input pair matches the request, output, reasoning,
+drafts, expert work, verifier windows and logical prefill work. Both
+arms generate 3,440 tokens and accept 2,268 of 2,376 drafts. Caller work
+goes from zero to 40,393 prefix jobs. Decode improves from 15.400 to
+15.908 tok/s (+3.30%), prefill from 939.11 to 941.96 tok/s and client
+TTFT from 103.811 to 103.498 s. Both owners close without a fresh Xe
+fault. Repeat with the reversed order and finish the three-pair screen.
+[Original samples](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
+
 The 96K controller reads the compact short-model proof and the coherent
 engine build. The two closed short validations have no remaining raw-output
 consumer. Retired 103 files totaling 23,601,467 bytes under the measurement
