@@ -589,11 +589,7 @@ void replay_locality(ReplayBatch& batch, cpu::ExpertPool& pool, int batch_index,
 }
 
 void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int threads, bool timing,
-                  int locality_batch = -1, bool rotating = false, std::string_view schedule = {},
-                  bool iq3s_compare = false) {
-#ifndef STRATA_CPU_EXPERT_SCHEDULE_TEST
-    (void) iq3s_compare;
-#endif
+                  int locality_batch = -1, bool rotating = false, std::string_view schedule = {}) {
     const bool host_works = threads == 6;
     const int workers = threads - static_cast<int>(host_works);
     cpu::ExpertPool pool(workers, true, host_works);
@@ -680,23 +676,6 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
         }
         validate();
     }
-#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
-    if (iq3s_compare) {
-        uint64_t digest = 14695981039346656037ULL;
-        for (const auto& batch : batches)
-            for (const auto& job : batch.jobs)
-                for (int t = 0; t < job.nt; ++t) {
-                    const auto* bytes = reinterpret_cast<const unsigned char*>(job.out[t]);
-                    for (size_t i = 0; i < cpu::H * sizeof(float); ++i)
-                        digest = (digest ^ bytes[i]) * 1099511628211ULL;
-                }
-        const auto audit = cpu::iq3_gu_audit_snapshot();
-        require(!audit.overflow, "IQ3_S route audit overflow");
-        std::cout << "{\"kind\":\"iq3s_single\",\"output_fnv64\":" << digest
-                  << ",\"single_rows\":" << cpu::iq3s_single_audit_rows()
-                  << ",\"audit\":" << (audit.enabled ? "true" : "false") << "}\n";
-    }
-#endif
 }
 
 int main(int argc,char** argv) try {
@@ -706,10 +685,6 @@ int main(int argc,char** argv) try {
 #ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
     if (argc == 3 && std::string_view(argv[1]) == "replay-publication-check") {
         route_replay(argv[2], topo, 5, false, -1, false, "publication");
-    } else if (argc == 4 && std::string_view(argv[1]) == "replay-iq3s-single") {
-        const std::string_view mode(argv[3]);
-        require(mode == "check" || mode == "measure", "IQ3_S single decode replay phase");
-        route_replay(argv[2], topo, 5, mode == "measure", -1, false, {}, true);
     } else if (argc == 5 && std::string_view(argv[1]) == "replay-schedule") {
         const std::string_view schedule(argv[3]), mode(argv[4]);
         require((schedule == "split" || schedule == "by-expert") &&

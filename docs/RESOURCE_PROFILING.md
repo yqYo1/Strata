@@ -1370,7 +1370,7 @@ component gate. An isolated model comparison must bind the production
 dispatch to the same format and keep prefill and expert placement fixed.
 The replay does not measure PCIe, GPU overlap or model throughput.
 
-The [isolated model build](../bench/dflash2_decode_iq3s_build.py) projects
+The isolated model build projects
 the two CPU selector files from `c0db4198f` onto the measured `968e71988`
 engine. Its inputs match the replay's AVX2 arithmetic source and the
 primary CPU selector preimages. Retain the primary recipe and link the
@@ -1392,7 +1392,7 @@ It exits zero and returns that exact result with empty stderr and closed
 ownership. The compact proof pins it to the serving executable's build
 receipt under `dflash2_decode_iq3s_parity_v1`.
 
-The two [bounded model runs](../bench/dflash2_decode_iq3s_model.py) read
+The two bounded model runs read
 33,287 tokens through the dedicated layer-major prefill and emit the same
 48 IDs with 21 of 30 DFlash2 drafts accepted. The CPU census matches all
 48 expert residency masks and 17,075 jobs, including 2,970 single-token
@@ -1400,7 +1400,7 @@ IQ3_S jobs. Both processes exit normally with quiet validation and no fresh
 Xe faults. The census establishes eligible work. The production executable
 omits the test-only per-row selector counter.
 
-The [96K timing comparison](../bench/dflash2_decode_iq3s_speed.py) changes
+The 96K timing comparison changes
 only this selector on the same executable. It uses three counterbalanced
 independent pairs with the fixed global expert map and the two thinking
 workloads. The six processes complete normally with all final assets checked
@@ -1419,7 +1419,24 @@ work. Treat that pair as workload throughput. The three GGML repeats span
 fails sustained gain, prompt-time preservation and TTFT preservation.
 Keep GGML on the selected model route. The compact result retains the six
 processes and the decision under `dflash2_decode_iq3s_speed_v1`. The CPU
-fixture's gain applies to its captured work.
+fixture's gain applies to its captured work. [Original build and comparison
+controllers](https://github.com/yqYo1/Strata/tree/369ea6cb1/bench).
+
+At `369ea6cb1`, the recovery audit matches 1,327 Git source files and 521
+controller inputs, the recorded compiler/link inputs, 140 objects and 12
+executable identities. The six terminal timing receipts match the committed
+samples. Retired the temporary build and both model-run output trees. All
+three original `record.json` receipts and 23 retained phase-reference
+executables match after removal. Removed this experiment's format selector,
+CPU replay mode and model controllers. The original comparison is recoverable
+from the published commit. The inventory hashes cover sorted state-relative
+file paths, byte counts and SHA-256 digests.
+
+| Root, excluding `record.json` | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-decode-iq3s-build-v1` | 1,529 | 227,143,188 | `9a9f2b06753cd6d1862cefe40e79ffe0b2db345f13c16f726cef58b3f1831fe1` |
+| `dflash2-decode-iq3s-model-v1` | 118 | 25,213,590 | `f1bf5c524a997a3a49b26e23984f866014030556865aa0f55b5ec89b06c743fd` |
+| `dflash2-decode-iq3s-speed-v1` | 436 | 90,760,069 | `b36b85ab4d2f1e05a609c6753a2ce81fc20f41af8044059224a2dc1eabd69623` |
 
 The timed CPU fixture has no live executable consumer. Its source and results
 are reachable from `feature/sycl` at `14180e833`. The recovery check matches
@@ -1991,8 +2008,8 @@ original `record.json` receipts and all 23 retained phase-reference
 executable identities. The inventory hashes include sorted state-relative
 paths, byte counts and file hashes. Removed the failed opt-in, its native
 fixture additions and the closed model runners. Recover them from
-`a57499a15`. The shared build-input reader serves the smaller-KV and IQ3_S
-trials.
+`a57499a15`. The shared build-input reader remains in use by the smaller-KV
+trial.
 
 | Scope under tuning state | Files | Bytes | Inventory SHA-256 |
 | --- | ---: | ---: | --- |
