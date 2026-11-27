@@ -11844,6 +11844,18 @@ Its STOP result establishes server recovery. The outstanding-gather lifetime and
 requires a new native proof. The failed direct trace hashes to
 `7ca9c9c94e2be75e032ee40c4382b3187789ccb2c3226d26ba1513fa85dfc2bd`.
 
+The closed V1 results are at `6db247db7`. The recovery audit matches the
+1,328 source files, 529 build controls, compiler and link inputs,
+139 objects, 11 executables and both terminal process receipts. Its engine
+and captured output have no remaining measurement consumer. Retire the
+following V1 descendants, keeping each original `record.json` and both
+phase references. Hashes cover sorted relative paths, sizes and file hashes.
+
+| State root | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-prefill-ple-early-native-v1` | 1,524 | 223,824,818 | `4b9c9b37b049c52c2eb491d9674eff0e635d6e02c7a9729f286577bc5c3deba1` |
+| `dflash2-prefill-ple-early-check-v1` | 105 | 24,197,682 | `d003d68135a51778c6942f3415b7f5fcab3236ced3c33bb01edc64ca95e9dd4f` |
+
 The closed comparison at `bdfd43ec9` preserves the 12 requests and
 passes the PLE reader's admission. After verifying all four terminal
 receipts against the pushed record, retired `host` and `0`–`3` under
