@@ -2287,6 +2287,17 @@ failed. The [model check](../bench/dflash2_decode_phase_placement_model_check.py
 pins the same host and Arc fixture evidence and adds the loader observer to
 both diagnostic model arms. Ordinary timing keeps the observer disabled.
 
+Both corrected model launches complete with 37 initialized providers and
+no fresh Xe faults. The candidate installs the blend after 33 native
+outputs. For the 640-output request, installation and restore take
+337.241 and 336.999 ms. The STOP request ends after 37 outputs and takes
+337.969 and 336.583 ms for the two transitions. Each direction copies
+2,010,419,200 requested bytes across 979 slots and passes the device
+map and boundary payload readbacks. The 32-output requests after a normal
+finish and a cancellation reproduce the stock output and active state.
+The diagnostic result qualifies the bounded path. Its prompt lengths,
+readbacks and different draft counts require separate throughput evidence.
+
 The [96K timing controller](../bench/dflash2_decode_phase_placement_speed.py)
 uses the two original thinking workloads in three counterbalanced pairs.
 It binds the switch and restore to the client request's first nonempty
