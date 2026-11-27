@@ -165,6 +165,7 @@ public:
     void run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n,
                                 NativeGuPhase phase = NativeGuPhase::Decode);
 #ifdef STRATA_DECODE_EXPERT_SCHEDULE
+    static bool supports_decode_native_by_expert(const NativeFmt& format) noexcept;
     struct DecodePublication {
         int prefix_jobs;
         void (*ready)(void*) noexcept;

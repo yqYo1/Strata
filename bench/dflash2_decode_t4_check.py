@@ -9,7 +9,7 @@ sys.dont_write_bytecode = True
 import dflash2_decode_t4_build as build
 
 bank, require, validation = build.bank, build.require, build.validation
-KEY = 'dflash2_decode_t4_shared_plan_v1'
+KEY = 'dflash2_decode_t4_shared_plan_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 SUMMARY = 'decode MoE combine numerical=PASS guards=PASS nodes=3/1/1 completed=1'

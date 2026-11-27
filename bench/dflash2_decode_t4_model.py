@@ -11,13 +11,12 @@ import dflash2_decode_t4_check as arc
 import dflash2_primary_tap_payload as tap
 
 build, bank, require, validation = arc.build, arc.bank, arc.require, arc.validation
-KEY = 'dflash2_decode_t4_model_v1'
+KEY = 'dflash2_decode_t4_model_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 ORDER = ('stock', 'after-cpu', 'early')
-T4 = re.compile(r'^DECODE_T4 mode=(\S+) position=(\d+) layers=(\d+) pool_ready=(\d+) early=(\d+)$', re.M)
-Q6_CONTROL = False
-V2_OBSERVATION = 'e36f293d5'
+T4 = re.compile(r'^DECODE_T4 mode=(\S+) position=(\d+) layers=(\d+) split=(\d+) pool_ready=(\d+) early=(\d+)$',
+                re.M)
 
 
 def inputs(revision):
@@ -36,40 +35,26 @@ def inputs(revision):
     require(args[args.index('--pcie-frac') + 1] == '0' and args[args.index('--spec') + 1] == '4'
             and '--spec-split' not in args and '--no-host-worker' not in args,
             'require the measured single-card DFlash2 dispatch flags')
+    previous = bank.previous.historic(build.Q6_EVIDENCE, build.Q6_KEY)
+    ready = {row[3] for row in previous['outcomes']['after-cpu']['publications']}
+    require(build.retained.closed(previous, 'closed') and ready == {23}
+            and old['cases']['smoke']['wire'] == previous['plan']['cases']['stock']['wire'],
+            'require the original short request and observed publication scope')
     env, cases = {}, {}
     for name in ORDER:
         env[name] = {k: v.replace(str(tap.ROOT / 'smoke'), str(ROOT / name))
                      for k, v in envs['smoke'].items()}
         env[name].update(STRATA_SYCL_DECODE_T4_SCHEDULE=name, STRATA_SYCL_DECODE_T4_AUDIT='1')
-        if Q6_CONTROL:
-            require(env[name]['STRATA_SYCL_DECODE_Q6_DPAS_DENSE'] == '1', 'require the original dense DPAS setting')
-            env[name]['STRATA_SYCL_DECODE_Q6_DPAS_DENSE'] = '0'
+        env[name]['STRATA_SYCL_DECODE_Q6_DPAS_DENSE'] = '0'
         cases[name] = dict(old['cases']['smoke'], environment_sha256=bank.signature(env[name]))
     plan = {k: old[k] for k in ('boot', 'driver', 'runtime_manifest', 'native_validation_probe',
                                 'dflash2_assets', 'model_assets_sha256')}
     plan.update(source_commit=revision, inputs_sha256=bank.signature(pins), arc_evidence_sha256=bank.signature(device),
                 native_source_commit=native['native_source_commit'], native_build_sha256=signature,
                 binary=binary, command=[binary['path'], *args], cases=cases, order=list(ORDER),
-                scope='Bounded actual DFlash2 decode with no per-request option overrides. Use the original '
-                      '82-input/32-output request. Verify actual T4 dispatch, active target state, '
-                      'tap payloads and output before collecting integrated performance.')
-    if Q6_CONTROL:
-        original = bank.previous.historic(V2_OBSERVATION, 'dflash2_decode_t4_model_v1')
-        require(original['stage'] == 'closed' and original['ownership_closed']
-                and all(original['outcomes'][k]['passed'] for k in ORDER)
-                and original['plan']['binary'] == binary
-                and all(old['cases']['smoke']['wire'] == original['plan']['cases'][k]['wire'] for k in ORDER),
-                'reproduce the two original arm inputs')
-        legacy = bank.B / 'dflash2-decode-t4-model-v1'
-        for name in ORDER:
-            same_case = {k: v.replace(str(ROOT / name), str(legacy / name)) for k, v in env[name].items()}
-            same_case['STRATA_SYCL_DECODE_Q6_DPAS_DENSE'] = '1'
-            require(bank.signature(same_case) == original['plan']['cases'][name]['environment_sha256'],
-                    'the Q6 intervention must change only dense DPAS')
-        plan.update(dense_dpas='0', reference=V2_OBSERVATION,
-                    scope='Compare the stock and deferred schedules with dense DPAS disabled in both. '
-                          'Keep the same executable, request, runtime and other kernel selections. '
-                          'Compare the short-request state digests with each other and their original DPAS-on arms.')
+                split_layers=next(iter(ready)), dense_dpas='0', numerical_reference=build.Q6_EVIDENCE,
+                scope='Replay the original 82-input/32-output DFlash2 request. Use matched dense DPAS off '
+                      'to check mixed stock and split dispatch, active state, prompt taps and output.')
     return plan, base, env, requests[0]
 
 
@@ -114,19 +99,19 @@ def run(row, model_base, name, env, request):
         observed.update(tap.inspect(log, entry['pid'], dict(plan, cases={'smoke': plan['cases'][name]}),
                                     'smoke', observed['requests']))
         widths = [tuple(map(int, m)) for m in re.findall(r'^strata trace: window (\d+) (\d+)$', log, re.M)]
-        t4 = [(mode, int(pos), int(layers), int(ready), int(early))
-              for mode, pos, layers, ready, early in T4.findall(log)]
+        t4 = [(mode, int(pos), int(layers), int(split), int(ready), int(early))
+              for mode, pos, layers, split, ready, early in T4.findall(log)]
         positions = [pos for pos, width in widths if width == 4]
+        expected = plan['split_layers']
         require(positions and (not t4 if name == 'stock' else
-                [p for _, p, _, _, _ in t4] == positions
-                and all(mode == name and layers == 48 and 0 <= early <= ready <= layers
-                        for mode, _, layers, ready, early in t4)
-                and sum(ready for _, _, _, ready, _ in t4) > 0
-                and (sum(early for _, _, _, _, early in t4) > 0) == (name == 'early')),
+                [p for _, p, *_ in t4] == positions
+                and all(mode == name and layers == 48 and split == ready == expected
+                        and early == (expected if name == 'early' else 0)
+                        for mode, _, layers, split, ready, early in t4)),
                 'the actual width-four schedule was not exercised')
         require(all(bank.sha(p) == h for p, h in plan['dflash2_assets'].items()), 'draft assets changed')
         tap.basis.comparison.shared.models.model_pins(model_base['configuration'], model_base['model_assets'],
-                                                     full=not Q6_CONTROL or name == ORDER[-1])
+                                                     full=name == ORDER[-1])
         observed.update(host_probe_accepted=True, widths=[list(item) for item in widths],
                         publications=[list(item) for item in t4])
     except BaseException as error:
@@ -143,33 +128,13 @@ def run(row, model_base, name, env, request):
             row['comparison'] = {f'{a}/{b}': {k: row['outcomes'][a][k] == row['outcomes'][b][k] for k in checks}
                                  for a, b in pairs}
             row['passed'] = all(all(checks.values()) for checks in row['comparison'].values())
-            if Q6_CONTROL:
-                on = bank.previous.historic(V2_OBSERVATION, 'dflash2_decode_t4_model_v1')['outcomes']
-                row['changed_state_keys'] = {
-                    'stock/split with DPAS off': state_differences(row['outcomes']['stock'], observed),
-                    'stock on/off': state_differences(on['stock'], row['outcomes']['stock']),
-                    'split on/off': state_differences(on['after-cpu'], observed),
-                }
             row.update(stage='closed', complete=True)
         save(row)
     print(name, observed['passed'], observed.get('error'), row.get('comparison', {}), flush=True)
     require(observed['passed'], observed.get('error', 'model owner or device gate failed'))
 
 
-def state_differences(a, b):
-    left, = a['states']
-    right, = b['states']
-    require(left.keys() == right.keys(), 'model state schemas differ')
-    return [key for key in left if left[key] != right[key]]
-
-
 if __name__ == '__main__':
-    if sys.argv[1:2] == ['--q6-control']:
-        sys.argv.pop(1)
-        Q6_CONTROL = True
-        KEY = 'dflash2_decode_t4_q6_control_v1'
-        ROOT = bank.B / KEY.replace('_', '-')
-        ORDER = ('stock', 'after-cpu')
     action, = sys.argv[1:]
     require(sys.executable == tap.basis.reference.model.PYTHON and action in ('prepare', *ORDER),
             'one pinned T4 model check stage')

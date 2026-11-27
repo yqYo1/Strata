@@ -2500,14 +2500,23 @@ zero early submissions; the early arm records 161 in total.
 
 The early and deferred arms match the full checked target-state digest
 set. Against stock, the split geometry changes the GDN, QSA tail, pooled
-index and KV digests. The stock numerical gate remains open, and this
-short observed cohort supplies no throughput result. Compare the split
-path against a stock run with the width-four-only dense DPAS route
-disabled to bound the arithmetic difference. Also keep the original
-full-width graph on the 25 layers without a supported CPU publication
-path when testing the next schedule. The model manifest has 14
+index and KV digests. The matched control at `697559569` disables the
+width-four dense DPAS route in both stock and deferred arms on that same
+executable. All 32 output IDs, draft counts, tap digests, widths and
+checked target-state digests match with DPAS off. Toggling DPAS changes
+GDN, PLE, QSA tail, pooled index and KV digests within both arms.
+Both processes exit normally with no fresh Xe fault. This resolves the
+checked short-sample difference under matched arithmetic. Production
+DPAS-on inference and sustained throughput still need separate checks.
+
+The next capture selects the split from the CPU pool's supported-format
+predicate. The model manifest has 14
 IQ3_XXS/IQ4_NL and nine IQ3_S/IQ4_NL layers eligible for the current pool
-contract. The other layers receive no overlap benefit from this split.
+contract. The other 25 steps retain the original four-column post and
+next-layer pre-mixer. Check actual publication counts and numerical parity
+with DPAS off in all three arms. Then use the production DPAS settings in a
+new repeated model comparison to charge the copy and scheduling costs and
+the changes in math and weight reuse. Preserve prefill separately.
 [Original model result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The first build at `8bd19a9b9` compiles and links all three named targets.
@@ -2527,6 +2536,16 @@ consumer. Its build, source and logs account for 1,510 files and
 147,318,485 bytes, excluding `record.json`, with inventory SHA-256
 `b31f90d3e58815ac2646479212d28f788ab448d700c883ed147bdbec9eb6763f`.
 Keep V2 and the measured DFlash2 fallback through the bounded comparison.
+The V2 comparison and matched DPAS diagnostic are now closed. Its rebuild
+audit matches 1,334 original project files, 141 objects, 13 executables,
+1,481 compiled inputs and 30 external link inputs against the source and
+recipe at `032690088`. The V3 candidate uses the same component proof and
+build target set. V2 has no further execution consumer. Its 1,534
+superseded files total 236,458,958 bytes with inventory SHA-256
+`2ccf8cb8df3968f50857c40eac247978b1434b6799d1c0df95e1b673d6849e0f`,
+excluding the retained `record.json`. Retire them after the V2 evidence is
+reachable from the pushed primary. The measured DFlash2 fallback remains
+the speed reference.
 
 For a copy-once control, the full CPU result slab at `T=4`, `K=10` and
 `N=2560` is 409,600 bytes per layer, or 19,660,800 across 48 layers. The

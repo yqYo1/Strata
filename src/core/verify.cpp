@@ -1593,7 +1593,11 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
                 err = "verify: begin layer segment capture failed";
                 return false;
             }
-            if (decode_t4) {
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
+            const auto& formats = strata::kernels::cpu::expert_layout().fmt;
+            const bool split_layer = decode_t4 && static_cast<size_t>(l) < formats.size() &&
+                strata::kernels::cpu::ExpertPool::supports_decode_native_by_expert(formats[size_t(l)]);
+            if (split_layer) {
                 auto pair = [&](int half) {
                     const int tb = half * 2;
                     try {
@@ -1616,6 +1620,10 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
                 if (l + 1 < le_) publish_rows(0, T);
                 continue;
             }
+            // The sparse graph family is indexed by dispatch step. Stock
+            // steps keep their full-width post and next-layer pre-mixer.
+            if (decode_t4) graph_window.first_pair.push_back(nullptr);
+#endif
 #endif
             if (!post(l, grp)) return false;
             if (l + 1 < le_ && !pre(l + 1, grp, tb_[grp], te_[grp], true)) return false;
@@ -2106,7 +2114,8 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
                 pair.submit_first();
         }
     };
-    int t4_pool_ready_layers = 0, t4_early_layers = 0;
+    const auto* t4_pairs = decode_t4 ? &window_graphs_.at(input, T).first_pair : nullptr;
+    int t4_split_layers = 0, t4_pool_ready_layers = 0, t4_early_layers = 0;
 #endif
     const bool test_stall = g_test_stall > 0 && windows + 1 == g_test_stall;   // #267 test hook (off: false)
     for (int64_t k = 0; k < steps; ++k) {
@@ -2175,7 +2184,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         const GpuPlanSink::DecodeT4Publication publication{
             DecodeT4Pair::ready, &pair, decode_t4_schedule_ == DecodeT4Schedule::after_cpu,
             &pair.dispatch_completed};
-        if (decode_t4) pair.first = window_graphs_.at(input, T).first_pair[size_t(k)];
+        if (t4_pairs) pair.first = (*t4_pairs)[size_t(k)];
 #endif
         progress_at("verify window: the CPU experts of layer", l);
         if (pool != nullptr) {
@@ -2186,10 +2195,10 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
             {
 #ifdef STRATA_DECODE_EXPERT_SCHEDULE
                 struct ClearPublication {
-                    GpuPlanSink& sink;
-                    ~ClearPublication() { sink.decode_t4_publication = nullptr; }
-                } clear{sink_};
-                if (decode_t4) sink_.decode_t4_publication = &publication;
+                    GpuPlanSink* sink;
+                    ~ClearPublication() { if (sink) sink->decode_t4_publication = nullptr; }
+                } clear{pair.first ? &sink_ : nullptr};
+                if (pair.first) sink_.decode_t4_publication = &publication;
 #endif
                 pool(user, h_x_ + (size_t) tb * g.n_embd, h_ids_ + (size_t) tb * ss.k, n, ss.k,
                      h_ymiss_ + (size_t) tb * ss.k * g.n_embd, l);
@@ -2260,7 +2269,8 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
             return false;
         }
 #ifdef STRATA_DECODE_EXPERT_SCHEDULE
-        if (decode_t4) {
+        if (pair.first) {
+            ++t4_split_layers;
             t4_pool_ready_layers += pair.pool_ready;
             t4_early_layers += pair.submitted;
             if (sink_.counts[2] != 0 || !pair.dispatch_completed)
@@ -2314,9 +2324,9 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     if (sample_segments) segment_request->emit(pos0, g.qsa_interval);
 #ifdef STRATA_DECODE_EXPERT_SCHEDULE
     if (decode_t4 && decode_t4_audit_)
-        std::fprintf(stderr, "DECODE_T4 mode=%s position=%lld layers=%lld pool_ready=%d early=%d\n",
+        std::fprintf(stderr, "DECODE_T4 mode=%s position=%lld layers=%lld split=%d pool_ready=%d early=%d\n",
                      decode_t4_schedule_ == DecodeT4Schedule::early ? "early" : "after-cpu",
-                     (long long) pos0, (long long) steps, t4_pool_ready_layers, t4_early_layers);
+                     (long long) pos0, (long long) steps, t4_split_layers, t4_pool_ready_layers, t4_early_layers);
 #endif
 #endif
     window_scope.drained(); // Both stage streams completed; sampling below has no mapped spin waits.

@@ -768,10 +768,13 @@ void ExpertPool::finish_decode_native_expert(int id, unsigned expert) {
     }
 }
 
+bool ExpertPool::supports_decode_native_by_expert(const NativeFmt& f) noexcept {
+    return f.n_embd == H && f.n_ff == FF && (f.gu_type == 18 || f.gu_type == 21) && f.d_type == 20;
+}
+
 bool ExpertPool::run_decode_native_by_expert(const NativeFmt& f, ExpertJobMulti* jobs, int n,
                                              const DecodePublication* publication) {
-    if (!jobs || n <= 0 || n > kMaxSplitMulti || f.n_embd != H || f.n_ff != FF ||
-        (f.gu_type != 18 && f.gu_type != 21) || f.d_type != 20)
+    if (!jobs || n <= 0 || n > kMaxSplitMulti || !supports_decode_native_by_expert(f))
         return false;
     for (int e = 0; e < n; ++e)
         if (jobs[e].nt < 1 || jobs[e].nt > MAXT) return false;

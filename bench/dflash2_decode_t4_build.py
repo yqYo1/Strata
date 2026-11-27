@@ -13,7 +13,7 @@ import dflash2_primary_retained as retained
 primary = retained.PRIMARY
 bank, builder, require = primary.bank, primary.builder, primary.require
 source, validation = bank.stage.source, bank.basis.validation
-KEY = 'dflash2_decode_t4_native_v2'
+KEY = 'dflash2_decode_t4_native_v3'
 ROOT = bank.B / KEY.replace('_', '-')
 TREE = ROOT / 'source'
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
@@ -22,6 +22,7 @@ REQUIRED = ('src/program/generate.cpp', 'src/core/verify.cpp', 'src/core/expert_
             'src/kernels/cpu/pool.cpp', 'src/kernels/sycl/shared_expert.cpp', fixture.FIXTURE)
 CPU_EVIDENCE = '7d38b06800cf6eb344e5a9215ec2bf3efd03eb8f'
 ARC_EVIDENCE = 'd7c710d12'
+Q6_EVIDENCE, Q6_KEY = '697559569', 'dflash2_decode_t4_q6_control_v1'
 
 
 def inputs(revision):
@@ -102,10 +103,10 @@ def save(row):
 def prepare():
     require(not ROOT.exists() and KEY not in validation.committed(bank.RESULT),
             'one fresh T4 build generation')
-    previous = bank.previous.historic('8bd19a9b9', 'dflash2_decode_t4_native_v1')
-    require(previous['stage'] == 'failed' and previous['ownership_closed'] and not previous['active']
-            and previous['error'] == "RuntimeError('complete fresh engine and the declared set of Gemm includers required')",
-            'close the original dependency census failure first')
+    previous = bank.previous.historic(Q6_EVIDENCE, Q6_KEY)
+    require(retained.closed(previous, 'closed') and not previous['changed_state_keys']['stock/split with DPAS off']
+            and all(previous['changed_state_keys'][k] for k in ('stock on/off', 'split on/off')),
+            'close the original dense DPAS comparison first')
     revision = source.git(bank.P, 'rev-parse', 'HEAD').decode().strip()
     fields, payload, _ = inputs(revision)
     ROOT.mkdir(mode=0o700)
@@ -118,6 +119,8 @@ def prepare():
     row = dict(fields, stage='prepared', commands=[], active=False, passed=False,
                complete=False, ownership_closed=True,
                plan=dict(schedules=['stock', 'after-cpu', 'early'],
+                         selection='Split only layers supported by the decode CPU pool format policy.',
+                         numerical_reference=Q6_EVIDENCE,
                          first_device='Shared-plan half-combine check with validation before any model run.',
                          model='Commit a bounded same-binary parity plan before model execution.',
                          retention='Keep the existing speed reference and this candidate through parity.'))
