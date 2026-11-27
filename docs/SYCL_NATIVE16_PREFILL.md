@@ -11693,9 +11693,16 @@ materialized sources. The diagnostic build's sole consumer is the matched
 comparison's closure. The first configuration at `05a25c986` exited normally
 without compiling. Its pinned controller tree differs from the current
 checkout in nine files under `bench/sycl` and `tools/sycl`. Preserve that
-configuration receipt in Git and prepare a fresh V2 build under the current
-controller revision. The engine projection, workload and observer-cost gate
-stay fixed. The new executable and model runs remain pending.
+configuration receipt in Git. V2 preparation recovers the same 1,328
+engine files and compiler recipe under the current controller revision.
+The workload and observer-cost gate stay fixed.
+
+Verified all 524 original V1 build controls from Git, the two materialized
+source trees and the original configured inputs. Retired every descendant
+of `dflash2-cold-layer-native-v1` except its unchanged `record.json`.
+The 1,359 files total 20,148,569 bytes and hash to
+`9ffbd208057967470546cec4f50f6719b8160943fb48c543863877000598620b`
+over sorted state-relative paths, byte counts and SHA-256 values.
 
 The closed observer generation and outputs were retired after verifying all
 1,328 original source files against Git, the configure and build recipe, 139
