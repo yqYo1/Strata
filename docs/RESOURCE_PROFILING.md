@@ -2368,6 +2368,22 @@ cost and future routes already known. Use it to judge how much space remains
 above realistic replacement policies, with their actual transfer and restore
 cost charged in a separate comparison.
 
+The same 33,287-input prose trace bounds work spent on drafts that do not
+advance the verifier. Run [the committed reader](../bench/dflash2_decode_residency_oracle.py)
+at `e7b95fa1d` with `--accepted-prefix` and the pinned interpreter. It matches
+the original 4,668,262 CPU jobs and keeps the final window intact. Keeping
+each observed advancing prefix reduces 13,387 verified rows to 11,783
+across 6,485 windows. It removes 387,421 distinct CPU jobs (8.30%),
+730,279 CPU expert rows (12.21%) and 787,649,177,600 logical packed weight
+bytes (8.27%). At 70 output tok/s the remaining logical visits are 51.93 GB/s,
+above the separately measured 42.27 GB/s continuous RAM read if each job
+fetches its whole blob once. Actual DRAM traffic and attainable speed remain
+unmeasured. The replay uses hindsight and fixed routes. Test residence and
+verifier service reductions first. Revisit cost-aware depth with a predictor
+whose inputs are available before verification and assess its cost at equal
+or better useful yield. EcoSpec discusses expert union in tree verification.
+[EcoSpec paper](https://arxiv.org/abs/2607.12696).
+
 Retired `dflash2-blend-independent-capture-v3` under the tuning state
 directory after verifying its absence. The exact scoring source and compact closed
 results remain in Git at `53f824443` and `a7c068890`. Both captured traces match
