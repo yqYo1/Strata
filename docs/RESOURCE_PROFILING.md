@@ -1841,8 +1841,16 @@ extent. The two long segments match in prefill attention and KV-stage work.
 The ranked arm verifies both 2,321,664,000-byte payloads and the published
 ranked map. The intervening short request uses the installed map without
 refill. All three one-token outputs agree. Both owners close normally with
-empty validation logs and no fresh Xe faults. Cancellation and the physical
-full fill remain open.
+empty validation logs and no fresh Xe faults.
+
+The cancellation case sends STOP after the first QSA KV-stage marker
+with stock and then ranked placement installed. Both requests return zero
+output and restore the original map and payload. Each is followed by a fresh
+33-token request that completes on the preserved map. The intervening
+successful 32,769-token read is the only request to publish the ranked
+tail. The owner closes normally with quiet validation, no fresh Xe fault
+and all 15 model asset hashes checked. This closes live RESTORE and
+cancellation qualification. The standalone physical full fill is separate.
 
 Retired the closed device fixture traces after the first live pair and
 verified both original `record.json` files are unchanged. The failed V1

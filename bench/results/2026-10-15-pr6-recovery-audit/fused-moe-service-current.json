@@ -715604,7 +715604,7 @@
     },
     "stock_restore_sha256": "87d4418e41b4de16e47680422cfcfd62f63a6ebec2e47aeb18925defe0e2713f",
     "fixtures_sha256": "3d2c1234252733bf356781a4ac504a598496fbb2786827e595bcb03309cba195",
-    "stage": "running",
+    "stage": "closed",
     "outcomes": {
       "host": {
         "complete": true,
@@ -716372,6 +716372,113 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "cancel-ranked": {
+        "complete": true,
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "GPU_executed": true,
+        "requests": [
+          {
+            "prompt": 32769,
+            "reused": 0,
+            "read": 0,
+            "cancelled": true,
+            "finish": "cancel",
+            "output_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "publications": [],
+            "stop_after": "strata prefill KV stage: layer=3 reloaded_pages=0 reused_pages=12288"
+          },
+          {
+            "prompt": 33,
+            "reused": 0,
+            "read": 33,
+            "cancelled": false,
+            "finish": "length",
+            "output_hash": "614fcb0d009bbde79e77f822d20745611e7bdc8e9226a0c5591fbe0c292f9b51",
+            "publications": [
+              32
+            ],
+            "stop_after": null
+          },
+          {
+            "prompt": 32769,
+            "reused": 0,
+            "read": 32769,
+            "cancelled": false,
+            "finish": "stop",
+            "output_hash": "f66a8a966619a7aae703ba69f26c7d0b93f5a86b91d51608f9e8b51bb4acc4c5",
+            "publications": [
+              8192,
+              16384,
+              24576,
+              32768
+            ],
+            "stop_after": null
+          },
+          {
+            "prompt": 32769,
+            "reused": 0,
+            "read": 0,
+            "cancelled": true,
+            "finish": "cancel",
+            "output_hash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "publications": [],
+            "stop_after": "strata prefill KV stage: layer=3 reloaded_pages=0 reused_pages=12288"
+          },
+          {
+            "prompt": 33,
+            "reused": 0,
+            "read": 33,
+            "cancelled": false,
+            "finish": "length",
+            "output_hash": "0dcf125c707020d9131f80175a35a893a59b85c34652446364022ba593b5b93f",
+            "publications": [
+              32
+            ],
+            "stop_after": null
+          }
+        ],
+        "validation": {
+          "pid": 348923,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "expert_placement": {
+          "phases": [
+            "request=1 phase=prefill-batched from=0 to=32768 first_masked=132 entries=24576 map=9377e60e8ad8ea63",
+            "request=1 phase=cancel-refill from=0 to=0 first_masked=1256 entries=24576 map=9e0b070ebe90ab9b",
+            "request=2 phase=prefill-cache from=0 to=32 first_masked=1256 entries=24576 map=9e0b070ebe90ab9b",
+            "request=2 phase=decode-handoff from=0 to=32 first_masked=1256 entries=24576 map=9e0b070ebe90ab9b",
+            "request=3 phase=prefill-batched from=0 to=32768 first_masked=132 entries=24576 map=9377e60e8ad8ea63",
+            "request=3 phase=decode-handoff from=0 to=32768 first_masked=1256 entries=24576 map=68eea56314d4990b",
+            "request=4 phase=prefill-batched from=0 to=32768 first_masked=132 entries=24576 map=9377e60e8ad8ea63",
+            "request=4 phase=cancel-refill from=0 to=0 first_masked=1256 entries=24576 map=68eea56314d4990b",
+            "request=5 phase=prefill-cache from=0 to=32 first_masked=1256 entries=24576 map=68eea56314d4990b",
+            "request=5 phase=decode-handoff from=0 to=32 first_masked=1256 entries=24576 map=68eea56314d4990b"
+          ],
+          "ranked_tail_refills": 1,
+          "verified_payloads": 3
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     },
     "plans": [
@@ -716861,8 +716968,8 @@
         "masked_digest": "9377e60e8ad8ea63"
       }
     ],
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
     "active": false,
     "speed_eligible": false,
