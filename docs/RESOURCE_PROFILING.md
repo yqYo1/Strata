@@ -2283,8 +2283,12 @@ allocations. In the staggered check, complete the first graph while the second
 half still contains poison and verify that the second output stays untouched.
 In the queued check, submit the first graph, write the separate second
 allocation, and submit the second graph on the same in-order stream. Its
-completion retires both publications before reuse. Compare all results
-bitwise with the FP32 oracle and verify guards at each readback.
+completion retires both publications before reuse. The Arc check at
+`d7c710d12` passes the stock, staggered and queued cases for all nine
+resident-row counts and both input seeds. Outputs match the FP32 oracle
+bitwise, including the output guards and untouched half in the staggered
+case. The expected Level Zero providers load, parameter validation is
+quiet and the process closes without a fresh Xe fault.
 The [component controller](../bench/dflash2_decode_result_copy.py) uses
 `--publication prepare`, `--publication build` and `--publication validate`,
 committing each transition. This qualifies the buffer and queue contract with
@@ -2304,16 +2308,15 @@ an empty prefix, a full prefix and a repeated captured prefix in both
 early and after-all modes. The callback compares only completed CPU outputs
 with the serial-checked reference. The pool retires all claims before buffer
 reuse, including when the early group has zero dependencies. This is a
-CPU-only readiness check for the isolated build. The Arc fixture separately
-exercises host-to-device visibility and ordered completion.
+CPU-only readiness check for the isolated build. The Arc fixture checks
+host-to-device visibility and ordered completion with seeded host inputs.
 [C++ atomic ordering](https://eel.is/c++draft/atomics.order).
 
 The CPU check at `62d23a297` passes all 32 bitwise cases across the four
 captured slices with 137 expert jobs and 308,249,600 logical packed bytes.
 The pinned five workers execute the CPU jobs while the reserved caller
-observes readiness. The process exits normally. This establishes the
-readiness contract for these inputs; Arc visibility and overlap remain
-pending.
+observes readiness. The process exits normally. Coupling the actual CPU
+workers and next-layer GPU graph remains pending.
 [CPU check record](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-expert-publication-current.json).
 
 The selected verifier at `968e71988` can split a decode window into two
@@ -2335,11 +2338,14 @@ the observed 82.26 ms of whole-window GPU completion averages 1.71 ms per
 layer over 48 layers. Keep stock segment and two-half-after-all controls
 to charge extra dispatch, event and synchronization costs. The measured
 production control uses five expert workers with caller participation.
-The readiness fixture reserves the caller, so first compare the stock
-schedule with and without caller participation. Use the reserved-caller
-stock schedule in the fixed-work overlap comparison to identify the cost
-of moving the caller out of CPU expert work. Keep the existing
-shared/resident overlap enabled in all arms.
+The eight-batch stock replay at `cd60b5041` measures that same worker
+topology both ways. Caller participation gives 17.598, 17.592 and 17.685
+ms per pass. Reserving the caller gives 19.750, 19.405 and 20.051 ms,
+a paired penalty of 10.31–13.38%. Both arms retain 201 CPU jobs,
+226 routed rows and 452,275,200 logical packed bytes per pass. Keep this
+comparison in the integrated trial to price the opportunity cost of
+submitting the first graph early. Keep the existing shared/resident
+overlap enabled in all arms.
 [Verifier](../src/core/verify.cpp).
 
 For a copy-once control, the full CPU result slab at `T=4`, `K=10` and
