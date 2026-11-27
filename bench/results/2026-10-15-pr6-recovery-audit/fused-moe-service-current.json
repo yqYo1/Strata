@@ -753955,7 +753955,7 @@
         "file_cap": 12582912
       }
     },
-    "stage": "running",
+    "stage": "failed",
     "outcomes": {
       "host": {
         "arm": "host",
@@ -753973,6 +753973,24 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "arc": {
+        "arm": "arc",
+        "host_probe_accepted": false,
+        "native_exit_code": 1,
+        "error": "RuntimeError('unexpected process exit')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
       }
     },
     "complete": false,
