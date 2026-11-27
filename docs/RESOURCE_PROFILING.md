@@ -2253,14 +2253,27 @@ grouped. Use these slices with the existing mapped-combine parity fixture
 to validate the barrier control. Their data establish routing dependencies.
 Actual GPU completion and the benefit of early publication need measurement.
 
-Extend the existing resident-row replay to count these dependencies over all
-47,280 width-four layer calls in the same held-out request. Check whether
-first-pair dependencies are a prefix of the stock first-seen CPU job order.
-Record first-only, shared and second-only jobs, routed rows and logical packed
-bytes, and how often the first pair requires at most half the original jobs
-while the second still has unshared CPU work. Use the distribution to decide
-whether ordered-prefix completion is enough for early publication. The
-counts describe dependencies and do not establish hardware time or overlap.
+The pinned replay at `a213dd223` checks all 47,280 width-four layer calls
+from the 33,287-input prose capture at `b28a9372b`. It reconciles all
+4,668,262 CPU jobs and 5,982,938 CPU routed rows across verifier widths.
+The first-pair dependencies form the first-seen CPU job prefix in every
+width-four layer call.
+
+| Width-four dependency | CPU jobs | Routed CPU rows | Logical packed bytes |
+| --- | ---: | ---: | ---: |
+| First pair only | 480,669 | 538,531 | 978,405,990,400 |
+| Both pairs | 250,854 | 684,476 | 515,667,072,000 |
+| Second pair only | 477,450 | 537,283 | 970,470,630,400 |
+
+The first publication depends on 60.5% of jobs in aggregate. Second-only
+work exists in 47,241 calls. The first pair needs at most half the CPU jobs
+in 5,030 calls, and every call has at least one first-pair CPU dependency.
+Use these counts to keep shared work single-copy and to select typical
+and short-prefix cases for the integrated handoff comparison. Measure the
+time from first-pair readiness through GPU completion alongside the whole
+layer. Logical packed bytes and job counts describe the captured dependency
+graph. The achievable overlap and its cost remain open.
+[Publication census](../bench/dflash2_decode_combine_hits.py).
 
 The [combine fixture](../tests/sycl/decode_moe_combine.cpp) exposes a
 correctness-only `validate --check-publication` mode. A stock four-token
