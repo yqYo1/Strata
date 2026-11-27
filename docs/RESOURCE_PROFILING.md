@@ -2191,13 +2191,13 @@ both placement costs included.
 Start with a component check for changed-slot sizes, reader retirement,
 CPU and GPU map publication, cancellation and partial-copy failure.
 Recover the original profile and the stock control from `a57499a15`.
-Check RAM residency for both experts at every changed slot. The current
-resident source can keep only part of the loan tail in RAM when the
-budget is tight. Require the actual resident sources and stable lifetimes
-before evaluating the two-copy estimate. Preserve the stock route when
-that admission fails. Keep ordinary adaptive swaps off in both arms.
-[Resident tail selection](../src/core/expert_source.cpp#L1343) ·
-[Resident source check](../src/core/expert_source.cpp#L1610).
+The original ranked-refill control uses the full RAM arena. Use its
+immutable layer views for both experts at every changed slot. The
+file-backed complement has a separate ownership policy. Verify the
+layer stride, extent and source lifetimes before admitting placement.
+Preserve the stock route when the profile or immutable view fails
+admission. Keep ordinary adaptive swaps off in both arms.
+[Resident arena view](../src/core/expert_source.cpp#L3005).
 
 Use the existing validated slot extent and copy retirement checks and
 publish both maps before admitting another verifier window. The fixed
@@ -2215,6 +2215,18 @@ decode match, and that two successive requests on the same process begin
 with the stock map. The long comparison uses code and prose in independent
 matched processes with equal inputs and reports draft totals and task output.
 Run this separately from the caller-help scheduling change.
+
+The candidate on `verify/decode-phase-placement` uses
+`STRATA_SYCL_DFLASH2_DECODE_PHASE_PROFILE` with the original blended
+profile. It starts after at least 32 native outputs with 512 or more
+output and context positions left. It retires the prior commit and
+cache readers, publishes the mask, drains the changed slots and publishes
+the new map. On cancellation after the switch it restores stock before
+request completion. The effective decode clock charges both transitions.
+The per-transition record includes the emitted count, payload bytes,
+monotonic start and wall duration. Compile and validate this candidate
+after the active caller-help campaign closes. No build or GPU evidence
+exists for this revision. The original ranked-refill result stays closed.
 
 The closed comparison at `a57499a15` is reachable on `feature/sycl`.
 The recovery audit matched 1,327 original source files, 520 committed

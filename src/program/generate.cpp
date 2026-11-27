@@ -2748,6 +2748,14 @@ int main(int argc, char** argv) {
         std::any_of(o.expert_cache_remote.begin(),o.expert_cache_remote.end(),[](auto n){return n>0;}))) {
         std::fprintf(stderr,"cache scratch lease requires serve, native dense bank, profiled borrowing, spec4 with MTP or DFlash2 without MTP, and one GPU without token graphs/vision/remote experts\n"); return 2;
     }
+    const char* decode_phase_profile = std::getenv("STRATA_SYCL_DFLASH2_DECODE_PHASE_PROFILE");
+    if (decode_phase_profile && !*decode_phase_profile) decode_phase_profile = nullptr;
+    if (decode_phase_profile && (!use_df2 || !cache_scratch_lease_enabled || o.mmap_experts ||
+                                  (o.adapt_every > 0 && o.adapt_swaps > 0))) {
+        std::fprintf(stderr, "strata serve: decode phase profile requires DFlash2, a checked cache loan, "
+                             "the RAM arena and fixed placement\n");
+        return 2;
+    }
 #endif
     const char* canonical_bank_switch=std::getenv("STRATA_PREFILL_CANONICAL_DENSE_BANK");
     const bool canonical_dense_bank_enabled=canonical_bank_switch && !std::strcmp(canonical_bank_switch,"1");
@@ -5480,6 +5488,124 @@ int main(int argc, char** argv) {
                 }
             }
         }
+#ifdef STRATA_ENABLE_SYCL
+        struct DecodePlacementSlot {
+            int32_t slot;
+            int64_t bytes;
+            const uint8_t* stock;
+            const uint8_t* blend;
+        };
+        std::vector<DecodePlacementSlot> decode_placement_slots;
+        std::vector<int32_t> decode_placement_stock, decode_placement_blend, decode_placement_mask;
+        if (decode_phase_profile) {
+            auto prepare_decode_placement = [&]() {
+                constexpr int64_t protected_slots = 132;
+                const int64_t slots = xcache.slots();
+                const auto* offsets = xcache.slot_offsets();
+                if (srcp != &arena_src || !d_res || xcache.per_layer_admission() ||
+                    !offsets || slots <= protected_slots || slots > std::numeric_limits<int32_t>::max() ||
+                    xcache.resident() != slots || profile.size() < size_t(slots) ||
+                    host_res.size() != size_t(g.n_layers) * size_t(g.n_expert)) {
+                    err = "decode phase profile requires the fully populated global cache and RAM arena";
+                    return false;
+                }
+                std::vector<std::pair<int32_t, int32_t>> blend;
+                int64_t profile_slots = 0;
+                if (!strata::core::read_expert_profile(decode_phase_profile, g.n_layers, g.n_expert,
+                                                      blend, profile_slots, err)) return false;
+                if (profile_slots < slots || blend.size() < size_t(slots)) {
+                    err = "decode phase profile does not describe the whole cache";
+                    return false;
+                }
+                const auto& layout = strata::kernels::cpu::expert_layout();
+                decode_placement_stock = host_res;
+                decode_placement_mask = host_res;
+                decode_placement_blend.assign(host_res.size(), strata::core::kNotResident);
+                decode_placement_slots.reserve(size_t(slots));
+                for (int32_t slot = 0; slot < slots; ++slot) {
+                    const auto [old_layer, old_expert] = profile[size_t(slot)];
+                    const auto [layer, expert] = blend[size_t(slot)];
+                    const size_t old_key = size_t(old_layer * g.n_expert + old_expert);
+                    const size_t key = size_t(layer * g.n_expert + expert);
+                    const uint64_t bytes = layout.blob_bytes(layer);
+                    const bool same = old_key == key;
+                    if (decode_placement_stock[old_key] != slot || xcache.slot_of(old_layer, old_expert) != slot ||
+                        decode_placement_blend[key] != strata::core::kNotResident || !bytes ||
+                        bytes != layout.blob_bytes(old_layer) || bytes > offsets[slot + 1] - offsets[slot] ||
+                        (!same && (slot < protected_slots || host_res[key] != strata::core::kNotResident))) {
+                        err = "decode phase profile disagrees with cache slot " + std::to_string(slot);
+                        return false;
+                    }
+                    decode_placement_blend[key] = slot;
+                    if (same) continue;
+                    const auto outgoing = arena_src.resident_layer(old_layer);
+                    const auto incoming = arena_src.resident_layer(layer);
+                    auto matches = [&](const strata::core::ResidentExpertLayer& view) {
+                        return view.experts == g.n_expert && view.stride == bytes &&
+                            strata::core::ResidentExpertLayer::make(view.data, view.bytes, 0,
+                                                                   g.n_expert, bytes).data;
+                    };
+                    if (!matches(outgoing) || !matches(incoming)) {
+                        err = "decode phase profile lacks a stable RAM source for slot " + std::to_string(slot);
+                        return false;
+                    }
+                    decode_placement_mask[old_key] = strata::core::kNotResident;
+                    decode_placement_slots.push_back({slot, int64_t(bytes),
+                        outgoing.data + uint64_t(old_expert) * bytes,
+                        incoming.data + uint64_t(expert) * bytes});
+                }
+                return true;
+            };
+            if (!prepare_decode_placement()) {
+                std::fprintf(stderr, "strata serve: decode phase profile inactive: %s\n", err.c_str());
+                decode_placement_slots.clear();
+                err.clear();
+            }
+        }
+        auto switch_decode_placement = [&](bool to_blend, int64_t emitted, std::string& e) {
+            const auto start = Clock::now();
+            const auto& previous = to_blend ? decode_placement_stock : decode_placement_blend;
+            const auto& next = to_blend ? decode_placement_blend : decode_placement_stock;
+            if (!xcache.decode_ready() || host_res != previous) {
+                e = "decode placement requires the expected ready cache";
+                return false;
+            }
+            if (cudaDeviceSynchronize() != cudaSuccess) {
+                e = "decode placement could not retire cache readers";
+                return false;
+            }
+            auto publish = [&](const std::vector<int32_t>& map) {
+                std::copy(map.begin(), map.end(), host_res.begin());
+                return adaptive_res_upload("serve decode placement", e);
+            };
+            if (!publish(decode_placement_mask)) return false;
+            const bool blocking = refill_blocking();
+            uint64_t copied_bytes = 0;
+            bool copied = true;
+            for (const auto& entry : decode_placement_slots) {
+                const auto* source = to_blend ? entry.blend : entry.stock;
+                if (!(blocking ? xcache.fill_slot_blocking(entry.slot, source, e, entry.bytes)
+                               : xcache.fill_slot_queued(entry.slot, source, e, entry.bytes))) {
+                    copied = false;
+                    break;
+                }
+                copied_bytes += uint64_t(entry.bytes);
+            }
+            std::string drain_error;
+            if (!xcache.sync_queued(drain_error))
+                strata::sycl_backend::cleanup_fail_stop("decode placement copy retirement failed");
+            if (!copied || !publish(next)) return false;
+            const auto end = Clock::now();
+            const auto start_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(start.time_since_epoch());
+            std::fprintf(stderr, "strata decode placement: profile=%s emitted=%lld slots=%zu "
+                                 "h2d_bytes=%llu start_ns=%lld wall_ms=%.3f\n",
+                         to_blend ? "blend" : "stock", (long long) emitted,
+                         decode_placement_slots.size(), (unsigned long long) copied_bytes,
+                         (long long) start_ns.count(),
+                         std::chrono::duration<double, std::milli>(end - start).count());
+            return true;
+        };
+#endif
         // the penalty-history buffer: one row per verify-window row (`penalty_rows`), each the last
         // `penalty_last_n` tokens that row's pick follows, -1 padded in front.  Allocated once at the cap for
         // the widest window; a request without penalties gets a null buffer and takes the byte-for-byte
@@ -7039,7 +7165,22 @@ int main(int argc, char** argv) {
             const uint64_t file_bytes0 = src.file_read_bytes();
             const int64_t decode_look0 = drive.d.cache_hits + drive.d.cache_admitted + drive.d.cache_refused;
             if (cancelled) finish = "cancel";
+#ifdef STRATA_ENABLE_SYCL
+            bool decode_placement_blended = false;
+#endif
             while (!cancelled && produced_n < max_new) {
+#ifdef STRATA_ENABLE_SYCL
+                if (!decode_placement_slots.empty() && !decode_placement_blended &&
+                    produced_n >= 32 && max_new - produced_n >= 512 && o.max_context - p >= 512 &&
+                    !stop_req.load()) {
+                    if (!ver.wait_commit(err) || !switch_decode_placement(true, produced_n, err)) {
+                        std::printf("ERR %s\n", err.c_str());
+                        return 1;
+                    }
+                    decode_placement_blended = true;
+                    if (stop_req.load()) { finish = "cancel"; break; }
+                }
+#endif
                 int T = S_mtp;
                 if (req_spec_min_p > 0.0) {
                     T = 1;
@@ -7177,13 +7318,20 @@ int main(int argc, char** argv) {
                 x = outv[(size_t) a];
                 p += a + 1;
             }
-            const double decode_ms = std::chrono::duration<double, std::milli>(Clock::now() - d0).count();
+            double decode_ms = std::chrono::duration<double, std::milli>(Clock::now() - d0).count();
             // the last commit (set_commit_async): the session is complete before anything reads or copies it
             if (!ver.wait_commit(err)) {
                 std::printf("ERR %s\n", err.c_str());
                 return 1;
             }
 #ifdef STRATA_ENABLE_SYCL
+            if (decode_placement_blended) {
+                if (!switch_decode_placement(false, produced_n, err)) {
+                    std::printf("ERR %s\n", err.c_str());
+                    return 1;
+                }
+                decode_ms = std::chrono::duration<double, std::milli>(Clock::now() - d0).count();
+            }
             if (observe_handoff_memory && dec_windows > 0 && !cancelled && std::strcmp(finish, "cancel") != 0 &&
                 !mark_df2_handoff_memory("after-decode", n, read_from)) return 1;
             decode_service.finish(!cancelled && std::strcmp(finish, "cancel") != 0);
