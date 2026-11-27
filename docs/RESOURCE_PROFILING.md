@@ -828,12 +828,7 @@ counter and payload checks and no fresh Xe faults.
 
 The candidate passes the component decision. It reduces the timed
 graph-launch-to-completion interval at all three miss densities. The
-zero-miss median is within the matched control range. The measured route
-uses a cooperative planner. Apply and measure the same arithmetic change
-independently in the currently selected scalar planner before aiming for
-an isolated decode-only model trial. The timing fixture resets the map;
-measure actual evictions and usable throughput in an HTTP model request
-before claiming a model-level gain. Keep prompt dispatch independent.
+zero-miss median is within the matched control range.
 [Exact comparison and decision](https://github.com/yqYo1/Strata/commit/1b671df2e1f23f2f9743817966f171232f5d05f8).
 
 The scalar comparison consumes the committed decision and original
@@ -844,6 +839,37 @@ and all eight terminal outcomes. Retire the fixture build and
 `{smoke,validate,0,1,2,3,4,5}` under that root. The 76 files total
 2,396,527 bytes with sorted path, size and content-hash inventory SHA-256
 `e64cdb96ffd62cab0725d0c0b6c72863f5ef1be11aaa90e27e28de15d3870c33`.
+
+The same arithmetic change in the currently selected scalar planner at
+`daffa0d18` passes the same map, payload, boundary and overflow checks.
+All eight processes close normally without a fresh Xe fault. The
+six clean processes change only the clock-hand update inside the
+scalar resolver. Copy geometry and miss placement stay fixed.
+
+| Missing pages of 1,539 | Scalar process medians (µs) | Conditional-wrap process medians (µs) | Paired time ratios |
+| ---: | --- | --- | --- |
+| 0 | 1,412.13, 1,412.49, 1,411.25 | 1,410.40, 1,407.73, 1,410.55 | 0.99877, 0.99663, 0.99951 |
+| 16 | 2,953.64, 2,953.74, 2,953.29 | 2,294.34, 2,292.39, 2,291.92 | 0.77678, 0.77610, 0.77606 |
+| 64 | 3,015.43, 3,014.66, 3,013.52 | 2,344.96, 2,347.26, 2,346.00 | 0.77765, 0.77862, 0.77849 |
+| 384 | 3,613.15, 3,616.32, 3,613.68 | 2,890.64, 2,888.66, 2,890.19 | 0.80003, 0.79878, 0.79979 |
+
+The scalar candidate passes the component decision. Its model trial uses
+an immutable decode selector, the existing scalar copy configuration and
+the K8V8 streamed shape. Verify that prompt captures keep the existing
+resolver. Check same-build route and output parity before collecting
+matched 96K thinking samples. The component fixture resets the map;
+measure actual evictions and usable throughput in model requests before
+claiming a model-level gain.
+[Exact scalar comparison and decision](https://github.com/yqYo1/Strata/commit/9a20db11dc6043cd12e128e61e2afc3c72721176).
+
+The scalar fixture retirement audit recovers 234 pinned inputs and
+four build commands, matches 672 compiler and 25 link inputs, and
+reconciles all eight terminal outcomes. Keep the original
+`decode-kv-scalar-clock-wrap-v1/record.json` for model-test admission.
+Retire `{fixture-build,smoke,validate,0,1,2,3,4,5}` under that root.
+The 76 files total 2,895,019 bytes with sorted path, size and content-hash
+inventory SHA-256
+`e88302672c429678a4b1214aa1de75d3adf00ae4623c6a04864ec06949e6a62b`.
 
 #### Width-four KV cache working set
 
