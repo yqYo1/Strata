@@ -140,7 +140,7 @@ def experiment():
     def save(row):
         bank.stage.write(ROOT / 'record.json', row)
         output = bank.previous.read(bank.RESULT)
-        output[KEY] = row
+        output[KEY] = basis.compact(row)
         bank.stage.write(bank.RESULT, output)
 
     def prepare():
@@ -156,7 +156,8 @@ def experiment():
 
     def run(name):
         row = bank.previous.read(ROOT / 'record.json')
-        require(row == basis.validation.committed(bank.RESULT, (KEY,)) and row['ownership_closed'] and not row['active']
+        require(basis.compact(row) == basis.validation.committed(bank.RESULT, (KEY,))
+                and row['ownership_closed'] and not row['active']
                 and tuple(row['outcomes']) == ORDER[:ORDER.index(name)]
                 and all(v['passed'] for v in row['outcomes'].values()), 'commit the preceding restore outcome')
         require(all(row[k] == v for k, v in inputs(row['source_commit']).items()), 'restore inputs changed')
