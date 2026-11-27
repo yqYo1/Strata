@@ -113,7 +113,8 @@ def short_routes(text, *, cooperative):
     return routes
 
 
-def execute(row, env, request, base, arm, *, read_routes=short_routes, publish=save):
+def execute(row, env, request, base, arm, *, read_routes=short_routes, publish=save,
+            order=ORDER, check_profile=None):
     case = next(c for c in row['cases'] if c['arm'] == arm)
     root = Path(case['root'])
     binary = row['binary']
@@ -151,13 +152,16 @@ def execute(row, env, request, base, arm, *, read_routes=short_routes, publish=s
                 'unexpected MTP or runtime validation')
         outcome['providers'] = bank.device.loaded_providers(text, dict(
             environment=env, native_validation_probe=base['native_validation_probe'], runtime_manifest=base['runtime_manifest']))
-        ranked.restore.check_loader(text, row['stock']['path'], per_layer=False)
+        if check_profile is None:
+            ranked.restore.check_loader(text, row['stock']['path'], per_layer=False)
+        else:
+            check_profile(text)
         require(text.count('strata DFlash2: eager, ') == 1 and outcome['request']['generated'] == row['output_cap']
                 and outcome['request']['accepted'] > 0, 'the actual DFlash2 speculative work changed')
         routes = read_routes(text, cooperative=arm == 'cooperative')
         outcome.update(validation=proof, kv_routes=routes)
-        if arm == 'cooperative':
-            require(outcome['request'] == row['outcomes']['scalar']['request'], 'output IDs or draft counters differ')
+        if arm == order[-1]:
+            require(outcome['request'] == row['outcomes'][order[0]]['request'], 'output IDs or draft counters differ')
         outcome['host_probe_accepted'] = True
     except BaseException as error:
         outcome['error'] = repr(error)
@@ -165,7 +169,7 @@ def execute(row, env, request, base, arm, *, read_routes=short_routes, publish=s
         validation.finish(outcome, owner, cursor, row['boot'])
         outcome['passed'] &= outcome.get('driver_after') == row['driver']
         row['outcomes'][arm] = outcome
-        complete = outcome['passed'] and arm == ORDER[-1]
+        complete = outcome['passed'] and arm == order[-1]
         row.update(stage='closed' if complete else 'running' if outcome['passed'] else 'failed',
                    complete=complete, passed=complete, ownership_closed=outcome['ownership_closed'])
         publish(row)
