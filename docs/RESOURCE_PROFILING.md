@@ -2744,6 +2744,10 @@ accepts 2,268/2,376 drafts and replays width four 680 times. The second block
 at `b982ab202` repeats these work counts and closes cleanly, at 16.256,
 15.705 and 16.362 tok/s with client TTFT of 103.437, 103.360 and 105.577 s.
 Early C2 is 0.064% slower and 0.654% faster than stock in the two blocks.
+The third C2 process at `1568885fe` gives 16.359 tok/s and 104.148 s
+client TTFT. All three C2 processes match the logical work, output,
+reasoning digest and 2,173/2,248 draft totals. The final two controls
+complete the counterbalanced comparison.
 
 Relative to early, the two C2 processes spend 1.441 and 2.212 extra seconds
 inside the first long native prompt. Their extra client TTFT beyond that
@@ -2780,6 +2784,17 @@ excluding the retained `record.json`. The exact V2 build, source, cache,
 temporary and ownership files were retired under the measurement lock after
 verifying reachability on the pushed primary, closure and matching inventory.
 The original receipt and measured DFlash2 fallback were reverified afterward.
+
+The closed V3 comparison at `2071d7722` and build at `2dac4cbf2` match the
+original 1,334 source files, configuration, 1,481 compiled inputs, 30 link
+inputs, 141 fresh objects and all 13 final executables. The live C2 and
+caller-help campaigns and retained phase builds use other executable paths.
+Retired 1,534 V3 files totaling 236,461,552 bytes under the measurement lock.
+The inventory SHA-256 is
+`55e322981a28dec5d06b356bd1a0edb114fea9669219bb41126c09ac31c7413b`
+over sorted relative paths, sizes and hashes. The original V3 `record.json`
+remains with SHA-256
+`64eff76e8ea0cf1bb82c768201e6a627aba3fb2c4e44529613ebe820116ae795`.
 
 For a copy-once control, the full CPU result slab at `T=4`, `K=10` and
 `N=2560` is 409,600 bytes per layer, or 19,660,800 across 48 layers. The
