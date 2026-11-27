@@ -2323,6 +2323,19 @@ CPU expert work per output and draft acceptance. Admission requires the
 bounded checks on this exact executable. The first full-capacity and
 agent-session results remain separate qualification steps.
 
+The [context controller](../bench/dflash2_decode_phase_placement_context.py)
+runs only after the complete 96K result qualifies for advancement. Its
+standalone mode reuses the checked 16,385-token and 262,144-token fixtures
+on the timed build's context diagnostic binary with the global stock
+profile. Require the last physical slot, zero full-context outputs and
+checked retirement. The `restore-` stages replay the original global
+server workload through 262,128 positions on the same serving executable.
+The two processes check the complete RAM restore, occupied expert payloads
+and state with the selector omitted and enabled. With one output requested,
+the enabled selector must stay idle. The existing short-request checks
+cover installation, normal restoration and STOP when output room permits
+switching. Both results remain distinct from agent-session and task checks.
+
 The closed comparison at `a57499a15` is reachable on `feature/sycl`.
 The recovery audit matched 1,327 original source files, 520 committed
 build-control inputs, the compiler and link inputs, 141 fresh objects and
