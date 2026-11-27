@@ -11940,6 +11940,15 @@ The selector remains opt-in pending the matched sustained generation,
 weak-draft and agent-session comparisons.
 [Live RESTORE controller](../bench/dflash2_prefill_ple_early_restore.py).
 
+The [sustained-generation controller](../bench/dflash2_prefill_ple_early_continuation.py)
+uses this exact engine in three pairs of independent stock and early processes. It
+requires the same 262144 final-slot and live RESTORE receipts. Each process
+runs the maintained thinking-enabled 96K code and prose bodies with the
+same decode settings and checks the actual layer-1 consumption markers.
+The comparison retains first and subsequent prefill, client TTFT, decode
+rates, and observed draft acceptance. Agent-session coverage remains a
+separate validation step.
+
 The closed comparison at `bdfd43ec9` preserves the 12 requests and
 passes the PLE reader's admission. After verifying all four terminal
 receipts against the pushed record, retired `host` and `0`–`3` under
