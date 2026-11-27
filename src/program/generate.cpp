@@ -5568,6 +5568,10 @@ int main(int argc, char** argv) {
                 err.clear();
             }
         }
+        auto retire_decode_placement_device = [] {
+            if (cudaDeviceSynchronize() != cudaSuccess)
+                strata::sycl_backend::cleanup_fail_stop("decode placement device retirement failed");
+        };
         auto switch_decode_placement = [&](bool to_blend, int64_t emitted, std::string& e) {
             const auto start = Clock::now();
             const auto& previous = to_blend ? decode_placement_stock : decode_placement_blend;
@@ -5578,15 +5582,11 @@ int main(int argc, char** argv) {
             }
             strata::core::progress_at(to_blend ? "installing decode expert placement" :
                                                  "restoring stock expert placement", emitted);
-            auto retire_device = [] {
-                if (cudaDeviceSynchronize() != cudaSuccess)
-                    strata::sycl_backend::cleanup_fail_stop("decode placement device retirement failed");
-            };
-            retire_device();
+            retire_decode_placement_device();
             auto publish = [&](const std::vector<int32_t>& map) {
                 std::copy(map.begin(), map.end(), host_res.begin());
                 if (adaptive_res_upload("serve decode placement", e)) return true;
-                retire_device();
+                retire_decode_placement_device();
                 return false;
             };
             if (!publish(decode_placement_mask)) return false;
@@ -5610,7 +5610,7 @@ int main(int argc, char** argv) {
                 std::vector<int32_t> device_map(next.size());
                 if (cudaMemcpy(device_map.data(), d_res, device_map.size() * sizeof(int32_t),
                                cudaMemcpyDeviceToHost) != cudaSuccess) {
-                    retire_device();
+                    retire_decode_placement_device();
                     e = "decode placement audit could not read the device residency map";
                     return false;
                 }
@@ -5619,8 +5619,15 @@ int main(int argc, char** argv) {
                     return false;
                 }
                 for (const auto* entry : {&decode_placement_slots.front(), &decode_placement_slots.back()}) {
-                    if (!xcache.verify_slot(entry->slot, to_blend ? entry->blend : entry->stock, e, entry->bytes)) {
-                        retire_device();
+                    std::vector<uint8_t> payload(size_t(entry->bytes));
+                    if (cudaMemcpy(payload.data(), xcache.device_slot(entry->slot), payload.size(),
+                                   cudaMemcpyDeviceToHost) != cudaSuccess) {
+                        retire_decode_placement_device();
+                        e = "decode placement audit could not read a changed slot";
+                        return false;
+                    }
+                    if (std::memcmp(payload.data(), to_blend ? entry->blend : entry->stock, payload.size()) != 0) {
+                        e = "decode placement audit found an incorrect slot payload";
                         return false;
                     }
                 }
@@ -7203,7 +7210,9 @@ int main(int argc, char** argv) {
                 if (!decode_placement_slots.empty() && !decode_placement_blended &&
                     produced_n >= 32 && max_new - produced_n >= 512 && o.max_context - p >= 512 &&
                     !stop_req.load()) {
-                    if (!ver.wait_commit(err) || !switch_decode_placement(true, produced_n, err)) {
+                    const bool committed = ver.wait_commit(err);
+                    if (!committed) retire_decode_placement_device();
+                    if (!committed || !switch_decode_placement(true, produced_n, err)) {
                         std::printf("ERR %s\n", err.c_str());
                         return 1;
                     }
@@ -7351,6 +7360,9 @@ int main(int argc, char** argv) {
             double decode_ms = std::chrono::duration<double, std::milli>(Clock::now() - d0).count();
             // the last commit (set_commit_async): the session is complete before anything reads or copies it
             if (!ver.wait_commit(err)) {
+#ifdef STRATA_ENABLE_SYCL
+                if (decode_placement_blended) retire_decode_placement_device();
+#endif
                 std::printf("ERR %s\n", err.c_str());
                 return 1;
             }
