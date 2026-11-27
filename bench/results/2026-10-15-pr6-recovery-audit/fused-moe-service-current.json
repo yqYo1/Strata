@@ -752089,5 +752089,705 @@
       }
     },
     "c2_short_qualified": true
+  },
+  "dflash2_decode_t4_c2_speed_v1": {
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "configuration": {
+      "exe": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-t4-c2-dpas/tools/sycl/engine_once.py",
+      "args": [
+        "--pack",
+        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+        "--native",
+        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+        "--max-context",
+        "262144",
+        "--kv",
+        "int8",
+        "--kv-resident",
+        "20480",
+        "--expert-cache",
+        "1256",
+        "--expert-profile",
+        "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-t4-c2-dpas/data/expert-profile.bin",
+        "--expert-cache-per-layer",
+        "--pool-workers",
+        "5",
+        "--pcie-frac",
+        "0",
+        "--adapt-swaps",
+        "0",
+        "--conversation-cache-mib",
+        "0",
+        "--prompt-cache",
+        "0",
+        "--turn-token",
+        "-1",
+        "--suffix-draft",
+        "0",
+        "--greedy",
+        "--no-spec-split",
+        "--short-read",
+        "128",
+        "--spec",
+        "4",
+        "--prefill",
+        "8192",
+        "--vram-reserve-mib",
+        "1500",
+        "--no-coupled-draft",
+        "--no-token-graph",
+        "--prefill-strategy",
+        "throughput",
+        "--mtp",
+        "/home/yayoi/.local/share/strata-sycl/mtp/rt"
+      ],
+      "cwd": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-t4-c2-dpas",
+      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq3_s-primary",
+      "aliases": [
+        "strata"
+      ],
+      "host": "127.0.0.1",
+      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-model-entry-arm1-v1/engine.stderr",
+      "engine_silence_s": 480,
+      "parallel": 1,
+      "open_browser": false,
+      "env": {},
+      "family": "qwen",
+      "backend": "sycl"
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-speed-v2/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "template": {
+      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
+      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
+    },
+    "ordinary_control": {
+      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-ordinary-bank-comparison-v1/1",
+      "environment_sha256": "5990eab9654303568db3c00994aafcc93671f5e549f6420fdaa10aae86d3999b"
+    },
+    "dflash2_assets": {
+      "/home/yayoi/.local/share/strata-sycl/dflash2/qwen3.8-flash-next-dflash2.q4_0.pack": "cda40d62d0eb8f37ed6e272142641a1d2f0de4a32f9e14d0416e7a71534849f1",
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin": "b1e1d3a7a9e4bf862dcd5923ce661fb59bbd07907e594df5cf86a62ac235cb91"
+    },
+    "validated_dflash2_args": [
+      "--pack",
+      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
+      "--native",
+      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
+      "--max-context",
+      "262144",
+      "--kv",
+      "int8",
+      "--kv-resident",
+      "20480",
+      "--expert-cache",
+      "1256",
+      "--expert-profile",
+      "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-t4-c2-dpas/data/expert-profile.bin",
+      "--expert-cache-per-layer",
+      "--pool-workers",
+      "5",
+      "--pcie-frac",
+      "0",
+      "--adapt-swaps",
+      "0",
+      "--conversation-cache-mib",
+      "0",
+      "--turn-token",
+      "-1",
+      "--suffix-draft",
+      "0",
+      "--greedy",
+      "--no-spec-split",
+      "--short-read",
+      "128",
+      "--prefill",
+      "8192",
+      "--vram-reserve-mib",
+      "1500",
+      "--no-coupled-draft",
+      "--no-token-graph",
+      "--prefill-strategy",
+      "throughput",
+      "--spec",
+      "4",
+      "--prompt-cache",
+      "1",
+      "--prompt-cache-every",
+      "0",
+      "--draft",
+      "dflash2",
+      "--draft-model",
+      "/home/yayoi/.local/share/strata-sycl/dflash2/qwen3.8-flash-next-dflash2.q4_0.pack",
+      "--draft-fallback",
+      "none",
+      "--mtp-draft-vocab",
+      "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin",
+      "--draft-conf",
+      "0.6"
+    ],
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-native-v1/build/strata",
+      "sha256": "9d635e7266a132a17fd632b6efafe2199045e5d8b791e5953a4413eb66660cbb",
+      "bytes": 26767800
+    },
+    "native_source_commit": "1000f7a421d4ba8ba3aaf22090bb55b4951e3c42",
+    "native_build_sha256": "01f663448f176a61485dd60c91f4dbb015539f80bdf3bc1562c9a6216a0763a3",
+    "reference_evidence": "ad8652973c8f025e73bd07bc791a9976a55e20a9",
+    "python_contract": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v4/runtime.json",
+      "sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
+      "files": 3597,
+      "bytes": 270975442
+    },
+    "python_selected": {
+      "workspace_venv": false,
+      "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
+      "file": {
+        "realpath": "/usr/bin/python3.12",
+        "dev": 29,
+        "ino": 774532,
+        "bytes": 8020928,
+        "mtime_ns": 1788171506000000000,
+        "ctime_ns": 1790581701420197973,
+        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
+      }
+    },
+    "selected_arm": "retain",
+    "selection_sha256": "e11f8ba2578f2e7d80a25ab117140cdfb0cb35effd759e8a618886655673cf77",
+    "base_physical_context_sha256": "88f091162a4694cfbcce148e5732a3fb6c16a0b6fd964617064396792dc46fb1",
+    "checked_c4_shapes": {
+      "stock": [
+        [
+          2560,
+          6144,
+          14
+        ],
+        [
+          2560,
+          10240,
+          22
+        ],
+        [
+          2560,
+          12288,
+          5
+        ],
+        [
+          6144,
+          2560,
+          40
+        ]
+      ],
+      "early": [
+        [
+          2560,
+          6144,
+          8
+        ],
+        [
+          2560,
+          10240,
+          15
+        ],
+        [
+          2560,
+          12288,
+          2
+        ],
+        [
+          6144,
+          2560,
+          21
+        ]
+      ],
+      "early-c2": [
+        [
+          2560,
+          6144,
+          8
+        ],
+        [
+          2560,
+          10240,
+          15
+        ],
+        [
+          2560,
+          12288,
+          2
+        ],
+        [
+          6144,
+          2560,
+          21
+        ]
+      ]
+    },
+    "checked_c2_shapes": [
+      [
+        2560,
+        6144,
+        12
+      ],
+      [
+        2560,
+        10240,
+        14
+      ],
+      [
+        2560,
+        12288,
+        6
+      ],
+      [
+        6144,
+        2560,
+        38
+      ]
+    ],
+    "native_context_qualified": false,
+    "production_dpas_proof": "aa85a95079901d9717b36c0c91e0f5d864f8ccf671a6f6e55f52f5505082cee0",
+    "split_layers": 23,
+    "request_reference": {
+      "source_commit": "9261c4b44",
+      "body_sha256": "061e8dbcbdcbb6952b8b5adf3fadf8d44e10ec98bc14808d6d4de98e79ac1bcd",
+      "read_tokens": 96204
+    },
+    "stage": "prepared",
+    "source_commit": "e70438a3516641dae0adebb9ec1e61ce77f9bbc6",
+    "host_passed": false,
+    "ownership_closed": true,
+    "active": false,
+    "passed": false,
+    "complete": false,
+    "plans": [
+      {
+        "index": 0,
+        "arm": "stock",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/0",
+        "port": 38545,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-native-v1/build/strata",
+          "sha256": "9d635e7266a132a17fd632b6efafe2199045e5d8b791e5953a4413eb66660cbb",
+          "bytes": 26767800
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-t4-c2-dpas/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/0/config.json",
+          "--port",
+          "38545",
+          "--long-generation-only",
+          "--long-generation-input-case",
+          "split-v1-96k",
+          "--long-generation-max-tokens",
+          "16384",
+          "--think",
+          "--runs",
+          "1",
+          "--workload-id",
+          "split_continuation_v1",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/0/bench",
+          "--long-generation-workload",
+          "regular-code"
+        ],
+        "generated": {
+          "config.json": "1e8281a9012783672cda54c5ec8caa516b7866a80877c06d6624fa119c7cd49a",
+          "plan.json": "b1fa629a785e990fc9990e6bf6d25a00ffdd7347003bc91cf7e34b501a9f0497"
+        },
+        "environment_sha256": "273f86a87595ff2abd743a36d5f195209b2fb1a6378e293dbae4fdf820b1cf7f"
+      },
+      {
+        "index": 1,
+        "arm": "early",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/1",
+        "port": 35651,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-native-v1/build/strata",
+          "sha256": "9d635e7266a132a17fd632b6efafe2199045e5d8b791e5953a4413eb66660cbb",
+          "bytes": 26767800
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-t4-c2-dpas/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/1/config.json",
+          "--port",
+          "35651",
+          "--long-generation-only",
+          "--long-generation-input-case",
+          "split-v1-96k",
+          "--long-generation-max-tokens",
+          "16384",
+          "--think",
+          "--runs",
+          "1",
+          "--workload-id",
+          "split_continuation_v1",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/1/bench",
+          "--long-generation-workload",
+          "regular-code"
+        ],
+        "generated": {
+          "config.json": "3677129416614401eaa2af331cbd0e380519007b32535f01f948cb66a518e8e0",
+          "plan.json": "b1fa629a785e990fc9990e6bf6d25a00ffdd7347003bc91cf7e34b501a9f0497"
+        },
+        "environment_sha256": "7948a19c0dd08289b2e1c89fa810c8eb649768e73bd81150ee4c461699b43262"
+      },
+      {
+        "index": 2,
+        "arm": "early-c2",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/2",
+        "port": 41337,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-native-v1/build/strata",
+          "sha256": "9d635e7266a132a17fd632b6efafe2199045e5d8b791e5953a4413eb66660cbb",
+          "bytes": 26767800
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-t4-c2-dpas/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/2/config.json",
+          "--port",
+          "41337",
+          "--long-generation-only",
+          "--long-generation-input-case",
+          "split-v1-96k",
+          "--long-generation-max-tokens",
+          "16384",
+          "--think",
+          "--runs",
+          "1",
+          "--workload-id",
+          "split_continuation_v1",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/2/bench",
+          "--long-generation-workload",
+          "regular-code"
+        ],
+        "generated": {
+          "config.json": "d597d37d7d05841e3d34b3c753088e5ae85aab53f23fb185aecafe0aaa8604ff",
+          "plan.json": "b1fa629a785e990fc9990e6bf6d25a00ffdd7347003bc91cf7e34b501a9f0497"
+        },
+        "environment_sha256": "9fa58f3c8042e364ee01cc4a0ed994613966f8010fb824e1b6dac7f7d39c60dc"
+      },
+      {
+        "index": 3,
+        "arm": "early",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/3",
+        "port": 41885,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-native-v1/build/strata",
+          "sha256": "9d635e7266a132a17fd632b6efafe2199045e5d8b791e5953a4413eb66660cbb",
+          "bytes": 26767800
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-t4-c2-dpas/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/3/config.json",
+          "--port",
+          "41885",
+          "--long-generation-only",
+          "--long-generation-input-case",
+          "split-v1-96k",
+          "--long-generation-max-tokens",
+          "16384",
+          "--think",
+          "--runs",
+          "1",
+          "--workload-id",
+          "split_continuation_v1",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/3/bench",
+          "--long-generation-workload",
+          "regular-code"
+        ],
+        "generated": {
+          "config.json": "45a555d48acb431364a98d68063f5a6cf248f48254e5250b239e8014cac19927",
+          "plan.json": "b1fa629a785e990fc9990e6bf6d25a00ffdd7347003bc91cf7e34b501a9f0497"
+        },
+        "environment_sha256": "37d6abba4b4f5173f180792f6301473c02dac51785609b370aa94180130d0292"
+      },
+      {
+        "index": 4,
+        "arm": "early-c2",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/4",
+        "port": 42251,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-native-v1/build/strata",
+          "sha256": "9d635e7266a132a17fd632b6efafe2199045e5d8b791e5953a4413eb66660cbb",
+          "bytes": 26767800
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-t4-c2-dpas/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/4/config.json",
+          "--port",
+          "42251",
+          "--long-generation-only",
+          "--long-generation-input-case",
+          "split-v1-96k",
+          "--long-generation-max-tokens",
+          "16384",
+          "--think",
+          "--runs",
+          "1",
+          "--workload-id",
+          "split_continuation_v1",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/4/bench",
+          "--long-generation-workload",
+          "regular-code"
+        ],
+        "generated": {
+          "config.json": "42f01c2337d64f1cddb3974382dadbd4b0ca224401cfbb78a294b2d3b2a9478f",
+          "plan.json": "b1fa629a785e990fc9990e6bf6d25a00ffdd7347003bc91cf7e34b501a9f0497"
+        },
+        "environment_sha256": "4799c560d35e433508acfed2b284b5c8bfe3d4f743f6b178c63378d4e7862a93"
+      },
+      {
+        "index": 5,
+        "arm": "stock",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/5",
+        "port": 44555,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-native-v1/build/strata",
+          "sha256": "9d635e7266a132a17fd632b6efafe2199045e5d8b791e5953a4413eb66660cbb",
+          "bytes": 26767800
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-t4-c2-dpas/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/5/config.json",
+          "--port",
+          "44555",
+          "--long-generation-only",
+          "--long-generation-input-case",
+          "split-v1-96k",
+          "--long-generation-max-tokens",
+          "16384",
+          "--think",
+          "--runs",
+          "1",
+          "--workload-id",
+          "split_continuation_v1",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/5/bench",
+          "--long-generation-workload",
+          "regular-code"
+        ],
+        "generated": {
+          "config.json": "a4875343c1e9b53e5f3bc14f12793b22571fe90bb75cc2c7fa79846672fe4c8e",
+          "plan.json": "b1fa629a785e990fc9990e6bf6d25a00ffdd7347003bc91cf7e34b501a9f0497"
+        },
+        "environment_sha256": "7d0be72e289f77612fbc4778f62ec440489e4cd1ae65af25c3b2b8a5d997b409"
+      },
+      {
+        "index": 6,
+        "arm": "early-c2",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/6",
+        "port": 38051,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-native-v1/build/strata",
+          "sha256": "9d635e7266a132a17fd632b6efafe2199045e5d8b791e5953a4413eb66660cbb",
+          "bytes": 26767800
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-t4-c2-dpas/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/6/config.json",
+          "--port",
+          "38051",
+          "--long-generation-only",
+          "--long-generation-input-case",
+          "split-v1-96k",
+          "--long-generation-max-tokens",
+          "16384",
+          "--think",
+          "--runs",
+          "1",
+          "--workload-id",
+          "split_continuation_v1",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/6/bench",
+          "--long-generation-workload",
+          "regular-code"
+        ],
+        "generated": {
+          "config.json": "8d922027486c8260009f02fe63c65380012441bc0a0a8b2c8844ff8cb75c0675",
+          "plan.json": "b1fa629a785e990fc9990e6bf6d25a00ffdd7347003bc91cf7e34b501a9f0497"
+        },
+        "environment_sha256": "6375c47ab1f026a777c18ac2a11c753b3526e1b771ac4911b74828e3467e1767"
+      },
+      {
+        "index": 7,
+        "arm": "stock",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/7",
+        "port": 33897,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-native-v1/build/strata",
+          "sha256": "9d635e7266a132a17fd632b6efafe2199045e5d8b791e5953a4413eb66660cbb",
+          "bytes": 26767800
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-t4-c2-dpas/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/7/config.json",
+          "--port",
+          "33897",
+          "--long-generation-only",
+          "--long-generation-input-case",
+          "split-v1-96k",
+          "--long-generation-max-tokens",
+          "16384",
+          "--think",
+          "--runs",
+          "1",
+          "--workload-id",
+          "split_continuation_v1",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/7/bench",
+          "--long-generation-workload",
+          "regular-code"
+        ],
+        "generated": {
+          "config.json": "8bcf37db6708e34ba09ef4d8936814220ab09b07bbbf2a8a2f0a7a73dd02f06b",
+          "plan.json": "b1fa629a785e990fc9990e6bf6d25a00ffdd7347003bc91cf7e34b501a9f0497"
+        },
+        "environment_sha256": "2a687a6694099b319cbc843536e954dab7f33fb455916d3f4dd4cec953ad63be"
+      },
+      {
+        "index": 8,
+        "arm": "early",
+        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/8",
+        "port": 44413,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-native-v1/build/strata",
+          "sha256": "9d635e7266a132a17fd632b6efafe2199045e5d8b791e5953a4413eb66660cbb",
+          "bytes": 26767800
+        },
+        "command": [
+          "/bin/sh",
+          "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-t4-c2-dpas/bench.sh",
+          "--config",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/8/config.json",
+          "--port",
+          "44413",
+          "--long-generation-only",
+          "--long-generation-input-case",
+          "split-v1-96k",
+          "--long-generation-max-tokens",
+          "16384",
+          "--think",
+          "--runs",
+          "1",
+          "--workload-id",
+          "split_continuation_v1",
+          "--fail-fast-engine-error",
+          "--ready-timeout",
+          "600",
+          "--out",
+          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-speed-v1/8/bench",
+          "--long-generation-workload",
+          "regular-code"
+        ],
+        "generated": {
+          "config.json": "2e6c3249385a395658119a848a2c1fffa7acd5e97b9ae6663f47c0ae711c3590",
+          "plan.json": "b1fa629a785e990fc9990e6bf6d25a00ffdd7347003bc91cf7e34b501a9f0497"
+        },
+        "environment_sha256": "664378d5bda977c72c8eeb5b041d4eaf8be7da2eda03a332c98d8b79e4460f66"
+      }
+    ],
+    "processes": [],
+    "budgets": {
+      "wall": 5400,
+      "cpu": 21600,
+      "rss_cap": 111669149696,
+      "text_cap": 25165824,
+      "file_cap": 67108864,
+      "total_cap": 167772160
+    },
+    "plan": {
+      "order": [
+        "stock",
+        "early",
+        "early-c2",
+        "early",
+        "early-c2",
+        "stock",
+        "early-c2",
+        "stock",
+        "early"
+      ],
+      "workload": "regular-code",
+      "input_case": "split-v1-96k",
+      "comparison": "Three counterbalanced blocks on the same image. Compare C2 with the existing early scheduler to isolate the kernel change, and with stock to measure the net effect.",
+      "scope": "One thinking-enabled long-code request per process after four short warm-ups. Enable the T4 and Q6 route audits in every arm. The clean speed, task, agent and context gates are separate.",
+      "eligibility": "Match the committed body and read extent, actual throughput prefill and KV placement, client/native token and draft counts, and valid output of at least 1024 tokens. Check the actual split modes on every recorded width-four window. Require width-four replay deltas and the checked C4 and C2 call sets.",
+      "decision": "Advance to a separate clean comparison when early C2 beats both references in at least two pairs each with geometric mean ratios above one and equal logical prefill work. Preserve first-long PP, TTFT, native draft counts, outputs and work for every sample.",
+      "stop": "Stop on the first identity, workload, route, validation, ownership, fault or budget failure."
+    },
+    "source_inputs": {
+      "files": 835,
+      "sha256": "026cfad19e42646647f6b0b87d71a45fcceb068a61399a37cf85f393678cc721"
+    },
+    "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
   }
 }
