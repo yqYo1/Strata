@@ -146,16 +146,22 @@ def prepare(ctx):
     ctx.save(row)
 
 
-def host(ctx, extra_controls=()):
+def host(ctx, extra_controls=(), *, output_root=None):
     root = ctx.ROOT
     row = json.loads((root / 'record.json').read_text())
     ctx.current(row)
     require(row['stage'] == 'built' and row['passed'] and row['ownership_closed']
             and 'host' not in row, 'a fresh committed fixture is required')
-    def persist():
-        ctx.write(root / 'host-execution.json', dict(active=bool(owner.active), commands=owner.commands))
+    output_root = root if output_root is None else output_root
+    output_root.mkdir(mode=0o700, exist_ok=True)
+    environment = row['recipe']['environment']
+    if output_root != root:
+        environment = dict(environment, TMPDIR=str(output_root), XDG_CACHE_HOME=str(output_root))
 
-    owner = base.ownership.Owner(root / 'owned-host', persist)
+    def persist():
+        ctx.write(output_root / 'host-execution.json', dict(active=bool(owner.active), commands=owner.commands))
+
+    owner = base.ownership.Owner(output_root / 'owned-host', persist)
     controls = [('--host', 'HOST passed=1 cases=31 GPU=0'),
                 ('--host-c5', 'HOST_C5 passed=1 cases=10 GPU=0')]
     if ctx.PACKED:
@@ -167,7 +173,7 @@ def host(ctx, extra_controls=()):
                 'native host controls differ from the committed plan')
         for flag, expected in controls:
             entry, out, _ = owner.run(flag.removeprefix('--'), [row['binary']['path'], flag],
-                                      row['recipe']['environment'], P, **row['host_budget'])
+                                      environment, P, **row['host_budget'])
             require(base.ownership.closed(entry) and entry['exit_code'] == 0
                     and out.read_text().splitlines() == [expected], 'host controls differ: ' + flag)
             outcomes.append(dict(argument=flag, exit_code=0, result=expected))

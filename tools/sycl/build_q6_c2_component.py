@@ -18,8 +18,8 @@ require, sha = existing.require, existing.sha
 sys.path.insert(0, str(P / 'bench'))
 import dflash2_decode_t4_build as source_build
 
-ROOT = B / 'q6-t4-c2-component-v1'
-KEY = 'q6_t4_c2_component_build_v1'
+ROOT = B / 'q6-t4-c2-component-v2'
+KEY = 'q6_t4_c2_component_build_v2'
 BASE_BUILD = '2dac4cbf2'
 BASE_DEVICE = '460628c2a'
 FOUNDATION = B / 'coherent-prefill-native-v1' / 'record.json'
@@ -39,6 +39,7 @@ SUMMARY = 'SPLIT_C2_CHECK passed=1 cases=10 bitwise=1 guards=1 isolated_halves=2
 TIMING_SUMMARY = 'TIMING passed=1 samples=40 shapes=4 model_speed=0 physical_traffic=0 cache=one-repeated-matrix'
 ARC_LIMITS = dict(wall=180, cpu=600, rss_cap=4 << 30, text_cap=24 << 20,
                   file_cap=32 << 20, total_cap=64 << 20)
+HOST_OUTPUT = ROOT / 'host-check'
 
 
 def reference():
@@ -67,6 +68,11 @@ def reference():
     return native, bank.previous.read(FOUNDATION), identity
 
 
+def arc_environment(env, output_root):
+    return dict(env, TMPDIR=str(output_root / 'tmp'), XDG_CACHE_HOME=str(output_root / 'cache'),
+                UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(output_root / 'validation.log'))
+
+
 def numerical_plan(ctx):
     arc = source_build.bank.previous.historic(BASE_DEVICE, ARC_GATE)
     legacy_root = str(B / ARC_GATE.replace('_', '-'))
@@ -74,19 +80,21 @@ def numerical_plan(ctx):
     require(env['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1' and env['NEOReadDebugKeys'] == '1'
             and env['EnableDirectSubmission'] == '0' and env['ZES_ENABLE_SYSMAN'] == '0',
             'preserve the verified Arc safety settings')
+    output_root = ROOT / 'arc-check'
     return dict(command=[str(ROOT / 'build' / ctx.TARGET), '--check-split-c2'],
-                environment=env, limits=ARC_LIMITS, shapes=[list(s) for s in SHAPES], summary=SUMMARY)
+                output_root=str(output_root), environment=arc_environment(env, output_root),
+                limits=ARC_LIMITS, shapes=[list(s) for s in SHAPES], summary=SUMMARY)
 
 
 def timing_plan(ctx):
     arc = numerical_plan(ctx)
     env = dict(arc['environment'], UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION')
-    env.pop('UR_LOG_TRACING')
-    validation_log = env.pop('UR_LOG_VALIDATION')
+    for name in ('UR_LOG_TRACING', 'UR_LOG_VALIDATION', 'TMPDIR', 'XDG_CACHE_HOME'):
+        env.pop(name)
     return dict(stages=[
         dict(mode=f'time-{i}', reference=reference, repetition=repetition,
              command=[arc['command'][0], f'--time-split-c2-{reference}', str(repetition)],
-             validation_log=validation_log.replace('/validation.log', f'/time-{i}-validation.log'))
+             output_root=str(ROOT / f'arc-time-{i}'))
         for i, (reference, repetition) in enumerate(ORDER)],
         environment=env,
         shapes=[list(shape) for shape in TIMED_SHAPES], limits=dict(ARC_LIMITS, wall=300),
@@ -153,6 +161,7 @@ def context():
         ctx.build.check_inputs(row)
         require(row['recipe']['targets'] == row['recipe']['build_targets'] == [ctx.TARGET]
                 and not row['recipe']['environment'].get('LD_PRELOAD')
+                and row['plan']['host_output'] == str(HOST_OUTPUT)
                 and row['plan']['arc'] == numerical_plan(ctx)
                 and row['plan']['timing'] == timing_plan(ctx), 'use the frozen standalone Q6 component plan')
         if 'binary' in row:
@@ -190,6 +199,7 @@ def prepare(ctx):
                host_budget=dict(wall=120, cpu=120, rss_cap=1 << 30, text_cap=1 << 20,
                                 file_cap=2 << 20, total_cap=8 << 20),
                plan=dict(compile_target=ctx.TARGET, initial_native_checks=['--host', '--host-c5', CONTROL[0]],
+                         host_output=str(HOST_OUTPUT),
                          scope='Build the fixture only with the retained production DPC++ recipe.',
                          arc=numerical_plan(ctx), timing=timing_plan(ctx), closed_model_comparison=cohort,
                          dense_capture=capture,
@@ -317,16 +327,18 @@ def run_arc(ctx, mode):
         stages = schedule['stages']
         index = [stage['mode'] for stage in stages].index(mode)
         plan = dict(stages[index], limits=schedule['limits'])
-        plan['environment'] = dict(schedule['environment'], UR_LOG_VALIDATION=plan['validation_log'])
+        plan['environment'] = arc_environment(schedule['environment'], Path(plan['output_root']))
         require(row.get('numerical', {}).get('passed') and len(row['timing']) == index
                 and all(v['passed'] for v in row['timing']), 'commit numerical and all prior timing outcomes first')
     else:
         plan = row['plan']['arc']
         require('numerical' not in row and not row['timing'], 'require a fresh numerical check')
+    output_root = Path(plan['output_root'])
     require(row['stage'] == 'built' and row['passed'] and row['ownership_closed']
             and row['host']['passed'] and row['host']['ownership_closed']
             and plan['command'][0] == row['binary']['path']
-            and not (ROOT / f'owned-{mode}').exists(), 'require the same-build host outcomes and fresh Arc stage')
+            and output_root.parent == ROOT and not output_root.exists(),
+            'require the same-build host outcomes and fresh Arc stage')
     runtime = identity['runtime_manifest']
     pins = bank.previous.read(Path(runtime['path']))
     require(sha(runtime['path']) == runtime['sha256']
@@ -338,8 +350,11 @@ def run_arc(ctx, mode):
     cursor, = [line.removeprefix('-- cursor: ') for line in subprocess.check_output(
         ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15).splitlines()
         if line.startswith('-- cursor: ')]
-    owner = base.ownership.Owner(ROOT / f'owned-{mode}', lambda: ctx.write(
-        ROOT / f'{mode}-execution.json', dict(active=bool(owner.active), commands=owner.commands)))
+    output_root.mkdir(mode=0o700)
+    for name in ('tmp', 'cache'):
+        (output_root / name).mkdir(mode=0o700)
+    owner = base.ownership.Owner(output_root / 'owned', lambda: ctx.write(
+        output_root / 'execution.json', dict(active=bool(owner.active), commands=owner.commands)))
     outcome = dict(mode=mode, host_probe_accepted=False)
     try:
         entry, out, err = owner.run(mode, plan['command'], plan['environment'], P, **plan['limits'])
@@ -395,6 +410,6 @@ if __name__ == '__main__':
         elif sys.argv[1] == 'build':
             ctx.compile_fixture()
         elif sys.argv[1] == 'host':
-            existing.host(ctx, extra_controls=(CONTROL,))
+            existing.host(ctx, extra_controls=(CONTROL,), output_root=HOST_OUTPUT)
         else:
             run_arc(ctx, sys.argv[1])
