@@ -1565,8 +1565,21 @@ workers. The caller may claim only first-pair dependencies and publishes
 after the same completion counter reaches the original prefix length.
 Compare against the reserved caller in three independent pairs for each
 format. Record first-pair readiness and full pool retirement separately.
-Exercise the bounded claim in the CPU fixture first. Prepare, commit
-and run the CPU replay at a closed boundary between 96K comparison blocks.
+The build covers 633 compiler inputs. Both correctness processes pass
+bitwise outputs and the captured, empty and full-prefix callbacks. All six
+timing processes and 60 eligible samples close on the same executable.
+
+| Format | First-pair readiness time ratio | Full pool retirement time ratio |
+| --- | ---: | ---: |
+| IQ3_XXS | 0.9210 | 0.9309 |
+| IQ3_S | 0.8509 | 0.9197 |
+
+Both clocks improve in every pair. Advance the bounded claim to a
+decode-only model comparison using the same two-half graph and placement
+in both arms. Check first-half GPU submission, output and draft work,
+prefill, TTFT and whole decode. CPU replay accounts for the jobs and pool
+overhead. Measure the GPU overlap on the model route.
+[CPU replay result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-expert-prefix-help-current.json).
 
 The three earlier roots below have no active consumer beyond their receipts.
 The recovery audit verifies each earlier build's 210 Git project files,
@@ -2701,11 +2714,14 @@ rejects an expert-profile path inherited from the primary worktree. The
 fix at `e70438a35` verifies the profile and launcher bytes and uses the
 isolated worktree's paths for all arms. The nine plans are fixed at
 `41af84337`.
-The stock process at `6bdeddaf0` verifies 645 width-four replays, 81
-C4 calls and no C2 calls. It reads 96,204 fresh tokens in 102.295 s,
-reaches client TTFT in 103.634 s and emits 3,195 tokens at 16.301 tok/s.
-It accepts 2,173 of 2,248 drafts, exits normally and records no fresh Xe
-fault. Complete the original early and early C2 arms of this block next.
+The first block closes at `bf2ba21b7` with matching prompt bodies and
+prefill work and no fresh Xe faults. Stock, early and early C2 give
+16.301, 15.710 and 16.290 tok/s, with client TTFT of 103.634, 103.744
+and 105.187 seconds. Early C2 matches the stock output and reasoning
+hashes, 3,195 emitted tokens, 2,173/2,248 accepted drafts and 645 width-four
+replays. Its capture records 46 C4 and 70 C2 calls. Early emits 3,440 tokens,
+accepts 2,268/2,376 drafts and replays width four 680 times. Continue the
+remaining two blocks to decide whether any model speed gain repeats.
 [Original model result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The first build at `8bd19a9b9` compiles and links all three named targets.
