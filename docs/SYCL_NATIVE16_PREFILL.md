@@ -11778,6 +11778,20 @@ The standard length workload repeats a deterministic word stream with
 distinct run tags, and the PLE row cache persists across those requests.
 Use varied text and the standard workload to evaluate a scheduling change.
 
+The first scheduling candidate issues the first Direct I/O gather at layer
+0 under `STRATA_SYCL_PREFILL_PLE_EARLY_READ=1` on the recovered mode-16
+prefill source. Both arms use the same gather function and existing two
+host buffers. The layer-1 reader consumes the future before issuing its
+existing upload and the next gather. A request-local future joins the host
+read when layer 0 exits early. Admission requires the existing direct PLE
+binding and the relocated mode-16 workspace.
+Build the three-file delta against the exact observed source and rebuild
+all users of the changed prefill class declaration. Check actual dispatch,
+the first read's lifetime on cancellation, and the layer-1 and decode
+handoff before timing. Use a same-binary off/on comparison with separate
+first and subsequent timings. The original observer measures all 15
+gathers, so the candidate's first-gather savings remain to be measured.
+
 The closed comparison at `bdfd43ec9` preserves the 12 requests and
 passes the PLE reader's admission. After verifying all four terminal
 receipts against the pushed record, retired `host` and `0`–`3` under

@@ -65,6 +65,12 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const core::OnDevice on_device(m.device);
     const auto& g = *m.g;
     auto& ss = *m.ss;
+    static const bool early_ple_read = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_PLE_EARLY_READ");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_PLE_EARLY_READ must be 0 or 1");
+    }();
     const bool native16_on = native16::requested();
     const bool gdn_chunk_on=strata::gdn_chunk64::requested();
     const int gdn_columns = gdn_column_partitions();
@@ -1070,6 +1076,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     detail::ColdHostPhases::mark(detail::ColdHostPhases::Boundary::provisioned);
     using ColdLayer = detail::ColdHostPhases::LayerBoundary;
     detail::ColdHostPhases::set_layers(g.n_layers, n);
+    FirstPleRead first_ple;
     for (; layer < g.n_layers; ++layer) {
         detail::ColdHostPhases::mark_layer(layer, ColdLayer::begin);
         if (profile) profile->layer = int(layer);
@@ -1078,6 +1085,15 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         if (!drain()) { err = "prefill layer-major: layer boundary drain failed"; return false; }
         if (window_context && window_context->pending_prefix_upload) {
             err = "prefill prefix expert upload: pending publication at layer boundary"; return false;
+        }
+        if (layer == 0 && early_ple_read && effective_window_mode == 16 &&
+            relocated_job_buffers_on && !activate_native_dense_layer && ss.ple.ready() &&
+            ss.ple.table->mode() == strata::kernels::PleIo::Direct) {
+            // The current request owns both host buffers. Layer 0 has no PLE
+            // reader. Carry its first read to layer 1 before starting read 2.
+            first_ple.result = std::async(std::launch::async, [&m, tokens, n, initial_prev, &first_ple] {
+                return m.gather_ple_chunk(tokens, n, 0, 0, initial_prev, first_ple.error);
+            });
         }
         if (std::getenv("STRATA_TRACE")) {
             std::fprintf(stderr, "strata trace: layer-major layer %lld of %lld: loading %lld experts\n",
@@ -1294,7 +1310,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             return true;
         };
         detail::ColdHostPhases::mark_layer(layer, ColdLayer::run);
-        if (!run_impl(tokens, n, pos0, err)) return false;
+        auto* pending_ple = layer == 1 && first_ple.result.valid() ? &first_ple : nullptr;
+        if (!run_impl(tokens, n, pos0, err, pending_ple)) return false;
         detail::ColdHostPhases::mark_layer(layer, ColdLayer::drain);
         if (!drain()) { err = "prefill layer-major: pass drain failed"; return false; }
         if (score_gemm_on && core::is_qsa_layer(g, layer)) {
