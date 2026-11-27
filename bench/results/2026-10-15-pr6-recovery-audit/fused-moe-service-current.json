@@ -745512,10 +745512,10 @@
     ]
   },
   "q6_t4_c2_component_build_v2": {
-    "stage": "prepared",
+    "stage": "built",
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "ownership_closed": true,
     "fallbacks": {},
     "selected_native": {
@@ -745847,6 +745847,37 @@
     },
     "timing": [],
     "retention": "One standalone fixture through the C2 component decision. No serving engine build.",
+    "actual_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-t4-c2-component-v2/actual-inputs.json",
+      "sha256": "7970f83c7cd4fe9349f12f9c552be2606eaf2066cc02fb3fb27755adf970d694",
+      "compiler_files": 801,
+      "owned_generated_files": 0,
+      "external_link_files": 24,
+      "uncovered": 0,
+      "translation_units": [
+        "src/sycl/runtime.cpp",
+        "src/sycl/compat.cpp",
+        "src/sycl/command_profile.cpp",
+        "src/kernels/sycl/native_mmvq.cpp",
+        "src/kernels/sycl/native_q5_head.cpp",
+        "src/kernels/sycl/native_q3_esimd.cpp",
+        "src/kernels/sycl/native_q4_esimd.cpp",
+        "src/kernels/sycl/native_q2_esimd.cpp",
+        "src/kernels/sycl/native_iq4xs_esimd.cpp",
+        "src/kernels/sycl/native_iq_esimd.cpp",
+        "src/kernels/sycl/native_mmq_xmx.cpp",
+        "src/kernels/sycl/iq.cpp",
+        "src/kernels/sycl/q6_dpas_component.cpp",
+        "bench/sycl/q6_canonical.cpp"
+      ],
+      "source_commit": "23022cd8ac5b383cb29eb18aa2c570e1e36e42a8"
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/q6-t4-c2-component-v2/build/sycl_q6_canonical_component",
+      "sha256": "f69cba1420e7c7d76fac5e1e9034d6a22061faf9ee4735a24b72fe31bb51da64",
+      "bytes": 11707176,
+      "source_commit": "23022cd8ac5b383cb29eb18aa2c570e1e36e42a8"
+    },
     "project": {
       "root": "/home/yayoi/ghq/github.com/yqYo1/Strata/.worktree/verify-t4-c2-dpas",
       "revision": "23022cd8ac5b383cb29eb18aa2c570e1e36e42a8",
@@ -745912,6 +745943,28 @@
       ]
     },
     "build_environment_sha256": "3da25bc27e206a2c4bf8770a5e752db7aa997414a661c46141f729ed44d0551d",
-    "commands": []
+    "commands": [
+      {
+        "label": "configure",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "compile",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      },
+      {
+        "label": "dependencies",
+        "exit_code": 0,
+        "ownership_closed": true,
+        "error": null,
+        "errors": []
+      }
+    ]
   }
 }
