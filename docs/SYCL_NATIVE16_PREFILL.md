@@ -11962,12 +11962,13 @@ final-slot and RESTORE receipts remain reachable on `feature/sycl`.
 The sustained early-PLE comparison has no prepared plan or live owner.
 Defer it until the decode placement comparison closes. Reproduce the
 exact build or qualify a new one when the PLE comparison resumes. The
-retirement decision covers `build`, `cache`, `owned`, `ownership.json`,
-`source` and `tmp` under `dflash2-prefill-ple-early-native-v2`. It selects
-1,524 files totaling 223,826,316 bytes. The SHA-256 of the inventory sorted
+retirement under the measurement lock removed `build`, `cache`, `owned`,
+`ownership.json`, `source` and `tmp` from `dflash2-prefill-ple-early-native-v2`.
+It removed 1,524 files totaling 223,826,316 bytes. The SHA-256 of the inventory sorted
 by relative path with file sizes and hashes is
 `c389e9b65e3aa889750bab062c21033e05549b3abebbe45572698e85f5a1d390`.
-Keep the original `record.json` and the two separate phase references.
+The original `record.json` and the two separate phase references match
+their pre-retirement hashes.
 
 The closed comparison at `bdfd43ec9` preserves the 12 requests and
 passes the PLE reader's admission. After verifying all four terminal
