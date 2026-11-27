@@ -1390,8 +1390,22 @@ exact 384 single and 80 paired GGML parity and row-canary result. This host
 fixture uses the same CPU library as the serving executable.
 It exits zero and returns that exact result with empty stderr and closed
 ownership. The compact proof pins it to the serving executable's build
-receipt under `dflash2_decode_iq3s_parity_v1`. The bounded model checks
-and repeated timing comparison remain open.
+receipt under `dflash2_decode_iq3s_parity_v1`.
+
+The two [bounded model runs](../bench/dflash2_decode_iq3s_model.py) read
+33,287 tokens through the dedicated layer-major prefill and emit the same
+48 IDs with 21 of 30 DFlash2 drafts accepted. The CPU census matches all
+48 expert residency masks and 17,075 jobs, including 2,970 single-token
+IQ3_S jobs. Both processes exit normally with quiet validation and no fresh
+Xe faults. The census establishes eligible work. The production executable
+omits the test-only per-row selector counter.
+
+The [96K timing comparison](../bench/dflash2_decode_iq3s_speed.py) changes
+only this selector on the same executable. It uses three counterbalanced
+independent pairs with the fixed global expert map and the two thinking
+workloads. Check prompt time, TTFT and decode separately. Record matched and
+changed decode work for each pair. Physical context, RESTORE, agent sessions
+and weak draft acceptance remain qualification gates for this candidate.
 
 The timed CPU fixture has no live executable consumer. Its source and results
 are reachable from `feature/sycl` at `14180e833`. The recovery check matches
