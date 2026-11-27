@@ -2234,12 +2234,17 @@ starting a verifier window.
 
 The [build controller](../bench/dflash2_decode_phase_placement_build.py)
 checks that the generator is the only native change from the coherent
-caller-help build. It uses its recorded build recipe and pins the full
+caller-help build. It checks the retained full recipe receipt against the
+committed compact build record and pins the full
 build and compiler inputs, including the same-build scratch and full-context
 fixtures. Keep the retained primary executable through this comparison.
 Set the same T4 schedule and caller policy in both placement arms.
-Compile after the active caller-help campaign closes and the extra
-generation is reviewed for retirement.
+The caller-help campaign is closed and its extra executable is retired.
+The source-only preflight at `d43350b2a` verified 1,338 project inputs,
+the two pinned dependencies, the four planned targets and both ranking
+profile hashes. The preflight did not configure, compile or execute a GPU
+fixture. Reconcile the remaining retained PLE and decode-reference consumers
+before starting the next build generation.
 
 The [bounded check](../bench/dflash2_decode_phase_placement_check.py) starts
 with the scratch host and Arc checks for fill ranges and retirement. It
