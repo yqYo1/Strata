@@ -64,6 +64,8 @@ SCHEDULE_ARMS = ('split', 'by-expert')
 SCHEDULE_SHAPES = ((0, 0), (18, 2), (18, 4), (21, 2), (21, 4))
 SCHEDULE_MODE = False
 PUBLICATION_MODE = False
+HANDOFF_MODE = False
+HANDOFF_ARMS = ((6, 'handoff-split'), (5, 'handoff-split'), (5, 'handoff-expert'), (5, 'handoff-early'))
 SCHEDULE_PROTOCOL = (
     'Replay the same eight held-out width-two and width-four batches with six physical cores and the '
     'DFlash2 decode IQ3 pair selection. Use the same compiled expert arithmetic, inputs, weights and '
@@ -122,6 +124,30 @@ def select_publication():
     )
     CHECK_ORDER = [(0, 5, 'publication')]
     ORDER = []
+
+
+def select_handoff():
+    global HANDOFF_MODE, ROOT, BUILD, RESULT, PROTOCOL, CHECK_ORDER, ORDER
+    select_schedule()
+    HANDOFF_MODE = True
+    ROOT = B / 'cpu-fixed-expert-handoff-v1'
+    BUILD = ROOT / 'build'
+    RESULT = recipe.RESULT.with_name('cpu-fixed-expert-handoff-current.json')
+    PROTOCOL = (
+        'Use only the four captured width-four batches, with all original jobs, rows and packed weights. '
+        'Keep five pinned workers in every arm. Compare stock with caller participation, stock with a '
+        'reserved caller, by-expert with a reserved caller, and by-expert early publication with a reserved '
+        'caller. Time both format cells separately, with five samples in each of three independent '
+        'counterbalanced blocks. The early callback records the actual first-pair readiness clock. '
+        'Record the remaining host time through pool retirement without GPU work. '
+        'Keep exact output, guard, affinity, work, sample floor and timer-overhead checks. '
+        'A format is eligible for an overlap trial only if its early whole-pass time less its measured '
+        'post-publication tail beats the six-core stock time in all three blocks. '
+        'This ideal headroom is a CPU-only necessary condition and includes no GPU split or submission cost.'
+    )
+    CHECK_ORDER = [(0, *arm) for arm in HANDOFF_ARMS]
+    ORDER = [(round_id, *arm) for round_id, arms in enumerate(
+        (HANDOFF_ARMS, HANDOFF_ARMS[::-1], HANDOFF_ARMS[2:] + HANDOFF_ARMS[:2])) for arm in arms]
 
 
 def atomic_json(path, data):
@@ -257,6 +283,13 @@ def prepare():
     project = recipe.pins(P, revision, PROJECT)
     ggml = recipe.pins(recipe.GGML, recipe.GGML_REV, ('ggml',))
     fixture = fixture_from_capture()
+    if HANDOFF_MODE:
+        relative = (RESULT.parent / 'cpu-fixed-expert-schedule-current.json').relative_to(P)
+        prior = json.loads(git(P, 'show', f'b4500d7f5:{relative}'))
+        need(prior['stage'] == 'closed' and prior['ownership_closed'] and not prior['active']
+             and prior['fixture'] == fixture
+             and [(x['gu'], x['eligible']) for x in prior['schedule_result']['shapes']
+                  if x['width'] == 4] == [(18, True), (21, True)], 'width-four scheduling evidence changed')
     weight_pin = weights(fixture)
     need(sha(recipe.SDK) == recipe.SDK_SHA, 'pinned SDK manifest changed')
     allowed = json.loads(recipe.SDK.read_text())
@@ -391,6 +424,8 @@ def scheduling_shapes(fixture):
         shapes.append((gu, width, byte_count, jobs))
     need(sum(s[2] for s in shapes) == fixture['logical_bytes']
          and sum(s[3] for s in shapes) == fixture['jobs'], 'shape work must cover the full schedule')
+    if HANDOFF_MODE:
+        return [shape for shape in shapes if shape[1] == 4]
     return [(0, 0, fixture['logical_bytes'], fixture['jobs']), *shapes]
 
 
@@ -409,9 +444,11 @@ def summaries(row, text, mode, cores, timed):
     need(placement['host_cpu'] == host and placement['workers'] == workers
          and placement['caller_computes'] == (cores == 6), 'replay caller and worker placement')
     result = dict(mode=mode, cores=cores, placement=placement)
-    schedule = mode in SCHEDULE_ARMS
+    schedule = mode in SCHEDULE_ARMS or HANDOFF_MODE
+    early = mode == 'handoff-early'
     if schedule:
-        need(cores == 6 and all(v.get('schedule') == mode for v in
+        need(((cores, mode) in HANDOFF_ARMS if HANDOFF_MODE else cores == 6)
+             and all(v.get('schedule') == mode for v in
              by_kind['replay_input'] + by_kind['timer_check'] + by_kind['sample']),
              'wrong decode expert schedule')
     if mode in LOCALITY_ARMS:
@@ -421,8 +458,16 @@ def summaries(row, text, mode, cores, timed):
         need(not by_kind['locality_input'] and not by_kind['locality_workers'], 'unexpected locality records')
     if mode == 'pool' or schedule:
         actual, = by_kind['replay_input']
-        need(all(actual[k] == fixture[k] for k in ('jobs', 'entries', 'logical_bytes', 'unique_blobs', 'unique_bytes'))
-             and actual['batches'] == 8 and actual['threads'] == cores and actual['host_works'] == (cores == 6)
+        expected = {k: fixture[k] for k in ('jobs', 'entries', 'logical_bytes', 'unique_blobs', 'unique_bytes')}
+        batch_count = 8
+        if HANDOFF_MODE:
+            batches = [batch for batch in json.loads(fixture['blocks']) if batch['width'] == 4]
+            batch_count = len(batches)
+            expected.update(jobs=sum(len(batch['jobs']) for batch in batches),
+                            entries=sum(len(rows) for batch in batches for _, rows in batch['jobs']),
+                            logical_bytes=sum(len(batch['jobs']) * batch['fmt'][2] for batch in batches))
+        need(all(actual[k] == n for k, n in expected.items())
+             and actual['batches'] == batch_count and actual['threads'] == cores and actual['host_works'] == (cores == 6)
              and actual['serial_output_equal'] and actual['verified_affinity'], 'pool replay conservation or numerics')
     else:
         need(not by_kind['replay_input'], 'unexpected expert work in the read control')
@@ -443,7 +488,8 @@ def summaries(row, text, mode, cores, timed):
     for i, (gu, width, byte_count, visits) in enumerate(cases):
         timer = timings[i]
         cell_samples = samples[5*i:5*(i+1)]
-        need(0 < timer['query_s'] < timer['fastest_pass_s'] * .001, 'timer overhead admission')
+        need(0 < timer['query_s'] * (6 if early else 1) < timer['fastest_pass_s'] * .001,
+             'timer overhead admission')
         if schedule:
             need(all((v.get('gu'), v.get('width'), v.get('mode'), v.get('threads')) == (gu, width, label, cores)
                      for v in (timer, *cell_samples)), 'wrong measured scheduling shape')
@@ -463,10 +509,21 @@ def summaries(row, text, mode, cores, timed):
                 phases = [sample[k] for k in ('gu_s', 'q_s', 'down_s')]
                 need(all(math.isfinite(v) and v >= 0 for v in phases) and sum(phases) <= sample['wall_s'] + .001,
                      'bounded disjoint pool stage times')
-                if mode == 'by-expert':
+                if mode in ('by-expert', 'handoff-expert', 'handoff-early'):
                     need(phases == [0, 0, 0], 'by-expert work has no disjoint stage clocks')
-        cells.append(dict(gu=gu, width=width, median_s_per_pass=statistics.median(
-            v['wall_s'] / v['iterations'] for v in cell_samples)))
+            if early:
+                prefix, tail = sample['prefix_s'], sample['tail_s']
+                need(sample['publications'] == 2 * repeats and 0 < prefix < sample['wall_s']
+                     and 0 < tail and prefix + tail <= sample['wall_s'] + 1e-8,
+                     'invalid early-publication timing or call count')
+        cell = dict(gu=gu, width=width, median_s_per_pass=statistics.median(
+            v['wall_s'] / v['iterations'] for v in cell_samples))
+        if early:
+            cell.update(prefix_s_per_pass=statistics.median(s['prefix_s'] / s['iterations'] for s in cell_samples),
+                        tail_s_per_pass=statistics.median(s['tail_s'] / s['iterations'] for s in cell_samples),
+                        ideal_s_per_pass=statistics.median((s['wall_s'] - s['tail_s']) / s['iterations']
+                                                          for s in cell_samples))
+        cells.append(cell)
     if schedule:
         result.update(schedule_cells=cells, shape_timers=timings[1:])
     return dict(result, samples=samples, timer=timings[0], median_s_per_pass=cells[0]['median_s_per_pass'])
@@ -544,6 +601,8 @@ def execute(stage):
                 elif mode in LOCALITY_ARMS:
                     layout, batch = LOCALITY_ARMS[mode]
                     args = ['replay-locality', str(ROOT / 'replay.txt'), str(batch), layout, stage]
+                elif HANDOFF_MODE:
+                    args = ['replay-handoff', str(ROOT / 'replay.txt'), mode, str(cores), stage]
                 elif mode in SCHEDULE_ARMS:
                     args = ['replay-schedule', str(ROOT / 'replay.txt'), mode, stage]
                 elif mode == 'pool':
@@ -567,6 +626,8 @@ def execute(stage):
                           for x in measured}) == len(ORDER), 'independent replay process count')
                 if LOCALITY_MODE:
                     row['locality_pairs'] = locality_pairs(measured)
+                elif HANDOFF_MODE:
+                    row['handoff_result'] = handoff_result(measured)
                 elif SCHEDULE_MODE:
                     row['schedule_result'] = schedule_result(measured)
                 else:
@@ -581,8 +642,9 @@ def execute(stage):
     finally:
         row.update(active=bool(owner.active), ownership_closed=not owner.active and all(owned.closed(e) for e in owner.commands))
         save(row)
-    print(row['stage'], row.get('locality_pairs', row.get('schedule_result', row.get('medians_s_per_pass', {}))),
-          flush=True)
+    result = next((row[k] for k in ('locality_pairs', 'schedule_result', 'handoff_result', 'medians_s_per_pass')
+                   if k in row), {})
+    print(row['stage'], result, flush=True)
 
 
 def locality_pairs(measured):
@@ -619,6 +681,29 @@ def schedule_result(measured):
                 eligible=all(cell['eligible'] for cell in cells), shapes=cells[1:])
 
 
+def handoff_result(measured):
+    shapes = []
+    width_four_formats = [gu for gu, width in SCHEDULE_SHAPES if width == 4]
+    for idx, gu in enumerate(width_four_formats):
+        blocks = []
+        for start in range(0, len(measured), len(HANDOFF_ARMS)):
+            block = measured[start:start + len(HANDOFF_ARMS)]
+            arms = {(x['cores'], x['mode']): x['schedule_cells'][idx] for x in block}
+            need(set(arms) == set(HANDOFF_ARMS) and len({x['round'] for x in block}) == 1
+                 and all((c['gu'], c['width']) == (gu, 4) for c in arms.values()), 'unmatched handoff block')
+            stock, reserved, expert, early = [arms[arm] for arm in HANDOFF_ARMS]
+            stock_time = stock['median_s_per_pass']
+            blocks.append(dict(
+                split_caller_s=stock_time, split_reserved_s=reserved['median_s_per_pass'],
+                expert_reserved_s=expert['median_s_per_pass'], early_reserved_s=early['median_s_per_pass'],
+                readiness_s=early['prefix_s_per_pass'], tail_s=early['tail_s_per_pass'],
+                ideal_headroom_s=stock_time - early['ideal_s_per_pass']))
+        need(len(blocks) == 3, 'three independent handoff blocks required')
+        shapes.append(dict(gu=gu, width=4, blocks=blocks,
+                           eligible=all(b['ideal_headroom_s'] > 0 for b in blocks)))
+    return shapes
+
+
 if __name__ == '__main__':
     if sys.argv[1:2] == ['--locality']:
         sys.argv.pop(1)
@@ -629,6 +714,9 @@ if __name__ == '__main__':
     elif sys.argv[1:2] == ['--publication']:
         sys.argv.pop(1)
         select_publication()
+    elif sys.argv[1:2] == ['--handoff']:
+        sys.argv.pop(1)
+        select_handoff()
     stages = ('prepare', 'build', 'check') if PUBLICATION_MODE else ('prepare', 'build', 'check', 'measure')
     need(sys.executable == '/home/yayoi/.local/share/strata-sycl/venv/bin/python3' and len(sys.argv) == 2
          and sys.argv[1] in stages, 'pinned Python and one declared CPU replay stage required')

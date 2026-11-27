@@ -188,21 +188,29 @@ struct Inputs {
         return {gu_error,down_error,pool_error,q2_ggml_gap};
     }
 };
+struct PublicationTiming {
+    Clock::duration prefix{}, tail{};
+    uint64_t calls = 0;
+};
+
 template<class F> void measure(F pass, uint64_t bytes, uint64_t visits, const std::string& fields,
-                              cpu::ExpertPool* pool = nullptr, bool audit_host = false) {
+                              cpu::ExpertPool* pool = nullptr, bool audit_host = false,
+                              const PublicationTiming* publication = nullptr) {
     pass();
     double fastest=1e9;
     for(int i=0;i<5;++i) { const auto t=Clock::now(); pass(); fastest=std::min(fastest,seconds(t)); }
     const auto timer_start=Clock::now();
     for(int i=0;i<10000;++i) { const auto t=Clock::now(); (void)t; }
     const double timer_s=seconds(timer_start)/10000;
-    require(fastest>0 && timer_s/fastest<.001,"per-pass timer overhead exceeds0.1%");
+    const int queries = publication ? 6 : 1; // Three clocks for each of the two layer batches.
+    require(fastest>0 && queries*timer_s/fastest<.001,"per-pass timer overhead exceeds0.1%");
     std::cout<<"{\"kind\":\"timer_check\","<<fields<<",\"query_s\":"<<timer_s<<",\"fastest_pass_s\":"<<fastest<<"}"<<std::endl;
     // Integer complete passes, fixed minimum time. An unusually slow pilot
     // cannot select an undersized batch. Preserve the original >=1s gate.
     for(int r=0;r<reps;++r) {
         const double gu=pool?pool->ms_multi_gu:0, q=pool?pool->ms_multi_q:0, down=pool?pool->ms_multi_down:0;
         const auto pool_bytes = pool ? pool->multi_bytes : 0;
+        const PublicationTiming prior = publication ? *publication : PublicationTiming{};
         const auto h0 = audit_host ? cpu_seconds(RUSAGE_THREAD) : 0;
         const auto c0=cpu_seconds(); const auto t0=Clock::now();
         uint64_t iterations=0; double elapsed;
@@ -218,6 +226,12 @@ template<class F> void measure(F pass, uint64_t bytes, uint64_t visits, const st
             <<",\"requested_bytes\":"<<bytes*iterations<<",\"wall_s\":"<<wall<<",\"cpu_s\":"<<process_cpu;
         if(pool) std::cout<<",\"gu_s\":"<<(pool->ms_multi_gu-gu)*.001<<",\"q_s\":"<<(pool->ms_multi_q-q)*.001<<",\"down_s\":"<<(pool->ms_multi_down-down)*.001;
         if (audit_host) std::cout << ",\"host_cpu_s\":" << host_cpu;
+        if (publication) {
+            using Seconds = std::chrono::duration<double>;
+            std::cout << ",\"prefix_s\":" << Seconds(publication->prefix - prior.prefix).count()
+                      << ",\"tail_s\":" << Seconds(publication->tail - prior.tail).count()
+                      << ",\"publications\":" << publication->calls - prior.calls;
+        }
         std::cout<<"}"<<std::endl;
     }
 }
@@ -445,12 +459,34 @@ struct ReplayBatch {
     }
 
 #ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
-    void validate_publication(cpu::ExpertPool& pool) {
+    int first_pair_prefix() const {
         const int total = static_cast<int>(jobs.size());
         const int prefix = static_cast<int>(std::count_if(first_token.begin(), first_token.end(),
                                                          [](int token) { return token < 2; }));
         require(width == 4 && first_token.size() == jobs.size() && std::is_sorted(first_token.begin(), first_token.end())
                 && 0 < prefix && prefix < total, "exact T4 publication prefix required");
+        return prefix;
+    }
+
+    void time_publication(cpu::ExpertPool& pool, int prefix, PublicationTiming& stats) {
+        Clock::time_point ready;
+        const auto publish = +[](void* context) noexcept {
+            *static_cast<Clock::time_point*>(context) = Clock::now();
+        };
+        const cpu::ExpertPool::DecodePublication publication{prefix, publish, &ready, false};
+        const auto start = Clock::now();
+        require(pool.run_decode_native_by_expert(*format, jobs.data(), static_cast<int>(jobs.size()), &publication),
+                "timed publication refused the replay batch");
+        const auto end = Clock::now();
+        require(start <= ready && ready <= end, "timed publication order");
+        stats.prefix += ready - start;
+        stats.tail += end - ready;
+        ++stats.calls;
+    }
+
+    void validate_publication(cpu::ExpertPool& pool, bool report = true) {
+        const int total = static_cast<int>(jobs.size());
+        const int prefix = first_pair_prefix();
         validate(pool, true);
 
         std::vector<std::vector<float>> expected;
@@ -495,9 +531,10 @@ struct ReplayBatch {
             }
         }
         for (const auto& in : acts) if (in) in->check();
-        std::cout << "{\"kind\":\"publication_input\",\"jobs\":" << total << ",\"prefix_jobs\":" << prefix
-                  << ",\"gu\":" << format->gu_type << ",\"logical_bytes\":" << total * format->bytes
-                  << ",\"cases\":" << cases << ",\"bitwise\":true}" << std::endl;
+        if (report)
+            std::cout << "{\"kind\":\"publication_input\",\"jobs\":" << total << ",\"prefix_jobs\":" << prefix
+                      << ",\"gu\":" << format->gu_type << ",\"logical_bytes\":" << total * format->bytes
+                      << ",\"cases\":" << cases << ",\"bitwise\":true}" << std::endl;
     }
 #endif
 };
@@ -628,8 +665,15 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
         return;
     }
 
+    const bool handoff = schedule.starts_with("handoff-");
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+    const bool early = schedule == "handoff-early";
+#endif
     uint64_t jobs = 0, entries = 0, visits = 0, unique_blobs = 0, unique_bytes = 0;
+    size_t replay_count = 0;
     for (const auto& batch : batches) {
+        if (handoff && batch.width != 4) continue;
+        ++replay_count;
         jobs += batch.jobs.size();
         visits += batch.jobs.size() * batch.format->bytes;
         for (const auto& job : batch.jobs) entries += job.nt;
@@ -637,17 +681,26 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
     for (const auto& layer : layers)
         for (const auto& blob : layer.weights)
             if (blob) { ++unique_blobs; unique_bytes += blob->bytes; }
-    const bool by_expert = schedule == "by-expert";
+    const bool by_expert = schedule == "by-expert" || schedule == "handoff-expert";
     const std::string schedule_field = schedule.empty() ? "" : ",\"schedule\":\"" + std::string(schedule) + "\"";
     auto validate = [&] {
-        for (auto& batch : batches) batch.validate(pool, by_expert);
+        for (auto& batch : batches) {
+            if (handoff && batch.width != 4) continue;
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+            if (early) {
+                batch.validate_publication(pool, false);
+                continue;
+            }
+#endif
+            batch.validate(pool, by_expert);
+        }
         for (const auto& layer : layers)
             for (const auto& blob : layer.weights) if (blob) blob->check();
         verify_placement(topo.host_core, worker_cores);
     };
     validate();
     report_placement(topo.host_core, worker_cores, host_works);
-    std::cout << "{\"kind\":\"replay_input\",\"batches\":" << batches.size() << ",\"jobs\":" << jobs
+    std::cout << "{\"kind\":\"replay_input\",\"batches\":" << replay_count << ",\"jobs\":" << jobs
               << ",\"entries\":" << entries << ",\"logical_bytes\":" << visits
               << ",\"unique_blobs\":" << unique_blobs << ",\"unique_bytes\":" << unique_bytes
               << ",\"threads\":" << threads << ",\"host_works\":" << (host_works ? "true" : "false")
@@ -655,10 +708,12 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
     if (timing) {
         const auto fields = "\"mode\":\"replay\",\"threads\":" + std::to_string(threads) + schedule_field;
         const auto full_fields = schedule.empty() ? fields : fields + ",\"gu\":0,\"width\":0";
-        measure([&] { for (auto& batch : batches) batch.run(pool, by_expert); },
-                visits, jobs, full_fields, &pool, true);
+        if (!handoff)
+            measure([&] { for (auto& batch : batches) batch.run(pool, by_expert); },
+                    visits, jobs, full_fields, &pool, true);
         if (!schedule.empty()) {
             for (int gu : {18, 21}) for (int width : {2, 4}) {
+                if (handoff && width != 4) continue;
                 std::vector<ReplayBatch*> selected;
                 uint64_t shape_bytes = 0, shape_jobs = 0;
                 for (auto& batch : batches) {
@@ -670,6 +725,17 @@ void route_replay(const char* descriptor, const cpu::CpuTopology& topo, int thre
                 require(selected.size() == 2, "expected two captured batches per scheduling shape");
                 const auto shape_fields = fields + ",\"gu\":" + std::to_string(gu)
                     + ",\"width\":" + std::to_string(width);
+#ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
+                if (early) {
+                    PublicationTiming stats;
+                    const std::array<int, 2> prefixes{selected[0]->first_pair_prefix(), selected[1]->first_pair_prefix()};
+                    measure([&] {
+                        for (size_t i = 0; i < selected.size(); ++i)
+                            selected[i]->time_publication(pool, prefixes[i], stats);
+                    }, shape_bytes, shape_jobs, shape_fields, &pool, true, &stats);
+                    continue;
+                }
+#endif
                 measure([&] { for (auto* batch : selected) batch->run(pool, by_expert); },
                         shape_bytes, shape_jobs, shape_fields, &pool, true);
             }
@@ -685,6 +751,13 @@ int main(int argc,char** argv) try {
 #ifdef STRATA_CPU_EXPERT_SCHEDULE_TEST
     if (argc == 3 && std::string_view(argv[1]) == "replay-publication-check") {
         route_replay(argv[2], topo, 5, false, -1, false, "publication");
+    } else if (argc == 6 && std::string_view(argv[1]) == "replay-handoff") {
+        const std::string_view arm(argv[3]), mode(argv[5]);
+        const std::string_view threads(argv[4]);
+        require((arm == "handoff-split" || arm == "handoff-expert" || arm == "handoff-early") &&
+                (threads == "5" || (threads == "6" && arm == "handoff-split")) &&
+                (mode == "measure" || mode == "check"), "width-four handoff replay arm");
+        route_replay(argv[2], topo, threads == "6" ? 6 : 5, mode == "measure", -1, false, arm);
     } else if (argc == 5 && std::string_view(argv[1]) == "replay-schedule") {
         const std::string_view schedule(argv[3]), mode(argv[4]);
         require((schedule == "split" || schedule == "by-expert") &&

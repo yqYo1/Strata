@@ -1524,6 +1524,20 @@ caller in this fixture. Measure the same width-four work with the
 caller reserved before attributing an overlap gain to the early callback.
 [CPU scheduling results](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-expert-schedule-current.json).
 
+The width-four `--handoff` replay measures four arms across the same four
+captured layers. All use five pinned workers. The caller either computes
+with the stock scheduler, stays reserved with the stock scheduler, stays
+reserved with the by-expert scheduler, or observes first-pair readiness
+in the by-expert scheduler. Measure five samples per format and arm in
+three independently started, counterbalanced blocks. Use the identical
+137 expert jobs and bitwise output checks. The early arm divides the pool
+call at the actual publication callback, retaining time through retirement
+and the outer wall clock. The measured tail bounds the available CPU-side
+overlap. A format can advance when hiding that tail would leave positive
+headroom against stock with caller participation in each block. GPU graph
+costs and actual overlap need their own measurement.
+[CPU replay controller](../bench/sycl/cpu_roofline/fixed_replay.py).
+
 Keep the completed `cpu-fixed-expert-schedule-v2` CPU build as the
 fixed-work reference for the reserved-caller comparison. Its verified
 executable hash also matches the earlier publication and schedule builds.
