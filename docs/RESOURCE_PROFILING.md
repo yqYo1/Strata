@@ -809,6 +809,33 @@ compiler inputs, 25 link inputs and all terminal outcomes. Keep
 2,524,016 bytes with sorted path, size and content-hash inventory SHA-256
 `1f7a46c38891fe54548e4eea09a22b30ddae2d8245fa923601d8a9ab3dfb2d68`.
 
+#### Conditional wrap in the decode KV replacement loop
+
+In the width-three cooperative resolver, replacing the per-slot remainder
+with a bounded increment and conditional wrap preserves the eviction
+order. The same-binary fixture at `036842526` validates second-chance
+eviction across the end of the ring, overflow with all residents
+protected, reset of an invalid hand, and the full physical last cell.
+The eight independent processes complete normally with exact map,
+counter and payload checks and no fresh Xe faults.
+
+| Missing pages of 1,539 | Cooperative process medians (µs) | Conditional-wrap process medians (µs) | Paired time ratios |
+| ---: | --- | --- | --- |
+| 0 | 529.77, 530.16, 530.31 | 529.80, 530.95, 530.07 | 1.00007, 1.00149, 0.99955 |
+| 16 | 2,129.00, 2,129.60, 2,131.30 | 1,453.78, 1,452.68, 1,454.64 | 0.68285, 0.68214, 0.68251 |
+| 64 | 2,192.54, 2,191.95, 2,193.73 | 1,503.58, 1,505.23, 1,505.85 | 0.68577, 0.68671, 0.68643 |
+| 384 | 2,816.36, 2,815.25, 2,815.89 | 2,076.68, 2,076.51, 2,076.98 | 0.73736, 0.73759, 0.73759 |
+
+The candidate passes the component decision. It reduces the timed
+graph-launch-to-completion interval at all three miss densities. The
+zero-miss median is within the matched control range. The measured route
+uses a cooperative planner. Apply and measure the same arithmetic change
+independently in the currently selected scalar planner before aiming for
+an isolated decode-only model trial. The timing fixture resets the map;
+measure actual evictions and usable throughput in an HTTP model request
+before claiming a model-level gain. Keep prompt dispatch independent.
+[Exact comparison and decision](https://github.com/yqYo1/Strata/commit/1b671df2e1f23f2f9743817966f171232f5d05f8).
+
 #### Width-four KV cache working set
 
 The retained K8V8 verifier at `968e71988` scores four-cell blocks and
