@@ -2140,6 +2140,43 @@ Keep the stock path. The measured stock TTFT spans 0.404 s for code and
 unresolved. The compact result retains all samples and the verdict under
 `dflash2_decode_ranked_refill_speed_v1`.
 
+#### Placement after early decode output
+
+Evaluate the measured blend by installing it during decode and restoring
+stock before request completion. Use stock residency throughout prefill
+and for at least the first 32 native outputs.
+The serving loop flushes emitted tokens before drafting and closes the
+round before the next verifier call. Check that first nonempty client
+output precedes the placement change, since a flushed native token can
+have no visible content. Change only the 979 verified tail slots after
+the last stock reader retires. Restore those slots to stock after the
+last decode reader retires and before the request completes. The next
+prompt, including a resumed conversation, starts with the stock map.
+Skip the experimental switch when the output budget cannot amortize it.
+[Serving window](../src/program/generate.cpp#L7122) ·
+[Residency publication contract](../include/strata/core/expert_cache.hpp#L145).
+
+The same slot geometry would request 2,010,419,200 H2D bytes each way.
+The 6.292–6.485 GB/s bulk-copy calibration gives 0.620–0.639 seconds for
+the two payloads before waits and publication. Holding the previous
+median rate difference fixed gives a copy-only crossover after 138–142
+additional code outputs or 327–337 additional prose outputs. These
+estimates use the ranked-refill medians (15.604 → 16.789 and
+11.184 → 11.427 tok/s). Output and acceptance changed in that comparison.
+Measure the actual switch and restore clocks, time to first nonempty
+client output, the inter-token gap at the switch and throughput with
+both placement costs included.
+
+Start with a component check for changed-slot sizes, reader retirement,
+CPU and GPU map publication, cancellation and partial-copy failure.
+Recover the original profile and the stock control from `a57499a15`.
+Keep ordinary adaptive swaps off in both arms. Before a long comparison,
+verify that the stock prefix, prefill and early decode are matched, and
+that two successive requests on the same process begin with the stock
+map. The long comparison uses code and prose in independent matched
+processes with equal inputs and reports draft totals and task output.
+Run this separately from the caller-help scheduling change.
+
 The closed comparison at `a57499a15` is reachable on `feature/sycl`.
 The recovery audit matched 1,327 original source files, 520 committed
 build-control inputs, the compiler and link inputs, 141 fresh objects and
