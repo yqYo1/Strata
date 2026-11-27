@@ -1619,11 +1619,16 @@ goes from zero to 40,393 prefix jobs. Decode improves from 15.400 to
 15.908 tok/s (+3.30%), prefill from 939.11 to 941.96 tok/s and client
 TTFT from 103.811 to 103.498 s. Both owners close without a fresh Xe
 fault. Repeat with the reversed order and finish the three-pair screen.
-The second helper process closes at 15.976 tok/s and 103.626 s TTFT.
-It matches the first helper's request, answer and logical prefill work,
-with different reasoning and 3,358 total outputs. It accepts 2,236 of
-2,327 drafts and replays 667 width-four windows. Compare its work and
-rate with the reserved process from the same block.
+The reverse-order pair closes at 15.679 tok/s reserved and 15.976 tok/s
+with help. The request, visible answer and logical prefill work match.
+The reserved arm generates 3,440 tokens, accepts 2,268 of 2,376 drafts
+and replays 680 width-four windows. The helper arm has different reasoning,
+generates 3,358 tokens, accepts 2,236 of 2,327 drafts and replays 667
+width-four windows. Client TTFT is 103.465 s reserved and 103.626 s with
+help. The observed rate rises 1.89%, with different decode work. This
+pair fails the matched-work requirement of the speed screen. Both owners
+close without a fresh Xe fault. Finish the planned third pair to record
+whether the work difference recurs.
 [Original samples](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The 96K controller reads the compact short-model proof and the coherent
