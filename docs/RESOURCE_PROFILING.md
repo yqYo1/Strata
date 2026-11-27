@@ -2559,6 +2559,12 @@ averages 185.44–185.92 ms per verifier window against stock's
 193.14–193.70 ms, with fewer emitted tokens per window. Keep this as one
 observed block and finish the frozen repetitions.
 
+The second deferred/early pair reproduces that subcomparison. Rates are
+14.917 and 15.794 tok/s with matching output and reasoning hashes, draft
+counts, expert work and 680 T4 windows. Early saves 12.795 seconds, a
+5.874% rate gain with no fresh Xe fault. The second block's stock sample
+is still pending.
+
 The first block selects arithmetic preservation as a follow-up component
 question. The existing Q6 DPAS tile shares integer dot and per-column FP32
 accumulation code across repeat counts. Check two canonical C2 launches
@@ -2570,15 +2576,17 @@ passes, scope C2 to the eligible split decode steps and recheck long
 draft yield. This is a new candidate; restored yield and model speed
 remain unmeasured.
 
-The isolated component source is `88c34b4a5` on the local
-`verify/t4-c2-dpas` worktree. It adds canonical C2 to the existing Q6
-fixture and uses two independent, one-node graph submissions for split
-arms. The first-half check requires C4 bits for the first two columns
+The isolated component source is `88c34b4a5` with build and Arc checks at
+`f910436e5` on the local `verify/t4-c2-dpas` worktree. It adds canonical
+C2 to the existing Q6 fixture and uses two independent, one-node graph
+submissions for split arms. The first-half check requires C4 bits for the first two columns
 and untouched poison in the second half. The ten numerical cases include
 an unpadded output shape. The production verifier is unchanged. This
 worktree's next consumer is the standalone component build and Arc
-verification after the frozen 96K cohort closes. Compile and runtime
-validation remain pending.
+verification after the frozen 96K cohort closes. The controller recovers
+the T4 build recipe and prior checked Arc safety environment. The source
+and reference binding checks pass. Compile and runtime validation remain
+pending.
 [Original model result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The first build at `8bd19a9b9` compiles and links all three named targets.
