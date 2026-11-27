@@ -11959,10 +11959,17 @@ The historical checkout passes the same admission without changing those
 inputs. Source commit `58236dac5`, overlay `8a2a6c4b2` and all closed timing,
 final-slot and RESTORE receipts remain reachable on `feature/sycl`.
 
-The sustained early-PLE comparison has no prepared plan or live owner.
-Defer it until the decode placement comparison closes. Reproduce the
-exact build or qualify a new one when the PLE comparison resumes. The
-retirement under the measurement lock removed `build`, `cache`, `owned`,
+The source projection at `8f539f82e38e1ec2c3e4285a29928aa1a32f4ea3`
+adds the four original observer and scheduling files to `968e71988`.
+All 1,328 files selected by the original build manifest match their saved
+SHA-256 values from this single Git tree. Use that manifest to materialize
+the source after the 96K decode KV comparison closes. Build in a fresh
+owned directory and record the resulting executable identities. If they
+differ from the original, rerun the short route and STOP checks, paired
+first-request timing, physical last-slot and live RESTORE before the
+sustained comparison. The sustained run still has no live owner.
+
+The retirement under the measurement lock removed `build`, `cache`, `owned`,
 `ownership.json`, `source` and `tmp` from `dflash2-prefill-ple-early-native-v2`.
 It removed 1,524 files totaling 223,826,316 bytes. The SHA-256 of the inventory sorted
 by relative path with file sizes and hashes is
