@@ -268,14 +268,16 @@ struct QsaState {
 /// QSA layer. `with_rope = false` sizes a state that borrows it; `share_rope` points `st` at another state's table
 /// instead of building a copy (the session builds it once, in the first QSA layer).
 uint64_t qsa_state_bytes(const ModelGeometry& g, int64_t max_cells, bool with_rope = true, int64_t ring_cells = 0);
+enum class QsaKvResidentFloor { standard, dflash2_spec4_trial };
+inline constexpr int64_t kDflash2Spec4TrialKvCells = 12288;
 /// KV streaming: keep `cells` cells of each QSA layer in VRAM and the rest in pinned host memory (0: all in VRAM,
 /// the default). Set before sizing and initializing the session; a context that fits in `cells` is not streamed.
 /// Also puts the MTP drafter's K/V in a ring of its window (`ring_cells` of qsa_state_bytes/init; -1 forces a fully
 /// resident state).
-void qsa_set_kv_resident(int64_t cells);
+void qsa_set_kv_resident(int64_t cells, QsaKvResidentFloor floor = QsaKvResidentFloor::standard);
 int64_t qsa_kv_resident();
-/// The fewest resident cells a streamed layer may have: one verify window's selections (8 queries x 2,051 cells
-/// in whole blocks) must fit at once, with room to spare.
+/// Minimum for the selected session policy. The standard floor covers eight
+/// block selections; the DFlash2 trial is restricted to four-query windows.
 int64_t qsa_kv_resident_min();
 /// Pinned host bytes the streamed states hold (their host copies).
 uint64_t qsa_kv_host_bytes();

@@ -231,8 +231,7 @@ def compile_fixture():
             outputs[label] = out
         row['actual_inputs'] = census(row, outputs['dependencies'], outputs['compile'])
         binary = ROOT / 'build' / TARGET
-        with binary.open('rb') as stream:
-            require(stream.read(4) == b'\x7fELF', 'fixture ELF absent')
+        require(binary.is_file() and binary.stat().st_size > 0, 'fixture executable absent')
         row['binary'] = dict(path=str(binary), sha256=digest(binary), bytes=binary.stat().st_size,
                              source_commit=row['project']['revision'])
         current(frozen)

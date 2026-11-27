@@ -164,6 +164,23 @@ public:
     /// Plan v0.3 P6: the same for a native pack's layer (ggml-cpu arithmetic, `nact` activations).
     void run_split_multi_native(const NativeFmt& f, ExpertJobMulti* jobs, int n,
                                 NativeGuPhase phase = NativeGuPhase::Decode);
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
+    static bool supports_decode_native_by_expert(const NativeFmt& format) noexcept;
+    struct DecodePublication {
+        int prefix_jobs;
+        void (*ready)(void*) noexcept;
+        void* context;
+        bool after_all;
+        bool caller_helps_prefix = false;
+        int* caller_prefix_jobs = nullptr;
+    };
+    // Decode scheduler. Complete all three stages of an expert in one claim.
+    // A publication assigns the callback to the caller. The caller may also
+    // help with the prefix, publishing as soon as that prefix is complete.
+    // Borrowed buffers live through full pool retirement.
+    bool run_decode_native_by_expert(const NativeFmt& f, ExpertJobMulti* jobs, int n,
+                                     const DecodePublication* publication = nullptr);
+#endif
     static constexpr int kMaxSplitMulti = 96;
     /// run_split_multi's phases, accumulated ms: gate/up rows, the intermediate quantization, down rows.
     double ms_multi_gu = 0, ms_multi_q = 0, ms_multi_down = 0;
@@ -201,15 +218,23 @@ public:
 
 private:
     void worker(int id);
-    void drain(int id, ExpertScratch& scratch, uint32_t epoch);
+    template<bool PrefixOnly = false>
+    int drain(int id, ExpertScratch& scratch, uint32_t epoch, uint32_t prefix_jobs = 0);
     void run_phase(int mode, int n_tasks);
-    /// Claim the next job of batch `epoch`, or -1 (that batch is exhausted, or it is not the current one).
-    int claim(uint32_t epoch);
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
+    static constexpr int kDecodeByExpert = 7;
+    void finish_decode_native_expert(int id, unsigned expert);
+    const DecodePublication* decode_publication_ = nullptr;
+#endif
+    /// Claim the next job of the current batch, optionally restricting the caller to the ready prefix.
+    template<bool PrefixOnly = false>
+    int claim(uint32_t epoch, uint32_t prefix_jobs = 0);
     /// Publish the batch whose description the caller has just written: reset `done`, then `head`, then the epoch.
     uint32_t begin_batch(int n);
     /// The host's waits, bounded by `kStall`.
     void wait_parked(const char* what);
     void wait_done(int n);
+    void wait_completed(const std::atomic<uint32_t>& completed, int n);
     /// Bump `epoch_`, and wake the workers that went to sleep.  Every publish goes through here.
     void publish();
 
@@ -281,6 +306,9 @@ private:
     std::vector<SplitBufMulti> split_multi_;
     PoolAffinity affinity_ = PoolAffinity::All;
     CpuTopology topo_;
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
+    alignas(64) std::atomic<uint32_t> decode_prefix_done_{0};
+#endif
 };
 
 }  // namespace strata::kernels::cpu

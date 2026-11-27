@@ -491,6 +491,7 @@ struct Cursor {    uint8_t* p;    uint64_t used = 0;    template <typename T>   
 namespace {
 // KV streaming (docs/kv-streaming-design.md): 0 keeps every cell in VRAM.
 int64_t g_kv_resident = 0;
+QsaKvResidentFloor g_kv_resident_floor = QsaKvResidentFloor::standard;
 uint64_t g_kv_host_bytes = 0;
 
 /// How one state holds its K/V: `mode` as in QsaState::kv_mode, `slots` VRAM pages of `pages` logical ones.
@@ -529,9 +530,14 @@ uint64_t kv_pool_bytes(const QsaShapes& s, int64_t pages, bool hybrid, bool int8
 }
 }  // namespace
 
-void qsa_set_kv_resident(int64_t cells) { g_kv_resident = cells > 0 ? cells : 0; }
+void qsa_set_kv_resident(int64_t cells, QsaKvResidentFloor floor) {
+    g_kv_resident = cells > 0 ? cells : 0;
+    g_kv_resident_floor = floor;
+}
 int64_t qsa_kv_resident() { return g_kv_resident; }
-int64_t qsa_kv_resident_min() { return 20480; }
+int64_t qsa_kv_resident_min() {
+    return g_kv_resident_floor == QsaKvResidentFloor::dflash2_spec4_trial ? kDflash2Spec4TrialKvCells : 20480;
+}
 uint64_t qsa_kv_host_bytes() { return g_kv_host_bytes; }
 
 uint64_t qsa_state_bytes(const ModelGeometry& g, int64_t max_cells, bool with_rope, int64_t ring_cells) {

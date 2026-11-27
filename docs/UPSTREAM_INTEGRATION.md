@@ -16,10 +16,10 @@ records actual fetch and remote-ref observations, separately from integration.
 
 | Item | Recorded state |
 | --- | --- |
-| Last actual check | 2026-11-24 01:09:27 UTC / November 24 10:09:27 JST. Fetched main and verified its remote ref. |
-| Observed upstream | `6a6db7ff58c283cf28d2b913404b5fa31a767eaa`, 16 commits after v0.2.20 |
-| Published release | v0.2.20, at `a34979fc94f3d126b9bb8210f4ad311345688b52` |
-| Next check at the approximate 48-hour cadence | 2026-11-26 01:09 UTC / November 26 10:09 JST |
+| Last actual check | 2026-11-26 01:07:19 UTC / November 26 10:07:19 JST. Fetched main and both new releases and verified the advertised refs. |
+| Observed upstream | `c234774038d1c9249cb33637d27b895d47b39786`, one commit after v0.2.22 |
+| Published release | v0.2.22, at `b28ca95e3e6847f2d5e317994f253b66716deeaa` |
+| Next check at the approximate 48-hour cadence | 2026-11-28 01:07 UTC / November 28 10:07 JST |
 | Current upstream Python/setup/control/server/API/CLI/Web import | Partial import from `146df3c4` plus individually tested ports, including GPU-list ordering, three server/Web fixes and offline DFlash2 pack readiness. Service and app changes remain open. |
 | Complete native function ledger and required-function port | Incomplete |
 | Unmodified, hardware-tuned upstream performance evaluation | Incomplete |
@@ -34,14 +34,42 @@ own host evidence; that does not complete the native function ledger or full
 host validation. The interval's changed source and partial status are recorded
 under `current_sync.functional_import` in the status file.
 
-Since v0.2.18 the fetched interval adds 152 commits and changes 835 paths.
-The Qwen-facing feature review covers model discovery and API schema, setup and
+The November 26 check adds 321 commits and 482 changed paths after
+`6a6db7ff5`. Initial Qwen-facing scopes cover agent-session prefix reuse,
+the custom Responses tool keep-alive, update resume, and chat working-folder
+preservation. The custom Responses keep-alive from `e83de74d7` is ported in
+`26b95ce99` at the assembler's output boundary. The scripted HTTP regression
+at `630fd80d3` reproduces zero keep-alives during held custom input before
+the fix. Afterward, the three new cases pass, including the complete custom
+argument and ordinary function streaming. Responses and write-timeout
+validation records 49 passes and one optional `jsonschema` skip. The
+broader run that includes the stream-ownership module reaches its 130-second
+deadline and remains open for separate verification.
+
+The retained Arc verifier uses completed GPU events and its
+host expert callback. The compiled SYCL path at `968e71988` sets the
+all-resident device planner to false. Keep this host fallback. Revisit the
+upstream `a7eb7c6c8` admission guard if an explicit no-host mode is added. The
+normalization change in `ed5bff88c` is in the root GPU source. Niko Arc
+selects `kernels.dp.cpp`, and this fork's compiler census contains its own
+`prefill/sycl/postops.cpp` implementation. Their numerical and runtime
+comparisons are separate work. The reviewed reports are indexed in the status
+file.
+The release publishes Qwen SYCL engine 0.1.69 and main adds libgomp packaging.
+Track the selected unmodified build and measure both default and tuned
+configurations on this B570. The required-function ledger and model
+performance evaluation remain open. [v0.2.21](https://github.com/Niko1221/Strata/releases/tag/v0.2.21) · [v0.2.22](https://github.com/Niko1221/Strata/releases/tag/v0.2.22).
+
+The prior 152-commit wave through `6a6db7ff5` changed 835 paths.
+Its Qwen-facing feature review covered model discovery and API schema, setup and
 installer changes, conversation branching, and SYCL device-loss propagation.
 Evaluate the Battlemage grouped expert path, GDN pairing and tiling, Unsloth
 multi-row SYCL formats, and cold-expert CPU SIMD as individual components.
 The upstream benchmark uses the unmodified source under `engine/sycl/` and
 the matching `tools/bench.sh`. Its execution and hardware-tuned comparison
-remain pending. [Niko1221's v0.2.20 release](https://github.com/Niko1221/Strata/releases/tag/v0.2.20).
+remain pending. The exact prior decisions and model-discovery and admission
+host checks are recoverable from `8db0078e3` in the status file.
+[Niko1221's v0.2.20 release](https://github.com/Niko1221/Strata/releases/tag/v0.2.20).
 
 The Arc BMG direct kernels accept the weight formats of five of this Qwen
 pack's 48 layers. They also cap each grouped expert at 32 rows and apply separate
@@ -190,17 +218,12 @@ in [SYCL_NATIVE16_PREFILL.md](SYCL_NATIVE16_PREFILL.md) and the single
 and its old speed figures remain in [their original document revision](https://github.com/yqYo1/Strata/blob/0820688a4ff14947b659d96bff112ed293559ca8/docs/UPSTREAM_INTEGRATION.md);
 they do not describe the current selected engines.
 
-Default-branch promotion remains pending through PR 180. Main ruleset `24638744`
-permits only squash PR merges. The normal squash attempt for `fbe45f1b1` on
-November 14 UTC is refused by the active update restriction
-(`update_allows_fetch_and_merge=false`). PR 180 remains open; no administrative
-bypass is authorized. All 172 CSV source/evidence references are verified on the
-pushed permanent primary. Before merging, verify that every original
-source/evidence commit referenced by the performance CSV remains an ancestor
-of the pushed, permanent `feature/sycl`, and keep automatic head deletion
-disabled. Under the project workflow, the default may receive the PR content
-snapshot while the primary retains those original identities; merge the updated
-default back into the primary normally and verify reachability again. This changes no protection
-or measured source history. The last verified default before that operation is
-`05069aeedea43f778b97dce30c729739cb3bce5c`; do not claim integration until its
-remote ref and clean ghq mirror are verified.
+The fork's verified default is `cc464282e`, published through PR 242.
+The next promotion is open in PR 243. The selected DFlash2 source and closed
+performance rows retain their original revisions in the primary history,
+including the closed width-four decode attribution at `e0cb8fc25`. Check
+that the remaining model comparisons can resolve their pinned inputs before
+retiring the verification worktree. Keep automatic head deletion disabled.
+When the protected default publishes a squash snapshot, merge the updated
+default back into the primary, verify reachability again and pull the clean
+ghq mirror. [Fork PR 243](https://github.com/yqYo1/Strata/pull/243).

@@ -2266,7 +2266,6 @@ int main(int argc, char** argv) {
         std::fprintf(stderr, "strata generate: --kv k8v4 does not support --kv-resident streaming (yet)\n");
         return 2;
     }
-    strata::core::qsa_set_kv_resident(o.kv_resident);
     // Prompt lookup (the suffix drafter, on by default): the MTP keeps its --spec windows and a lookup window may be
     // up to 2 tokens longer; the draft policy (strata/spec/draft_policy.hpp) takes one only where it pays. Code
     // edits +6-11%, ordinary text unchanged (bench/results/2026-09-27-spec). --suffix-draft 0 turns it off.
@@ -2651,6 +2650,31 @@ int main(int argc, char** argv) {
                              rope_cfg.type == RST::YaRN ? "YaRN" : "--yarn-attn-factor", rope_cfg.mscale());
         }
     }
+    auto kv_resident_floor = strata::core::QsaKvResidentFloor::standard;
+#ifdef STRATA_ENABLE_SYCL
+    if (const char* trial = std::getenv("STRATA_SYCL_DFLASH2_KV_12288"); trial && std::strcmp(trial, "0") != 0) {
+        if (std::strcmp(trial, "1") != 0) {
+            std::fprintf(stderr, "strata generate: STRATA_SYCL_DFLASH2_KV_12288 must be 0 or 1\n");
+            return 2;
+        }
+        const char* coalesced = std::getenv("STRATA_SYCL_DECODE_KV_COALESCED");
+        if (!use_df2 || !native_pack || multi_gpu || !o.no_token_graph || o.gpu_only_full ||
+            o.kv != "int8" || o.spec != 4 || o.max_context != 262144 ||
+            o.kv_resident != strata::core::kDflash2Spec4TrialKvCells ||
+            g.n_head_kv != 2 || g.head_dim != 256 || g.n_qsa_layers() != 12 ||
+            std::getenv("STRATA_KV_MAIN_OFF") || (coalesced && std::strcmp(coalesced, "0") != 0)) {
+            std::fprintf(stderr, "strata generate: STRATA_SYCL_DFLASH2_KV_12288 requires single-device native "
+                                 "DFlash2 spec4, int8 KV, scalar KV resolve, no token graphs, and "
+                                 "--max-context 262144 --kv-resident 12288\n");
+            return 2;
+        }
+        // The exact block selector needs at most 2056 pages for four queries.
+        // A token-wise fallback issues one selection of at most 2051 cells.
+        // The long-prefill identity stage and full host mirror keep their extent.
+        kv_resident_floor = strata::core::QsaKvResidentFloor::dflash2_spec4_trial;
+    }
+#endif
+    strata::core::qsa_set_kv_resident(o.kv_resident, kv_resident_floor);
     strata::core::NativeEmbed native_embed;
     if (native_pack) {
         if (o.native_preset.empty() || o.keep_canonical || o.spec < 0 || o.spec == 1 ||
@@ -3629,9 +3653,23 @@ int main(int argc, char** argv) {
         if (n - resume > std::max<int64_t>(o.short_read, 0)) df2.reset();
         return df2_taps.begin(n, 0, why);
     };
-    auto df2_layer_tap = [&](int64_t layer, int64_t pos0, int64_t rows, const float* R,
-                             const uint16_t* R16, void* stream, std::string& why) {
-        return df2_taps.capture(layer, pos0, rows, R, R16, stream, why);
+    const strata::prefill::Dflash2PrefillTaps::LayerTap df2_layer_tap{df2_taps};
+    const char* df2_handoff_memory_env = std::getenv("STRATA_SYCL_DECODE_HANDOFF_MEMORY");
+    const bool df2_handoff_memory = use_df2 && !multi_gpu && df2_handoff_memory_env &&
+        std::strcmp(df2_handoff_memory_env, "1") == 0;
+    auto mark_df2_handoff_memory = [&](const char* phase, int64_t prompt_tokens, int64_t first_read) {
+        size_t free_bytes = 0, total_bytes = 0;
+        if (cudaMemGetInfo(&free_bytes, &total_bytes) != cudaSuccess ||
+            total_bytes == 0 || free_bytes > total_bytes ||
+            std::fprintf(stderr, "strata DFlash2 handoff memory: phase=%s prompt=%lld read_from=%lld "
+                                 "free_bytes=%zu total_bytes=%zu expert_slots=%lld expert_bytes=%llu\n",
+                         phase, (long long)prompt_tokens, (long long)first_read, free_bytes, total_bytes,
+                         (long long)xcache.slots(), (unsigned long long)xcache.bytes()) < 0 ||
+            std::fflush(stderr) != 0) {
+            std::printf("ERR DFlash2 handoff memory observation failed at %s\n", phase);
+            return false;
+        }
+        return true;
     };
     auto df2_activate = [&](strata::core::Verifier& verifier, const std::vector<int64_t>& ids,
                             int64_t resume, int max_drafts, std::string& why) {
@@ -5580,19 +5618,21 @@ int main(int argc, char** argv) {
             (size_t) o.conversation_cache_slots);
         // Save only on a switch/rewind, not on each continuing request. No graph
         // addresses change: all parked images live in ordinary host vectors.
+        // DFlash2 rebuilds its draft context from the request's captured tail.
+        const strata::core::QsaState* const snapshot_mtp_kv = use_df2 ? nullptr : &mtp.kv_state();
         auto park_current = [&](size_t held) -> bool {
             if (!conversations.enabled() || !live_ok || live.empty()) return true;
             const strata::core::ConversationView view{live, live_imgs, checks, cvec_cached};
             auto reuse = conversations.take_reuse();
             size_t estimate = 0;
-            if (!strata::core::conversation_snapshot_bytes(view, ss, g, mtp.kv_state(), estimate, err)) {
+            if (!strata::core::conversation_snapshot_bytes(view, ss, g, snapshot_mtp_kv, estimate, err)) {
                 std::fprintf(stderr, "strata serve: conversation cache: skip parking (%s)\n", err.c_str());
                 err.clear(); // A recoverable miss must not poison the batched draft prefill's error channel.
                 return true;
             }
             const size_t fresh_estimate = estimate;
             if (!reuse.kv.empty() && !strata::core::conversation_snapshot_capture_bytes(
-                    reuse, view, ss, g, mtp.kv_state(), estimate, err)) {
+                    reuse, view, ss, g, snapshot_mtp_kv, estimate, err)) {
                 reuse = {};
                 estimate = fresh_estimate;
                 err.clear();
@@ -5625,7 +5665,7 @@ int main(int argc, char** argv) {
                 }
                 strata::core::SavedConversation image;
                 size_t reused_bytes = 0;
-                if (!strata::core::conversation_snapshot_save(image, view, ss, g, mtp.kv_state(), err,
+                if (!strata::core::conversation_snapshot_save(image, view, ss, g, snapshot_mtp_kv, err,
                         std::move(reuse), &reused_bytes)) return false;
                 if (!strata::core::conversation_memory_admit(strata::core::conversation_available_memory(), 0, floor)) {
                     std::fprintf(stderr, "strata serve: conversation cache: skip parking (physical RAM floor after capture, or telemetry unavailable)\n");
@@ -5761,6 +5801,13 @@ int main(int argc, char** argv) {
         }
         drive.d.plan = ver.plan_sink();
         drive.d.pcie_num = std::max(0, std::min(256, (int) (o.pcie_frac * 256.0 + 0.5)));
+#ifdef STRATA_ENABLE_SYCL
+        if (!ver.configure_decode_t4_dispatch(n_stages == 1 && !multi_gpu && drive.d.host_res &&
+            drive.d.pcie_num == 0 && !drive.d.peer && drive.d.remote_count == 0, err)) {
+            std::fprintf(stderr, "strata serve: %s\n", err.c_str());
+            return 1;
+        }
+#endif
         if (o.adapt_every > 0 && o.adapt_swaps > 0) drive.d.usage.assign((size_t) (g.n_layers * g.n_expert), 0.0f);
         // #477 --expert-profile-save: what the adaptive tier learned, kept across restarts (opt-in; off: `heat` stays
         // empty and nothing below runs).  It needs the adaptive tier's counts and the residency table.
@@ -6188,6 +6235,12 @@ int main(int argc, char** argv) {
                     // unknown keys are skipped: the ids start at the first token without '='
                 }
             }
+#ifdef STRATA_ENABLE_SYCL
+            if (!ver.decode_t4_accepts_pcie_share(req_pcie_frac)) {
+                std::printf("ERR decode T4 schedule requires zero PCIe expert share\n");
+                continue;
+            }
+#endif
             std::string emb_path;
             if (geni && endp != nullptr) {
                 while (*endp == ' ') ++endp;
@@ -6350,7 +6403,7 @@ int main(int argc, char** argv) {
             if (parked.tokens > resume) incoming.emplace(conversations.take(parked.index));
             // Reject the entire image before parking/overwriting the outgoing
             // state. Invalid entries can safely fall back to its existing prefix.
-            if (incoming && !strata::core::conversation_snapshot_validate(*incoming, ss, g, mtp.kv_state(), err)) {
+            if (incoming && !strata::core::conversation_snapshot_validate(*incoming, ss, g, snapshot_mtp_kv, err)) {
                 std::fprintf(stderr, "strata serve: conversation cache: discard invalid snapshot (%s)\n", err.c_str());
                 incoming.reset();
                 err.clear();
@@ -6363,7 +6416,7 @@ int main(int argc, char** argv) {
             }
             if (incoming) {
                 const auto t0 = Clock::now();
-                if (strata::core::conversation_snapshot_restore(*incoming, ss, g, mtp.kv_state(), err) !=
+                if (strata::core::conversation_snapshot_restore(*incoming, ss, g, snapshot_mtp_kv, err) !=
                     strata::core::ConversationRestore::restored) {
                     // Already prevalidated above: a failure here is fatal, never
                     // permission to decode from a partially restored session.
@@ -6372,16 +6425,19 @@ int main(int argc, char** argv) {
                 }
                 if (std::getenv("STRATA_SNAPSHOT_VERIFY") != nullptr) {
                     strata::core::ConversationVerification checked;
-                    if (!strata::core::conversation_snapshot_verify(*incoming, ss, g, mtp.kv_state(), checked, err)) {
+                    if (!strata::core::conversation_snapshot_verify(*incoming, ss, g, snapshot_mtp_kv, checked, err)) {
                         std::printf("ERR verifying restored session: %s\n", err.c_str());
                         return 1;
                     }
+                    const int64_t draft_resident = snapshot_mtp_kv
+                        ? snapshot_mtp_kv->n_slots * strata::kernels::qsa_real_shapes().page_size : 0;
                     std::fprintf(stderr, "strata serve: SNAPSHOT_VERIFY draft=%016llx cells=%lld mode=%d source=%s resident=%lld "
                                          "main=%016llx main_layers=%zu main_bytes=%zu draft_bytes=%zu "
                                          "running=%016llx running_bytes=%zu upto=%zu result=PASS\n",
-                                 (unsigned long long) checked.draft_hash, (long long) incoming->kv.back().cells,
-                                 mtp.kv_state().kv_mode, "ram",
-                                 (long long) (mtp.kv_state().n_slots * strata::kernels::qsa_real_shapes().page_size),
+                                 (unsigned long long) checked.draft_hash,
+                                 snapshot_mtp_kv ? (long long) incoming->kv.back().cells : 0ll,
+                                 snapshot_mtp_kv ? snapshot_mtp_kv->kv_mode : 0, "ram",
+                                 (long long) draft_resident,
                                  (unsigned long long) checked.main_hash, checked.main_layers, checked.main_bytes,
                                  checked.draft_bytes, (unsigned long long) checked.running_hash, checked.running_bytes,
                                  incoming->live.ids.size());
@@ -6468,6 +6524,8 @@ int main(int argc, char** argv) {
             if (use_df2 && !df2_begin_prompt(n, read_from, err)) {
                 std::printf("ERR %s\n", err.c_str()); return 1;
             }
+            const bool observe_handoff_memory = df2_handoff_memory && n - read_from > std::max<int64_t>(o.short_read, 0);
+            if (observe_handoff_memory && !mark_df2_handoff_memory("before-prefill", n, read_from)) return 1;
 #endif
             conversations.limit_reuse(read_from);
             pp_total = n;
@@ -6877,9 +6935,15 @@ int main(int argc, char** argv) {
             tr("prompt done (slots refilled)");
 #ifdef STRATA_ENABLE_SYCL
             if (use_df2) {
-                if (cancelled) df2_taps.release();
-                else if (!df2_activate(ver, ids, read_from, S_mtp - 1, err)) {
-                    std::printf("ERR %s\n", err.c_str()); return 1;
+                if (cancelled) {
+                    df2_taps.release();
+                } else {
+                    // Activation loads draft weights and retires the prompt taps.
+                    if (observe_handoff_memory && !mark_df2_handoff_memory("after-refill", n, read_from)) return 1;
+                    if (!df2_activate(ver, ids, read_from, S_mtp - 1, err)) {
+                        std::printf("ERR %s\n", err.c_str()); return 1;
+                    }
+                    if (observe_handoff_memory && !mark_df2_handoff_memory("after-draft-activation", n, read_from)) return 1;
                 }
             }
 #endif
@@ -7120,6 +7184,8 @@ int main(int argc, char** argv) {
                 return 1;
             }
 #ifdef STRATA_ENABLE_SYCL
+            if (observe_handoff_memory && dec_windows > 0 && !cancelled && std::strcmp(finish, "cancel") != 0 &&
+                !mark_df2_handoff_memory("after-decode", n, read_from)) return 1;
             decode_service.finish(!cancelled && std::strcmp(finish, "cancel") != 0);
 #endif
 #ifdef STRATA_CPU_SERVICE_PROFILE
@@ -8018,6 +8084,13 @@ int main(int argc, char** argv) {
         drive.d.pcie_num = (int) (o.pcie_frac * 256.0 + 0.5);
         if (drive.d.pcie_num < 0) drive.d.pcie_num = 0;
         if (drive.d.pcie_num > 256) drive.d.pcie_num = 256;
+#ifdef STRATA_ENABLE_SYCL
+        if (!ver.configure_decode_t4_dispatch(!multi_gpu && drive.d.host_res &&
+            drive.d.pcie_num == 0 && !drive.d.peer && drive.d.remote_count == 0, err)) {
+            std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+            return 1;
+        }
+#endif
         const int64_t pcie0 = drive.d.pcie_experts;
         // CS-T: the file tier since the decode began (the prompt path's copies are before this)
         const int64_t files0 = src.file_reads(), ram0 = src.ram_reads();

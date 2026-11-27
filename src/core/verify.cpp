@@ -60,6 +60,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <string_view>
 #include <exception>
 #include <immintrin.h>
 #include <limits>
@@ -72,6 +73,15 @@ using Clock = std::chrono::steady_clock;
 double ms_since(Clock::time_point t) { return std::chrono::duration<double, std::milli>(Clock::now() - t).count(); }
 #ifdef STRATA_ENABLE_SYCL
 namespace segment_clocks = strata::sycl_backend::decode_segment_clocks;
+
+bool decode_q6_c5_head_enabled() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_SYCL_DECODE_Q6_DPAS_C5_HEAD");
+        return value && std::strcmp(value, "1") == 0;
+    }();
+    return enabled;
+}
+
 bool decode_clock_geometry(VerifyInput input, int width, bool split, int64_t first, int64_t end, int64_t layers) {
     return input == VerifyInput::decode && width == 4 && !split && first == 0 &&
            end == layers && layers == segment_clocks::layers;
@@ -260,14 +270,18 @@ bool Verifier::report_q6_routes(std::FILE* file, uint64_t request) const {
                 input, strata::kernels::native_mmvq_multi_exact(), 14, shape[0], shape[1], 4))
                 dense_complete = false;
         }
+        const auto [c5_in, c5_out] = verify_q6_dense_c5_shape;
+        const bool dense_c5_allowed = verify_q6_dpas_dense_c5(decode_q6_dpas_dense_c5_, input,
+            strata::kernels::native_mmvq_multi_exact(), 14, c5_in, c5_out, T, 5);
         const bool complete = window.q6_routes_complete && window.q6_capture_id != 0 &&
-            dense_complete &&
+            dense_complete && (window.q6_dpas_dense_c5_calls == 0 || dense_c5_allowed) &&
             window.q6_replay_started == window.q6_replay_completed &&
             total[0] == window.q6_reference_calls &&
             total[1] + total[2] + total[3] == window.q6_columns_calls &&
             total[2] == window.q6_centered_calls && total[3] == window.q6_native_half_calls &&
-            (window.q6_dpas_head_calls==0 || (input==VerifyInput::decode && T==4 &&
-             window.q6_dpas_head_calls==1 && head_ && head_->decode_dpas_ready())) &&
+            (window.q6_dpas_head_calls == 0 || (window.q6_dpas_head_calls == 1 && head_ &&
+             verify_q6_dpas_head(head_->decode_dpas_ready(), input, strata::kernels::native_mmvq_multi_exact(),
+                 head_->type(), int(g_->n_embd), int(n_vocab_), T, T == 5 && decode_q6_c5_head_enabled()))) &&
             (window.q6_packed_head_calls==0 || (T<=4 && window.q6_packed_head_calls==1 &&
              head_ && head_->primary_packed() && head_->loaded() && !head_->head_detached()));
         valid = valid && complete;
@@ -304,6 +318,12 @@ bool Verifier::report_q6_routes(std::FILE* file, uint64_t request) const {
                 (unsigned long long)request, device_, phase, T, (unsigned long long)window.q6_capture_id,
                 shape[0], shape[1], (unsigned long long)window.q6_dpas_dense_calls[i], int(complete)) >= 0 && valid;
         }
+        if (dense_c5_allowed)
+            valid = std::fprintf(file, "strata Q6_DPAS_DENSE request=%llu device=%d phase=%s tokens=%d "
+                "capture_id=%llu ni=%d no=%d nc=5 layout=canonical extra_weight_bytes=0 "
+                "canonical_table_excludes_dpas=1 calls=%llu complete=%d\n",
+                (unsigned long long)request, device_, phase, T, (unsigned long long)window.q6_capture_id,
+                c5_in, c5_out, (unsigned long long)window.q6_dpas_dense_c5_calls, int(complete)) >= 0 && valid;
     }
     return std::fflush(file) == 0 && valid;
 }
@@ -502,6 +522,7 @@ Verifier::~Verifier() {
         if(arena_)checked(cudaFree(arena_));
         void* hosts[]={h_tok_,h_step_,h_pos_,h_commit_,h_ple_,h_out_,h_x_,h_ids_,h_w_,h_seq_,h_flag_,h_ymiss_,h_flagA_,h_plan_,h_flagB_};
         for(auto h:hosts)if(h)checked(cudaFreeHost(h));
+        for (auto* h : decode_t4_cpu_) if (h) checked(cudaFreeHost(h));
         return;
     }
 #endif
@@ -556,6 +577,12 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
         if (g.n_layers <= 0 || g.n_embd <= 0 || lb_ != 0 || (le_ >= 0 && le_ != g.n_layers)) {
             err = "verify taps: require the complete target on one device"; return false;
         }
+        // The DFlash2 drafter is the only owner that requests target taps.
+        const char* score_grid = std::getenv("STRATA_SYCL_DECODE_QSA_SCORE_GRID");
+        if (score_grid && std::strcmp(score_grid, "0") != 0 && std::strcmp(score_grid, "1") != 0) {
+            err = "verify: STRATA_SYCL_DECODE_QSA_SCORE_GRID must be 0 or 1"; return false;
+        }
+        decode_qsa_score_grid_ = score_grid && score_grid[0] == '1';
         tap_slot_.assign(size_t(g.n_layers), -1);
         for (size_t slot = 0; slot < tap_req_.size(); ++slot) {
             const int layer = tap_req_[slot];
@@ -622,6 +649,14 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
     decode_q6_dpas_dense_ = q6_dense && std::strcmp(q6_dense, "1") == 0;
     if (decode_q6_dpas_dense_ && (!decode_q6_columns_ || decode_q6_centering_ || decode_q6_native_half_)) {
         err = "verify: decode Q6 dense-DPAS requires columns=1,centering=0,native-half=0"; return false;
+    }
+    const char* q6_dense_c5 = std::getenv("STRATA_SYCL_DECODE_Q6_DPAS_C5_10240");
+    if (q6_dense_c5 && std::strcmp(q6_dense_c5, "0") != 0 && std::strcmp(q6_dense_c5, "1") != 0) {
+        err = "verify: STRATA_SYCL_DECODE_Q6_DPAS_C5_10240 must be 0 or 1"; return false;
+    }
+    decode_q6_dpas_dense_c5_ = q6_dense_c5 && std::strcmp(q6_dense_c5, "1") == 0;
+    if (decode_q6_dpas_dense_c5_ && !strata::kernels::native_mmvq_multi_exact()) {
+        err = "verify: decode Q6 width-five DPAS requires the exact MMVQ layout"; return false;
     }
     const char* q6_audit = std::getenv("STRATA_SYCL_Q6_ROUTE_AUDIT");
     if (q6_audit && std::strcmp(q6_audit, "0") != 0 && std::strcmp(q6_audit, "1") != 0) {
@@ -815,6 +850,26 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
 #ifdef STRATA_ENABLE_SYCL
     const char* overlap = std::getenv("STRATA_SYCL_VERIFY_OVERLAP");
     overlap_gpu_ = overlap == nullptr || std::strcmp(overlap, "0") != 0;
+    if (const char* text = std::getenv("STRATA_SYCL_DECODE_T4_SCHEDULE")) {
+        const std::string_view mode(text);
+        if (mode == "after-cpu") decode_t4_schedule_ = DecodeT4Schedule::after_cpu;
+        else if (mode == "early") decode_t4_schedule_ = DecodeT4Schedule::early;
+        else if (mode != "stock") {
+            err = "verify: STRATA_SYCL_DECODE_T4_SCHEDULE must be stock, after-cpu or early";
+            return false;
+        }
+    }
+    const char* t4_audit = std::getenv("STRATA_SYCL_DECODE_T4_AUDIT");
+    decode_t4_audit_ = t4_audit && std::strcmp(t4_audit, "1") == 0;
+    if (const char* text = std::getenv("STRATA_SYCL_DECODE_T4_PREFIX_HELP")) {
+        const std::string_view help(text);
+        if (help == "1" && decode_t4_schedule_ == DecodeT4Schedule::early) {
+            decode_t4_prefix_help_ = true;
+        } else if (help != "0") {
+            err = "verify: STRATA_SYCL_DECODE_T4_PREFIX_HELP needs 0 or 1 with the early T4 schedule";
+            return false;
+        }
+    }
     const char* early = std::getenv("STRATA_SYCL_VERIFY_PCIE_EARLY");
     early_pcie_ = early && std::strcmp(early, "1") == 0;
     const char* audit = std::getenv("STRATA_SYCL_VERIFY_PCIE_EARLY_AUDIT");
@@ -868,6 +923,36 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
     return true;
 }
 
+#ifdef STRATA_ENABLE_SYCL
+bool Verifier::configure_decode_t4_dispatch(bool local_plan_without_pcie, std::string& err) {
+    if (decode_t4_schedule_ == DecodeT4Schedule::stock) return true;
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
+    if (local_plan_without_pcie && g_ && !tap_req_.empty() && max_t_ >= 4 && g_->n_embd == 2560 && ss_->k == 10 &&
+        lb_ == 0 && le_ == g_->n_layers && !split_ && overlap_gpu_ && !early_pcie_ &&
+        strata::kernels::cpu::expert_layout().native) {
+        if (decode_t4_dispatch_) return true;
+        for (int half = 0; half < 2; ++half) {
+            if (!decode_t4_cpu_[half] &&
+                !mapped(decode_t4_half_floats * sizeof(float), (void**) &decode_t4_cpu_[half],
+                        (void**) &decode_t4_device_[half])) {
+                err = "verify: decode T4 result allocation failed";
+                return false;
+            }
+            if (!decode_t4_device_[half]) {
+                err = "verify: incomplete decode T4 result allocation";
+                return false;
+            }
+        }
+        decode_t4_dispatch_ = true;
+        return true;
+    }
+#endif
+    (void) local_plan_without_pcie;
+    err = "verify: decode T4 schedule requires a full native verifier, local expert plan and no PCIe share";
+    return false;
+}
+#endif
+
 const float* Verifier::final_R(int t) const {
     return released_.load() ? nullptr : R_ + (size_t) t * (size_t) (g_->hc * g_->n_embd);
 }
@@ -888,23 +973,30 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
 #ifdef STRATA_ENABLE_SYCL
     auto& graph_window = window_graphs_.at(input, T);
     graph_window.kv_scalar_calls = graph_window.kv_coalesced_calls = 0;
+    graph_window.qsa_reference_calls = graph_window.qsa_grid_calls = 0;
+    const bool qsa_score_grid = decode_verify_qsa_score_grid(decode_qsa_score_grid_, input, T, max_blocks_);
     graph_window.q6_reference_calls = graph_window.q6_columns_calls =
         graph_window.q6_centered_calls = graph_window.q6_native_half_calls = 0;
     graph_window.q6_dpas_head_calls = 0;
     graph_window.q6_packed_head_calls = 0;
     graph_window.q6_dpas_dense_calls.fill(0);
+    graph_window.q6_dpas_dense_c5_calls = 0;
 #endif
     auto window_mmvq = [&](int type, const void* weights, const void* x, float* y,
                            int n_in, int n_out, int columns, void* stream) {
 #ifdef STRATA_ENABLE_SYCL
-        if (verify_q6_dpas_dense(decode_q6_dpas_dense_, input, native_mmvq_multi_exact(),
-                                 type, n_in, n_out, columns)) {
+        const bool exact = native_mmvq_multi_exact();
+        if (verify_q6_dpas_dense(decode_q6_dpas_dense_, input, exact, type, n_in, n_out, columns)) {
             component::q6_dpas_c4_canonical(weights, x, y, n_in, n_out, columns, stream);
             ++graph_window.q6_dpas_dense_calls[verify_q6_dense_dpas_index(n_in, n_out)];
             return;
         }
-        if (verify_q6_columns(decode_q6_columns_, input, native_mmvq_multi_exact(),
-                              type, n_in, n_out, columns)) {
+        if (verify_q6_dpas_dense_c5(decode_q6_dpas_dense_c5_, input, exact, type, n_in, n_out, T, columns)) {
+            component::q6_dpas_c5_canonical(weights, x, y, n_in, n_out, columns, stream);
+            ++graph_window.q6_dpas_dense_c5_calls;
+            return;
+        }
+        if (verify_q6_columns(decode_q6_columns_, input, exact, type, n_in, n_out, columns)) {
             // The outer policy already established the exact Q81 layout.
             VerifyQ6Route route = VerifyQ6Route::columns;
             if (verify_q6_native_half(decode_q6_native_half_, input, true,
@@ -956,6 +1048,11 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
     const bool decode_combine = decode_combine_mapped_rows && input == VerifyInput::decode &&
         T == 4 && G == 1 && N == 2560 && K == 10 && dec_batch &&
         native_moe_combine_enabled() && !device_plan_;
+    const bool decode_t4 = decode_t4_window(input, T);
+    if (decode_t4 && (G != 1 || !dec_batch || !native_moe_combine_enabled())) {
+        err = "verify: decode T4 schedule requires batched native combine";
+        return false;
+    }
 #endif
     auto stamp = [&](int64_t l, int i, int grp) { if (prof_on_ && grp == 0) gpu_stamp(prof_, (int) (l * kProfPer + i), cs); };
     const int tb_[2] = {0, (T + 1) / 2}, te_[2] = {G == 2 ? (T + 1) / 2 : T, T};
@@ -1044,9 +1141,14 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
         return true;
     };
 
+    auto publish_rows = [&](int tb, int n) {
+        doorbell_publish(mixed_ + tb * N, ids_ + tb * K, w_ + tb * K, (int64_t) n * N,
+                         (int64_t) n * K, m_x_ + tb * N, m_ids_ + tb * K, m_w_ + tb * K, m_seq_, cs);
+    };
+
     // ---------------------------------------------------------------- pre(l, group): up to the ring
-    auto pre = [&](int64_t l, int grp) -> bool {
-        const int tb = tb_[grp], te = te_[grp], n = te - tb;
+    auto pre = [&](int64_t l, int grp, int tb, int te, bool publish) -> bool {
+        const int n = te - tb;
         stamp(l, 0, grp);
         const LayerView v(wt, l);
         const char* pfx[2] = {"hc_attn_", "hc_ffn_"};
@@ -1226,8 +1328,20 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
                 }
                 }
                 stamp(l, 10, grp);
-                qsa_block_scores(st.idx_pooled, st.idx_dead, qidx_ + tb * IQ * ID, step_ + tb * kStepCount, n, max_blocks_,
-                                 s, scores_ + (size_t) tb * max_blocks_, cs);
+#ifdef STRATA_ENABLE_SYCL
+                if (qsa_score_grid) {
+                    qsa_block_scores_decode_grid(st.idx_pooled, st.idx_dead, qidx_ + tb * IQ * ID,
+                        step_ + tb * kStepCount, n, max_blocks_, s, scores_ + (size_t) tb * max_blocks_, cs);
+                    ++graph_window.qsa_grid_calls;
+                } else
+#endif
+                {
+                    qsa_block_scores(st.idx_pooled, st.idx_dead, qidx_ + tb * IQ * ID, step_ + tb * kStepCount,
+                                     n, max_blocks_, s, scores_ + (size_t) tb * max_blocks_, cs);
+#ifdef STRATA_ENABLE_SYCL
+                    ++graph_window.qsa_reference_calls;
+#endif
+                }
                 qsa_block_topk(scores_ + (size_t) tb * max_blocks_, step_ + tb * kStepCount, n, max_blocks_, cap_, s,
                                sel_ + (size_t) tb * cap_, cs);
                 stamp(l, 11, grp);
@@ -1294,13 +1408,34 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
                           hits_.cache_base, slot_off_d_, (long long) hits_.blob,
                           plan_ + (size_t) grp * (size_t) (plan_i32_ + 16), (long long) max_t_ * K, skip_ + grp,
                           (uint32_t) ((l - lb_) * G + grp + 1), cs);
-        doorbell_publish(xm, ids_ + tb * K, w_ + tb * K, (int64_t) n * N, (int64_t) n * K, m_x_ + tb * N,
-                         m_ids_ + tb * K, m_w_ + tb * K, m_seq_, cs);
+        if (publish) publish_rows(tb, n);
         stamp(l, 17, grp);
 #ifdef STRATA_ENABLE_SYCL
         if (overlap_gpu_) return true;
 #endif
         return shared(l, grp);
+    };
+
+    auto post_state = [&](int64_t l, int grp, int tb, int te) {
+        const int n = te - tb;
+        stamp(l, 24, grp);
+        if (l == g.n_layers - 1) {
+            for (int t = tb; t < te; ++t) gr_write(Rt(t), bo_ + t * N, inj2_ + t * HC, gs, Rt(t), cs);
+            if (cvec().covers(l)) cvec_apply(Rt(tb), l, n, HC * N, nullptr, 0, nullptr, 0, false, cs);
+        } else if (cvec().covers(l)) {
+            cvec_apply(Rt(tb), l, n, HC * N, bo_ + tb * N, N, inj2_ + tb * HC, HC, true, cs);
+        }
+#ifdef STRATA_ENABLE_SYCL
+        if (tap_dev_ && tap_slot_[size_t(l)] >= 0) {
+            const int64_t stride = int64_t(tap_req_.size()) * N;
+            float* destination = tap_dev_ + int64_t(tb) * stride + int64_t(tap_slot_[size_t(l)]) * N;
+            if (l == g.n_layers - 1)
+                df2_tap_rows(Rt(tb), destination, stride, N, int(HC), n, cs);
+            else
+                df2_tap_gr(Rt(tb), HC * N, bo_ + tb * N, N, inj2_ + tb * HC, HC,
+                           destination, stride, n, N, int(HC), cs);
+        }
+#endif
     };
 
     auto project_group = [&](int64_t l, int grp, const unsigned long long* gp,
@@ -1427,29 +1562,12 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
                 if (!moe_combine_parts(g, l, K, mb, parts_ + (size_t) t * K * N, bo_ + t * N, cs, err)) return false;
             }
         }
-        stamp(l, 24, grp);
-        if (l == g.n_layers - 1) {
-            for (int t = tb; t < te; ++t) gr_write(Rt(t), bo_ + t * N, inj2_ + t * HC, gs, Rt(t), cs);
-            if (cvec().covers(l)) cvec_apply(Rt(tb), l, n, HC * N, nullptr, 0, nullptr, 0, false, cs);
-        } else if (cvec().covers(l)) {
-            cvec_apply(Rt(tb), l, n, HC * N, bo_ + tb * N, N, inj2_ + tb * HC, HC, true, cs);
-        }
-#ifdef STRATA_ENABLE_SYCL
-        if (tap_dev_ && tap_slot_[size_t(l)] >= 0) {
-            const int64_t stride = int64_t(tap_req_.size()) * N;
-            float* destination = tap_dev_ + int64_t(tb) * stride + int64_t(tap_slot_[size_t(l)]) * N;
-            if (l == g.n_layers - 1)
-                df2_tap_rows(Rt(tb), destination, stride, N, int(HC), n, cs);
-            else
-                df2_tap_gr(Rt(tb), HC * N, bo_ + tb * N, N, inj2_ + tb * HC, HC,
-                           destination, stride, n, N, int(HC), cs);
-        }
-#endif
+        post_state(l, grp, tb, te);
         return true;
     };
 
     for (int grp = 0; grp < G; ++grp)
-        if (!pre(lb_, grp)) return false;
+        if (!pre(lb_, grp, tb_[grp], te_[grp], true)) return false;
     for (int64_t l = lb_; l < le_; ++l)
         for (int grp = 0; grp < G; ++grp) {
 #ifdef STRATA_ENABLE_SYCL
@@ -1484,9 +1602,40 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
                 err = "verify: begin layer segment capture failed";
                 return false;
             }
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
+            const auto& formats = strata::kernels::cpu::expert_layout().fmt;
+            const bool split_layer = decode_t4 && static_cast<size_t>(l) < formats.size() &&
+                strata::kernels::cpu::ExpertPool::supports_decode_native_by_expert(formats[size_t(l)]);
+            if (split_layer) {
+                auto pair = [&](int half) {
+                    const int tb = half * 2;
+                    try {
+                        decode_moe_combine_mapped_half(tb, decode_t4_device_[half], hit_out_,
+                            plan_ + 4 + max_t_ * K + 1, plan_ + 1,
+                            w_ + tb * K, shared_ + tb * N, bo_ + tb * N, cs);
+                    } catch (const std::exception& e) {
+                        err = std::string("verify decode T4 combine: ") + e.what();
+                        return false;
+                    }
+                    post_state(l, half, tb, tb + 2);
+                    return l + 1 >= le_ || pre(l + 1, half, tb, tb + 2, false);
+                };
+                if (!pair(0) || !end_segment(T, err, input, SegmentKind::first_pair)) return false;
+                if (begin_verify_capture(cs, T) != cudaSuccess) {
+                    err = "verify: begin second decode T4 segment failed";
+                    return false;
+                }
+                if (!pair(1)) return false;
+                if (l + 1 < le_) publish_rows(0, T);
+                continue;
+            }
+            // The sparse graph family is indexed by dispatch step. Stock
+            // steps keep their full-width post and next-layer pre-mixer.
+            if (decode_t4) graph_window.first_pair.push_back(nullptr);
+#endif
 #endif
             if (!post(l, grp)) return false;
-            if (l + 1 < le_ && !pre(l + 1, grp)) return false;
+            if (l + 1 < le_ && !pre(l + 1, grp, tb_[grp], te_[grp], true)) return false;
         }
     if (le_ < g.n_layers) {   // a layer split's earlier stage: hand the residual on, no head
         for (int t = 0; t < T; ++t) {
@@ -1520,9 +1669,13 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
                 if(head_->primary_packed()) {
                     head_->run_packed_columns(xq_,head_logits_,T,cs);
                     ++graph_window.q6_packed_head_calls;
-                } else if(verify_q6_dpas_head(head_->decode_dpas_ready(),input,native_mmvq_multi_exact(),
-                    head_->type(),int(N),int(n_vocab_),T)) {
-                    head_->run_decode_c4(xq_,head_logits_,cs);
+                } else if (verify_q6_dpas_head(head_->decode_dpas_ready(), input, native_mmvq_multi_exact(),
+                    head_->type(), int(N), int(n_vocab_), T, T == 5 && decode_q6_c5_head_enabled())) {
+                    if (T == 4) {
+                        head_->run_decode_c4(xq_, head_logits_, cs);
+                    } else {
+                        component::q6_dpas_c5_canonical(head_->weights(), xq_, head_logits_, int(N), int(n_vocab_), T, cs);
+                    }
                     ++graph_window.q6_dpas_head_calls;
                 } else
 #endif
@@ -1586,7 +1739,7 @@ bool Verifier::end_segment(int T, std::string& err, VerifyInput input, SegmentKi
         return false;
     }
     cudaGraphExec_t exec = nullptr;
-    const bool profile = kind == SegmentKind::layer &&
+    const bool profile = kind == SegmentKind::layer && !decode_t4_window(input, T) &&
         decode_clock_geometry(input, T, split_, lb_, le_, g_->n_layers) && segment_clocks::configuration().device;
     const cudaError_t ie = profile ? strata::sycl_backend::compat::graph_instantiate_profiled(&exec, graph)
                                    : cudaGraphInstantiate(&exec, graph, 0);
@@ -1599,7 +1752,8 @@ bool Verifier::end_segment(int T, std::string& err, VerifyInput input, SegmentKi
     }
     auto& window = window_graphs_.at(input, T);
     auto& target = kind == SegmentKind::pcie ? window.pcie :
-                   kind == SegmentKind::resident ? window.resident : window.layer;
+                   kind == SegmentKind::resident ? window.resident :
+                   kind == SegmentKind::first_pair ? window.first_pair : window.layer;
     try { target.push_back(exec); }
     catch (...) {
         if (cudaGraphExecDestroy(exec) != cudaSuccess)
@@ -1621,7 +1775,7 @@ bool Verifier::capture(int T, std::string& err, VerifyInput input) try {
     if (q6_route_audit_ && q6_capture_sequence_ == std::numeric_limits<uint64_t>::max()) {
         err = "verify: Q6 capture identity exhausted"; return false;
     }
-    if (!window.layer.empty() || !window.resident.empty() || !window.pcie.empty()) {
+    if (!window.layer.empty() || !window.resident.empty() || !window.pcie.empty() || !window.first_pair.empty()) {
         err = "verify: incomplete phase graph cache"; return false;
     }
     const auto capture_start = Clock::now();
@@ -1634,7 +1788,8 @@ bool Verifier::capture(int T, std::string& err, VerifyInput input) try {
     const size_t steps = static_cast<size_t>(le_ - lb_) * static_cast<size_t>(groups_[T]);
     if (!recorded || window.layer.size() != steps + 1 ||
         window.resident.size() != (overlap_gpu_ ? steps : 0) ||
-        window.pcie.size() != (overlap_gpu_ && early_pcie_ ? steps : 0)) {
+        window.pcie.size() != (overlap_gpu_ && early_pcie_ ? steps : 0) ||
+        window.first_pair.size() != (decode_t4_window(input, T) ? steps : 0)) {
         if (recorded) err = "verify: incomplete phase graph families";
         if(head_recapture_checked_)strata::sycl_backend::cleanup_fail_stop("verify head window recapture incomplete");
         // A failed kernel may leave the current segment recording. Close it
@@ -1654,6 +1809,11 @@ bool Verifier::capture(int T, std::string& err, VerifyInput input) try {
     if (q6_route_audit_) window.q6_capture_id = ++q6_capture_sequence_;
     std::fprintf(stderr, "strata verify: captured the %d-token window in %zu event-completed segments\n",
                  T, window.layer.size());
+    if (!tap_req_.empty())
+        std::fprintf(stderr, "strata verify QSA_SCORE: phase=%s tokens=%d reference_calls=%llu grid_calls=%llu\n",
+                     input == VerifyInput::prompt ? "prompt" : "decode", T,
+                     static_cast<unsigned long long>(window.qsa_reference_calls),
+                     static_cast<unsigned long long>(window.qsa_grid_calls));
     std::fprintf(stderr, "strata verify: phase=%s tokens=%d q6_reference_calls=%llu q6_columns_calls=%llu\n",
                  input == VerifyInput::prompt ? "prompt" : "decode", T,
                  static_cast<unsigned long long>(window.q6_reference_calls),
@@ -1861,8 +2021,9 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     } window_scope{this};
 #ifdef STRATA_ENABLE_SYCL
     namespace service = strata::sycl_backend::decode_service_profile;
+    const bool decode_t4 = decode_t4_window(input, T);
     auto* segment_request = segment_clocks::active;
-    const bool sample_window = segment_request &&
+    const bool sample_window = segment_request && !decode_t4 &&
         decode_clock_geometry(input, T, split_, lb_, le_, g.n_layers) && segment_request->sample_next_window();
     const bool sample_segments = sample_window && segment_clocks::configuration().device;
     const auto window_start = sample_window ? Clock::now() : Clock::time_point{};
@@ -1936,6 +2097,36 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     const int G = groups_[T] > 0 ? groups_[T] : 1;
     const int gtb[2] = {0, (T + 1) / 2}, gte[2] = {G == 2 ? (T + 1) / 2 : T, T};
     const int64_t steps = (le_ - lb_) * G;
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
+    struct DecodeT4Pair {
+        Verifier* verifier;
+        cudaGraphExec_t first = nullptr;
+        cudaError_t status = cudaSuccess;
+        bool pool_ready = false, submitted = false, dispatch_completed = false;
+        int caller_prefix_jobs = 0;
+
+        void submit_first() noexcept {
+            if (submitted || !verifier->work_launched_ ||
+                verifier->work_status_ != cudaSuccess ||
+                verifier->released_.load()) {
+                status = cudaErrorInvalidValue;
+                return;
+            }
+            std::memcpy(verifier->decode_t4_cpu_[0], verifier->h_ymiss_,
+                        decode_t4_half_floats * sizeof(float));
+            submitted = true;
+            status = cudaGraphLaunch(first, verifier->cs_);
+        }
+        static void ready(void* context) noexcept {
+            auto& pair = *static_cast<DecodeT4Pair*>(context);
+            pair.pool_ready = true;
+            if (pair.verifier->decode_t4_schedule_ == DecodeT4Schedule::early)
+                pair.submit_first();
+        }
+    };
+    const auto* t4_pairs = decode_t4 ? &window_graphs_.at(input, T).first_pair : nullptr;
+    int t4_split_layers = 0, t4_pool_ready_layers = 0, t4_early_layers = 0, t4_caller_prefix_jobs = 0;
+#endif
     const bool test_stall = g_test_stall > 0 && windows + 1 == g_test_stall;   // #267 test hook (off: false)
     for (int64_t k = 0; k < steps; ++k) {
         const int64_t l = lb_ + k / G;
@@ -1998,14 +2189,30 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         pcie_status_ = cudaSuccess;
 #endif
         const int tb = gtb[grp], n = gte[grp] - gtb[grp];
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
+        DecodeT4Pair pair{this};
+        const GpuPlanSink::DecodeT4Publication publication{
+            DecodeT4Pair::ready, &pair, decode_t4_schedule_ == DecodeT4Schedule::after_cpu,
+            &pair.dispatch_completed, decode_t4_prefix_help_, decode_t4_audit_ ? &pair.caller_prefix_jobs : nullptr};
+        if (t4_pairs) pair.first = (*t4_pairs)[size_t(k)];
+#endif
         progress_at("verify window: the CPU experts of layer", l);
         if (pool != nullptr) {
 #ifdef STRATA_ENABLE_SYCL
             service::Part pool_service(service::cpu_pool);
             const auto pool_start = sample_segments ? Clock::now() : Clock::time_point{};
 #endif
-            pool(user, h_x_ + (size_t) tb * g.n_embd, h_ids_ + (size_t) tb * ss.k, n, ss.k,
-                 h_ymiss_ + (size_t) tb * ss.k * g.n_embd, l);
+            {
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
+                struct ClearPublication {
+                    GpuPlanSink* sink;
+                    ~ClearPublication() { if (sink) sink->decode_t4_publication = nullptr; }
+                } clear{pair.first ? &sink_ : nullptr};
+                if (pair.first) sink_.decode_t4_publication = &publication;
+#endif
+                pool(user, h_x_ + (size_t) tb * g.n_embd, h_ids_ + (size_t) tb * ss.k, n, ss.k,
+                     h_ymiss_ + (size_t) tb * ss.k * g.n_embd, l);
+            }
 #ifdef STRATA_ENABLE_SYCL
             if (sample_segments) {
                 segment_request->record_pool(static_cast<unsigned>(k),
@@ -2071,6 +2278,25 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
             err = "verify: host results withheld" + released_note(release_gpu_waits(5000));
             return false;
         }
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
+        if (pair.first) {
+            ++t4_split_layers;
+            t4_pool_ready_layers += pair.pool_ready;
+            t4_early_layers += pair.submitted;
+            t4_caller_prefix_jobs += pair.caller_prefix_jobs;
+            if (sink_.counts[2] != 0 || !pair.dispatch_completed)
+                pair.status = cudaErrorInvalidValue;
+            if (pair.status == cudaSuccess && !pair.submitted)
+                pair.submit_first();
+            if (pair.status != cudaSuccess) {
+                err = std::string("verify: decode T4 publication: ") + cudaGetErrorString(pair.status) +
+                      released_note(release_gpu_waits(5000));
+                return false;
+            }
+            std::memcpy(decode_t4_cpu_[1], h_ymiss_ + decode_t4_half_floats,
+                        decode_t4_half_floats * sizeof(float));
+        }
+#endif
         const cudaError_t next = service::measure(service::graph_submission, [&] {
             return strata::sycl_backend::compat::graph_launch_with_completion(
                 window_graphs_.at(input, T).layer[size_t(k + 1)], cs_, layer_done_);
@@ -2107,6 +2333,15 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     if (copy_status != cudaSuccess) { err = std::string("verify: copies: ") + cudaGetErrorString(copy_status); return false; }
 #ifdef STRATA_ENABLE_SYCL
     if (sample_segments) segment_request->emit(pos0, g.qsa_interval);
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
+    if (decode_t4 && decode_t4_audit_) {
+        std::fprintf(stderr, "DECODE_T4 mode=%s position=%lld layers=%lld split=%d pool_ready=%d early=%d\n",
+                     decode_t4_schedule_ == DecodeT4Schedule::early ? "early" : "after-cpu",
+                     (long long) pos0, (long long) steps, t4_split_layers, t4_pool_ready_layers, t4_early_layers);
+        std::fprintf(stderr, "DECODE_T4_CALLER_HELP position=%lld jobs=%d\n",
+                     (long long) pos0, t4_caller_prefix_jobs);
+    }
+#endif
 #endif
     window_scope.drained(); // Both stage streams completed; sampling below has no mapped spin waits.
     if (prof_on_ && G == 1) {       // the window's GPU stage stamps

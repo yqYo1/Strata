@@ -16,6 +16,13 @@ constexpr bool valid_verify_input(VerifyInput input) {
     return input == VerifyInput::prompt || input == VerifyInput::decode;
 }
 
+// Arc component evidence covers widths 1–4 at the physical 256K allocation.
+constexpr bool decode_verify_qsa_score_grid(bool enabled, VerifyInput input,
+                                            int window, int64_t max_blocks) {
+    return enabled && input == VerifyInput::decode && window >= 1 && window <= 4 &&
+        max_blocks == 262'144 / 4 + 2;
+}
+
 struct VerifyKvShape {
     int queries = 0;
     int64_t logical_pages = 0, resident_pages = 0, page_size = 0;
@@ -52,13 +59,22 @@ constexpr bool verify_q6_dpas_dense(bool enabled, VerifyInput input, bool exact,
         verify_q6_dense_dpas_index(n_in, n_out) < verify_q6_dense_dpas_shapes.size();
 }
 
-// 0ccc4ed45:q6_canonical_component_v4: only the full target head/C4 won.
-// The enabled owner supplies unchanged canonical Q6 rows. Never select the
-// slower 2560x640 matrix. This is eligibility for a model trial only.
+inline constexpr std::array<int, 2> verify_q6_dense_c5_shape{2560, 10240};
+
+// f282d174d measured this projection independently at five columns.
+constexpr bool verify_q6_dpas_dense_c5(bool enabled, VerifyInput input, bool exact,
+                                      int type, int n_in, int n_out, int window, int columns) {
+    return enabled && input == VerifyInput::decode && exact && type == 14 &&
+        window == 5 && columns == 5 && std::array<int, 2>{n_in, n_out} == verify_q6_dense_c5_shape;
+}
+
+// The full target head won the C4 and C5 component comparisons at
+// 0ccc4ed45 and f282d174d. C5 has a separate opt-in for its model trial.
 constexpr bool verify_q6_dpas_head(bool dpas_ready, VerifyInput input, bool exact,
-                                  int type, int n_in, int n_out, int columns) {
-    return dpas_ready && input==VerifyInput::decode && exact && type==14 &&
-           n_in==2560 && n_out==248320 && columns==4;
+                                  int type, int n_in, int n_out, int columns,
+                                  bool enable_c5 = false) {
+    return dpas_ready && input == VerifyInput::decode && exact && type == 14 &&
+           n_in == 2560 && n_out == 248320 && (columns == 4 || (enable_c5 && columns == 5));
 }
 
 // Only these shapes passed all three independent process medians in
@@ -112,8 +128,9 @@ public:
     VerifyWindowGraphCache(const VerifyWindowGraphCache&) = delete;
     VerifyWindowGraphCache& operator=(const VerifyWindowGraphCache&) = delete;
     struct Window {
-        std::vector<Handle> layer, resident, pcie;
+        std::vector<Handle> layer, resident, pcie, first_pair;
         uint64_t kv_scalar_calls = 0, kv_coalesced_calls = 0;
+        uint64_t qsa_reference_calls = 0, qsa_grid_calls = 0;
         uint64_t q6_reference_calls = 0, q6_columns_calls = 0, q6_centered_calls = 0,
                  q6_native_half_calls = 0;
         // Packed target-head route is counted separately from canonical-row
@@ -123,6 +140,7 @@ public:
         // Separate from the four-arm legacy Q6_SHAPE schema. These are static
         // capture counts, never a per-replay global/atomic counter.
         std::array<uint64_t, verify_q6_dense_dpas_shapes.size()> q6_dpas_dense_calls{};
+        uint64_t q6_dpas_dense_c5_calls = 0;
         struct Q6Shape {
             int n_in, n_out, columns;
             std::array<uint64_t, 4> calls{};
@@ -151,7 +169,7 @@ public:
 
         template<class Destroy>
         void clear(Destroy&& destroy) {
-            for (auto* family : {&layer, &resident, &pcie}) {
+            for (auto* family : {&layer, &resident, &pcie, &first_pair}) {
                 for (auto& handle : *family) if (handle) {
                     destroy(handle);
                     handle = {};
@@ -160,9 +178,11 @@ public:
             }
             q6_reference_calls = q6_columns_calls = q6_centered_calls = q6_native_half_calls = 0;
             kv_scalar_calls = kv_coalesced_calls = 0;
+            qsa_reference_calls = qsa_grid_calls = 0;
             q6_dpas_head_calls = 0;
             q6_packed_head_calls = 0;
             q6_dpas_dense_calls.fill(0);
+            q6_dpas_dense_c5_calls = 0;
             q6_shapes.clear();
             q6_capture_id = q6_cache_hits = q6_replay_started = q6_replay_completed = 0;
             q6_routes_complete = true;

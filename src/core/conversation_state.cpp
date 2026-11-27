@@ -194,17 +194,18 @@ bool conversation_checkpoint_restore(const ConversationCheckpoint& c, SessionSta
 }
 
 bool conversation_snapshot_bytes(const ConversationView& view, const SessionState& ss,
-                                 const ModelGeometry& g, const QsaState& draft, size_t& bytes, std::string& error) {
+                                 const ModelGeometry& g, const QsaState* draft, size_t& bytes, std::string& error) {
     bytes = 0;
     if (!view_validate(view, ss, g, error)) return false;
     ConversationStateSizes z;
     if (!conversation_session_sizes(g, ss, z, error)) return false;
     size_t ids = 0, images = 0, checkpoints = 0, layers = 0, tails = 0, dead = 0, positions = 0;
     const auto qsa = (uint64_t) owned_qsa(ss);
+    const auto kv_layers = qsa + (draft != nullptr);
     if (!product(ids, {view.ids.size(), sizeof(int32_t)}) ||
         !product(images, {view.images.size(), sizeof(ConversationImageKey)}) ||
         !product(checkpoints, {view.checkpoints.size(), sizeof(ConversationCheckpoint)}) ||
-        !product(layers, {qsa + 1, sizeof(ConversationKv)}) ||
+        !product(layers, {kv_layers, sizeof(ConversationKv)}) ||
         !product(tails, {qsa, z.tail}) || !product(dead, {qsa, z.dead}) ||
         !product(positions, {qsa, z.block_pos})) return fail(error, "snapshot metadata byte count overflow");
     for (size_t n : {ids, images, checkpoints, layers, tails, dead, positions, z.gdn, ss.ple_hist ? z.ple : 0})
@@ -212,9 +213,10 @@ bool conversation_snapshot_bytes(const ConversationView& view, const SessionStat
     for (const auto& c : view.checkpoints)
         if (!metadata_bytes(c, bytes)) return fail(error, "checkpoint byte count overflow");
     const int64_t upto = (int64_t) view.ids.size(); // view_validate bounds this by signed max_cells
-    for (uint64_t i = 0; i <= qsa; ++i) {
-        const auto& st = i == qsa ? draft : owned(ss, (size_t) i);
-        const size_t n = conversation_kv_bytes(st, g, upto, i != qsa);
+    for (uint64_t i = 0; i < kv_layers; ++i) {
+        const bool index = i < qsa;
+        const auto& st = index ? owned(ss, (size_t) i) : *draft;
+        const size_t n = conversation_kv_bytes(st, g, upto, index);
         if (!n || !add(bytes, n)) return fail(error, "invalid or overflowing K/V byte estimate");
     }
     return true;
@@ -222,16 +224,17 @@ bool conversation_snapshot_bytes(const ConversationView& view, const SessionStat
 
 bool conversation_snapshot_capture_bytes(const ConversationKvReuse& reuse, const ConversationView& view,
                                          const SessionState& ss, const ModelGeometry& g,
-                                         const QsaState& draft, size_t& bytes, std::string& error) {
+                                         const QsaState* draft, size_t& bytes, std::string& error) {
     if (!conversation_snapshot_bytes(view, ss, g, draft, bytes, error)) return false;
     if (reuse.kv.empty()) return true;
-    const size_t layers = owned_qsa(ss) + 1;
+    const size_t qsa = owned_qsa(ss);
+    const size_t layers = qsa + (draft != nullptr);
     if (reuse.kv.size() != layers || reuse.unchanged_tokens < 0 ||
         reuse.unchanged_tokens > reuse.captured_tokens || reuse.unchanged_tokens > int64_t(view.ids.size()))
         return fail(error, "invalid retained K/V prefix");
     for (size_t i = 0; i < layers; ++i) {
-        const bool index = i + 1 != layers;
-        const auto& st = index ? owned(ss, i) : draft;
+        const bool index = i < qsa;
+        const auto& st = index ? owned(ss, i) : *draft;
         if (!conversation_kv_validate(reuse.kv[i], st, g, reuse.captured_tokens, index, error)) return false;
         const size_t fresh = conversation_kv_bytes(st, g, int64_t(view.ids.size()), index);
         size_t retained = 0;
@@ -247,7 +250,7 @@ bool conversation_snapshot_capture_bytes(const ConversationKvReuse& reuse, const
 
 bool conversation_snapshot_save(SavedConversation& image, const ConversationView& view,
                                 const SessionState& ss, const ModelGeometry& g,
-                                const QsaState& draft, std::string& error,
+                                const QsaState* draft, std::string& error,
                                 ConversationKvReuse reuse, size_t* reused_bytes) {
     size_t estimate = 0;
     if (!conversation_snapshot_capture_bytes(reuse, view, ss, g, draft, estimate, error) || !sync(error)) return false;
@@ -260,7 +263,7 @@ bool conversation_snapshot_save(SavedConversation& image, const ConversationView
     const int64_t unchanged = reuse.kv.empty() ? 0 : reuse.unchanged_tokens;
     captured.kv = std::move(reuse.kv);
     const size_t layers = owned_qsa(ss);
-    captured.kv.resize(layers + 1);
+    captured.kv.resize(layers + (draft != nullptr));
     if (!conversation_checkpoint_save(captured.live, ss, g, error)) return false;
     const int64_t upto = (int64_t) view.ids.size();
     for (size_t j = 0; j < layers; ++j)
@@ -268,14 +271,14 @@ bool conversation_snapshot_save(SavedConversation& image, const ConversationView
                                   unchanged, reused_bytes)) return false;
     // The draft's final cell may not have been computed when the output cap was
     // reached. Refresh that page even when the main prefix continued unchanged.
-    if (!conversation_kv_save(captured.kv.back(), draft, g, upto, false, error,
-                              std::max<int64_t>(0, unchanged - 1), reused_bytes)) return false;
+    if (draft && !conversation_kv_save(captured.kv.back(), *draft, g, upto, false, error,
+                                       std::max<int64_t>(0, unchanged - 1), reused_bytes)) return false;
     image = std::move(captured);
     return true;
 }
 
 bool conversation_snapshot_validate(const SavedConversation& image, const SessionState& ss,
-                                    const ModelGeometry& g, const QsaState& draft, std::string& error) {
+                                    const ModelGeometry& g, const QsaState* draft, std::string& error) {
     if (!image.live.stage_parts.empty()) return fail(error, "layer-split parking is not supported");
     if (image.geometry != geometry_key(g)) return fail(error, "incompatible runtime geometry");
     // an image holds exactly one carve's running state and K/V: same layer range or nothing
@@ -284,28 +287,28 @@ bool conversation_snapshot_validate(const SavedConversation& image, const Sessio
     const ConversationView view{image.live.ids, image.live.imgs, image.checkpoints, image.cvec};
     if (!view_validate(view, ss, g, error) || !conversation_checkpoint_validate(image.live, ss, g, error)) return false;
     const size_t layers = owned_qsa(ss);
-    if (image.kv.size() != layers + 1) return fail(error, "invalid K/V layer count");
+    if (image.kv.size() != layers + (draft != nullptr)) return fail(error, "invalid K/V layer count");
     const int64_t upto = (int64_t) image.live.ids.size();
     for (size_t j = 0; j < layers; ++j)
         if (!conversation_kv_validate(image.kv[j], owned(ss, j), g, upto, true, error)) return false;
-    return conversation_kv_validate(image.kv.back(), draft, g, upto, false, error);
+    return !draft || conversation_kv_validate(image.kv.back(), *draft, g, upto, false, error);
 }
 
 ConversationRestore conversation_snapshot_restore(const SavedConversation& image, SessionState& ss,
-                                                   const ModelGeometry& g, const QsaState& draft, std::string& error) {
+                                                   const ModelGeometry& g, const QsaState* draft, std::string& error) {
     if (!conversation_snapshot_validate(image, ss, g, draft, error)) return ConversationRestore::invalid;
     if (!sync(error)) return ConversationRestore::transfer_failed;
     const int64_t upto = (int64_t) image.live.ids.size();
     for (size_t j = 0; j < owned_qsa(ss); ++j)
         if (!conversation_kv_restore(image.kv[j], owned(ss, j), g, upto, true, error))
             return ConversationRestore::transfer_failed;
-    if (!conversation_kv_restore(image.kv.back(), draft, g, upto, false, error) ||
+    if ((draft && !conversation_kv_restore(image.kv.back(), *draft, g, upto, false, error)) ||
         !conversation_checkpoint_restore(image.live, ss, g, error)) return ConversationRestore::transfer_failed;
     return ConversationRestore::restored;
 }
 
 bool conversation_snapshot_verify(const SavedConversation& image, const SessionState& ss,
-                                  const ModelGeometry& g, const QsaState& draft,
+                                  const ModelGeometry& g, const QsaState* draft,
                                   ConversationVerification& result, std::string& error) {
     result = {};
     if (!conversation_snapshot_validate(image, ss, g, draft, error) || !sync(error)) return false;
@@ -330,8 +333,10 @@ bool conversation_snapshot_verify(const SavedConversation& image, const SessionS
         if (!payload_bytes(image.kv[j], checked.main_bytes)) return fail(error, "verified byte count overflow");
         ++checked.main_layers;
     }
-    if (!conversation_kv_verify(image.kv.back(), draft, g, upto, false, checked.draft_hash, error)) return false;
-    if (!payload_bytes(image.kv.back(), checked.draft_bytes)) return fail(error, "verified byte count overflow");
+    if (draft) {
+        if (!conversation_kv_verify(image.kv.back(), *draft, g, upto, false, checked.draft_hash, error)) return false;
+        if (!payload_bytes(image.kv.back(), checked.draft_bytes)) return fail(error, "verified byte count overflow");
+    }
     ConversationStateSizes z;
     if (!conversation_session_sizes(g, ss, z, error)) return false;
     std::array<uint8_t, 65536> buffer;

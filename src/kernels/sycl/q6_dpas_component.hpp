@@ -22,9 +22,13 @@ inline size_t q6_dpas_packed_bytes(int k, int n) {
     return size_t(bytes);
 }
 
-inline bool q6_dpas_c4_shape(int k, int n, int columns) noexcept {
-    return columns == 4 && k > 0 && k % 256 == 0 && n > 0 &&
+inline bool q6_dpas_matrix_shape(int k, int n) noexcept {
+    return k > 0 && k % 256 == 0 && n > 0 &&
         ((uint64_t(n) + 15) / 16) * 16 * (k / 256) * 210 <= std::numeric_limits<uint32_t>::max();
+}
+
+inline bool q6_dpas_c4_shape(int k, int n, int columns) noexcept {
+    return columns == 4 && q6_dpas_matrix_shape(k, n);
 }
 
 inline void q6_dpas_pack(std::span<const uint8_t> source,
@@ -65,4 +69,13 @@ void q6_dpas_columns(const uint16_t* packed, const void* q8, float* output,
 // for prospective model trials; this does not imply model/default adoption.
 void q6_dpas_c4_canonical(const void* canonical, const void* q8, float* output,
                          int k, int n, int columns, void* stream);
+
+// Five live columns with the same canonical allocation contract as C4.
+void q6_dpas_c5_canonical(const void* canonical, const void* q8, float* output,
+                         int k, int n, int columns, void* stream);
+
+// Five live columns reading the same interleave used by the sole-packed head.
+// This component has its own check; the serving head still admits 1..4 columns.
+void q6_dpas_c5_packed(const uint16_t* packed, const void* q8, float* output,
+                       int k, int n, int columns, void* stream);
 } // namespace strata::kernels::component

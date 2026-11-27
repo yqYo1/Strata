@@ -6,6 +6,7 @@
 #include "strata/sycl/runtime.hpp"
 #include <chrono>
 #include <cstdlib>
+#include <ctime>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -352,11 +353,14 @@ void graph_contract(Fixture &f,bool cooperative=false) {
 }
 // Main-authored extension of the owned fixture/oracle. Keep the candidate's
 // graph parameters fixed while refreshing input contents and persistent state.
-void planner_context_graph(Fixture &f) {
-  require(f.shape.blocks==65536 && f.shape.page==4 && f.shape.slots>=1025,
+void planner_context_graph(Fixture &f, int queries = 4, bool cooperative = true) {
+  require((queries == 3 || queries == 4) && f.shape.blocks == 65536 &&
+          f.shape.page == 4 && f.shape.slots >= 1025,
           "fixed physical-context planner fixture geometry");
   Case base("planner_context_tail",f.shape);
-  for(int qi=0;qi<4;++qi) {
+  if (queries == 3)
+    base.cap = qsa_selection_width(262144, qsa_real_shapes());
+  for(int qi=0;qi<queries;++qi) {
     std::vector<int32_t> row;
     for(int i=0;i<257;++i)
       row.push_back((i/4+qi*7)*f.shape.page+i%f.shape.page);
@@ -366,15 +370,18 @@ void planner_context_graph(Fixture &f) {
   Input in(f,base);
   f.put(base.before,initial_payload(f.shape,base.before));
   ex::command_graph<ex::graph_state::modifiable> graph(f.q.get_context(),f.q.get_device());
-  graph.begin_recording(f.q); in.submit(f,0,true); graph.end_recording(f.q);
+  graph.begin_recording(f.q); in.submit(f,0,cooperative); graph.end_recording(f.q);
   auto executable=graph.finalize();
   State previous=base.before;
   for(int pass=0;pass<5;++pass) {
     auto c=base;c.before=previous;
-    if(pass==1) c.widths={1,255,256,257};
-    if(pass==2) c.widths={0,0,0,0};
+    if (pass == 1)
+      c.widths = queries == 3 ? std::vector<int32_t>{1, 256, 257}
+                             : std::vector<int32_t>{1, 255, 256, 257};
+    if (pass == 2 || pass == 4)
+      std::fill(c.widths.begin(), c.widths.end(), 0);
     if(pass==3) c.before.ctl[0]=INT_MAX;
-    if(pass==4) c.widths={c.cap+1,0,0,0};
+    if (pass == 4) c.widths.front() = c.cap + 1;
     const auto expected=resolve(f.shape,c);
     const auto payload=expected_payload(f.shape,c.before,expected);
     f.put(c.before,initial_payload(f.shape,c.before)); in.put(c);
@@ -383,7 +390,10 @@ void planner_context_graph(Fixture &f) {
       f.rt->wait(done);
     });
     const auto fingerprint=check(f,in,expected,payload);
-    std::cout << "{\"phase\":\"planner_context_graph\",\"fmt\":" << f.shape.fmt
+    std::cout << "{\"phase\":\"planner_context_graph\",\"fmt\":" << f.shape.fmt;
+    if (queries == 3)
+      std::cout << ",\"nq\":3,\"cooperative\":" << (cooperative ? "true" : "false");
+    std::cout
               << ",\"last_cell\":262143,\"replay\":" << pass
               << ",\"oracle_exact\":true,\"fingerprint_fnv64\":" << fingerprint << "}\n";
     previous=expected;
@@ -481,10 +491,36 @@ void planner_smoke(std::shared_ptr<Runtime> rt,sycl::queue &q) {
   require(checked==14,"all fourteen bounded planner semantics required");
   std::cout << "planner_smoke=PASS direct_cases=" << checked << " graph_replays=20\n";
 }
+void planner_width3_smoke(std::shared_ptr<Runtime> rt, sycl::queue &q) {
+  const Shape shape{11, 7, 4, 2, 256, kKvInt8};
+  Fixture f(shape, rt, q);
+  Case c("planner_width3_shared_and_tail", shape);
+  c.add({4, 5, 8});
+  c.add({6, 9, 17});
+  c.add({19, shape.blocks * shape.page - 1});
+  seed(c.before, 1, 0);
+  Input in(f, c);
+  const auto expected = resolve(shape, c);
+  const auto initial = initial_payload(shape, c.before);
+  const auto payload = expected_payload(shape, c.before, expected);
+  require(!expected.ctl[3] && expected.ctl[2] == 3, "width-three smoke misses");
+  for (bool cooperative : {false, true}) {
+    f.put(c.before, initial);
+    pending_or_hold("width-three planner smoke", [&] { in.submit(f, 0, cooperative); });
+    checked_all(rt, q, "width-three planner smoke completion");
+    (void)check(f, in, expected, payload);
+    f.put(c.before, initial);
+    auto graph = capture(f, in, 0, cooperative);
+    (void)timed(f, in, 0, false, graph.get());
+    (void)check(f, in, expected, payload);
+  }
+  f.source_exact();
+  std::cout << "planner_width3_smoke=PASS direct_cases=2 graph_replays=2\n";
+}
 // Synthetic disjoint selections bound the miss range; the model's actual hit
 // distribution and inter-query overlap are not inferred from these cases.
 Case planner_case(const Shape &s,int nq,int missing) {
-  require((nq==2||nq==4) && s.slots==5120,"current streamed-cache and target windows");
+  require(nq >= 2 && nq <= 4 && s.slots == 5120, "current streamed-cache and target windows");
   auto c=typical_t4(s,0);c.rows.resize(size_t(nq));c.widths.resize(size_t(nq));
   c.before=State(s);c.name="planner_T"+std::to_string(nq)+"_miss_"+std::to_string(missing);
   require(c.cap==qsa_selection_width(262144,qsa_real_shapes()),"production selection capacity");
@@ -502,9 +538,15 @@ Case planner_case(const Shape &s,int nq,int missing) {
   require(count==s.slots,"full initial cache");
   c.before.ctl[0]=9;c.before.ctl[1]=3917;return c;
 }
-void planner_perf_validation(std::shared_ptr<Runtime> rt,sycl::queue &q) {
+void planner_perf_validation(std::shared_ptr<Runtime> rt, sycl::queue &q,
+                             const std::vector<int> &widths) {
+  const bool width_three = std::find(widths.begin(), widths.end(), 3) != widths.end();
   const Shape s{65536,5120,4,2,256,kKvInt8};Fixture f(s,rt,q);
-  for(int nq:{2,4}) for(int pattern:{0,1,2}) {
+  if (width_three) {
+    planner_context_graph(f, 3, false);
+    planner_context_graph(f, 3, true);
+  }
+  for(int nq:widths) for(int pattern:{0,1,2}) {
     const int missing=pattern==0?0:pattern==1?513*nq/4:513*nq;
     const auto c=planner_case(s,nq,missing);Input in(f,c);
     const auto expected=resolve(s,c),initial=c.before;
@@ -529,10 +571,11 @@ double planner_clock_pair() {
   for(int i=0;i<10000;++i) { const auto a=Clock::now(),b=Clock::now();total+=ns(a,b); }
   return double(total)/10000.;
 }
-void planner_benchmark(std::shared_ptr<Runtime> rt,sycl::queue &q,bool cooperative) {
+void planner_benchmark(std::shared_ptr<Runtime> rt, sycl::queue &q, bool cooperative,
+                       const std::vector<int> &widths) {
   const Shape s{65536,5120,4,2,256,kKvInt8};Fixture f(s,rt,q);
-  const double pair_ns=planner_clock_pair();int samples=0;
-  for(int nq:{2,4}) for(int pattern:{0,1,2}) {
+  const double pair_ns=planner_clock_pair();size_t samples=0;
+  for(int nq:widths) for(int pattern:{0,1,2}) {
     const int missing=pattern==0?0:pattern==1?513*nq/4:513*nq;
     const auto c=planner_case(s,nq,missing);
     Input in(f,c);const auto expected=resolve(s,c);
@@ -571,8 +614,41 @@ void planner_benchmark(std::shared_ptr<Runtime> rt,sycl::queue &q,bool cooperati
     }
     checked_all(rt,q,"planner benchmark graph retirement");
   }
-  require(samples==18,"complete planner timing matrix");f.source_exact();
-  std::cout << "planner_benchmark=PASS samples=18 timing=sum_of_isolated_graph_launch_and_wait reset_and_oracle=excluded physical_bus_bytes=unknown\n";
+  require(samples == widths.size() * 9, "complete planner timing matrix");f.source_exact();
+  std::cout << "planner_benchmark=PASS samples=" << samples
+            << " timing=sum_of_isolated_graph_launch_and_wait reset_and_oracle=excluded physical_bus_bytes=unknown\n";
+}
+void planner_width3_trace(std::shared_ptr<Runtime> rt, sycl::queue &q, bool cooperative, int missing) {
+  const Shape shape{65536, 5120, 4, 2, 256, kKvInt8};
+  Fixture f(shape, rt, q);
+  const auto c = planner_case(shape, 3, missing);
+  Input in(f, c);
+  const auto expected = resolve(shape, c);
+  const auto payload = expected_payload(shape, c.before, expected);
+  require(!expected.ctl[3] && expected.ctl[2] == missing, "trace placement count");
+  f.put(c.before, initial_payload(shape, c.before));
+  auto graph = capture(f, in, 0, cooperative);
+  const auto raw_ns = [] {
+    std::timespec stamp{};
+    require(::clock_gettime(CLOCK_MONOTONIC_RAW, &stamp) == 0, "read planner trace clock");
+    return uint64_t(stamp.tv_sec) * 1'000'000'000 + uint64_t(stamp.tv_nsec);
+  };
+  // A fixed number of submissions makes the native resolver and payload
+  // kernel instances countable without including calibration replays.
+  for (int replay = 0; replay < 5; ++replay) {
+    f.put_map(c.before);
+    const auto begin = raw_ns();
+    (void)timed(f, in, 0, false, graph.get());
+    const auto end = raw_ns();
+    (void)check(f, in, expected, payload);
+    std::cout << "{\"phase\":\"planner_width3_replay\",\"replay\":" << replay
+              << ",\"begin_raw_ns\":" << begin << ",\"end_raw_ns\":" << end << "}\n";
+  }
+  f.source_exact();
+  std::cout << "{\"phase\":\"planner_width3_trace\",\"replays\":5,\"nq\":3,\"graph_nodes\":2"
+            << ",\"missing\":" << missing << ",\"cooperative\":" << (cooperative ? "true" : "false")
+            << ",\"requested_host_payload_bytes_per_call\":" << uint64_t(missing) * shape.block_bytes()
+            << ",\"oracle_exact\":true}\n";
 }
 void benchmark(std::shared_ptr<Runtime> rt,sycl::queue &q,int candidate,int samples,bool events,bool graph) {
   require(candidate!=0 && samples>=40 && samples<=80 && samples%4==0,"40..80 samples, multiple of 4");
@@ -619,19 +695,32 @@ int main(int argc,char **argv) {
     }
     if(mode=="--help") {
       require(argc<=2,"help takes no extra args");
-      std::cout << "sycl_kv_copy_groups_bench --host-env|--validate|--validate-exhaustive|--planner-smoke|--planner-validate|--planner-benchmark scalar|cooperative|--benchmark GROUPS SAMPLES|--event-benchmark GROUPS SAMPLES|--graph-benchmark GROUPS SAMPLES|--graph-event-benchmark GROUPS SAMPLES\n";
+      std::cout << "sycl_kv_copy_groups_bench --host-env|--validate|--validate-exhaustive|--planner-smoke|--planner-validate|--planner-benchmark scalar|cooperative|--planner-width3-smoke|--planner-width3-validate|--planner-width3-benchmark scalar|cooperative|--planner-width3-trace ARM MISSES|--benchmark GROUPS SAMPLES|--event-benchmark GROUPS SAMPLES|--graph-benchmark GROUPS SAMPLES|--graph-event-benchmark GROUPS SAMPLES\n";
       return 0;
     }
     const bool graph=mode=="--graph-benchmark"||mode=="--graph-event-benchmark";
     const bool events=mode=="--event-benchmark"||mode=="--graph-event-benchmark";
     const bool bench=mode=="--benchmark"||mode=="--event-benchmark"||graph;
     const bool smoke=mode=="--planner-smoke";
-    const bool planner_speed=mode=="--planner-benchmark";
-    const bool planner=mode=="--planner-validate"||smoke||planner_speed;
-    require((bench&&argc==4)||(planner_speed&&argc==3)||
-        ((mode=="--validate"||mode=="--validate-exhaustive"||planner)&&!planner_speed&&argc==2),"invalid arguments");
-    if(planner_speed) require(std::string(argv[2])=="scalar"||std::string(argv[2])=="cooperative","planner arm required");
-    int candidate=0,samples=0;
+    const bool width_three_smoke = mode == "--planner-width3-smoke";
+    const bool width_three_validation = mode == "--planner-width3-validate";
+    const bool width_three_timing = mode == "--planner-width3-benchmark";
+    const bool width_three_trace = mode == "--planner-width3-trace";
+    const bool planner_speed = mode == "--planner-benchmark" || width_three_timing;
+    const bool planner_arm = planner_speed || width_three_trace;
+    const bool planner = mode == "--planner-validate" || smoke || planner_arm
+        || width_three_smoke || width_three_validation;
+    require(((bench || width_three_trace) && argc == 4) || (planner_speed && argc == 3) ||
+        ((mode == "--validate" || mode == "--validate-exhaustive" || planner) && !planner_arm && argc == 2),
+        "invalid arguments");
+    const std::string arm = planner_arm ? argv[2] : "";
+    if (planner_arm) require(arm == "scalar" || arm == "cooperative", "planner arm required");
+    int candidate=0,samples=0,trace_misses=0;
+    if (width_three_trace) {
+      const std::string misses = argv[3];
+      require(misses == "0" || misses == "384" || misses == "1539", "invalid width-three miss count");
+      trace_misses = std::stoi(misses);
+    }
     if(bench) { candidate=std::stoi(argv[2]); samples=std::stoi(argv[3]); check_groups(candidate);
       require(candidate!=0&&samples>=40&&samples<=80&&samples%4==0,"benchmark bounds"); }
     // Read-only snapshots happen before constructing Runtime and queues.
@@ -645,11 +734,16 @@ int main(int argc,char **argv) {
         rt->device().get_info<sycl::info::device::name>().find("B570")!=std::string::npos,
         "planner screen requires the qualified B570/in-order/workgroup256 setup");
     std::cerr << "device=" << rt->device().get_info<sycl::info::device::name>() << "\n";
-    if(planner_speed) planner_benchmark(rt,q,std::string(argv[2])=="cooperative");
+    const auto planner_widths = width_three_validation || width_three_timing
+        ? std::vector<int>{3} : std::vector<int>{2, 4};
+    if (width_three_trace) planner_width3_trace(rt, q, arm == "cooperative", trace_misses);
+    else if(planner_speed) planner_benchmark(rt,q,arm=="cooperative",planner_widths);
     else if(smoke) planner_smoke(rt,q);
+    else if (width_three_smoke) planner_width3_smoke(rt, q);
     else if(bench) benchmark(rt,q,candidate,samples,events,graph);
-    else validate(rt,q,mode=="--validate-exhaustive",startup_groups,planner);
-    if(mode=="--planner-validate") planner_perf_validation(rt,q);
+    else if(!width_three_validation) validate(rt,q,mode=="--validate-exhaustive",startup_groups,planner);
+    if(mode=="--planner-validate" || width_three_validation)
+      planner_perf_validation(rt,q,planner_widths);
     checked_all(rt,q,"final completion");
     if(planner) {
       std::cout << "KV_PLAN_WAIT\n" << std::flush;

@@ -188,6 +188,13 @@ public:
     /// The GPU plan the pool writes each layer (VRAM hits + the PCIe share of the misses); give it to the
     /// dispatch (`ExpertDispatch::plan`) before the first `run`.
     GpuPlanSink* plan_sink() { return &sink_; }
+#ifdef STRATA_ENABLE_SYCL
+    bool configure_decode_t4_dispatch(bool local_plan_without_pcie, std::string& err);
+    bool decode_t4_accepts_pcie_share(double fraction) const noexcept {
+        // A share smaller than half of one 1/256 unit rounds to zero.
+        return !decode_t4_dispatch_ || (fraction >= 0.0 && fraction < 0.5 / 256.0);
+    }
+#endif
     /// Plan v0.3 P6: split the window into two token groups and pipeline the CPU experts of one with the GPU work
     /// of the other (default on).  Set before the first `run`.
     void set_split(bool on) { split_ = on; }
@@ -306,11 +313,13 @@ private:
     // runtime barrier snapshots a freshly recorded copy event outside capture.
     VerifyWindowGraphCache<cudaGraphExec_t> window_graphs_;
     VerifyInput last_input_ = VerifyInput::decode;
+    bool decode_qsa_score_grid_ = false;
     bool decode_kv_coalesced_ = false; // immutable opt-in; qualified INT8/C2,C4 only
     bool decode_q6_columns_ = false; // immutable after init; opt-in model candidate
     bool decode_q6_centering_ = false; // independent opt-in;18 measured column shapes only
     bool decode_q6_native_half_ = false; // immutable;26-cell incumbent intersection
     bool decode_q6_dpas_dense_ = false; // immutable;four measured non-head C4 shapes
+    bool decode_q6_dpas_dense_c5_ = false;
     bool q6_route_audit_ = false;
     uint64_t q6_capture_sequence_ = 0;
     cudaEvent_t pcie_copy_ready_ = nullptr, pcie_done_ = nullptr;
@@ -331,10 +340,21 @@ private:
     bool finish_expert_copies(std::string& err);
     friend struct VerifierRetirementTestAccess;
     std::atomic<uint32_t> reached_{0};
-    enum class SegmentKind { layer, resident, pcie };
+    enum class SegmentKind { layer, resident, pcie, first_pair };
     bool end_segment(int T, std::string& err, VerifyInput input, SegmentKind kind = SegmentKind::layer);
     void launch_work();
     void launch_pcie(int groups);
+    enum class DecodeT4Schedule { stock, after_cpu, early };
+    DecodeT4Schedule decode_t4_schedule_ = DecodeT4Schedule::stock;
+    bool decode_t4_dispatch_ = false;
+    bool decode_t4_audit_ = false;
+    bool decode_t4_prefix_help_ = false;
+    bool decode_t4_window(VerifyInput input, int width) const noexcept {
+        return decode_t4_dispatch_ && input == VerifyInput::decode && width == 4;
+    }
+    static constexpr size_t decode_t4_half_floats = 2 * 10 * 2560;
+    float* decode_t4_cpu_[2]{};
+    float* decode_t4_device_[2]{};
 #endif
     cudaGraphExec_t commit_exec_ = nullptr;
 

@@ -221,6 +221,18 @@ struct GpuPlanSink {
     /// SYCL opt-in: copy from an immutable resident HOST layer in mode0.
     /// This promises neither page locking, a device alias nor asynchronous DMA.
     bool host_layer_copy = false;
+#ifdef STRATA_DECODE_EXPERT_SCHEDULE
+    struct DecodeT4Publication {
+        void (*ready)(void*) noexcept;
+        void* context;
+        bool after_all;
+        bool* completed;
+        bool caller_helps_prefix;
+        int* caller_prefix_jobs;
+    };
+    // Borrowed only inside the synchronous width-four decode pool call.
+    const DecodeT4Publication* decode_t4_publication = nullptr;
+#endif
 };
 
 /// The adapter's own state.  One per session, reused every layer so the token path allocates nothing (P2.T10).

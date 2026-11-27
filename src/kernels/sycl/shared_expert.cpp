@@ -140,28 +140,29 @@ void native_moe_combine_multi(const float *p, const float *w, const float *s,
                               float *o, int64_t n, int64_t k, int t, void *st) {
   combine(p, w, s, o, n, k, t, st, true);
 }
-void decode_moe_combine_mapped_rows(const float *mapped_cpu_parts,
-                                    const float *gpu_parts,
-                                    const int32_t *gpu_rows,
-                                    const int32_t *gpu_count,
-                                    const float *weights, const float *shared,
-                                    float *output, void *stream) {
-  constexpr int columns = 2560, experts = 10, tokens = 4;
-  constexpr int rows = tokens * experts, group_size = 128;
+namespace {
+template <int tokens>
+void decode_moe_combine_mapped_range(int first_token, const float *mapped_cpu_parts,
+                                     const float *gpu_parts, const int32_t *gpu_rows,
+                                     const int32_t *gpu_count, const float *weights,
+                                     const float *shared, float *output, void *stream) {
+  constexpr int columns = 2560, experts = 10, rows = 4 * experts, group_size = 128;
   constexpr size_t output_bytes = tokens * columns * sizeof(float);
-  constexpr size_t parts_bytes = rows * columns * sizeof(float);
+  constexpr size_t cpu_bytes = tokens * experts * columns * sizeof(float);
+  constexpr size_t gpu_bytes = rows * columns * sizeof(float);
   constexpr uint32_t invalid = uint32_t{1} << 31;
   if (!stream)
     throw std::invalid_argument("decode MoE combine needs an explicit queue");
   validate_spans({{output, output_bytes}},
-                 {{mapped_cpu_parts, parts_bytes}, {gpu_parts, parts_bytes},
+                 {{mapped_cpu_parts, cpu_bytes}, {gpu_parts, gpu_bytes},
                   {gpu_rows, rows * sizeof(int32_t)}, {gpu_count, sizeof(int32_t)},
-                  {weights, rows * sizeof(float)}, {shared, output_bytes}});
+                  {weights, tokens * experts * sizeof(float)}, {shared, output_bytes}});
   auto event = queue_for(stream).parallel_for(
       sycl::nd_range<1>(tokens * columns, group_size), [=](sycl::nd_item<1> item) {
         const size_t index = item.get_global_linear_id();
         const size_t token = index / columns, column = index % columns;
         const unsigned first = token * experts;
+        const unsigned first_gpu = first + first_token * experts;
         uint32_t gpu_mask = 0;
         if (item.get_local_linear_id() == 0) {
           const int count = *gpu_count;
@@ -170,7 +171,7 @@ void decode_moe_combine_mapped_rows(const float *mapped_cpu_parts,
           } else {
             for (int j = 0; j < count; ++j) {
               const unsigned row = static_cast<unsigned>(gpu_rows[j]);
-              const unsigned expert = row - first;
+              const unsigned expert = row - first_gpu;
               if (row >= rows) gpu_mask |= invalid;
               if (expert < experts) {
                 const uint32_t bit = uint32_t{1} << expert;
@@ -188,7 +189,8 @@ void decode_moe_combine_mapped_rows(const float *mapped_cpu_parts,
         auto part = [&](unsigned expert) {
           const size_t at = (size_t(first) + expert) * columns + column;
           // Match the original add of a resident row to the zeroed part.
-          return (gpu_mask & (uint32_t{1} << expert)) ? 0.0f + gpu_parts[at]
+          return (gpu_mask & (uint32_t{1} << expert)) ?
+                     0.0f + gpu_parts[at + size_t(first_token) * experts * columns]
                                                       : mapped_cpu_parts[at];
         };
         float sum = part(0) * weights[first];
@@ -197,6 +199,25 @@ void decode_moe_combine_mapped_rows(const float *mapped_cpu_parts,
         output[index] = sum + shared[index];
       });
   finish(stream, event);
+}
+} // namespace
+
+void decode_moe_combine_mapped_rows(const float *mapped_cpu_parts,
+                                    const float *gpu_parts, const int32_t *gpu_rows,
+                                    const int32_t *gpu_count, const float *weights,
+                                    const float *shared, float *output, void *stream) {
+  decode_moe_combine_mapped_range<4>(0, mapped_cpu_parts, gpu_parts, gpu_rows, gpu_count,
+                                     weights, shared, output, stream);
+}
+
+void decode_moe_combine_mapped_half(int first_token, const float *mapped_cpu_parts,
+                                    const float *gpu_parts, const int32_t *gpu_rows,
+                                    const int32_t *gpu_count, const float *weights,
+                                    const float *shared, float *output, void *stream) {
+  if (first_token != 0 && first_token != 2)
+    throw std::invalid_argument("decode MoE half must start at token zero or two");
+  decode_moe_combine_mapped_range<2>(first_token, mapped_cpu_parts, gpu_parts, gpu_rows, gpu_count,
+                                     weights, shared, output, stream);
 }
 void moe_combine(const float *p, const float *w, const float *s, float *o,
                  int64_t n, int64_t k, void *st) {

@@ -1,5 +1,6 @@
 #include "strata/kernels/kv_q4.hpp"
 #include "strata/kernels/kv_q8.hpp"
+#include "strata/kernels/qsa_select.hpp"
 #include "strata/prefill/kernels.hpp"
 #include "strata/sycl/runtime.hpp"
 #include <algorithm>
@@ -9,6 +10,7 @@
 #include <cstring>
 #include <iostream>
 #include <stdexcept>
+#include <string_view>
 #include <vector>
 using namespace strata;
 using namespace strata::kernels;
@@ -182,6 +184,103 @@ void streaming(int fmt) {
   std::cout
       << "KV streaming format " << fmt
       << ": hits, CLOCK eviction, overflow, wrap, ring and stage passed\n";
+}
+
+void dflash2_width4_streaming() {
+  constexpr int blocks = 65536, score_blocks = blocks + 2, slots = 3072;
+  constexpr int queries = 4, cap = 2051, group_pages = 514;
+  constexpr int values = 4 * 2 * 256, scales = 4 * 2 * (256 / KV_Q8_GROUP);
+  const auto s = qsa_real_shapes();
+  Buffer<int8_t> hk(blocks * values, true), hv(blocks * values, true),
+      dk(slots * values), dv(slots * values);
+  Buffer<uint16_t> hks(blocks * scales, true), hvs(blocks * scales, true),
+      dks(slots * scales), dvs(slots * scales);
+  Buffer<int32_t> table(blocks + 1), slot_block(slots + 1), stamp(slots),
+      ref(slots), ctl(kKvCtlInts), miss_block(slots), miss_slot(slots),
+      ids(queries * cap), steps(queries * kStepCount);
+  Buffer<float> scores(queries * score_blocks);
+  constexpr int32_t guard = -987;
+  table.put(std::vector<int32_t>(blocks + 1, guard));
+  slot_block.put(std::vector<int32_t>(slots + 1, guard));
+  KvStreamMap map{table.data(), slot_block.data(), stamp.data(), ref.data(), ctl.data(),
+                  miss_block.data(), miss_slot.data(), blocks, slots};
+  QsaAttnPools device;
+  device.page_table = table.data();
+  device.k_q = dk.data();
+  device.v_q = dv.data();
+  device.k_scale = dks.data();
+  device.v_scale = dvs.data();
+  KvHostPools host;
+  host.k_q = hk.data();
+  host.v_q = hv.data();
+  host.k_scale = hks.data();
+  host.v_scale = hvs.data();
+  kv_stream_reset(map, nullptr);
+
+  auto run = [&](int first) {
+    std::vector<float> weights(queries * score_blocks, -1);
+    std::vector<int32_t> step(queries * kStepCount), expected;
+    std::vector<int32_t> selected_pages;
+    for (int q = 0; q < queries; ++q) {
+      const int tail = blocks - 1 - q;
+      qsa_step_fill(step.data() + q * kStepCount, tail * 4, s);
+      const int begin = first + q * 514;
+      float* row = weights.data() + q * score_blocks;
+      std::fill(row + begin, row + begin + 512, 3);
+      row[tail] = 2;
+      row[begin + 512] = row[begin + 513] = 1;
+      for (int cell = begin * 4; cell < (begin + 512) * 4 + 2; ++cell)
+        expected.push_back(cell);
+      expected.push_back(tail * 4);
+      for (int block = begin; block <= begin + 512; ++block)
+        selected_pages.push_back(block);
+      selected_pages.push_back(tail);
+    }
+    check(selected_pages.size() == queries * group_pages, "width4 page union fixture");
+    for (int block : selected_pages) {
+      for (int j = 0; j < values; ++j) {
+        hk.data()[block * values + j] = int8_t((block * 11 + j) % 255 - 127);
+        hv.data()[block * values + j] = int8_t((block * 19 + 3 * j) % 255 - 127);
+      }
+      for (int j = 0; j < scales; ++j) {
+        hks.data()[block * scales + j] = uint16_t(17 * block + j);
+        hvs.data()[block * scales + j] = uint16_t(23 * block + 3 * j);
+      }
+    }
+    steps.put(step);
+    scores.put(weights);
+    qsa_block_topk(scores.data(), steps.data(), queries, score_blocks, cap, s, ids.data(), nullptr);
+    check(ids.get() == expected, "width4 full-block, threshold tie and partial-tail selection");
+    kv_stream_resolve_with_copy_groups(map, device, host, kKvInt8,
+                                      ids.data(), steps.data(), queries, cap, s, nullptr, 0);
+    const auto pages = table.get(), resident = slot_block.get();
+    const auto key = dk.get(), value = dv.get();
+    const auto key_scale = dks.get(), value_scale = dvs.get();
+    for (int block : selected_pages) {
+      const int slot = pages[block];
+      check(slot >= 0 && slot < slots && resident[slot] == block, "width4 resident page");
+      const int key_begin = slot * values, scale_begin = slot * scales;
+      check(std::equal(key.begin() + key_begin, key.begin() + key_begin + values, hk.data() + block * values)
+            && std::equal(value.begin() + key_begin, value.begin() + key_begin + values, hv.data() + block * values)
+            && std::equal(key_scale.begin() + scale_begin, key_scale.begin() + scale_begin + scales,
+                          hks.data() + block * scales)
+            && std::equal(value_scale.begin() + scale_begin, value_scale.begin() + scale_begin + scales,
+                          hvs.data() + block * scales), "width4 resident payload bytes");
+    }
+    for (int block = 0; block < blocks; ++block)
+      check(pages[block] == -1 || (pages[block] >= 0 && pages[block] < slots &&
+                                 resident[pages[block]] == block), "width4 inverse map");
+    check(pages.back() == guard && resident.back() == guard, "width4 map canaries");
+    return kv_stream_counters(map);
+  };
+  auto counters = run(0);
+  check(counters.misses == 2056 && counters.calls == 1 && !counters.overflow, "width4 cold fill");
+  counters = run(0);
+  check(counters.misses == 2056 && counters.calls == 2 && !counters.overflow, "width4 all-hit replay");
+  counters = run(4096);
+  check(counters.misses == 4108 && counters.lookups == 6168 &&
+        counters.calls == 3 && !counters.overflow, "width4 eviction and tail reuse");
+  std::cout << "DFlash2 width4 resident KV: 3072 slots, 2056 distinct pages, payload and eviction passed\n";
 }
 uint16_t half(float x) { return std::bit_cast<uint16_t>(_Float16(x)); }
 float decode(uint16_t x) { return float(std::bit_cast<_Float16>(x)); }
@@ -509,10 +608,16 @@ void hadamard() {
     check(std::abs(x[i] - y[i]) < 4e-7, "FWHT inverse/guards");
 }
 } // namespace
-int main() {
+int main(int argc, char** argv) {
   try {
+    const bool width4 = argc == 2 && std::string_view(argv[1]) == "--dflash2-kv-resident";
+    check(argc == 1 || width4, "unknown KV fixture option");
     std::fesetround(FE_TONEAREST);
     runtime = sycl_backend::runtime_for();
+    if (width4) {
+      dflash2_width4_streaming();
+      return 0;
+    }
     for (int fmt : {kKvF16, kKvInt8, kKvQ4})
       streaming(fmt);
     hadamard();

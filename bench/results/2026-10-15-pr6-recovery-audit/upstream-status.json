@@ -1,142 +1,141 @@
 {
   "schema": "strata-upstream-status-v3",
-  "queried_utc": "2026-11-24T01:09:27+00:00",
+  "queried_utc": "2026-11-26T01:07:19+00:00",
   "sole_upstream": "Niko1221/Strata",
   "skill": ".claude/skills/strata-upstream-sync/SKILL.md",
   "previous_observation": {
-    "queried_utc": "2026-11-22T01:09:53+00:00",
-    "observed_sha": "6e38f588a646c0ee6948a74afbe670eb75896106"
+    "queried_utc": "2026-11-24T01:09:27+00:00",
+    "observed_sha": "6a6db7ff58c283cf28d2b913404b5fa31a767eaa"
   },
-  "observed_sha": "6a6db7ff58c283cf28d2b913404b5fa31a767eaa",
+  "observed_sha": "c234774038d1c9249cb33637d27b895d47b39786",
   "changed_since_previous_observation": true,
   "source_fetched": true,
-  "fetch_command": "git fetch --no-tags origin refs/heads/main:refs/remotes/origin/main",
+  "fetch_command": "git -c maintenance.auto=false fetch --no-tags origin refs/heads/main:refs/remotes/origin/main refs/tags/v0.2.21:refs/tags/v0.2.21 refs/tags/v0.2.22:refs/tags/v0.2.22",
   "remote_check": {
-    "command": "git ls-remote --symref origin HEAD refs/heads/main",
-    "observed_sha": "6a6db7ff58c283cf28d2b913404b5fa31a767eaa",
+    "command": "git ls-remote --symref origin HEAD refs/heads/main refs/tags/v0.2.21 refs/tags/v0.2.21^{} refs/tags/v0.2.22 refs/tags/v0.2.22^{}",
+    "observed_sha": "c234774038d1c9249cb33637d27b895d47b39786",
     "matches_fetched_origin_main": true,
-    "checked_utc": "2026-11-24T01:09:27+00:00",
-    "tag": "v0.2.20",
-    "tag_object": "4920a3a4be0f3951dc84678b32a37eb12999b54f",
-    "peeled_tag_commit": "a34979fc94f3d126b9bb8210f4ad311345688b52",
-    "commits_after_release_tag": 16
+    "checked_utc": "2026-11-26T01:07:19+00:00",
+    "tag": "v0.2.22",
+    "tag_object": "a6f14f067fc4a2be660284039b33234937cbf555",
+    "peeled_tag_commit": "b28ca95e3e6847f2d5e317994f253b66716deeaa",
+    "commits_after_release_tag": 1,
+    "previous_release": {
+      "tag": "v0.2.21",
+      "tag_object": "0f8a6b78c5e37ef84bf8ad8acecf60a44cf0618a",
+      "peeled_tag_commit": "d46f5f268f8ed797e83a5c63a69bffbd7a581cf6"
+    }
   },
   "new_interval": {
     "start": "146df3c468739147f520ac3816de806f71232571",
-    "target": "6a6db7ff58c283cf28d2b913404b5fa31a767eaa",
-    "commits": 2547,
-    "changed_paths": 8550,
-    "describe": "16 commits past annotated v0.2.20",
+    "target": "c234774038d1c9249cb33637d27b895d47b39786",
+    "commits": 2868,
+    "changed_paths": 14080,
+    "path_count_convention": "git diff --no-renames --name-only; a renamed file contributes both paths.",
+    "describe": "v0.2.22-1-gc23477403",
     "source_access": "Fetched origin/main in the independent ghq clone and verified the advertised main and annotated release tag.",
     "integration_state": "fetched_not_imported",
     "whole_function_ledger_complete": false,
     "unmodified_hardware_tuned_performance_complete": false,
     "since_previous_check": {
-      "start": "6e38f588a646c0ee6948a74afbe670eb75896106",
-      "target": "6a6db7ff58c283cf28d2b913404b5fa31a767eaa",
-      "commits": 152,
-      "changed_paths": 835,
+      "start": "6a6db7ff58c283cf28d2b913404b5fa31a767eaa",
+      "target": "c234774038d1c9249cb33637d27b895d47b39786",
+      "commits": 321,
+      "changed_paths": 482,
       "by_top_level_area": {
-        ".github": 2,
+        ".github": 10,
         "AGENTS.md": 1,
         "README.md": 1,
-        "app": 171,
-        "docs": 39,
-        "engine": 416,
-        "terminal": 187,
-        "tools": 18
+        "app": 63,
+        "docs": 110,
+        "engine": 151,
+        "terminal": 113,
+        "tools": 33
       },
       "status": "fetched_not_imported"
     },
     "source_only_review": {
-      "state": "candidate_slices_identified",
-      "release_note": "https://github.com/Niko1221/Strata/releases/tag/v0.2.20",
-      "release_commit": "a34979fc94f3d126b9bb8210f4ad311345688b52",
+      "state": "two_scopes_reviewed_initial",
+      "release_note": "https://github.com/Niko1221/Strata/releases/tag/v0.2.22",
+      "release_commit": "b28ca95e3e6847f2d5e317994f253b66716deeaa",
       "license_sha256": "949b9b0aada7476006469e58ee4ffb0e0f68c2d9137e90a356757b61a09d37f0",
       "required_function_candidates": [
-        "6bd3485da and 00810bdd9: shared model discovery and schema fixes, config and installer interactions.",
-        "1f1057b3f and 7ddb2bfd7: branching conversation checkpoints and Intel free-memory reporting.",
-        "062b6ec72: SYCL GENI/cvec bounds and DEVICE_LOST propagation. Review separately from SSD spill.",
-        "73d4f4196: MCP installation cancellation order and portability checks."
+        "e83de74d7: ported the Responses output-idle heartbeat and its loopback HTTP regression. Focused host validation passes.",
+        "3575dd122 and the v0.2.21 agent-session updates: check prompt-cache option admission and live prefix reuse through the actual serial SYCL entrypoint.",
+        "Review update resume and chat working-folder behavior jointly with their shared App/Control API contracts."
       ],
       "inference_component_candidates": [
-        "f44ed40b8: Battlemage grouped routed-expert prefill and weight reuse.",
-        "4de1074d8: Battlemage GDN recurrence pairing and tiling.",
-        "9e3ad2778: Unsloth and NVFP4 SYCL multi-row quantization kernels.",
-        "4414c2988: cold-expert CPU SIMD independently from the all-tier planner."
+        "a7eb7c6c8: retain the local event-synchronized host expert fallback. Review this guard if the local SYCL verifier gains an explicit no-host mode.",
+        "ed5bff88c: exact Arc source resolution selects separate SYCL implementations in upstream and this fork. Numerical parity and effective runtime dispatch remain separate comparisons.",
+        "v0.2.20 Battlemage grouped prefill, GDN pairing and cold-expert component reviews remain pending."
       ],
       "model_performance_verified": false,
       "review_index_keys": [
-        "niko-0220-b570-component-boundaries-20261124",
-        "niko-0220-shared-function-boundaries-20261124"
+        "niko-0222-qwen-shared-contracts-20261126",
+        "niko-0222-arc-prefill-component-boundaries-20261126"
       ],
-      "local_bmg_direct_screen": {
-        "source_commit": "6a6db7ff58c283cf28d2b913404b5fa31a767eaa",
-        "source_paths": [
-          "engine/sycl/src/prefill/prefill.cpp",
-          "engine/sycl/src/prefill/bmg_direct_experts.cpp"
-        ],
-        "metadata_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
-        "layers": 48,
-        "format_pairs": {
-          "18/20": 14,
-          "18/42": 3,
-          "21/20": 9,
-          "21/42": 1,
-          "22/20": 15,
-          "22/42": 5,
-          "23/20": 1
+      "normalization_resolution": {
+        "upstream_resolver": "engine/sycl/CMakeLists.txt",
+        "upstream_source": "engine/sycl/src/prefill/kernels.dp.cpp",
+        "changed_root_source": "engine/src/prefill/kernels.cu",
+        "fork_compiled_source": "src/prefill/sycl/postops.cpp",
+        "fork_build_evidence": "0ab86d36b7ac37465a4f577a25bedbf7e66fb2b2",
+        "native_runtime_dispatch_measured": false
+      },
+      "no_host_guard_resolution": {
+        "upstream_commit": "a7eb7c6c8626f4c56c14daa1c4daf663bd2b5284",
+        "retained_source": "968e71988953dca3d98037d3b3fec9f903bdfd6f",
+        "retained_build": "0ab86d36b7ac37465a4f577a25bedbf7e66fb2b2",
+        "compiled_git_sha256": {
+          "src/core/verify.cpp": "4c3b80fbadeb53a82163c4a7449763081cc0345b97a2cfc7c52723d86d843c26",
+          "src/program/generate.cpp": "0a1466333308c916504abe4e883bec0778f59db7cbf38132955d4088704a4e42"
         },
-        "format_matching_layers": 5,
-        "member_max_rows": 32,
-        "layout_and_row_eligibility_measured": false,
-        "decision": "Keep direct compressed BMG conditional on actual row and phase dispatch. The 5 format-matching layers do not establish eligible grouped rows. Evaluate the shared grouped schedule and GDN pairing independently."
+        "decision": "keep_host_fallback_for_retained_sycl_entry",
+        "evidence": "The configured SYCL backend compiles the verified source. Its device_plan_ is false, per-layer publication waits on a completed event, and the host pool callback serves misses.",
+        "revisit": "An explicit no-host selector or a change to the resident-only verifier dispatch."
       },
-      "model_discovery_port": {
-        "state": "implemented_host_verified",
-        "fork_commit": "affe682594a030d81e844b42dd0abf245ad9cd20",
-        "upstream_source": "terminal/serve/server.py",
-        "upstream_commits": [
-          "23d94d00aed4808a8a09dd91bb64141ffd6ab62c",
-          "dd6da3a9dc4832c19597702d89b5ada7d67be1c3",
-          "18cce81d0a409c9440f8d9376b6341de443aa7df",
-          "6bd3485daccce0953e9379a35709f0b02a212397"
-        ],
-        "destination": "serve/server.py",
-        "behavior": "Both model-list endpoints and individual model retrieval. Stable created and owned_by fields, text context aliases, and the existing lazy-loaded, text, vision and image model entries.",
-        "host_verification": {
-          "tests": [
-            "serve.test_server.WebApp.test_model_discovery_and_props",
-            "serve.test_server.ModelAliases",
-            "serve.test_lifecycle.Lifecycle.test_discover_chat_unload_and_stream_reload",
-            "serve.test_images.OverHttp.test_listed"
+      "responses_custom_keepalive": {
+        "upstream_commit": "e83de74d7d6207622c7e8f3ae5f8b35dae15d491",
+        "source_destination": "serve/server.py",
+        "implementation_source": "26b95ce9976e9797b493baf10e5610713a36717d",
+        "regression_source": "630fd80d333a116afb02da581f45feeac250875c",
+        "baseline": {
+          "passed": 2,
+          "failed": 1,
+          "observed_held_body_keepalives": 0,
+          "expected_minimum": 2
+        },
+        "focused_validation": {
+          "suites": [
+            "serve.test_responses",
+            "serve.test_stream_write_timeout"
           ],
-          "passed": 8,
-          "native_model_runs": 0
-        }
-      },
-      "model_id_admission_port": {
-        "state": "implemented_host_verified",
-        "fork_commit": "6dd01971d0624ea7c8479d5cb5e04340d1fd75da",
-        "upstream_commits": [
-          "4aaa1cbdcd73e142965cdc3a66c2cbc08977b7df",
-          "6bd3485daccce0953e9379a35709f0b02a212397"
-        ],
-        "destination": "serve/server.py",
-        "behavior": "Check explicit Qwen3.8-Flash-Next model IDs at chat, Messages and Responses admission. Keep the default family base aliases and generic placeholders. Honor strict matching from CLI, config or startup environment.",
-        "host_verification": {
-          "tests": [
-            "serve.test_server.ModelAliases",
-            "serve.test_server.WebApp.test_model_discovery_and_props",
-            "serve.test_lifecycle.Lifecycle.test_discover_chat_unload_and_stream_reload",
-            "serve.test_images.OverHttp.test_listed"
+          "passed": 49,
+          "skipped": 1,
+          "skip_reason": "optional jsonschema not installed",
+          "failed": 0,
+          "keepalive_regressions_passed": 3,
+          "exit_code": 0
+        },
+        "broader_attempt": {
+          "suites": [
+            "serve.test_responses",
+            "serve.test_stream_ownership",
+            "serve.test_stream_write_timeout"
           ],
-          "passed": 10,
-          "cli_help_verified": true,
-          "native_model_runs": 0
-        }
-      },
-      "next_required_host_port": "Continue the shared configuration and installer review for 6bd3485da and 00810bdd9. Enumeration, retrieval and request model validation have host coverage."
+          "stage": "timed_out",
+          "timeout_s": 130,
+          "exit_code": 124,
+          "resolution": "Isolate stream ownership in a verbose run separately."
+        },
+        "scope": "Host HTTP verification of timely pings during held custom arguments, a single complete custom argument body, ordinary function deltas and disconnect handling.",
+        "native_performance_qualified": false
+      }
+    },
+    "prior_source_review": {
+      "commit": "8db0078e3e5634d7c7326e7520dd3ab7cb6c6ac9",
+      "key": "new_interval.source_only_review",
+      "consumer": "Retain the tested model discovery and model admission ports and the earlier B570 decisions."
     },
     "prior_pending_component_review": {
       "commit": "13932a536d0f5daed3fcca4e7a76e826817cdc86",
@@ -147,7 +146,9 @@
     "unmodified_b570_bench_admission": {
       "build_source": "engine/sycl/CMakeLists.txt",
       "launcher": "tools/bench.sh enters terminal and executes .venv/bin/python tools/strata_bench.py.",
-      "next": "Check the unmodified Qwen Arc launch and measure the standard long and agent suite and matched sustained workloads. Include hardware-tuned settings."
+      "next": "Check the unmodified Qwen Arc launch and measure the standard long and agent suite and matched sustained workloads. Include hardware-tuned settings.",
+      "observed_source": "c234774038d1c9249cb33637d27b895d47b39786",
+      "packaging_candidate": "v0.2.22 publishes the Linux x86-64 SYCL Qwen engine 0.1.69; current main adds libgomp bundling. Build or validate the exact selected unmodified artifact and keep release and main identities distinct."
     }
   },
   "integrated_upstream_target": "7695859aa13afb248bdb4d36f9b2e95707db079d",
@@ -158,8 +159,8 @@
   "current_engine_source_commit": "59411e1de2edcf76739205b54ca2cfd7a6681339",
   "current_engine_sha256": "1b56f94c7434cc332ada4092bf6bb69b677bde1df10c049867e7c0884462c5d2",
   "current_engine_changed_by_check": false,
-  "next_check_utc": "2026-11-26T01:09:27+00:00",
-  "pending": "Continue the cumulative non-inference ledger through 6a6db7ff5, including the new app, terminal and engine paths. The partial functional import remains scoped to 146df3c4 and incremental ports. Keep unmodified hardware-tuned upstream performance and component-specific inference evaluation open. Preserve the DFlash2 configuration and troubleshoot device-lost propagation separately. DeepSeek and 35B execution remain excluded.",
+  "next_check_utc": "2026-11-28T01:07:19+00:00",
+  "pending": "Continue the cumulative non-inference ledger through c23477403 and reconcile the named shared feature and Arc component scopes. The partial functional import remains scoped to 146df3c4 and incremental host-verified ports. Measure the unmodified upstream at default and hardware-tuned settings before considering inference adoption.",
   "legacy_upstream_clone_root": "Preserved the existing main checkout at 99f3dbd0b. Only remote-tracking refs were advanced.",
   "function_review": {
     "fork_revision": "21ad950a4cde54f57ab5f78d9318cca57631df91",
@@ -961,9 +962,14 @@
     "-C",
     "/home/yayoi/ghq/github.com/Niko1221/Strata",
     "ls-remote",
-    "--heads",
+    "--symref",
     "origin",
-    "main"
+    "HEAD",
+    "refs/heads/main",
+    "refs/tags/v0.2.21",
+    "refs/tags/v0.2.21^{}",
+    "refs/tags/v0.2.22",
+    "refs/tags/v0.2.22^{}"
   ],
   "earlier_pending_intervals": [
     {
@@ -1500,8 +1506,18 @@
             "target_passed": 10,
             "target_skipped": 0,
             "comparison": "Unmodified git archives; same upstream-host-tests-146df3c4 CPython 3.12.3; unittest test_drafting*.py plus the focused module when present, PYTHONDONTWRITEBYTECODE=1 and PYTHONNOUSERSITE=1",
-            "parent": {"run": 266, "failures": 8, "errors": 11, "skipped": 0},
-            "port": {"run": 276, "failures": 8, "errors": 11, "skipped": 0},
+            "parent": {
+              "run": 266,
+              "failures": 8,
+              "errors": 11,
+              "skipped": 0
+            },
+            "port": {
+              "run": 276,
+              "failures": 8,
+              "errors": 11,
+              "skipped": 0
+            },
             "unchanged_failure_ids_classes_and_test_functions": 19,
             "introduced_failure_ids": [],
             "initial_attempt": "Model venv on worktree: 276 run, 8 failures and 11 errors; the pinned host environment comparison subsequently classified the common failures."

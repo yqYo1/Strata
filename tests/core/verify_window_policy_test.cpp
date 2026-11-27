@@ -19,6 +19,17 @@ static void need(bool ok, const char* message) {
 }
 
 int main() try {
+    using strata::core::decode_verify_qsa_score_grid;
+    for (int window : {1, 2, 3, 4})
+        need(decode_verify_qsa_score_grid(true, VerifyInput::decode, window, 65'538),
+             "QSA score grid rejected a measured width");
+    need(!decode_verify_qsa_score_grid(true, VerifyInput::prompt, 4, 65'538) &&
+         !decode_verify_qsa_score_grid(false, VerifyInput::decode, 4, 65'538) &&
+         !decode_verify_qsa_score_grid(true, VerifyInput::decode, 0, 65'538) &&
+         !decode_verify_qsa_score_grid(true, VerifyInput::decode, 5, 65'538) &&
+         !decode_verify_qsa_score_grid(true, VerifyInput::decode, 4, 8'194),
+         "QSA score grid escaped the selected phase or allocation");
+
     // The measured KV set must stay separate from prompt, non-streamed or
     // differently sized caches, and every unmeasured target width.
     const strata::core::VerifyKvShape kv{4,65536,5120,4,2,256,2051,true};
@@ -47,22 +58,25 @@ int main() try {
     auto nonstreamed=kv;nonstreamed.streamed_int8=false;
     need(!strata::core::decode_verify_coalesced_kv(true,VerifyInput::decode,nonstreamed),
         "KV planner selected a non-streamed/other-format cache");
-    // Only the independently measured winning head can use the new packing.
-    // Exercise negative phase/layout/owner/type controls and every window size.
-    int dpas_selected=0;
-    for(bool ready:{false,true}) for(bool exact:{false,true})
-        for(auto phase:{VerifyInput::prompt,VerifyInput::decode,static_cast<VerifyInput>(255)})
-            for(int type:{-1,13,14,15}) for(int c=0;c<=9;++c) {
-                const bool expected=ready && exact && phase==VerifyInput::decode && type==14 && c==4;
-                need(verify_q6_dpas_head(ready,phase,exact,type,2560,248320,c)==expected,
-                    "packed target-head policy escaped measured owner/phase/layout/type/columns");
-                dpas_selected+=expected;
-                for(const auto& shape:{std::array<int,2>{2560,640},{2560,248319},{2561,248320},
-                                      {0,248320},{2560,0},{-2560,248320}})
-                    need(!verify_q6_dpas_head(ready,phase,exact,type,shape[0],shape[1],c),
-                        "unmeasured packed-head geometry selected");
-            }
-    need(dpas_selected==1,"wrong number of packed target-head selections");
+    for (bool opt_in_c5 : {false, true}) {
+        int dpas_selected = 0;
+        for (bool ready : {false, true}) for (bool exact : {false, true})
+            for (auto phase : {VerifyInput::prompt, VerifyInput::decode, static_cast<VerifyInput>(255)})
+                for (int type : {-1, 13, 14, 15}) for (int c = 0; c <= 9; ++c) {
+                    const bool expected = ready && exact && phase == VerifyInput::decode && type == 14 &&
+                                          (c == 4 || (opt_in_c5 && c == 5));
+                    need(verify_q6_dpas_head(ready, phase, exact, type, 2560, 248320, c, opt_in_c5) == expected,
+                         "canonical target-head policy escaped measured owner/phase/layout/type/columns");
+                    dpas_selected += expected;
+                    for (const auto& shape : {std::array<int, 2>{2560, 640}, {2560, 248319}, {2561, 248320},
+                                              {0, 248320}, {2560, 0}, {-2560, 248320}})
+                        need(!verify_q6_dpas_head(ready, phase, exact, type, shape[0], shape[1], c, opt_in_c5),
+                             "unmeasured canonical head geometry selected");
+                }
+        need(dpas_selected == (opt_in_c5 ? 2 : 1), "wrong number of canonical target-head selections");
+    }
+    need(!verify_q6_dpas_head(true, VerifyInput::decode, true, 14, 2560, 248320, 5),
+         "canonical C5 head selected without opt-in");
     // Independent expected set from e44575158; exclude the losing512-row
     // shape, packed full head and every prompt/C1-C3/C8 call.
     int dense_selected = 0;
@@ -82,6 +96,20 @@ int main() try {
         for (int c=0;c<=9;++c)
             need(!verify_q6_dpas_dense(true,VerifyInput::decode,true,14,shape[0],shape[1],c),
                  "unqualified dense DPAS shape selected");
+    for (bool enabled : {false, true}) for (bool exact : {false, true})
+        for (auto phase : {VerifyInput::prompt, VerifyInput::decode, static_cast<VerifyInput>(255)})
+            for (int type : {13, 14, 15}) for (int window = 0; window <= 9; ++window)
+                for (int columns = 0; columns <= 9; ++columns) {
+                    const bool expected = enabled && exact && phase == VerifyInput::decode &&
+                                          type == 14 && window == 5 && columns == 5;
+                    need(strata::core::verify_q6_dpas_dense_c5(enabled, phase, exact, type,
+                             2560, 10240, window, columns) == expected,
+                         "width-five projection escaped its phase, layout, type or window");
+                }
+    for (const auto& shape : {std::array<int, 2>{6144, 2560}, {2560, 6144}, {2560, 12288},
+                              {2560, 512}, {2560, 248320}, {2561, 10240}, {2560, 10239}})
+        need(!strata::core::verify_q6_dpas_dense_c5(true, VerifyInput::decode, true, 14,
+                  shape[0], shape[1], 5, 5), "unqualified width-five projection selected");
     // Expected selections come from the committed component decision, not a
     // second implementation of the dispatch predicate. Bit c means columns c.
     const int eligible[][3] = {
@@ -193,6 +221,12 @@ int main() try {
          cache.at(VerifyInput::decode,4).q6_dpas_dense_calls==std::array<uint64_t,4>{40,14,22,5} &&
          cache.at(VerifyInput::decode,3).q6_dpas_dense_calls==std::array<uint64_t,4>{},
          "dense DPAS capture metadata crossed phase/token keys");
+    auto& decode5 = cache.at(VerifyInput::decode, 5);
+    decode5.q6_dpas_dense_c5_calls = 22;
+    need(cache.at(VerifyInput::prompt, 5).q6_dpas_dense_c5_calls == 0 &&
+         decode.q6_dpas_dense_c5_calls == 0 &&
+         decode5.q6_dpas_dense_calls == std::array<uint64_t, 4>{},
+         "width-five DPAS capture metadata crossed phase, window or call-width keys");
     auto& decode8 = cache.at(VerifyInput::decode, 8);
     decode8.layer = {31};
     decode8.q6_columns_calls = decode8.q6_native_half_calls = 26;
@@ -238,6 +272,7 @@ int main() try {
          prompt.q6_dpas_head_calls==0 && decode.q6_dpas_head_calls==0 &&
          prompt.q6_dpas_dense_calls==std::array<uint64_t,4>{} &&
          decode.q6_dpas_dense_calls==std::array<uint64_t,4>{} &&
+         decode5.q6_dpas_dense_c5_calls == 0 &&
          decode8.q6_native_half_calls == 0 && decode8.q6_shapes.empty() &&
          decode8.q6_capture_id == 0 && decode8.q6_replay_started == 0 &&
          decode8.q6_replay_completed == 0 && decode8.q6_cache_hits == 0 &&

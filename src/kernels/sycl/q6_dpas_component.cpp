@@ -27,6 +27,7 @@
 #include <sycl/ext/intel/esimd/xmx/dpas.hpp>
 #include <sycl/ext/intel/experimental/grf_size_properties.hpp>
 #include <string>
+#include <type_traits>
 
 namespace strata::kernels::component {
 namespace {
@@ -153,6 +154,21 @@ struct Q6DpasC4Canonical {
 };
 
 template <int Columns>
+struct Q6DpasCanonicalColumns {
+    const uint16_t* weights;
+    const uint8_t* activation;
+    float* output;
+    int k, n;
+    void operator()(sycl::nd_item<1> item) const SYCL_ESIMD_KERNEL {
+        tile<true, Columns>(item, weights, activation, output, k, n);
+    }
+    constexpr auto get(sycl::ext::oneapi::experimental::properties_tag) const {
+        return sycl::ext::oneapi::experimental::properties{
+            sycl::ext::intel::experimental::grf_size<128>};
+    }
+};
+
+template <int Columns>
 struct Q6DpasColumns {
     const uint16_t* weights;
     const uint8_t* activation;
@@ -168,14 +184,18 @@ struct Q6DpasColumns {
 };
 } // namespace
 
-template <bool Canonical>
+template <bool Canonical, int Columns = 4>
 void launch(const void* weights, const void* q8, float* output,
             int k, int n, int columns, void* stream) {
-    if (!q6_dpas_c4_shape(k, n, columns) || !stream || (reinterpret_cast<uintptr_t>(weights) & 1))
-        throw std::invalid_argument("Q6 DPAS needs explicit queue and eligible C4 shape");
+    static_assert(Columns == 4 || Columns == 5);
+    if (columns != Columns || !q6_dpas_matrix_shape(k, n) || !stream ||
+        (reinterpret_cast<uintptr_t>(weights) & 1))
+        throw std::invalid_argument(Columns == 4 ? "Q6 DPAS needs explicit queue and eligible C4 shape" :
+            "Q6 DPAS needs explicit queue and eligible C5 shape");
     auto& q = queue_for(stream);
     const size_t wb = Canonical ? size_t(n) * size_t(k / 256) * 210 : q6_dpas_packed_bytes(k, n);
-    const size_t xb = size_t(k / 32) * 36 * 4, yb = size_t(n) * 4 * 4;
+    const size_t xb = size_t(k / 32) * 36 * Columns;
+    const size_t yb = size_t(n) * sizeof(float) * Columns;
     validate_spans({{output, yb}}, {{weights, wb}, {q8, xb}});
     validate_device_span(weights, wb, q); validate_device_span(q8, xb, q); validate_device_span(output, yb, q);
     const auto device = q.get_device();
@@ -184,15 +204,12 @@ void launch(const void* weights, const void* q8, float* output,
         throw std::invalid_argument("Q6 DPAS component is scoped to B570/fp16");
     const size_t items = (size_t(n) + 15) / 16;
     const sycl::nd_range<1> range(((items + 3) / 4) * 4, 4);
-    if constexpr (Canonical) {
-        const auto event = q.parallel_for(range,
-            Q6DpasC4Canonical{static_cast<const uint16_t*>(weights), static_cast<const uint8_t*>(q8), output, k, n});
-        finish(stream, event);
-    } else {
-        const auto event = q.parallel_for(range,
-            Q6DpasC4{static_cast<const uint16_t*>(weights), static_cast<const uint8_t*>(q8), output, k, n});
-        finish(stream, event);
-    }
+    using C4Kernel = std::conditional_t<Canonical, Q6DpasC4Canonical, Q6DpasC4>;
+    using C5Kernel = std::conditional_t<Canonical, Q6DpasCanonicalColumns<5>, Q6DpasColumns<5>>;
+    using Kernel = std::conditional_t<Columns == 4, C4Kernel, C5Kernel>;
+    const auto event = q.parallel_for(range,
+        Kernel{static_cast<const uint16_t*>(weights), static_cast<const uint8_t*>(q8), output, k, n});
+    finish(stream, event);
 }
 
 void q6_dpas_c4(const uint16_t* packed, const void* q8, float* output,
@@ -203,6 +220,16 @@ void q6_dpas_c4(const uint16_t* packed, const void* q8, float* output,
 void q6_dpas_c4_canonical(const void* canonical, const void* q8, float* output,
                          int k, int n, int columns, void* stream) {
     launch<true>(canonical, q8, output, k, n, columns, stream);
+}
+
+void q6_dpas_c5_canonical(const void* canonical, const void* q8, float* output,
+                         int k, int n, int columns, void* stream) {
+    launch<true, 5>(canonical, q8, output, k, n, columns, stream);
+}
+
+void q6_dpas_c5_packed(const uint16_t* packed, const void* q8, float* output,
+                       int k, int n, int columns, void* stream) {
+    launch<false, 5>(packed, q8, output, k, n, columns, stream);
 }
 
 template <int Columns>

@@ -24,11 +24,27 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
 #if defined(STRATA_ENABLE_SYCL)
         // Read on the calling thread before publishing the thread-local scope.
         const char* cpu_wait_switch = std::getenv("STRATA_PREFILL_CPU_WAIT_PROFILE");
+        static const bool cold_host_phases = [] {
+            const char* value = std::getenv("STRATA_PREFILL_COLD_HOST_PHASES");
+            return value && std::strcmp(value, "1") == 0;
+        }();
+        static const bool cold_layer_phases = [] {
+            const char* value = std::getenv("STRATA_PREFILL_COLD_LAYER_PHASES");
+            return value && std::strcmp(value, "1") == 0;
+        }();
+        static const bool cold_layer_windows = [] {
+            const char* value = std::getenv("STRATA_PREFILL_COLD_LAYER_WINDOWS");
+            return value && std::strcmp(value, "1") == 0;
+        }();
+        const bool cold_observed = cold_host_phases || cold_layer_phases || cold_layer_windows;
         sycl_backend::cpu_wait_profile::Scope cpu_wait_scope(
-            cpu_wait_switch && std::strcmp(cpu_wait_switch, "1") == 0);
+            cold_observed || (cpu_wait_switch && std::strcmp(cpu_wait_switch, "1") == 0));
+        std::optional<detail::ColdHostPhases> cold;
+        if (cold_observed) cold.emplace(true, cold_layer_phases, cold_layer_windows);
 #endif
         const bool ok = run_layer_major(tokens, n, pos0, err);
 #if defined(STRATA_ENABLE_SYCL)
+        if (cold) cold->finish(ok);
         cpu_wait_scope.complete(ok);
 #endif
         return ok;
@@ -49,6 +65,12 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const core::OnDevice on_device(m.device);
     const auto& g = *m.g;
     auto& ss = *m.ss;
+    static const bool early_ple_read = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_PLE_EARLY_READ");
+        if (!value || std::strcmp(value, "0") == 0) return false;
+        if (std::strcmp(value, "1") == 0) return true;
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_PLE_EARLY_READ must be 0 or 1");
+    }();
     const bool native16_on = native16::requested();
     const bool gdn_chunk_on=strata::gdn_chunk64::requested();
     const int gdn_columns = gdn_column_partitions();
@@ -766,6 +788,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         std::fflush(stderr); std::abort();
     });
     lease.arm();
+    detail::ColdHostPhases::mark(detail::ColdHostPhases::Boundary::allocated_plan);
     if (!drain()) { err = "prefill layer-major: entry queue drain failed"; return false; }
     if (profile) profile->open();
     if (qsa_profile) qsa_profile->open();
@@ -1050,13 +1073,35 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                              "FP32 local accumulations/router/recurrent state; PLE and final callbacks bridge FP32; "
                              "QSA tensor IO=%s, indexer/GDN internals FP32; reserved scratch arena unchanged; unqualified\n",
                      qsa16_on ? "BF16" : "FP32");
+    detail::ColdHostPhases::mark(detail::ColdHostPhases::Boundary::provisioned);
+    using ColdLayer = detail::ColdHostPhases::LayerBoundary;
+    detail::ColdHostPhases::set_layers(g.n_layers, n);
+    FirstPleRead first_ple;
     for (; layer < g.n_layers; ++layer) {
+        detail::ColdHostPhases::mark_layer(layer, ColdLayer::begin);
         if (profile) profile->layer = int(layer);
         if (qsa_profile) qsa_profile->layer = int(layer);
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
         if (!drain()) { err = "prefill layer-major: layer boundary drain failed"; return false; }
         if (window_context && window_context->pending_prefix_upload) {
             err = "prefill prefix expert upload: pending publication at layer boundary"; return false;
+        }
+        auto* const ple_table = ss.ple.table;
+        if (layer == 0 && early_ple_read && effective_window_mode == 16 &&
+            relocated_job_buffers_on && ple_table && ple_table->is_open() &&
+            ple_table->mode() == strata::kernels::PleIo::Direct &&
+            (activate_native_dense_layer || ss.ple.ready())) {
+            // The table and row IDs are host inputs owned for this request.
+            // Native dense activation may replace the layer-1 device key.
+            // run_impl still checks that key before consuming these rows.
+            first_ple.result = std::async(std::launch::async,
+                [&m, tokens, n, initial_prev, ple_table, consts = ss.ple.consts, &first_ple] {
+                    return m.gather_ple_chunk(*ple_table, consts, tokens, n, 0, 0, initial_prev, first_ple.error);
+                });
+            if (std::getenv("STRATA_TRACE")) {
+                std::fprintf(stderr, "strata trace: prefill PLE early read issued layer=0\n");
+                std::fflush(stderr);
+            }
         }
         if (std::getenv("STRATA_TRACE")) {
             std::fprintf(stderr, "strata trace: layer-major layer %lld of %lld: loading %lld experts\n",
@@ -1272,7 +1317,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             }
             return true;
         };
-        if (!run_impl(tokens, n, pos0, err)) return false;
+        detail::ColdHostPhases::mark_layer(layer, ColdLayer::run);
+        auto* pending_ple = layer == 1 && first_ple.result.valid() ? &first_ple : nullptr;
+        if (!run_impl(tokens, n, pos0, err, pending_ple)) return false;
+        detail::ColdHostPhases::mark_layer(layer, ColdLayer::drain);
         if (!drain()) { err = "prefill layer-major: pass drain failed"; return false; }
         if (score_gemm_on && core::is_qsa_layer(g, layer)) {
             const auto copied = cudaMemcpyAsync(&score_status_observed, m.score_gemm.status,
@@ -1306,7 +1354,9 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         // checked boundary. Owners and saved caller callbacks remain leased.
         on_chunk = {}; on_stage_chunk = {}; m.on_chunk16 = {};
         if (window_context) window_context->complete_piece = {};
+        detail::ColdHostPhases::mark_layer(layer, ColdLayer::end);
     }
+    detail::ColdHostPhases::mark(detail::ColdHostPhases::Boundary::layer_passes_finished);
     if (!stage_delivered || logical_chunks != 1 + (n - 1) / m.T) {
         err = "prefill layer-major: incomplete final callback sequence"; return false;
     }

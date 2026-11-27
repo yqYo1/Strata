@@ -7912,7 +7912,18 @@ commit `3abcceba08b25a632f4e26bde7551039120ac42a`](https://github.com/yqYo1/Stra
 
 ## Prefill envelope and scaling
 
-The current coherent14508reference has repeated32K/64Kprocesses at evidence
+The primary DFlash2 mode16 route has a closed five-length curve at
+`71ddd9046`, under `dflash2_primary_prefill_curve_v1`. Two independent
+processes at each length cover 94,209–126,977 input tokens with the same
+4096-row tail. With `n` actual input tokens, subsequent prefill is about
+`2.580 + 0.000927125 n` seconds and subsequent client TTFT is about
+`2.717 + 0.000927646 n` seconds. The errors at the reserved 110,593-token
+length are 68 and 71 ms. First-use errors at that length are about 1.16 s.
+See [the matched curve and model comparison](#primary-dflash2-input-length-curve)
+for the first-use fits, other hypotheses and scope. Revisit the fit when
+the route, placement, chunking or scheduling changes.
+
+The older coherent14508reference has repeated32K/64Kprocesses at evidence
 `f9662f7abfebb1c5f20e7e9e4677fad8f1f5e695`. Its two distinct lengths support
 an adjacent slope only,not a fitted law. The offline
 [prefill_scaling.py](../tools/prefill_scaling.py)adapter prepares the next
@@ -7928,11 +7939,9 @@ subsequent slopes0.839074707/0.839706421ms/token. Both groups contain three
 independent processes at each of two lengths;all fitted hypotheses remain
 ineligible. Follow`prefill_scaling_analysis_v1`for source/data identities and
 the compact analysis. This is no new timing or speed improvement.
-The next current-build curve needs a separately committed matched-length/order/
-repetition plan,at least five lengths on a compatible route,and first-use,
-prefill time and client TTFT kept separate. Revisit the curve after placement,
-chunk or scheduling changes;do not combine old and new timing periods merely
-because the ELFmatches.
+Extending this older reference needs a separately committed length, order and
+repetition plan. Keep its clocks separate from the DFlash2 curve and retain
+scope and timing period even when the executable hash matches.
 
 The historical117489result and separate same-engine curve below retain their
 original source/configuration limits. That curve has one process per length
@@ -7973,6 +7982,89 @@ do not waive the answer gate or assume sampling caused the previous failure.
 
 ## Decode and resource evidence
 
+The clean width-five Q6 device comparison closes at `f282d174d`. Three
+independent processes contribute 180 eligible graph batches. The full head's
+median time per replay is 13.458 ms on generic MMVQ and 5.067 ms on canonical
+DPAS. Four larger dense projections also win every process. The 2560×512
+projection takes 1.238 times the reference time and keeps its generic route.
+Both arms use the same Q6 weights. Each process passes numerical and buffer
+checks and closes without a fresh Xe fault. The initial clean gate stopped
+before kernels because it expected the diagnostic preload's loader mapping.
+The direct Level Zero adapter and driver identities pass the corrected gate.
+The settled fixed-width comparison at `03e307dc1` retains width four as the
+model reference. The separate opt-in head at `b06064ead` is scoped to decode
+width five. The verification worktree's build plan at `5a1040990` projects
+that change onto the qualified target-snapshot source. The same-build 82-input
+probe at `dfc260d23` observes seven width-five verifier windows in each arm,
+with the Q6 head using its intended kernel, matched draft work and no new Xe
+fault. `758de922c` freezes the three independent process pairs at fixed
+width. The frontend admission passes at `a39df7aea`.
+The six-process result closes at `b71522878`. The isolated head raises the
+width-five median from 14.235 to 14.734 tok/s at identical work. The build
+remains local to the verification branch while the independent projection
+and broader model checks are open. Keep width four as the model reference.
+
+The measured 122,881-input throughput route uses the sole-packed head and
+the checked cache loan. The loan-off 82-input width comparison reports
+64.0/69.9 MiB verifier arenas at widths four/five. This is about 5.9 MiB of
+arena growth on that route, before graph and placement costs. Three independent
+guards matter for reusing the throughput route: the cache-loan selector, the
+target head-release selector and idle verifier check, and the sole-packed head's
+1–4-column consumer. Removing one guard cannot enable the composition safely.
+
+The first component comparison keeps both sides at five columns and changes
+only the target head weight layout, using the existing canonical DPAS result
+at `f282d174d` as the basis. The packed entry reuses the owned interleave and
+DPAS tile. At 2560×248320 each layout occupies 521,472,000 weight bytes. The
+fixture allocates both for comparison and checks both inputs for mutation;
+a sole-packed model owner would allocate the packed extent only. Keep existing
+model dispatch and release admission while this component is unqualified.
+
+Use the retained C5 component recipe and a fresh fixture, verifying its
+source, toolchain, actual executable and providers before running. Run
+`--host-packed-c5`, then `--check-packed-c5-small` and `--check-packed-c5`
+for two seeds, exact five-column spans, unchanged canaries and inputs, and the
+shared scalar-oracle envelope. Trace both kernel entries in the small check
+and leave parameter validation active on the full-head check. These checks
+cover the 17- and 33-row tails as well as the actual full head. Run
+`--time-packed-c5 0`, `1` and `2` in three
+fresh processes, with five batches of 256 completion-checked graph launches
+per arm after warmup. Candidate-first in the middle process, canonical-first
+in the others. Exclude setup and use the 10 ms and 300 timer-stamp floor.
+Require both numerical checks, normal closure with no fresh Xe fault, and
+a lower packed median in each process to advance on speed. A pass only
+qualifies the five-column head component. The later head and cache retirement
+checks need separate width-five controls and admission, including the refill,
+lazy graph recapture, actual memory fit and sustained decode and prefill timing.
+The [build controller](../tools/sycl/build_q6_c5_component.py) and
+[measurement controller](../tools/sycl/check_q6_c5_component.py) select this
+separate campaign with `--packed`, retaining the original canonical receipts.
+Run the packed build after the active width-five dense campaign closes and its
+build retention is resolved.
+
+The next independent projection trial selects only the exact Q6 2560×10240
+calls in width-five decode windows. The component medians are 0.604 ms for
+generic MMVQ and 0.203 ms for canonical DPAS. The short probe records 22
+such calls per width-five capture. This gives the largest sum of component
+time differences among the four audited dense shapes. The sum is a selection
+heuristic. Both routes use the same canonical weights. Compare the projection
+with its own switch and keep the head setting fixed until the combined trial.
+The four-file projection from `063ec7946` applies to the verified compiled
+C5-head source. Reversing it restores each of the four original hashes.
+The old head build was retired after full recovery. The coherent projection
+build passes both host controls and the two native 82-input probes at
+`e961023e3`. The candidate moves exactly 22 calls, with identical generated
+tokens, drafter work, head replays and placement. The sustained comparison
+closes at `7360c14ac` on the verification branch. All six processes exit
+normally without fresh Xe faults. The per-arm TG medians are
+14.782 and 15.470 tok/s, with 3,039 and 3,203 output tokens. All three pairs
+change verifier and expert work and fail the projection gain gate. Keep
+width four as the operational reference. The next model qualification
+checks the five DFlash2 tap payloads on the measured 122,881-input
+direct-writer route. The packed C5 layout comparison is an independent
+component trial.
+[Performance CSV](../bench/performance-records.csv).
+
 Keep prefill and decode kernels, placement, scheduling and selectors independent.
 The completed 05a9 comparison changes only its decode selector. Required
 adoption evidence still includes both observed MTP-strong
@@ -7986,6 +8078,15 @@ attribution, not useful CPU work or critical-path wall time. Neither useful CPU
 arithmetic nor physical RAM/PCIe transactions, VRAM traffic/bandwidth, hardware
 ceilings or saturation are established. Keep requested transfer bytes distinct
 from measured physical traffic.
+
+The static cache study at `208c92b15` gives an optimistic allocation bound
+for the recorded code and prose requests. At the stock 2,575,206,400-byte
+payload, perfect future knowledge and relaxed residency give lower bounds
+of 39.70 and 39.55 GB/s for logical CPU weight visits at 70 tok/s. The
+stock values are 50.34 and 56.61 GB/s. Under the assumption that every
+visit reads the full blob from RAM, both lower bounds exceed the 39.3035
+GB/s sequential read reference. Use causal placement, measured CPU
+service and verifier yield for adoption decisions.
 
 The CPU-only read calibration at source
 `b3f2d7f31fbd836008930c2354c0a6479a6caea5`now closes:one1GiB anonymous
@@ -8020,6 +8121,103 @@ The effective DDR bandwidth for this access pattern and
 the actual cache reuse are open. The worker clock comparison checks its
 observed format and width counts against the exact manifest before comparing
 logical weight visits with and without grouping.
+
+The fixed-worker replay has a feasible input from the closed held-out
+DFlash2 routing capture at `b28a9372b`. Verify the original routing SHA-256,
+native closure, cache profile and expert manifest before reading its suffix.
+Take the entries at the first and third quartile indices of the width-two
+and width-four window lists. Windows 1675, 2769, 4801 and 5799 are zero-based.
+Within each window, take the first IQ3_XXS/IQ4_NL and IQ3_S/IQ4_NL layers
+(0 and 17). Keep CPU misses in first-occurrence order, joining repeated
+experts by their verifier row indices. This matches the production job
+construction in `src/core/expert_source.cpp` at `96832af6f`.
+The eight batches have 20/17/36/35/13/14/35/31 CPU jobs. The 166 unique
+layer/expert blocks cover 374,425,600 packed bytes. The ordered descriptor
+SHA-256 is `931fa301815eb3824492e10c571fcd0e63d1f3124ff9d09a3b93df305c080933`.
+Its compact JSON uses keys `window,width,layer,fmt,jobs`, where `fmt`
+holds GU type, Down type and blob bytes, and each job holds the expert ID
+and its ordered row indices.
+The [fixed replay result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-expert-replay-current.json)
+at `cd60b5041` closes four numerical and affinity checks and 36 timed CPU
+processes. It uses the original model slices and seeded typed activations.
+Each pass repeats the same 201 expert jobs and 452,275,200 logical packed
+weight bytes. The scan reads the 374,425,600-byte union of the same slices.
+Each point is the median of three independent process medians, with five
+scored batches per process.
+
+| Physical worker cores | Expert replay per pass | Scan per pass |
+| ---: | ---: | ---: |
+| 1 | 76.971 ms | 11.698 ms |
+| 2 | 40.798 ms | 8.728 ms |
+| 3 | 27.697 ms | 8.638 ms |
+| 4 | 22.860 ms | 8.781 ms |
+| 5 | 19.750 ms | 8.941 ms |
+| 6 | 17.598 ms | 9.131 ms |
+
+The first five arms reserve the caller for dispatch and hidden quantization.
+In the six-core arm the caller also runs work in both the pool and scan.
+From four to five workers the replay saves 13.6% wall time while the scan
+changes from 42.64 to 41.88 GB/s of payload. Gate/up (GU) takes about 15.0 ms
+out of 19.75 ms at five workers. Prioritize a bounded GU comparison on this
+workload and check its overlap with GPU work in the model before choosing a
+worker setting. The scan bounds this read pattern only. Physical DRAM traffic,
+model-level overlap and the effect on sustained decode remain unmeasured.
+
+The fixed-work comparison planned at `d8fd00bf4` exercises the production
+IQ3_S single-token gate/up entry with five workers and a reserved caller.
+Of the 81 IQ3_S single-token expert jobs, the current pool partition leaves
+36 as complete 640-row calls. Only those calls can select the paired AVX2
+kernel. The exact generated descriptor and packed slices match `cd60b5041`.
+Two phase checks and all 30 timed batches pass numerical and actual dispatch
+admission. At `0e82f3e38`, the paired kernel takes 1.78%, 0.57% and 0.75%
+more gate/up time in the three pairs. Whole-pool time increases by 0.64%
+geometric mean. The full-row candidate fails this workload's advancement
+gate. Its temporary production selector and replay mode are retired. The
+original source `fc0272d67` stays reachable with the measurement.
+[Comparison result](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-iq3s-full-replay-current.json).
+
+The follow-up lossless-layout audit uses the actual IQ3_S block fields.
+The packed block carries 110 bytes for 256 weights. Signed four-bit code
+planes would carry 128 bytes of codes plus six bytes of scales, a 21.8%
+payload increase. At the observed 289,038 IQ3_S CPU jobs for 4,111 emitted
+tokens in both runs at `6bbd3e3e1`, that layout adds 88.79 GB of logical visits
+per request, or 1.51 GB/s at 70 tok/s if one full payload is visited per job.
+The projection keeps the observed route. Physical RAM traffic remains unmeasured.
+The existing AVX2 multi-token path already decodes each 32-weight group once
+outside the token loop. Keep the compact format.
+Gate/Up interleaving at the same byte size remains a locality hypothesis
+until a production-shaped caller comparison shows a gain.
+
+The independent Zen 3 IQ3_S single-token path now reads each eight-byte
+sign group with a fixed-size byte copy into two 32-bit words. It preserves
+the same x86 mask bits, integer lanes and floating-point reduction order.
+The existing GGML fixture passes all 544 parity and row-canary cases at
+`fcc812880`, with 617 compiler inputs and 22 external link inputs checked.
+The first preparation stopped on argument order. Controller `49135e918`
+recovers the exact configure arguments from the standalone passing parity
+stage in `4cb47ff93` and keeps that cohort's separate timing failure intact.
+The fresh CPU executable and owned logs were retired after source and recipe
+recovery. The compact `cpu_iq3s_sign_parity_v1` result preserves their identities.
+Matched caller timing remains pending for this opt-in decode path.
+
+Retired the closed external state directory `cpu-fixed-expert-replay-v1`
+before compiling the new replay on 2026-11-25 JST. The executable, 209 project
+and 1,376 dependency inputs, 633 actual compiler inputs and 22 external linker
+inputs match the original committed source and recipe. The directory contained
+158 files totaling 16,587,180
+bytes, with SHA-256
+`17b057f245eec966db5529605c339ef47bc72561afc9deedbc9afec7be85a4e4` of the
+sorted relative paths, sizes and content hashes in compact JSON. The closed
+result and source are reachable from the pushed feature branch. The holdout
+routing capture remains available for the model cache and fixed-work decisions.
+
+Retired the rejected full-row candidate's external state directory
+`cpu-fixed-iq3s-full-replay-v1`. Its 94 files total 16,419,704 bytes.
+SHA-256 of the sorted relative paths, sizes and content hashes in compact
+JSON is `5618e95a090a619306736442c09ff0826356ea592bb7854b6d526ab748952b6c`.
+Verified the original source and recipe against its final executable, 633
+compiler inputs and 22 external linker inputs before deletion. The exact
+result commit is reachable on the pushed primary.
 
 The quiet DFlash2 process 2 at `94f7eb2b0` uses native source `96832af6f`
 and reports a filled 1,256-slot cache at 2.40 GiB. The manifest and the
@@ -10775,9 +10973,10 @@ Client TTFT is 48.020 and 47.470 s. Body hashes, output lengths and
 draft counts agree with the preceding native run. Code still submits 1449976
 CPU expert jobs. At that work per emitted token, 70 tok/s would require
 about 24700 CPU expert jobs per wall-second. Measure CPU execution and GPU
-completion waits separately to locate the cost. The two further clean
-processes remain pending. Use a synthetic multi-source methods dossier for
-the next weak-acceptance screen.
+completion waits separately to locate the cost. The original suite has one
+of three planned clean samples. Use the current DFlash2 engine for the
+remaining qualification, including a synthetic multi-source methods
+dossier for the weak-acceptance screen.
 
 `dflash2_v2_decode_clocks_v1` closes three independent processes after the
 official code subset warmups. Each reads 33217 fresh tokens, emits 4111 and
@@ -10801,6 +11000,13 @@ Retired the three process directories and host captures under
 `dflash2-v2-decode-clocks-v1` after `e26315def` recorded the decision.
 The 220 files cover 44944545 bytes with inventory SHA-256
 `c5dd97b629ece6b32ac7e2bf7bea3f19f79f9b093ce2dce48def856b0f06be02`.
+
+Retired the 196,380,087 bytes of generated files for native V2 source
+`59411e1de` on 2026-11-25 JST. The exact original inputs, recipe and
+executable matched the published build receipt. The retained DFlash2
+decode admission and target-only RESTORE projection both passed with only
+the old `record.json` readable. The current native build is `96832af6f`.
+Read the archived V2 samples from their commits.
 
 #### DFlash2 KV stage retention outside the tap layers
 
@@ -10831,6 +11037,1048 @@ of avoidable KV copy requests. Confirm the actual placement and transfers
 on the model. Keep the candidate engine and worktree for that comparison
 after the original V2 split route checks. Sustained decode, the physical
 262144-token fill and RESTORE remain pending.
+
+The 122881-input reference at `ad8652973` runs with aligned KV retention
+enabled. Each matched arm reports 1,935,360 reused and 645,120 reloaded
+pages. The owned `44a2926a6` delta is ported to the primary source, keeping
+the existing direct-reader audit and partial-page mode. It permits reuse
+only where the DFlash2 callback is known to return without touching the
+stream. The tap layers, other callbacks and the final layer retain the
+existing reload. Rebuild all affected units before paired primary checks
+with aligned retention enabled and disabled. Verify actual page counts,
+five-layer tap content, task behavior and the decode handoff on that build.
+
+The 122881-input direct-writer reference at `ad8652973` has a separate
+five-layer DFlash2 payload comparison. The diagnostic switch
+`STRATA_DFLASH2_TAP_PAYLOAD_AUDIT=1` reads the completed FP32 tap means
+immediately before draft ingestion. It reports one digest per layer and
+keeps raw activations out of the log. Host staging is capped at 64 rows
+(3,276,800 bytes) and each device read completes before staging reuse.
+Verify the observer with a bounded short request, then compare copied and
+direct writes in one coherent build for the same fresh requests at
+82, 122881 and 82 inputs. Require matching five-layer digests over the
+exact tail, checked ingestion, independent target/cache state and normal
+closure. At 122881 inputs the producer supplies 2046 rows beginning at
+120834. The direct control may change only the attention output writer.
+The host reader accepts the matched 82/122881/82 fixtures, reports the
+changed layer in a mismatched payload, and refuses eight invalid receipts.
+The coherent observer build has 137 fresh objects and passes its host gate
+at `89667ea9d`. The fresh 82-input request at `fb3d64f1d` records all five
+digests over 81 rows before ingestion, generates 32 tokens, accepts 23 of
+23 drafts and closes normally with no fresh Xe fault. The source and asset
+checks pass. The copy process at `5c89553c9` passes the complete
+82/122881/82 sequence. Both short prompts reproduce the smoke digests and
+the long prompt records 2,046 rows in each layer. The copy route records
+120,795,955,200 requested device-copy bytes. The same-build direct
+writer at `321c5776a` requests zero of those copy bytes. All five digests
+match for every prompt, as do target state, cache refill and measured work.
+Both independent processes close normally with zero fresh Xe faults.
+The observer is charged in this comparison. The clean prefill speed
+reference remains the earlier paired `ad8652973` result.
+[Tap comparison reader](../bench/sycl/dflash2_tap_payloads.py).
+
+The closed tap-observer build and run captures are retired. The serialized
+check recovered the 1,171 source inputs, recipe and 137 fresh objects for
+`593e7c5db` and checked all 12 executable identities. The observer
+engine hash is `70dd5d376eb64ee0be2093f232251034b40601da466b33d9d226021365f49560`.
+Under the tuning state root, the retirement removed these files except
+`record.json`. Inventories hash sorted relative paths, byte counts and file hashes.
+
+| Directory | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-tap-payload-native-v1` | 1369 | 196426489 | `05e7292a927312003c20a5ae74d0be1e0050045d6e96668a1c80672515bed28d` |
+| `dflash2-tap-payload-model-v1` | 164 | 36631666 | `4006cc73cc8ec7290f8fb88e8d9a6908469f762a86cc6483f70f847984081188` |
+
+The snapshot prefill and width-four decode reference executables passed
+identity checks before and after deletion. The observer and matched model
+result at `321c5776a` were reachable from pushed primary `493777f9b` at
+deletion. Both retired directories contain only their compact receipts.
+
+The target-only conversation snapshot change from `7e1ad6e28` and its host
+transfer fixture from `3a93dafd7` are ported to the primary source. DFlash2
+parks the target state and rebuilds the drafter from its captured tail.
+The MTP path supplies its existing ring. The earlier exact snapshot build
+`4b4ac554c` passed the near-capacity 262,128-token RESTORE and full copy-route
+context checks. Separately validate the primary build's host transfers,
+full-context and RESTORE behavior. Its source manifest differs from that
+measured snapshot, so the earlier throughput does not qualify this port.
+The primary build at `0ab86d36b` compiles actual `feature/sycl` source
+`968e71988` with 139 fresh objects and 11 executable identities. The fixture
+sequence at `83c6936a6` passes 1,656 host transfer checks, 134 extent checks,
+9,459 host KV span/hash cases, 16 Arc DFlash2 kernel cases and 113 Arc
+same-device snapshot smoke checks. The two traced device processes verify
+the qualified providers and close without validation errors or fresh Xe
+faults.
+The standalone model plan at `d2142368c` recovers the two original token
+streams, safety environment and byte-identical primary expert ranking. At
+`7339ae8e4`, the 16,385-input case keeps all 16,384 batched BF16 rows on the
+GPU, passes the KV placement and DFlash2 tail gates, and emits four fixture
+IDs matching the previous build. The process closes without a fresh Xe
+fault. At `137fb933f`, the same copy-writer diagnostic processes all 262,144
+inputs. It batches 262,143 rows with 122,880 BF16 rows in VRAM and 139,263
+in host memory, then verifies the last physical slot and emits zero tokens.
+The process closes normally with no fresh Xe fault. All 15 model assets pass
+final full hashing. The native GEN restore runner passes the two parked
+prefixes on the same primary build. Both resume with 8,209 fresh tokens.
+The 32,769-token prefix reaches 40,978 after restore. The 253,919-token prefix
+reaches 262,128 and emits one token. The near-capacity RAM snapshot passes
+readback verification for 3,607,695,360 bytes of target KV across 12 layers
+and 118,069,304 bytes of running state. Both native processes close normally
+with no fresh Xe faults. The final 15 model asset hashes match.
+
+The primary copy/direct comparison closes on the same build with fixed
+82 / 122881 / 82 inputs. Both processes return identical digests for all
+five tap layers, identical active target state and outputs, and identical
+expert, KV and verifier work. Each long prompt passes 2,046 rows per tap
+layer to the drafter. Direct store writes all 720 pieces and eliminates
+120,795,955,200 bytes of requested device copies on that request. Both
+processes close normally, the validation logs are quiet, and the final
+asset hashes match. These instrumented observations qualify the payload.
+
+The first 82-input smoke at `1cfd63cd0` has native exit zero and no fresh
+Xe fault but fails the original state-length checker. Its state contains
+114 tokens after 32 outputs. The corrected smoke at `be1f51c82` verifies
+the post-generation extent and preserves the earlier failure.
+[Physical-context runner](../bench/dflash2_primary_context.py),
+[live restore runner](../bench/dflash2_primary_restore.py) and
+[tap payload comparison](../bench/dflash2_primary_tap_payload.py).
+
+Retired the three closed diagnostic roots below after verifying their inventories,
+process closure and exact results in pushed commit `63c0c6353`. This removed 332
+files and 73,583,611 bytes. The curve reads the committed timing reference, and
+the validated model and build assets remain available. Inventory SHA-256 uses
+compact JSON of sorted relative paths, file byte counts and file hashes.
+
+| Diagnostic root | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-primary-live-restore-v1` | 120 | 25182273 | `2176fdb20b0ff98bbb2160e1c818b9884b10308f46d60e87270df9e299e80d39` |
+| `dflash2-primary-tap-payload-v1` | 47 | 11506432 | `df8a2b9a9e72d9d53736776ca97a3920aa7e174e4208c195881486260efe8b3c` |
+| `dflash2-primary-tap-payload-v2` | 165 | 36894906 | `5022e55f4a7db4d02c177e32c06d6b24d640b97dfe3cabae1e1a70a0fbd5cf3c` |
+
+The primary long-prefill comparison closes at `bfc0c54ae`. The six
+independent processes use the same primary executable and change only
+`STRATA_SYCL_PREFILL_KEEP_KV_STAGE` before execution. Each completes three
+fresh 122881-input requests with the same non-KV work and no fresh Xe faults.
+The final asset hashes match.
+
+| Median of three processes | Reload | Retain |
+| --- | ---: | ---: |
+| First prefill | 955.367 tok/s | 965.514 tok/s |
+| First client TTFT | 128.819 s | 127.469 s |
+| Subsequent prefill | 1044.430 tok/s | 1056.148 tok/s |
+| Subsequent client TTFT | 117.849 s | 116.544 s |
+
+Retain raises subsequent PP by 1.170%, 1.132% and 1.074% in pair order.
+It avoids 1,935,360 aligned-page copies, or 8,174,960,640 requested bytes
+per request. Each of the twelve subsequent measurements exceeds 1000 tok/s.
+Use retain for the length curve on this build. Sustained decode checks are pending.
+
+Each private cache contains 54 driver cache entries. In all six processes
+the same 13 paths, totaling 954,872 bytes, have modification times between
+the first long request and first output. Subsequent requests have no entries
+in those intervals. The comparison agrees using the last journal write
+offset and the realtime-minus-monotonic offset varied by 0.5 seconds in
+either direction. SHA-256 over the sorted newline-delimited relative names
+is `fe1dd0c57f1b93a4b18e3517be775f01af1852ff055a0a398000bddc23cb0785`.
+This identifies first-use cache activity. A matched cache-seed trial would
+be needed to measure its effect on TTFT.
+
+Retired the closed timing run's `host` and numbered directories `0`–`5` under
+`dflash2-primary-prefill-speed-v1` after verifying the committed samples
+and process closure. The inventory was 430 files and 75,234,805 bytes with SHA-256
+`7e3b056f8cc5906a9f246433f471792060d6601af742db9373f5771631b22e6e`
+over the compact JSON list of sorted relative paths, byte counts and file
+hashes. The remaining `record.json` and primary executable match their
+original hashes. The curve reads the committed timing results, and RESTORE
+has an independent plan.
+
+[Primary build](../bench/sycl/dflash2_primary_prefill_build.py) and
+[fixture sequence](../bench/dflash2_primary_checks.py).
+
+Before adding the decode-census candidate, rechecked the two older
+builds still read by primary admission. The coherent `14508acbf`
+reader recovers 2,361 Git project and dependency files, verifies 1,470
+compiler inputs and 12 executable identities, and matches the frozen
+primary foundation proof. The target-snapshot `4b4ac554c` build still
+matches its retained source, compiled and linked inputs and measured
+engine. Its materialized recipe has 1,171 source files. Reading the
+named Git commit alone matches 1,130 files. The other 41 include 15
+compile inputs. A full-history scan on the pushed `feature/sycl` ref
+recovers 35 of those 41 as exact reachable Git blobs at their logical paths.
+The remaining six are the generated QSA probability fixture,
+`cmake/sycl_backend.cmake`, `src/prefill/layer_major.inc`,
+`src/prefill/moe_window.inc`, `src/prefill/prefill.cpp` and
+`src/program/generate.cpp`. The archived DFlash2 KV and target snapshot
+projections at `4b4ac554c` now recover all 1,171 files, including those six,
+with the [recovery controller](https://github.com/yqYo1/Strata/blob/416c66058/bench/sycl/dflash2_snapshot_source_recovery.py).
+All 279 project inputs in the compiler census match. The complete source
+manifest SHA-256 is `e28ba38869c135026faf009c516b7042390e9493341ae200c2db24efdd57cd07`
+and the configure/build recipe hash is
+`f81ab214ebe8f896a93362bfa72327cc6baf7a375dfee6a757a10942b869a429`.
+The records and original measured engine identity match the committed
+`ad8652973` reference. The closed curve used both older executable
+generations during admission. The future packed Q6 fixture consumes the
+snapshot's build receipt, compiler receipt and original verifier policy
+header. The header at `02d64c4ca533e357b0c408047a749626790b476b`, reachable
+from the pushed primary, matches the measured source manifest and the
+materialized header. Its SHA-256 is
+`36ee46ce251ec720710c7bb22550e20111fad94c259dbed5d65eecb4db7288ae`.
+The header at the snapshot controller revision has a different digest.
+The Q6 controller at `7acf48b93` reads the exact Git header and keeps the
+original engine identity as provenance. Both standalone fixture plans pass
+source and recipe admission with access to the 24 old executables and the
+old materialized header blocked. The canonical proof uses a temporary key
+because its historical build key is occupied.
+
+The three host recovery tests at `15ac8515f` also pass. The target-snapshot
+projection recovers all 1,171 source files and the original 279 project
+compiler inputs while access to both generations' 24 executables is
+blocked.
+
+The reconciliation and planned stock-map RESTORE controls use
+`dflash2_primary_retained.baseline()`. The 32-slot upload and route-census
+verification branches use the selected primary prefill engine and the
+independent `dflash2-prefill-kv-stage-native-v1` decode engine. They check
+the historical foundation against its receipts. The original coherent
+model and speed jobs and the target-snapshot direct-prefill and sustained
+jobs have closed ownership. The older primary build/check and historical
+comparison entrypoints still enforce their exact legacy executable pins
+when replayed from their original campaign. Their historical readers
+remain in Git. Neither selected engine's actual compiler/link census reads
+compiled outputs from these two older roots.
+
+After the reconciliation process closes at `c5ffe8f77`, the original
+coherent and target-snapshot source and recipe checks pass. Each old root's
+12 final executable hashes match. The coherent intermediate paths come from
+its original compile and link lists and the pinned Ninja AOT rule. All
+target-snapshot compiler/link inputs and intermediate hashes match.
+The 320 exact files are removed under the measurement lock. All three
+host recovery tests pass again after removal at controller `15ac8515f`.
+Inventory SHA-256 uses compact
+JSON of sorted relative paths, sizes and file hashes. Retain the recipes,
+receipts and generated inputs required by the historical foundation reader.
+
+| Old build root | Deleted files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `coherent-prefill-native-v1/build` | 160 | 188752214 | `857de3a4d052c77400d4f9726ae59b2fec085d5eb8d5a6c16dd13fe61e5a6e70` |
+| `dflash2-target-snapshot-native-v2/build` | 160 | 175203404 | `9bac235f1300e7deff1a2d496061cf044aeda5b3d5137aa6d13f2cccc7e58984` |
+
+The `host`, `taps` and `restore` captures under `dflash2-primary-checks-v1`
+were removed after verifying ownership and the committed proof. The 20
+files and 3,493,419 bytes had inventory SHA-256
+`8f620f67282feb277ad1822ebb3d8169d6b3d87913bff7f95c996389e9f60d15`
+over sorted relative paths, sizes and file hashes. The compact receipt and
+three engine builds serve the upcoming model checks.
+
+The closed standalone physical-context captures were retired after checking
+identities, ownership and the original `137fb933f` and `321c5776a` results.
+Only `record.json` remains in each directory below. Live restore and
+width-four attribution use the committed proofs.
+
+| Directory | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-primary-physical-context-v1` | 119 | 26523236 | `8e083c4d34dd8c5af69d9a97a6cce2728683289f70d17f172972535a5b06b6f7` |
+| `dflash2-snapshot-physical-context-v1` | 119 | 26398509 | `0b493c82bffe52dccd3a4119ea7e8b9ab0cd935b6e22b7611bf3f867aed429e5` |
+
+#### Primary DFlash2 input-length curve
+
+The length curve uses the primary native source `968e71988`.
+`make_long_prefill_scratch` accepts 81921–131072 batched rows. The bank
+planner excludes 90112 rows because the ordinary window leaves a short
+8192-row tail there. The next full-chunk point above 122880 requires
+4,305,716,224 bytes including the 512 MiB reserve. That exceeds the minimum
+4,237,037,568 free bytes measured in the first matched pair. These two limits
+leave four full-chunk points in the observed VRAM budget.
+
+Use 94209, 102401, 110593, 118785 and 126977 actual prompt tokens for the
+same-route curve. Each request subtracts one final anchor to yield batched
+rows in full 8192-row chunks plus a fixed 4096-row tail. Reserve 110593
+prompt tokens for held-out prediction. The source-derived budget at 126976
+batched rows is 4,171,465,728 bytes including headroom, with 25,376,768 bytes
+remaining in the relocated shared arena. The budget allows staging in the
+first pair's observed envelope. Verify effective mode16, the relocated
+workspace and tail, all-GPU residual placement, the 32-slot bank, KV reuse
+and direct-store counters at every length. Record a separate series for the
+full-chunk 122881 reference and any rejected admission or fallback. The curve
+runner reverses the process order for the second block and excludes the
+reserved length from each fit. [Length curve runner](../bench/dflash2_primary_prefill_curve.py).
+
+The first 110,593-token process at `aad1422fc` validates all three request
+routes and closes with no fresh Xe fault. Prefill is 952.219 tok/s on first
+use and 1,052.936 and 1,051.701 tok/s on subsequent requests. Client TTFT is
+116.331, 105.225 and 105.349 seconds, respectively. Every request observes
+672 direct pieces, 559,104 reloaded KV pages and 1,677,312 reused stage
+pages. Keep these observations outside the training lengths for the fit.
+
+The first 94,209-token process at `b0eade844` also passes the three route
+gates with no fresh Xe fault. First-use prefill is 935.794 tok/s and the two
+subsequent requests give 1,047.211 and 1,045.446 tok/s. Client TTFT is 100.851,
+90.148 and 90.296 seconds, respectively. Each run uses 576 direct pieces.
+
+The first 126,977-token process at `9b8810146` passes all three route gates
+and closes with no fresh Xe fault. First-use prefill is 968.865 tok/s and
+the subsequent requests give 1,055.113 and 1,054.066 tok/s. Client TTFT is
+131.261, 120.545 and 120.668 seconds, respectively. Each request keeps all
+126,976 BF16 residual rows in VRAM and observes 768 direct pieces. At the
+tightest admission, 4,237,041,664 available bytes exceed the fixed budget
+including the reserve by 65,575,936 bytes. Three of the ten independent
+processes were complete at that point.
+
+The first 102,401-token process at `0577a8bbc` passes all three route gates
+and closes with no fresh Xe fault. Prefill is 947.498 tok/s first and
+1,050.770 / 1,050.285 tok/s subsequently. Client TTFT is 108.285 / 97.637 /
+97.709 seconds. Four of ten independent processes are complete. Across
+the completed lengths, first-use prompt time exceeds the subsequent median
+by 10.599–11.048 seconds. The bank's requested H2D bytes can increase or
+decrease on first use. Their largest absolute difference in these four
+processes is 66,713,600 bytes, about 11 ms at the separate large-copy
+reference. Measuring cache seeding and fixed first-use costs requires its
+own comparison. The final held-out comparison awaits both blocks.
+
+The 118,785-token process at `7ea730475` closes the forward block with
+matched placement, all routes and no fresh Xe fault. First prefill is
+964.2 tok/s, followed by 1,055.7 and 1,055.0 tok/s. Client TTFT is 123.387,
+112.716 and 112.789 seconds. A descriptive affine fit of the four training
+lengths in this first block gives first-prefill time `13.301 + 0.000926354 n`
+seconds and subsequent time `2.773 + 0.000925418 n` seconds. At the reserved
+110,593-token length, the predictions are 115.750 and 105.118 seconds,
+0.393 seconds below and 0.023 seconds above the observed times. These
+coefficients cover one process per length and this range. Complete the
+reverse block before comparing the candidate time models.
+
+The reverse 118,785-token process at `dda5bf72e` matches the forward
+process's route and expert work, exits normally and records no fresh Xe
+fault. First prefill grows from 123.1927 to 133.9573 s and first TTFT from
+123.387 to 134.149 s. The subsequent prefill median grows from 112.5531
+to 112.6664 s. Keep the two first-use samples separate from subsequent
+samples. The first-use spread needs repeat measurements and attribution.
+
+The reverse 102,401-token process at `9a748e1eb` matches the previous
+route and work with no fresh Xe fault. First prefill and TTFT take 108.7542
+and 108.944 s, compared with 108.0752 and 108.285 s forward. The subsequent
+prefill medians are 97.4284 and 97.4758 s. Seven of ten processes have
+completed. The first-use difference at 118,785 tokens is much larger than
+at this length, and the subsequent intervals at both lengths remain close.
+
+The reverse 126,977-token process at `f3fada00a` validates all three routes
+and closes with no fresh Xe fault. First prefill is 964.6 tok/s with 131.838 s
+TTFT. Later prefill is 1,055.7 and 1,053.8 tok/s with 120.479 and 120.696 s
+TTFT. The tightest observed allocation leaves 65,571,840 bytes above the
+fixed budget including reserve. Eight of ten processes have completed.
+
+The reverse 94,209-token process at `d50febe07` passes all three request
+and ownership gates without a fresh Xe fault. First prefill is 931.8 tok/s
+and TTFT is 101.289 s. Subsequent rates are 1,047.1 and 1,047.4 tok/s.
+The last repeat at `71ddd9046` closes the comparison. At 110,593 tokens,
+the three prefill rates are 952.1, 1054.3 and 1052.3 tok/s. Client TTFT is
+116.348, 105.083 and 105.292 seconds. All ten processes complete their
+three matched requests, exit normally and record no fresh Xe fault.
+
+For this route over 94,209–126,977 input tokens, let `n` be actual input
+tokens. Fit the medians of two independent processes per length, reserving
+110,593 tokens for the prediction check. The affine estimates in seconds
+and absolute holdout errors follow.
+
+| Clock | Affine estimate | Affine error | Quadratic error | n log n error |
+| --- | --- | ---: | ---: | ---: |
+| First prefill | `7.850 + 0.000989727 n` | 1.156 s | 3.135 s | 3.049 s |
+| Subsequent prefill | `2.580 + 0.000927125 n` | 0.068 s | 0.070 s | 0.069 s |
+| First client TTFT | `7.998 + 0.000990143 n` | 1.161 s | 3.146 s | 3.060 s |
+| Subsequent client TTFT | `2.717 + 0.000927646 n` | 0.071 s | 0.065 s | 0.064 s |
+
+Use the affine estimates as local planning approximations. The nonlinear
+models reduce training residuals. Their subsequent holdout errors differ
+from the affine errors by at most 7 ms. Adjacent subsequent prefill slopes
+are 0.910–0.950 ms per token. First-use slopes spread from 0.339 to
+1.517 ms per token and the first-use training residual reaches 3.160 s.
+Treat intercepts as fitted terms over this range and keep individual
+process measurements for decisions about startup cost and route changes.
+
+The next prefill scheduling candidate is batched issue on the current
+32-slot bank. Earlier 128-slot comparisons at `982211f5c` and `297adab4d`
+reduce paired warm prompt time by 2.55% and 1.00% respectively. The
+102,401-token demand control at `d01f72a19` submits 18,766 expert copies
+requesting 38,313,779,200 bytes on its first request, with no permanent hits.
+The current batch helper caps each run at 16 slots. Its caller still limits
+admission to 128 requested slots and non-relocated scratch, so setting
+`STRATA_SYCL_PREFILL_SPLIT_EXPERT_UPLOAD=batched` alone leaves this route on
+demand issue. Scope the admission change to mode16, 32 requested slots and
+the validated private bank/ordered queue. Keep the existing source and GPU
+span checks, relocated arena bounds, bank overwrite ordering and checked
+drain on success, cancellation and error.
+
+The [Arc 32-slot component result](https://github.com/yqYo1/Strata/blob/4f0bbef71/docs/SYCL_NATIVE16_PREFILL.md#dflash2-kv-stage-retention-outside-the-tap-layers)
+passes both full transfer and cancellation at `3552b9d7a`. The coherent
+model build and the relocated-workspace route also pass their execution checks.
+
+First verify 16-slot bank reuse with the relocated scratch and a partial
+chunk. On one candidate binary compare demand against batched with three
+opposite-order 102,401-token pairs. Hold the cache state, KV retention,
+input/output, kernel path, scratch, bank budget and decode placement fixed.
+Compare all 48 upload windows, expert copies, requested bytes, dequants,
+jobs and post-prefill work. The candidate must reproduce a warm gain
+in at least two pairs with a median time ratio below one. Record first
+prefill and client TTFT separately. Payload and device timing checks are
+required before broadening admission. Coalescing has its own prior failed
+incremental comparison and remains outside this test.
+
+The six-process comparison closes at `60db3b84b`. All 18 requests match
+the expected route and work, all processes exit normally, the final assets
+match, and no fresh Xe fault appears. Batched issue increases subsequent
+prefill time by 0.184%, 0.193% and 0.165% and first prefill time by 0.076%,
+1.095% and 1.773% in pair order. Keep demand on the 32-slot route. Restore
+the exact rejected candidate and its full receipts from their original Git
+revisions if needed. The source and recipe audit matches 1,329 project
+files and 1,475 compiler inputs to the final build. After preserving the
+original commits on `feature/sycl`, retired 1,524 candidate build and source
+files and 430 measurement files. The compact result records the inventories.
+
+The [primary driver cache comparison](../bench/dflash2_primary_driver_cache.py)
+reuses the older NEO inventory, private copy, readiness and counter readers.
+It selects the closed 102,401-token primary process as the only permitted
+seed donor. Keep that private original through this comparison. Compare
+empty and whole seeded NEO directories, including the driver metadata,
+using the original bodies and the exact binary, providers and route. Verify
+first-long hits and misses in two diagnostic processes before collecting
+three reversed pairs with statistics disabled. Keep readiness, short warm-up,
+prompt time, client TTFT and seed preparation costs separate. At this length
+the original first prefill needs to fall by 5.674 seconds to reach 1,000 tok/s.
+The older 117,489-token campaign established the hit mechanism on its own
+build and stopped before a full clean comparison. A disk seed does not
+isolate in-process compilation, module creation or expert page-in.
+An offline check of `55d9e4096` reconciles both request hashes and the
+closed donor. The 54 images total 12,434,952 bytes with inventory SHA-256
+`c93c2b41a2fc8642b3abc00424449f3466c584634b971c36b28258f5206b3ddb`.
+The copied tree matches the donor inventory. The older counter replay
+passes at 0/12 empty hits/misses and 12/0 seeded. Equal counters fail.
+No new native process ran in this check.
+
+The two native cache diagnostics at `2997fef19` and `b64605400` both
+close with the original two 102,401-token requests, matched route and
+warm-up work, identical final image inventories and no new Xe fault.
+During the first long request the empty cache gives 0 hits and 13 misses;
+the seeded cache gives 13 hits and 0 misses. These two processes have
+driver statistics enabled.
+
+| Observed diagnostic clock | Empty | Seeded |
+| --- | ---: | ---: |
+| Server readiness bracket | 56.440–56.525 s | 39.450–39.535 s |
+| Four-row verifier capture during the 74-token warm-up | 12.273 s | 0.173 s |
+| First long prefill | 109.9024 s | 106.8552 s |
+| First long client TTFT | 110.087 s | 107.043 s |
+| Subsequent long prefill | 97.3020 s | 97.2824 s |
+
+The private seed copy took 0.237 s. The capture interval belongs to the
+warm-up, so keep those two clocks separate. This establishes the intended
+cache-hit contrast. The three counterbalanced clean pairs with statistics
+disabled decide the repeatable timing effect. The seeded diagnostic still
+has a 9.573 s first-versus-subsequent prefill gap at the same input length.
+
+All eight processes close at `ad009f585` with matching work and placement,
+normal exits, all final asset checks and no fresh Xe fault. In the three
+clean pairs, positive values mean the seed shortens the interval.
+
+| Clean pair | First prefill saved | First client TTFT saved | Subsequent prefill saved |
+| --- | ---: | ---: | ---: |
+| Empty then seed | 0.6363 s | 0.629 s | −0.0374 s |
+| Seed then empty | 2.2143 s | 2.220 s | 0.1875 s |
+| Empty then seed | 2.9729 s | 2.972 s | −0.0009 s |
+
+The first-prefill and first-TTFT gates pass. Median first prefill is
+109.4903 s empty and 106.7133 s seeded. Median readiness brackets are
+53.749–53.835 s and 42.568–42.653 s. The 74-token warm-up median falls
+from 26.456 s to 6.205 s. Seed preparation takes 0.206–0.213 s. Both
+subsequent-request gain gates fail. All six first-prefill rates are below
+1,000 tok/s. Even with the cache seeded, first prefill takes 9.235–11.431 s
+longer than the second request. Keep the seed timing as a verified startup
+and first-request result. Investigate the remaining gap and preserve the
+length curve's original comparator settings. This does not change the
+shipping cache policy.
+
+The [primary continuation plan](../bench/dflash2_primary_continuation.py)
+uses the same retained binary and KV selection for three independent
+`bench.sh --long-generation-only --long-generation-input-case split-v1-96k`
+processes. Both code and prose bodies use the existing count-only preflight
+and a 16,384-token output limit with thinking on. Require mode16, all-GPU BF16
+residuals, the 32-slot demand bank, KV retention, direct stores and the actual
+expert route after the handoff. Native and API counts must agree and the
+engine must emit at least 1,024 tokens in each sustained case. Record TTFT,
+PP, TG and the observed acceptance separately by workload and request order.
+Stop on a placement fallback and preserve its result. This plan exercises
+the measured long-prefill handoff. The ordinary official agent suite and
+the reconciliation task have independent purposes and evidence.
+At `a151628bd`, the route reader agrees with the three archived ragged
+102,401-token observations on writer pieces, KV pages and requested bank
+bytes. The same check rejects a substituted mode10 marker. This checks the
+reader using existing logs. The new sustained processes remain pending.
+
+The [retained primary reader](../bench/dflash2_primary_retained.py) binds
+the continuation to the closed primary build, timing and physical-context
+receipts. It recovers the original source and checks actual compiler and
+link inputs, all same-build fixtures, providers and model assets directly.
+The historical executable identities remain in the committed evidence.
+The continuation now verifies the selected executable directly. Run the
+two host controls in `bench/test_dflash2_primary_retained.py` under the named
+interpreter and measurement lock before preparing the suite. The controls
+compare the original baseline with legacy executable access denied and check
+that a changed physical-context proof fails admission. Both pass at
+`d50febe07`: the replacement baseline exactly matches the old result while
+opens and stats on all 14 original reference executables are rejected.
+The three model processes are prepared at `c6e52edf8`. Both frontend
+probes pass at `a87131dfe`. All three native processes exit normally with
+quiet validation, an unchanged driver, no fresh Xe faults and verified
+final hashes for all 15 model assets. Each process uses the same request,
+output and reasoning hashes and native work counts for each workload.
+Both workloads use mode16 with all batched BF16 rows on the GPU, the
+private 32-slot demand bank, direct attention stores and KV stage retention.
+
+| Workload across three processes | Fresh input | Output with thinking | Prefill median and range (tok/s) | Client TTFT median and range (s) | Decode median and range (tok/s) | Drafts accepted per request |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Code, first long request | 96,204 | 3,195 | 915.8 (774.2–940.2) | 106.426 (103.660–125.611) | 16.286 (16.252–16.325) | 2,173 / 2,248 |
+| Prose, subsequent request | 96,274 | 8,618 | 1,039.6 (1,039.3–1,040.2) | 92.793 (92.740–92.821) | 11.574 (11.487–11.595) | 3,442 / 4,864 |
+
+All six requests qualify for the planned speed accounting. The first
+prefill intervals span 21.936 seconds and the subsequent prefill intervals
+span 0.080 seconds. The code case confirms strong draft agreement at
+96.7 percent. Prose has 70.8 percent acceptance, above the 40 percent weak
+case limit. The long-prefill handoff check passes. The 70 tok/s goal and
+weak-case qualification remain open.
+
+These native footers also bound the needed decode latency at the observed
+spec4 yield. Each window emits one target token plus its accepted drafts.
+The final window can leave up to three committed positions unreported after
+EOS or the output cap. The three matched code processes therefore have
+1,022–1,025 windows and require 44.53–44.66 ms of whole decode per window
+at 70 tok/s, against 190.94–192.36 ms from their decode clocks. Prose has
+5,176–5,179 windows, a 23.77–23.79 ms budget and 143.51–144.94 ms observed.
+This estimate covers whole decode at fixed yield. Before selecting a
+component, measure actual window counts, verifier critical path, CPU expert
+service and draft clocks on the same route.
+[Exact sustained result](https://github.com/yqYo1/Strata/commit/9261c4b44).
+
+The three matched code requests at `9261c4b44` request the same
+41,499,571,200 bytes of expert-bank H2D copies. The difference between
+client TTFT and the native prompt interval is 1.337–1.377 seconds, a spread
+of 0.040 seconds. In the five same-length process pairs at `71ddd9046`,
+that difference changes by at most 0.020 seconds. At 118,785 tokens, the
+first prompt interval changes by 10.765 seconds and the first TTFT by
+10.762 seconds, while the subsequent prompt median changes by 0.113
+seconds. These matched samples place the observed variation inside the
+native prompt interval. Its internal cause remains open.
+
+The median 96,204-token first prompt needs 8.845 seconds less to reach
+1,000 tok/s. Sending its requested expert-bank payload at the separately
+measured bulk-copy rate of 6.292–6.485 GB/s would take 6.40–6.60 seconds
+in isolation. Effective copy time, physical traffic and overlap within
+the model request remain unmeasured. The 102,401-token cache-seed experiment
+at `ad009f585` separately saves 0.636–2.973 seconds of first prefill.
+For the next cold attribution, use the matched first and subsequent
+requests at 118,785 tokens. The
+[CPU wait controller](../bench/dflash2_primary_prefill_cpu_wait.py) prepares
+two opposite-order pairs on the unchanged retained engine. The layer-major CPU wait observer already
+separates thread CPU and wall time in GPU waits, copy submission and
+host grouping. Match the archived native work in every request and
+require the accounting to fit inside the prompt interval. Check observer
+overhead separately on the subsequent requests. Keep the first-use clock
+ratios as observations because the first-use spread can exceed observer
+overhead. At `edfdc8812`, three host parser tests verify the complete CPU
+partition and reject incomplete MoE status wrapper output, incorrect call
+counts and nested totals outside the enclosing interval. The status copy,
+submission, drain and postcheck subtotals remain nested. Frontend and model
+admission now pass for the first clean and observed processes. Both match
+all three native routes and close without new Xe faults. The first observed
+process's subsequent median is 0.99978 times the control's. Within that
+observed process, the first prompt takes 10.755 seconds longer than the
+subsequent median. The disjoint unclassified host interval increases by
+10.734 wall seconds and 5.340 thread CPU seconds. Observed wait-wall time
+is 75.268–75.343 seconds in all three requests. The reverse-order observed
+process at `b4aaf76ad` also passes all three matched requests without a fresh
+Xe fault. Its first prefill is 10.335 seconds longer, with 10.804 additional
+unclassified wall seconds and 5.453 thread CPU seconds. The recorded wait
+interval ranges from 75.174 to 75.326 seconds. The final clean control
+closes the comparison with 949.9 tok/s and 125.236 s client TTFT on the
+first long request and 1055.7/1054.3 tok/s on the subsequent requests.
+The two observed-to-clean subsequent duration ratios are 0.999780 and
+1.004486, within the declared observer gate. All 12 requests match the
+expected work and all four processes close normally with no fresh Xe faults.
+The clean first-use prompts themselves differ by 3.013 seconds. The
+noticeable first-use spread remains outside the observer-cost qualification.
+
+The optional cold host phase observer uses the regular V4 wait and host
+ledger. `STRATA_PREFILL_COLD_HOST_PHASES=1` records the calling thread's
+wall time, CPU time and faults over admission, allocation and provisioning,
+the layer passes, and final retirement. Boundaries require all existing
+inner scopes to be closed. The observer reads calling-thread state and keeps
+its phase subtotals nested in the original request ledger. A repeated or
+missing boundary makes the phase sample unavailable. The standalone host
+fixture uses `/usr/bin/g++ -std=c++17 -O2 -Wall -Wextra -Werror -pthread
+-Iinclude -Isrc/prefill tests/sycl/prefill_cold_host_phases.cpp`.
+All five host cases pass at `8a437b97a` with GCC 13.3.0. The fixture checks
+phase partition conservation against V4 waits, disabled output, wrong order,
+an open host scope, and incomplete results.
+Future native attribution requires the same clean and observed route,
+matching work and clock accounting, and a separate observer-cost check.
+The fault counters cover the calling thread. Use them together with the
+phase timings to select a narrower test of faults, allocation or submission.
+The [observer build controller](../bench/dflash2_cold_host_build.py) starts
+from the exact retained primary build recipe and adds the three cold-host
+source files from `8a437b97a` after checking the original preimages. Keep
+the independently developed CPU expert scheduling changes outside this
+build. For the native comparison, use separate processes with the existing
+V4 wait ledger enabled in both arms and switch the new phase ledger only.
+Match the 118,785-token requests and check the phase sums before interpreting
+their elapsed time and per-thread fault counts.
+The native build at `591e81a55` passes the 139-object compiler and link
+inventory and the 11 executable identity checks. The
+[phase comparison controller](../bench/dflash2_cold_host_measure.py)
+checks each phase against the request interval and the nested V4 totals.
+Its counterbalanced plan records first-minus-subsequent deltas per process
+and requires each paired subsequent ratio to stay within five percent.
+The seven offline accounting checks pass at `196abca84`, including incomplete
+and duplicate phase records and phase and request conservation. The exact
+four-process plan is committed at `6841d6f6d` and the owned frontend probes pass.
+The V4-only control on the new executable completes all three requests with
+matched work, closed ownership and no fresh Xe fault. The first prefill takes
+123.517 seconds, followed by 112.555 and 112.663 seconds. The first
+unclassified interval is 17.978 seconds, compared with 7.179 and 7.141
+seconds later. Report the phase attribution after completing the paired
+observations.
+The first phase-observed process also completes all three matched requests,
+with quiet validation, closed ownership and no fresh Xe fault. Its first
+prefill is 123.279 seconds and its subsequent median is 112.567 seconds,
+0.999623 times the paired V4-only median. Within its layer loop, the first
+request adds 10.680 unclassified wall seconds and 5.350 main-thread CPU
+seconds over the subsequent medians. Its calling thread records 23,415
+minor faults in the layer loop, compared with 5 and 0 later. No major
+faults occur. The counts locate the change in the layer loop. Their backing
+and cost remain unmeasured. The reversed phase-observed process yields
+10.769 additional unclassified wall seconds and 5.437 calling-thread CPU
+seconds inside that loop. It records 23,121 minor faults on first use and
+3 and 0 later, with no major faults. The three requests preserve the route
+and workload, validation is quiet, and the owner exits without a fresh Xe
+fault. The final V4-only process closes the reversed pair at
+963.2/1055.1/1055.0 tok/s. All four processes and 12 matched requests close
+normally with no fresh Xe faults and matching final model hashes. The paired
+subsequent duration ratios are 0.999623 and 1.002511, passing the observer-cost
+gate. Keep first-use ratios descriptive. The replicated layer-loop excess
+qualifies the detailed attribution experiment.
+The next observer splits the layer loop into outer preparation, the
+`run_impl` call and retirement of the pass. Set
+`STRATA_PREFILL_COLD_LAYER_PHASES=1` to collect those calling-thread clocks,
+faults and the largest unclassified interval in each category. The marks
+sample the existing disjoint V4 ledger after its nested scopes are closed.
+The output is one aggregate per request. The host fixture uses the same GCC
+command above and includes a complete two-layer loop, out-of-order marks and
+an incomplete layer count. Require the three segment totals to fit inside
+the enclosing layer interval. All eight host cases pass at `8f379bcaa`.
+The three valid segments fit inside the enclosing layer interval, including
+the clock and fault totals. The native follow-up needs a separate build and
+matched observer-cost gate after the current comparison closes.
+The [layer-detail controller](../bench/dflash2_cold_layer_measure.py) recovers
+the same primary source and compiler recipe, then replaces only the two
+instrumented layer files after verifying their original Git preimages.
+It requires both closed coarse observations to localize excess in the layer
+loop. Both new arms enable the coarse and V4 ledgers. Change only the layer
+detail selector and bind each aggregate to that request's actual layer count
+and enclosing interval before accepting it.
+At `fcaf1e45a`, four controller checks pass. The same parser also accepts
+the actual two-layer C++ fixture output and rejects both incomplete fixture
+outcomes. The next native projection recovers byte-identical preimages for
+both changed files from Git. Its coarse reference and observer-cost decision
+are now closed. Source preparation recovers 1,328 files and the pinned
+11-target recipe from the retained primary build and the two observer
+revisions. It binds both original first-use deltas and validates the
+materialized sources. The diagnostic build's sole consumer is the matched
+118,785-token layer-detail comparison. Review it for retirement at that
+comparison's closure. The first configuration at `05a25c986` exited normally
+without compiling. Its pinned controller tree differs from the current
+checkout in nine files under `bench/sycl` and `tools/sycl`. Preserve that
+configuration receipt in Git. V2 preparation recovers the same 1,328
+engine files and compiler recipe under the current controller revision.
+The workload and observer-cost gate stay fixed.
+
+Verified all 524 original V1 build controls from Git, the two materialized
+source trees and the original configured inputs. Retired every descendant
+of `dflash2-cold-layer-native-v1` except its unchanged `record.json`.
+The 1,359 files total 20,148,569 bytes and hash to
+`9ffbd208057967470546cec4f50f6719b8160943fb48c543863877000598620b`
+over sorted state-relative paths, byte counts and SHA-256 values.
+
+All four V2 processes complete normally with matching model assets and no
+fresh Xe faults. The detailed/coarse subsequent-duration ratios are
+0.997254 and 0.999751, within the predeclared 5% observer limit. The
+first-duration ratios are 1.019010 and 0.999481 and remain descriptive.
+In the detailed processes, the first request adds 13.224 and 10.825 seconds
+of unclassified wall time inside `run_impl` and 5.667 and 5.558 seconds
+of unclassified caller CPU time. The largest first-request layer is index
+1 in both processes, at 7.746 and 5.465 seconds. On subsequent requests the
+largest layer is below 0.237 seconds. Preparation and retirement changes in
+unclassified time are below 4 ms.
+
+The frozen environment enables `STRATA_SYCL_PARALLEL_IQ_DEQUANT=1`.
+The model manifest places the first IQ2_S Gate/Up and Q2_0 Down at index 1.
+The compiled mode16 accumulator calls the type-specific dequantization
+wrappers there. The V4 ledger already classifies both wrappers. For the
+first request minus the subsequent median, their outside-wait totals change
+by −34.7 to +2.0 ms for Gate/Up and −30.2 to −14.5 ms for Down across
+the four processes. These calls are outside the unclassified interval.
+
+The next observer confines window accounting to layer index 1. It uses
+the existing host ledger to time each MoE window and its output handoff
+inside `run_impl`, leaving the remaining interval identifiable from the
+enclosing layer time. Require complete ordered coverage of the window rows
+and count wall time, caller CPU time and page faults. This uses the actual
+mode16 path without an added queue drain. The existing command-service
+observer refuses mode16 before submission. The
+[window comparison controller](../bench/dflash2_cold_window_measure.py)
+compares the observer off and on using the verified 118,785-token workload
+and the original subsequent-request overhead gate. The GCC fixture
+preserves the eight original host cases and verifies a complete ragged
+tail, a missing tail and a row gap. The comparison reader accepts the
+fixture output and the expected mode16 record geometry of one full-row
+window per layer. Six controls reject missing rows, wrong window counts,
+overlapping subtotals, repeated records or data from a disabled observer.
+
+The first detailed process completes all three matched requests, exits
+normally and records no fresh Xe fault. First prefill takes 124.112 seconds.
+The later requests take 113.267 and 113.299 seconds. Their median is
+1.000299 times the paired control's median. At layer index 1, first use adds
+5.294 seconds of unclassified wall time. The MoE window adds 0.976 ms,
+handoff changes by less than 1 µs, and the rest of the layer adds 5.293
+seconds with 1.272 ms of calling-thread CPU time. The MoE window accounts
+for 872 of the 886 additional minor faults at this layer. The reverse
+observed process at `3363abc7b` also completes all three requests and exits
+without a fresh Xe fault. It adds 5.302 seconds in the layer remainder with
+1.726 ms of calling-thread CPU time. The MoE window adds 1.186 ms of
+unclassified wall time. The final control closes the comparison. All 12
+requests match the original model work, all four owners exit normally,
+all final model assets match, and no fresh Xe faults are recorded. The
+paired subsequent-duration ratios with the window observer are 1.000299
+and 1.000312. Both pass the predeclared five-percent gate.
+
+The exact diagnostic executable already contains the PLE wait observer.
+The layer-major path starts the first PLE gather within the layer-1 slice,
+then waits for each result in that slice. The
+[PLE controller](../bench/dflash2_cold_ple_measure.py) requires the closed
+layer-window proof and reuses its exact executable. Two independent processes
+keep the window observer and enable the PLE clock. Require 15 Direct I/O
+gathers over the 118,784 batched rows, with the exposed wait inside the
+unclassified remainder. The prior window processes supply a subsequent
+duration reference from an earlier measurement period. Three replays with
+real archived request frames and synthetic PLE markers pass. Ten malformed
+or out-of-scope records are rejected. The environment comparison confirms
+that only the PLE selector changes, and admission refuses the unfinished
+layer-window comparison. The first Direct I/O process completes all three
+requests with normal ownership closure and no fresh Xe fault. Its 15 gathers
+spend 5262.815 ms waiting for their result on the first request and 33.888
+and 56.275 ms on the two later requests. The first-use increase is
+5.217734 seconds of the layer remainder's 5.221782 seconds, leaving 4.048 ms
+after subtraction. The second independent process records 5225.751, 37.469
+and 57.429 ms of exposed PLE wait. Its first-use increase is 5.178302
+seconds against a 5.178276-second increase in the layer remainder.
+Both processes close normally and all six requests match the pinned route,
+with no fresh Xe fault and unchanged final model hashes. The subsequent
+duration ratios to the historical windows processes are 0.999858 and
+0.996989, within the declared range.
+The standard length workload repeats a deterministic word stream with
+distinct run tags, and the PLE row cache persists across those requests.
+Use varied text and the standard workload to evaluate a scheduling change.
+
+The Qwen IQ3_S PLE table occupies 26.82 GiB. The reverse-order timing
+engine had a 15.71 GiB locked-memory limit and the host reported
+33.91 GiB available in one prefill startup snapshot. The existing
+`--ple-io ram` path would fall back to touching pageable pages under
+that limit. A comparison using that mode needs separate startup timing
+and actual page-residency evidence before attributing a gain to RAM.
+
+The first scheduling candidate issues the first Direct I/O gather at layer
+0 under `STRATA_SYCL_PREFILL_PLE_EARLY_READ=1` on the recovered mode-16
+prefill source. Both arms use the same gather function and existing two
+host buffers. The layer-1 reader consumes the future before issuing its
+existing upload and the next gather. A request-local future joins the host
+read when layer 0 exits early. Admission requires the existing direct PLE
+binding and the relocated mode-16 workspace.
+The [early PLE build controller](../bench/dflash2_prefill_ple_early_build.py)
+recovers the observed source and applies the three-file delta. It requires
+the repeated PLE attribution and rebuilds the original set of 139 objects.
+Check actual dispatch,
+the first read's lifetime on cancellation, and the layer-1 and decode
+handoff before timing. Use a same-binary off/on comparison with separate
+first and subsequent timings. The original observer measures all 15
+gathers, so the candidate's first-gather savings remain to be measured.
+At `d7870f810`, the prefill translation unit passes a syntax-only check
+with the observed compile database, compiler and three committed overlays.
+All 804 compiler inputs verify against their original or candidate hashes.
+The dependency digest is
+`3f3a3f0b21ae1164b5966ab73b7118dde7e5dc211b462aef8362e55a8b474e2d`.
+The compiler exits normally with no warnings. Full build and model
+qualification remain open.
+
+The closed PLE result at `9ecd845e9` supplies both observations for the
+early-read build. Before retiring the diagnostic executable, its build
+controller recovered all 1,328 project files and 527 build controls from
+Git, the original recipe, the compiler and link inputs, 139 objects and
+11 executable identities. The candidate reconstruction changes three
+source files. All 23 executables in the two retained phase references
+match before and after retirement.
+
+| Retired state root, retaining its original `record.json` | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-cold-layer-windows-native-v1` | 1,524 | 223,757,159 | `15f8a45cbd0f7555075459d9ecaf41b599a883af9603d7ca5950e72007cabce5` |
+| `dflash2-cold-ple-wait-v1` | 146 | 25,192,694 | `98e4fac3e52fc0122710b22871bf2fc985c9878437687b655389ece51d5e6305` |
+
+Both original receipts match. The inventories hash sorted state-relative
+paths, byte counts and file hashes. The next build uses these committed
+inputs to reconstruct the source and recipe.
+
+The early-read candidate completes the full pinned build. The object census
+matches all 139 original paths, with 11 newly linked executables and zero
+uncovered inputs. Run the [native checker](../bench/dflash2_prefill_ple_early_check.py)
+before timing. One process sends STOP after the layer-0 launch boundary and
+repeats the short request on the same server. A second process completes the
+original 82 / 122881 / 82 input sequence and checks active state, five DFlash2
+tap payloads and output against the previous direct-store result. These requests
+check scheduling and state handoff. Timing and physical full-context validation
+use separate runs.
+
+Both V1 diagnostic processes exited normally and recorded no fresh Xe fault.
+STOP occurred before layer 1 with zero prompt tokens committed. The two
+82-input requests returned the reference 32 outputs and matched active state.
+The complete 122,881-input request reached all 48 layers and emitted 32
+outputs with zero early gathers. The dense-phase trace showed 48 layer
+activations. V1 excludes the installed dense callback from early scheduling.
+Its STOP result establishes server recovery. The outstanding-gather lifetime
+and timed cohort require a new native proof. The failed direct trace hashes to
+`7ca9c9c94e2be75e032ee40c4382b3187789ccb2c3226d26ba1513fa85dfc2bd`.
+
+The closed V1 results are at `6db247db7`. The recovery audit matches the
+1,328 source files, 529 build controls, compiler and link inputs,
+139 objects, 11 executables and both terminal process receipts. Its engine
+and captured output had no remaining measurement consumer. The following
+V1 descendants are retired. Both original `record.json` files and all
+23 executables of the retained phase references match their original hashes.
+The inventory hashes cover sorted relative paths, sizes and file hashes.
+
+| State root | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-prefill-ple-early-native-v1` | 1,524 | 223,824,818 | `4b9c9b37b049c52c2eb491d9674eff0e635d6e02c7a9729f286577bc5c3deba1` |
+| `dflash2-prefill-ple-early-check-v1` | 105 | 24,197,682 | `d003d68135a51778c6942f3415b7f5fcab3236ced3c33bb01edc64ca95e9dd4f` |
+
+V2 at `8a2a6c4b2` binds the host PLE table and copies the n-gram constants
+for the background gather. The dense callback can continue activating each
+layer's GPU weights. The existing layer-1 consumer still checks its active
+PLE key and waits before uploading the first rows. The future is destroyed
+before the request exits, including cancellation. The traced start marker
+now precedes STOP, and the complete request must show exactly one layer-1
+consumption and subsequent restoration of the full dense weights.
+
+The V2 build at `b95065187` matches 139 fresh objects and 11 executables
+with zero uncovered inputs. In the V2 STOP process at `3507e137d`, the
+122,881-token request reaches the issue marker and exits before layer 1 with
+zero read and generated tokens. Its 9.904-second prompt interval includes
+preparation, STOP and gather retirement. The same process then reproduces
+the 82-token control's 32 output IDs, active state and draft tap payloads.
+It exits normally with quiet validation and no fresh Xe fault.
+
+The separate completion process issues one read at layer 0 and consumes
+8,192 rows at layer 1. It restores the full dense bank after all 48 layer
+activations. The 82 / 122,881 / 82 inputs each emit 32 tokens; all output
+IDs, active state digests, five draft tap digests and checked work match
+the original direct-writer run. Both V2 owners exit normally, validation
+is quiet, model hashes match and no fresh Xe fault appears. The traced
+outcomes qualify the scheduling check and enable the untraced comparison.
+
+The [same-binary timing controller](../bench/dflash2_prefill_ple_early_speed.py)
+requires both V2 native outcomes before admission. It counterbalances three
+pairs at 118,785 inputs and separates each process's first prompt from two
+subsequent fresh prompts. Both first prefill and client TTFT must improve in
+at least two pairs and have median ratios below one. The two subsequent
+median ratios may be at most 1.01 for this screening stage. Track 1,000 tok/s
+and broader model validation independently.
+Replay of three original request frames matches the committed work. Three
+synthetic consumption cases and twelve invalid or observer-enabled frames
+exercise the route gate. The paired decision accepts a repeated first gain
+and rejects the same gain with a 3% subsequent-time increase.
+
+All six clean processes close at `a213dd223` with 18 matched requests,
+zero reused tokens, quiet validation, verified final model assets and no
+fresh Xe fault. Each early request records one layer-1 consumption. The
+stock requests record zero.
+
+| Pair | First PP, stock → early (tok/s) | First PP time saved | First client TTFT saved | Subsequent PP time ratio |
+| --- | ---: | ---: | ---: | ---: |
+| Stock first | 956.8 → 967.0 | 1.321 s | 1.327 s | 0.999027 |
+| Early first | 958.9 → 963.5 | 0.591 s | 0.586 s | 0.999054 |
+| Stock first | 950.7 → 975.1 | 3.129 s | 3.132 s | 1.000128 |
+
+The paired median ratios are 0.989360 for first prefill and 0.989330 for
+first client TTFT. Subsequent PP and TTFT ratios are 0.999054 and 0.999017.
+The candidate passes the repeatability and subsequent-preservation screens.
+Its six subsequent requests run at 1,048.0–1,050.1 tok/s. The three first
+requests run at 963.5–975.1 tok/s. Advance to the same-build standalone
+physical final-slot check with the early selector enabled. Verify the
+16,385-input handoff and the 262,144-input fallback on the original token
+bodies. Live RESTORE and sustained generation remain open.
+[Physical-context controller](../bench/dflash2_prefill_ple_early_capacity.py).
+
+The same-build physical check closes at `c32ac6175`. The 16,385-input
+smoke reproduces all four output IDs in mode 10. The 262,144-input run
+uses mode 2 and processes 122,880 GPU-backed and 139,263 host-backed batch
+rows before committing the final position. It emits zero tokens and passes
+the commit wait and refill drain. Both fallback runs record zero early
+gathers, normal owner closure and no fresh Xe fault. All final model
+asset hashes match.
+
+The same-binary live RESTORE comparison closes at `6819afd49`. Both
+processes park a 16,385-token prefix, switch to a 33-token conversation,
+restore the first prefix from RAM and append 118,785 fresh tokens in
+mode 16 with the direct writer. Output IDs, active target state, work
+counters and the 12 KV stage records and mirror digest match. The early
+arm gathers once and consumes 8,192 rows at layer 1. The control records
+zero early reads. Both processes exit normally with no fresh Xe faults.
+The selector remains opt-in pending the matched sustained generation,
+weak-draft and agent-session comparisons.
+[Live RESTORE controller](../bench/dflash2_prefill_ple_early_restore.py).
+
+The [sustained-generation controller](../bench/dflash2_prefill_ple_early_continuation.py)
+uses this exact engine in three pairs of independent stock and early processes. It
+requires the same 262144 final-slot and live RESTORE receipts. Each process
+runs the maintained thinking-enabled 96K code and prose bodies with the
+same decode settings and checks the actual layer-1 consumption markers.
+The comparison retains first and subsequent prefill, client TTFT, decode
+rates, and observed draft acceptance. Agent-session coverage remains a
+separate validation step.
+
+The early-PLE build recovery uses the historical checkout at `6819afd49`.
+Its original reader verifies 1,328 project files, 529 controller inputs,
+1,479 compiler inputs, 139 fresh objects and all 11 executable identities.
+The recovered recipe SHA-256 is
+`b1cc47c1b8888ea4a807f8a7bfa9cfed5dc1c28ac07a456a8b667085267c70ef`.
+The earlier worktree comparison encountered three later CPU replay edits.
+The historical checkout passes the same admission without changing those
+inputs. Source commit `58236dac5`, overlay `8a2a6c4b2` and all closed timing,
+final-slot and RESTORE receipts remain reachable on `feature/sycl`.
+
+The sustained early-PLE comparison has no prepared plan or live owner.
+Defer it until the decode placement comparison closes. Reproduce the
+exact build or qualify a new one when the PLE comparison resumes. The
+retirement under the measurement lock removed `build`, `cache`, `owned`,
+`ownership.json`, `source` and `tmp` from `dflash2-prefill-ple-early-native-v2`.
+It removed 1,524 files totaling 223,826,316 bytes. The SHA-256 of the inventory sorted
+by relative path with file sizes and hashes is
+`c389e9b65e3aa889750bab062c21033e05549b3abebbe45572698e85f5a1d390`.
+The original `record.json` and the two separate phase references match
+their pre-retirement hashes.
+
+The closed comparison at `bdfd43ec9` preserves the 12 requests and
+passes the PLE reader's admission. After verifying all four terminal
+receipts against the pushed record, retired `host` and `0`–`3` under
+`dflash2-cold-layer-windows-v1`. This removed 288 files and 50,351,489
+bytes. The sorted state-relative paths, byte counts and file hashes give
+inventory SHA-256
+`625e2ba90b35dbcc695d2ef647b0d0bd835dd0dfed89b4a3d1b90ac26a6fdc62`.
+The original `record.json` and all 34 executables across the two phase
+references and the layer-window build used for PLE match their original
+hashes.
+
+The closed V2 build and run receipts are recoverable from Git at `200ec7292`.
+Recovery matches 1,328 project files, 525 build controls, the exact
+compiler/link inputs, 139 objects and 11 executable identities. Both
+original receipts and all 23 phase-reference executables match after
+retirement. The inventories cover sorted state-relative paths, byte
+counts and SHA-256 values.
+
+| Root, excluding `record.json` | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-cold-layer-native-v2` | 1,524 | 223,688,598 | `d972bde6d47445fb715f4c1ed5c5d348361532748ff3f9da5d199a42288e971b` |
+| `dflash2-cold-layer-phases-v1` | 288 | 50,330,812 | `5a10cf1d8e096dde1224aa459198e37ab76fbd52a164f6a2e745fd96ae5a0fef` |
+
+The closed observer generation and outputs were retired after verifying all
+1,328 original source files against Git, the configure and build recipe, 139
+actual objects and all 11 executable identities. The observer build receipt
+at `591e81a55` preserves the source and recipe identities. The continuation
+reads the committed coarse and V4 evidence and uses the primary engine's
+recipe. Each retained `record.json` is byte-identical to its pre-retirement
+record. The inventories below hash sorted relative paths, logical byte counts
+and file hashes.
+
+| Root and retired paths | Evidence commit | Files | Bytes | Inventory SHA-256 |
+| --- | --- | ---: | ---: | --- |
+| `dflash2-cold-host-native-v1/{build,source,cache,tmp,owned}` | `591e81a55` | 1523 | 223564445 | `02636aa3c8e947852b007bc994c73835cdfa64f3ed2b63d4a2921d567fb70e4b` |
+| `dflash2-cold-host-phases-v1/{host,0,1,2,3}` | `62ab9e1b9` | 288 | 50302307 | `409dcfdbe588710fc200aafac43f15fc5f855ff12ad9a89824b0c40fedee951d` |
+| `dflash2-primary-prefill-cpu-wait-v1/{host,0,1,2,3}` | `b74b6b067` | 288 | 50223523 | `be8c76f4016d5361c65a4cd437185c1dcc117d50aff6e90951b7909f1cbb349d` |
+
+The separately prepared [reconciliation workload](../bench/dflash2_reconciliation_fixture.py)
+at `38b2d252d` uses 54 synthetic services and 1,303 event records.
+The host count through the production chat renderer and tokenizer is
+35,915 input tokens with thinking enabled and a 16,384-token output cap.
+The exact JSON wire SHA-256 is
+`06b1845151ce2fa7a79fa020108b9c44b9afb0dd77046475dd4cb1c6441aa748`.
+The validator accepts the independently derived incident decision and
+rejects a wrong service, incomplete JSON block and duplicate key.
+Before the model screen, bind the wire hash and live count to the exact
+benchmark request. The [reconciliation client](../bench/dflash2_reconciliation_client.py)
+joins all native stderr request footers with a single new `/metrics` history
+row and the benchmark client's SSE response. The history supplies clocks
+from DONE; the native footers independently reconcile generated, read and draft
+counts and their rounded clocks. The API/native token difference can only
+bound inserted output from below. Calculate TG from native generated tokens
+and the native decode clock. Require at least 1,024 native outputs for the
+weak-agreement observation. Run the focused offline accounts with the qualified
+interpreter and `-B -m unittest discover -s bench -p test_dflash2_reconciliation_client.py`.
+All four cases pass at `cccf6e8a7` with the exact production client and fixture.
+The [reconciliation model controller](../bench/dflash2_reconciliation_model.py)
+uses the retained primary build and the same owned launch, provider and
+exit checks as the 96K continuation. It starts one private server with no
+benchmark warm-up and pins the same fixture and client. Report the observed
+acceptance, native TG and answer check together with client TTFT. Repeat the
+workload as a weak case only if the first screen generates at least 1,024
+native tokens, passes the answer check and accepts at most 40% of offered
+drafts. Retain the compact observation and retire the closed raw output after
+the next workload decision.
+
+The screen closes normally with quiet validation, no fresh Xe fault and all
+15 final model hashes verified. The answer passes the fixture's oracle. With
+thinking enabled, the API returns 15,168 tokens and the engine emits 15,151
+at 16.331 tok/s across the two native decode intervals. Client TTFT is
+69.784 seconds. The first leg reads all 35,915 input tokens in 65.044
+seconds. The answer-room continuation rereads all 48,221 tokens in
+53.314 seconds, with zero reported reuse. The two legs accept 10,379 of
+11,482 DFlash2 drafts, or 90.39 percent. This closes the task-quality screen.
+It exceeds the 40 percent weak-case limit. The continuation clock is
+also usable evidence for the separately scoped request-prefix handoff.
+
+The cache-off reconciliation launch explicitly sets `--prompt-cache 0`,
+which disables live target reuse on this build. The staged
+[answer-room reuse screen](../bench/dflash2_answer_room_reuse.py) uses the
+same committed model, native binary, request body and oracle with live
+reuse enabled. Periodic, turn, root and parked checkpoints stay disabled.
+Require the full first prefill, at most 64 fresh tokens on the continuation,
+the live DFlash2 prefix and a correct answer with sustained generation.
+Compare the continuation clock with the archived 53.314 s observation.
+The eight host accounting and configuration tests pass at `0804e46fc`.
+The live screen precedes a repeated timing comparison and any production change.
+
+The next weak-case candidate is the
+[maintenance-window scheduling fixture](../bench/dflash2_scheduling_fixture.py)
+at `3590c990f`. The fixed seed produces 2,016 scored choices for 36 required
+changes and 56 exclusive windows. The independent assignment oracle checks
+approval, exclusivity, both objective totals and the ordered tie-break. All
+three host tests pass, including an exhaustive comparison on a small
+rectangular instance. The canonical optimum has risk 2,106 and disruption
+6,696.
+
+The retained production chat template and tokenizer first reproduce the
+reconciliation wire hash and 35,915-token input count. With the same
+thinking and output policy, they count 52,055 tokens for the scheduling
+packet and an output cap of 16,384. The scheduling request's wire SHA-256 is
+`a7b6c72e9a06280eb216d5d34340a451b5deb07b363a3d0da4b554b45cc4874b`.
+The [scheduling model screen](../bench/dflash2_scheduling_model.py) at
+`9047ce522` uses the same tokenizer, live request, and API-to-engine
+accounting as the reconciliation screen. Six focused host tests pass,
+including the scheduling packet's count, body, answer oracle and entry
+point. The native screen still needs to verify the live count and body,
+visible answer, output length and per-request draft counters on the model.
 
 Retired the six numbered directories and `host` under state
 `dflash2-prefill-kv-stage-speed-v4` covering 430 files and 74709297 bytes.
