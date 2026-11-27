@@ -1370,6 +1370,18 @@ component gate. An isolated model comparison must bind the production
 dispatch to the same format and keep prefill and expert placement fixed.
 The replay does not measure PCIe, GPU overlap or model throughput.
 
+The [isolated model build](../bench/dflash2_decode_iq3s_build.py) projects
+the two CPU selector files from `c0db4198f` onto the measured `968e71988`
+engine. Its inputs match the replay's AVX2 arithmetic source and the
+primary CPU selector preimages. Retain the primary recipe and link the
+existing GGML parity fixture against the same CPU library. Keep the
+ranked-refill and smaller-KV options outside this source projection.
+After parity, compare `STRATA_IQ_SINGLE_EXACT=0` and `iq3s` in fresh
+processes with the same expert map. Verify the actual native decode work
+before clean model timing. The separate route-census phase reference
+remains needed through its pending comparison. Retire this temporary
+candidate at a failed model gate or closing timing decision.
+
 The timed CPU fixture has no live executable consumer. Its source and results
 are reachable from `feature/sycl` at `14180e833`. The recovery check matches
 210 project inputs, 1,376 GGML inputs, all 633 actual compiler inputs, the
