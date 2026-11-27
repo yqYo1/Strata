@@ -11750,8 +11750,11 @@ for 872 of the 886 additional minor faults at this layer. The reverse
 observed process at `3363abc7b` also completes all three requests and exits
 without a fresh Xe fault. It adds 5.302 seconds in the layer remainder with
 1.726 ms of calling-thread CPU time. The MoE window adds 1.186 ms of
-unclassified wall time. The final control still needs to close the reverse
-pair and qualify the observer cost.
+unclassified wall time. The final control closes the comparison. All 12
+requests match the original model work, all four owners exit normally,
+all final model assets match, and no fresh Xe faults are recorded. The
+paired subsequent-duration ratios with the window observer are 1.000299
+and 1.000312. Both pass the predeclared five-percent gate.
 
 The exact diagnostic executable already contains the PLE wait observer.
 The layer-major path starts the first PLE gather within the layer-1 slice,
