@@ -11746,18 +11746,29 @@ The later requests take 113.267 and 113.299 seconds. Their median is
 5.294 seconds of unclassified wall time. The MoE window adds 0.976 ms,
 handoff changes by less than 1 µs, and the rest of the layer adds 5.293
 seconds with 1.272 ms of calling-thread CPU time. The MoE window accounts
-for 872 of the 886 additional minor faults at this layer. Complete the
-reverse pair before using these intervals to select a change.
+for 872 of the 886 additional minor faults at this layer. The reverse
+observed process at `3363abc7b` also completes all three requests and exits
+without a fresh Xe fault. It adds 5.302 seconds in the layer remainder with
+1.726 ms of calling-thread CPU time. The MoE window adds 1.186 ms of
+unclassified wall time. The final control still needs to close the reverse
+pair and qualify the observer cost.
 
 The exact diagnostic executable already contains the PLE wait observer.
 The layer-major path starts the first PLE gather within the layer-1 slice,
-then waits for each result in that slice. If the reverse pair reproduces the
-delay outside the MoE window and handoff, measure the exposed
-`future_get_ms` with the existing observer before changing I/O scheduling.
+then waits for each result in that slice. The
+[PLE controller](../bench/dflash2_cold_ple_measure.py) requires the closed
+layer-window proof and reuses its exact executable. Two independent processes
+keep the window observer and enable the PLE clock. Require 15 Direct I/O
+gathers over the 118,784 batched rows, with the exposed wait inside the
+unclassified remainder. The prior window processes supply a subsequent
+duration reference from an earlier measurement period. Three replays with
+real archived request frames and synthetic PLE markers pass. Ten malformed
+or out-of-scope records are rejected. The environment comparison confirms
+that only the PLE selector changes, and admission refuses the unfinished
+layer-window comparison. Actual PLE clocks remain pending.
 The standard length workload repeats a deterministic word stream with
-distinct run tags. Its zero model-prefix reuse does not reset the separately
-owned PLE row cache. A PLE change needs a further comparison on varied text
-as well as the standard workload.
+distinct run tags, and the PLE row cache persists across those requests.
+Use varied text and the standard workload to evaluate a scheduling change.
 
 The closed V2 build and run receipts are recoverable from Git at `200ec7292`.
 Recovery matches 1,328 project files, 525 build controls, the exact
