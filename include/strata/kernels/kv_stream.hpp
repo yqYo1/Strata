@@ -92,6 +92,11 @@ void decode_kv_stream_resolve_coalesced(
     const KvStreamMap& m, const QsaAttnPools& slots, const KvHostPools& host, int fmt,
     const int32_t* ids, const int32_t* steps, int64_t n_q, int64_t cap, const QsaShapes& s,
     void* stream, uint32_t copy_group_cap);
+/// Component candidate that advances the decode clock hand with a conditional wrap.
+void decode_kv_stream_resolve_clock_wrap(
+    const KvStreamMap& m, const QsaAttnPools& slots, const KvHostPools& host, int fmt,
+    const int32_t* ids, const int32_t* steps, int64_t n_q, int64_t cap, const QsaShapes& s,
+    void* stream, uint32_t copy_group_cap);
 #endif
 
 /// The static ring table `block -> block % n_slots`.

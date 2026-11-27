@@ -95,6 +95,7 @@ void increment(int32_t *c, uint64_t amount) {
 }
 // Decode-owned ordered clock policy. Only one work-item calls this after every
 // selected resident block has been marked with the current epoch.
+template <bool WrapClock>
 void resolve_victims(const KvStreamMap &m, int epoch, int need,
                      uint64_t lookups) {
   int hand = m.ctl[1];
@@ -105,7 +106,13 @@ void resolve_victims(const KvStreamMap &m, int epoch, int need,
     int victim = -1;
     for (int64_t scanned = 0; scanned < 2 * m.n_slots; ++scanned) {
       const int sl = hand;
-      hand = int((int64_t(hand) + 1) % m.n_slots);
+      if constexpr (WrapClock) {
+        // map_spans bounds the slot count by INT_MAX and hand is a valid slot.
+        if (++hand == m.n_slots)
+          hand = 0;
+      } else {
+        hand = int((int64_t(hand) + 1) % m.n_slots);
+      }
       if (m.slot_stamp[sl] == epoch)
         continue;
       if (m.slot_block[sl] < 0 || m.slot_ref[sl] == 0) {
@@ -138,8 +145,8 @@ void resolve_victims(const KvStreamMap &m, int epoch, int need,
   increment(m.ctl + 8, 1);
 }
 } // namespace decode_kv_detail
-} // namespace
-void decode_kv_stream_resolve_coalesced(
+template <bool WrapClock>
+void decode_kv_stream_resolve_coalesced_impl(
     const KvStreamMap &m, const QsaAttnPools &slots, const KvHostPools &host,
     int fmt, const int32_t *ids, const int32_t *steps, int64_t nq, int64_t cap,
     const QsaShapes &s, void *stream, uint32_t copy_group_cap) {
@@ -251,7 +258,7 @@ void decode_kv_stream_resolve_coalesced(
         }
       }
       if (lane == 0)
-        resolve_victims(m, epoch, need, lookups);
+        resolve_victims<WrapClock>(m, epoch, need, lookups);
     });
   });
 
@@ -287,5 +294,22 @@ void decode_kv_stream_resolve_coalesced(
         });
   }
   finish(stream, event);
+}
+} // namespace
+
+void decode_kv_stream_resolve_coalesced(
+    const KvStreamMap &m, const QsaAttnPools &slots, const KvHostPools &host,
+    int fmt, const int32_t *ids, const int32_t *steps, int64_t nq, int64_t cap,
+    const QsaShapes &s, void *stream, uint32_t copy_group_cap) {
+  decode_kv_stream_resolve_coalesced_impl<false>(
+      m, slots, host, fmt, ids, steps, nq, cap, s, stream, copy_group_cap);
+}
+
+void decode_kv_stream_resolve_clock_wrap(
+    const KvStreamMap &m, const QsaAttnPools &slots, const KvHostPools &host,
+    int fmt, const int32_t *ids, const int32_t *steps, int64_t nq, int64_t cap,
+    const QsaShapes &s, void *stream, uint32_t copy_group_cap) {
+  decode_kv_stream_resolve_coalesced_impl<true>(
+      m, slots, host, fmt, ids, steps, nq, cap, s, stream, copy_group_cap);
 }
 } // namespace strata::kernels
