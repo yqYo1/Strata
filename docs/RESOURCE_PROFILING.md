@@ -2222,11 +2222,37 @@ profile. It starts after at least 32 native outputs with 512 or more
 output and context positions left. It retires the prior commit and
 cache readers, publishes the mask, drains the changed slots and publishes
 the new map. On cancellation after the switch it restores stock before
-request completion. The effective decode clock charges both transitions.
+request completion. Use `STRATA_SYCL_DFLASH2_DECODE_PHASE_CLOCK=1` in both
+arms so the decode clock includes the final commit wait in both and the
+two transitions when placement is enabled. Ordinary launches retain their
+existing clock.
 The per-transition record includes the emitted count, payload bytes,
-monotonic start and wall duration. Compile and validate this candidate
-after the active caller-help campaign closes. No build or GPU evidence
-exists for this revision. The original ranked-refill result stays closed.
+monotonic start and wall duration. The watchdog identifies which transition
+was active. Unknown device retirement stops the process before allocation
+owners unwind. A known-retired partial fill returns an error without
+starting a verifier window.
+
+The [build controller](../bench/dflash2_decode_phase_placement_build.py)
+checks that the generator is the only native change from the coherent
+caller-help build. It uses its recorded build recipe and pins the full
+build and compiler inputs, including the same-build scratch and full-context
+fixtures. Keep the retained primary executable through this comparison.
+Set the same T4 schedule and caller policy in both placement arms.
+Compile after the active caller-help campaign closes and the extra
+generation is reviewed for retirement.
+
+Start with the scratch host and bounded Arc checks for fill ranges and
+retirement. Then use the unchanged small model prompt with enough output
+budget to cross the 32-token switch. Enable
+`STRATA_SYCL_DFLASH2_DECODE_PHASE_AUDIT=1` for this probe. It reads back the
+whole published device map and samples both ends of the replaced-slot list
+at install and restore. Check two successive requests, a stop after install,
+and the path that skips the switch when fewer than 512 positions remain.
+Before timing, require the expected transition count, ordered install and
+restore, exact requested bytes and stock output through the last token
+before installation. The short probe and the existing scratch fixtures
+cover different parts of this contract. Wall-speed runs omit map readback
+and payload sampling. The original ranked-refill result stays closed.
 
 The closed comparison at `a57499a15` is reachable on `feature/sycl`.
 The recovery audit matched 1,327 original source files, 520 committed

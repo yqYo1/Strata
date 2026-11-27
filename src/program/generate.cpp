@@ -2750,6 +2750,12 @@ int main(int argc, char** argv) {
     }
     const char* decode_phase_profile = std::getenv("STRATA_SYCL_DFLASH2_DECODE_PHASE_PROFILE");
     if (decode_phase_profile && !*decode_phase_profile) decode_phase_profile = nullptr;
+    const char* decode_phase_audit_flag = std::getenv("STRATA_SYCL_DFLASH2_DECODE_PHASE_AUDIT");
+    const bool decode_phase_audit = decode_phase_profile && decode_phase_audit_flag &&
+                                    std::strcmp(decode_phase_audit_flag, "1") == 0;
+    const char* decode_phase_clock_flag = std::getenv("STRATA_SYCL_DFLASH2_DECODE_PHASE_CLOCK");
+    const bool decode_phase_clock = use_df2 && (decode_phase_profile ||
+        (decode_phase_clock_flag && std::strcmp(decode_phase_clock_flag, "1") == 0));
     if (decode_phase_profile && (!use_df2 || !cache_scratch_lease_enabled || o.mmap_experts ||
                                   (o.adapt_every > 0 && o.adapt_swaps > 0))) {
         std::fprintf(stderr, "strata serve: decode phase profile requires DFlash2, a checked cache loan, "
@@ -5570,13 +5576,18 @@ int main(int argc, char** argv) {
                 e = "decode placement requires the expected ready cache";
                 return false;
             }
-            if (cudaDeviceSynchronize() != cudaSuccess) {
-                e = "decode placement could not retire cache readers";
-                return false;
-            }
+            strata::core::progress_at(to_blend ? "installing decode expert placement" :
+                                                 "restoring stock expert placement", emitted);
+            auto retire_device = [] {
+                if (cudaDeviceSynchronize() != cudaSuccess)
+                    strata::sycl_backend::cleanup_fail_stop("decode placement device retirement failed");
+            };
+            retire_device();
             auto publish = [&](const std::vector<int32_t>& map) {
                 std::copy(map.begin(), map.end(), host_res.begin());
-                return adaptive_res_upload("serve decode placement", e);
+                if (adaptive_res_upload("serve decode placement", e)) return true;
+                retire_device();
+                return false;
             };
             if (!publish(decode_placement_mask)) return false;
             const bool blocking = refill_blocking();
@@ -5595,14 +5606,33 @@ int main(int argc, char** argv) {
             if (!xcache.sync_queued(drain_error))
                 strata::sycl_backend::cleanup_fail_stop("decode placement copy retirement failed");
             if (!copied || !publish(next)) return false;
+            if (decode_phase_audit) {
+                std::vector<int32_t> device_map(next.size());
+                if (cudaMemcpy(device_map.data(), d_res, device_map.size() * sizeof(int32_t),
+                               cudaMemcpyDeviceToHost) != cudaSuccess) {
+                    retire_device();
+                    e = "decode placement audit could not read the device residency map";
+                    return false;
+                }
+                if (device_map != next) {
+                    e = "decode placement audit found a mismatched device residency map";
+                    return false;
+                }
+                for (const auto* entry : {&decode_placement_slots.front(), &decode_placement_slots.back()}) {
+                    if (!xcache.verify_slot(entry->slot, to_blend ? entry->blend : entry->stock, e, entry->bytes)) {
+                        retire_device();
+                        return false;
+                    }
+                }
+            }
             const auto end = Clock::now();
             const auto start_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(start.time_since_epoch());
             std::fprintf(stderr, "strata decode placement: profile=%s emitted=%lld slots=%zu "
-                                 "h2d_bytes=%llu start_ns=%lld wall_ms=%.3f\n",
+                                 "h2d_bytes=%llu start_ns=%lld wall_ms=%.3f audit=%d\n",
                          to_blend ? "blend" : "stock", (long long) emitted,
                          decode_placement_slots.size(), (unsigned long long) copied_bytes,
                          (long long) start_ns.count(),
-                         std::chrono::duration<double, std::milli>(end - start).count());
+                         std::chrono::duration<double, std::milli>(end - start).count(), int(decode_phase_audit));
             return true;
         };
 #endif
@@ -7330,8 +7360,9 @@ int main(int argc, char** argv) {
                     std::printf("ERR %s\n", err.c_str());
                     return 1;
                 }
-                decode_ms = std::chrono::duration<double, std::milli>(Clock::now() - d0).count();
             }
+            if (decode_phase_clock)
+                decode_ms = std::chrono::duration<double, std::milli>(Clock::now() - d0).count();
             if (observe_handoff_memory && dec_windows > 0 && !cancelled && std::strcmp(finish, "cancel") != 0 &&
                 !mark_df2_handoff_memory("after-decode", n, read_from)) return 1;
             decode_service.finish(!cancelled && std::strcmp(finish, "cancel") != 0);
