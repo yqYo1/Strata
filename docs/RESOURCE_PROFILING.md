@@ -2435,6 +2435,11 @@ IDs and the preceding layer's job map and trace as distinct payloads.
 The current GDN replay loops from token zero in both half graphs and
 suppresses earlier outputs in the second half. A width-four split
 therefore executes two extra GDN recurrence steps per applicable layer.
+The selected stock build also uses the width-four Q6 DPAS dense kernels.
+The two-token pre-mixers use their own supported projection shapes. The
+stock versus after-CPU comparison captures that loss of the four-column
+kernel and weight reuse, and the after-CPU versus early comparison uses
+the same two half graphs to isolate submission timing.
 The existing unsplit segment observer excludes split windows. Count the
 actual graph and recurrent work and time the two-half control through
 its own completion events.
