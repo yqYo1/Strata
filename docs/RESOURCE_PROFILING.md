@@ -2165,6 +2165,13 @@ Skip the experimental switch when the output budget cannot amortize it.
 [Serving window](../src/program/generate.cpp#L7122) ·
 [Residency publication contract](../include/strata/core/expert_cache.hpp#L145).
 
+The 1,256-slot global profiles from `a57499a15` match their recorded hashes.
+All 277 expert identities shared by the profiles occupy the same slots.
+The 979 outgoing and 979 incoming identities are disjoint. Build the stock
+map, blended map and one common mask at startup. The mask lists the
+277 shared slots in both directions while the transition owns the cache.
+Copy only the changed slots. Their 109 runs span slot 132 through slot 1255.
+
 The same slot geometry would request 2,010,419,200 H2D bytes each way.
 The 6.292–6.485 GB/s bulk-copy calibration gives 0.620–0.639 seconds for
 the two payloads before waits and publication. Holding the previous
