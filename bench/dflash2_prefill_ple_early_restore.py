@@ -120,7 +120,8 @@ def experiment():
                     'commit the exact restore input: ' + name)
             pins[name] = bank.sha(bank.P / name)
         fields = ('boot', 'driver', 'runtime_manifest', 'native_validation_probe', 'configuration', 'model_assets',
-                  'environment_template', 'binary', 'native_source_commit', 'native_build_sha256', 'dflash2_assets')
+                  'environment_template', 'binary', 'native_source_commit', 'native_build_sha256',
+                  'selected_arm', 'ordinary_control', 'python_selected', 'dflash2_assets')
         row = {k: baseline[k] for k in fields}
         command = peer.argv(dict(row, configuration=dict(row['configuration'], args=baseline['validated_dflash2_args'])))
         request_plan = peer.input_plan(False)
