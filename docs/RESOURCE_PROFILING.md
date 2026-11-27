@@ -2489,6 +2489,27 @@ request body without overrides. Run sustained generation and full-context
 checks after parity.
 [T4 build controller](../bench/dflash2_decode_t4_build.py).
 
+The model observation at `e36f293d5` closes all three independent
+processes without a fresh Xe fault and with all model hashes verified.
+All arms emit the same 32 token IDs, offer and accept the same 23
+DFlash2 drafts and reproduce the five prompt tap digests. The stock arm
+also matches the previously selected stock model's short-request state.
+Both split arms enter the same seven width-four windows. Each has
+23 compatible CPU pool layers out of 48. The deferred arm records
+zero early submissions; the early arm records 161 in total.
+
+The early and deferred arms match the full checked target-state digest
+set. Against stock, the split geometry changes the GDN, QSA tail, pooled
+index and KV digests. The stock numerical gate remains open, and this
+short observed cohort supplies no throughput result. Compare the split
+path against a stock run with the width-four-only dense DPAS route
+disabled to bound the arithmetic difference. Also keep the original
+full-width graph on the 25 layers without a supported CPU publication
+path when testing the next schedule. The model manifest has 14
+IQ3_XXS/IQ4_NL and nine IQ3_S/IQ4_NL layers eligible for the current pool
+contract. The other layers receive no overlap benefit from this split.
+[Original model result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
+
 The first build at `8bd19a9b9` compiles and links all three named targets.
 Its build audit fails because that plan omitted the existing fixture
 translation units needed by the shared Gemm and MoE class-definition
