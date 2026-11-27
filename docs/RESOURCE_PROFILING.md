@@ -2274,10 +2274,18 @@ The coherent placement build at `d6488e9f5` has 136 fresh objects,
 passes 39 cases. The first Arc launch, recorded at `085f702ea`, stops
 before binding the current cache ticket because its layout lacks the
 scratch alias required by `Prefill::bind_cache_scratch_lease`. The fixture
-exits with owners retained and records no fresh Xe fault. The
-[corrected launch](../bench/dflash2_decode_phase_placement_check_v2.py)
-supplies the existing fixture settings before exec. It reuses the exact
-engine and fixtures, and preserves the original failed result.
+exits with owners retained and records no fresh Xe fault. With the fixture
+settings from `6739d7de8`, the same executable verifies 20 Arc cases in
+three cache-loan cycles at `f5cf3309b`, with no fresh Xe fault.
+
+The first stock model launch at `6f4782848` closes normally after all five
+requests. Its launch omits `LD_DEBUG=libs`, so the provider check receives
+no initialization records and rejects the run. An offline check of the
+same output reconciles all five fresh requests, active state extents
+115/722/115/722/115 and zero placement events. The original launch remains
+failed. The [model check](../bench/dflash2_decode_phase_placement_model_check.py)
+pins the same host and Arc fixture evidence and adds the loader observer to
+both diagnostic model arms. Ordinary timing keeps the observer disabled.
 
 The [96K timing controller](../bench/dflash2_decode_phase_placement_speed.py)
 uses the two original thinking workloads in three counterbalanced pairs.
