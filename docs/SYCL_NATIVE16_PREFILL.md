@@ -11807,6 +11807,23 @@ The dependency digest is
 The compiler exits normally with no warnings. Full build and model
 qualification remain open.
 
+The closed PLE result at `9ecd845e9` supplies both observations for the
+early-read build. Before retiring the diagnostic executable, its build
+controller recovered all 1,328 project files and 527 build controls from
+Git, the original recipe, the compiler and link inputs, 139 objects and
+11 executable identities. The candidate reconstruction changes three
+source files. All 23 executables in the two retained phase references
+match before and after retirement.
+
+| Retired state root, retaining its original `record.json` | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-cold-layer-windows-native-v1` | 1,524 | 223,757,159 | `15f8a45cbd0f7555075459d9ecaf41b599a883af9603d7ca5950e72007cabce5` |
+| `dflash2-cold-ple-wait-v1` | 146 | 25,192,694 | `98e4fac3e52fc0122710b22871bf2fc985c9878437687b655389ece51d5e6305` |
+
+Both original receipts match. The inventories hash sorted state-relative
+paths, byte counts and file hashes. The next build uses these committed
+inputs to reconstruct the source and recipe.
+
 The closed comparison at `bdfd43ec9` preserves the 12 requests and
 passes the PLE reader's admission. After verifying all four terminal
 receipts against the pushed record, retired `host` and `0`–`3` under
