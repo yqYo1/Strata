@@ -96,7 +96,7 @@ def select_locality():
 def select_schedule():
     global ROOT, BUILD, RESULT, PROTOCOL, CHECK_ORDER, ORDER, SCHEDULE_MODE
     SCHEDULE_MODE = True
-    ROOT = B / 'cpu-fixed-expert-schedule-v1'
+    ROOT = B / 'cpu-fixed-expert-schedule-v2'
     BUILD = ROOT / 'build'
     RESULT = recipe.RESULT.with_name('cpu-fixed-expert-schedule-current.json')
     PROTOCOL = SCHEDULE_PROTOCOL
@@ -294,7 +294,9 @@ def prepare():
                           '-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t', '-DGGML_CCACHE=OFF',
                           '-DSTRATA_GGML_DIR=' + str(recipe.GGML)],
                build=['/usr/bin/cmake', '--build', str(BUILD), '--target', 'cpu_roofline', '--parallel', '4'],
-               budgets=dict(build_wall=300, run_wall=60 if SCHEDULE_MODE else 45, build_rss=8 << 30, run_rss=2 << 30,
+               budgets=dict(build_wall=300, run_wall=60 if SCHEDULE_MODE else 45,
+                            run_cpu=300 if SCHEDULE_MODE and not PUBLICATION_MODE else 180,
+                            build_rss=8 << 30, run_rss=2 << 30,
                             text=4 << 20, file=64 << 20, total=384 << 20),
                processes=[], active=False, ownership_closed=True, gpu_executed=False)
     if LOCALITY_MODE:
@@ -333,7 +335,9 @@ def load():
              and row['environment']['STRATA_IQ_SINGLE_EXACT'] == row['environment']['STRATA_CPU_SERVICE'] == '0'
              and row['configure'][-1] == '-DSTRATA_CPU_EXPERT_SCHEDULE_TEST=ON'
              and row['schedule_shapes'] == [list(shape) for shape in scheduling_shapes(row['fixture'])]
-             and row['budgets']['run_wall'] == 60, 'fixed decode scheduling inputs')
+             and row['budgets']['run_wall'] == 60
+             and row['budgets'].get('run_cpu', 180) == (180 if PUBLICATION_MODE else 300),
+             'fixed decode scheduling inputs')
     return row
 
 
@@ -506,10 +510,10 @@ def execute(stage):
         entry, out, err = owner.run(label, argv, env, ROOT,
             wall=row['budgets']['build_wall' if build else 'run_wall'],
             rss_cap=row['budgets']['build_rss' if build else 'run_rss'],
-            cpu=1200 if build else 180, text_cap=row['budgets']['text'],
+            cpu=1200 if build else row['budgets'].get('run_cpu', 180), text_cap=row['budgets']['text'],
             file_cap=row['budgets']['file'], total_cap=row['budgets']['total'])
         need(owned.closed(entry) and entry['exit_code'] == 0,
-             label + ' failed: ' + err.read_text(errors='replace')[-1500:])
+             f"{label} failed with exit code {entry['exit_code']}: " + err.read_text(errors='replace')[-1500:])
         return entry, out, err
 
     try:

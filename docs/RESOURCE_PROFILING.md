@@ -1497,6 +1497,14 @@ and epoch costs. Per-stage wall times from the split scheduler do not
 transfer to the candidate's overlapping worker stages. Native serving and
 hardware throughput claims require separate evidence.
 
+The first timing attempt at `8191a29dd` passes both host correctness
+cases. Its first timed process hits the 180 CPU-second limit after
+31.011 wall seconds with 22 of 25 samples and no success marker.
+The owner exits with SIGXCPU and is reaped. The attempt has no eligible
+pair. Repeat the frozen comparison in a fresh root with 300 CPU seconds
+per process and the same 60 wall seconds, preserving the workloads,
+order, sample floor, timer limit and decision.
+
 The [stock admission controller](../bench/dflash2_decode_stock_global_restore.py)
 uses the retained primary executable and recovers the original restore plans
 from `3d75f7e91`. It generates only the stock global profile. Both loaders
@@ -2347,6 +2355,17 @@ comparison in the integrated trial to price the opportunity cost of
 submitting the first graph early. Keep the existing shared/resident
 overlap enabled in all arms.
 [Verifier](../src/core/verify.cpp).
+
+The production pre-mixer ends by publishing its routing in mapped host
+buffers. The current CPU dispatcher still reads those IDs after pool
+retirement to clear the job map and record the route census. The server
+trace reads them again after dispatch returns. In the integrated trial,
+complete the first half's next-layer pre-mixer before waiting for the
+second half and defer its mapped publication until those consumers
+retire, or use a separately owned destination. Verify the next-layer
+IDs and the preceding layer's job map and trace as distinct payloads.
+[CPU dispatcher](../src/core/expert_source.cpp) and
+[server trace](../src/program/generate.cpp).
 
 For a copy-once control, the full CPU result slab at `T=4`, `K=10` and
 `N=2560` is 409,600 bytes per layer, or 19,660,800 across 48 layers. The
