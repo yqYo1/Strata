@@ -23,7 +23,7 @@ sha, write, validation = bank.sha, bank.stage.write, basis.validation
 owner_api = bank.builder.ownership
 PRIMARY = retained.PRIMARY.ROOT
 KEY = 'decode_kv_width3_v1'
-CLOCK_WRAP_KEY = 'decode_kv_clock_wrap_v1'
+CLOCK_WRAP_KEY = 'decode_kv_scalar_clock_wrap_v1'
 ROOT = bank.B / KEY.replace('_', '-')
 BUILD = ROOT / 'fixture-build'
 TARGET = 'sycl_kv_copy_groups_bench'
@@ -65,10 +65,10 @@ PLAN = dict(
 CLOCK_WRAP_PLAN = dict(
     PLAN,
     clock_wrap=True,
-    arms=['cooperative', 'clock-wrap', 'clock-wrap', 'cooperative', 'cooperative', 'clock-wrap'],
+    arms=['scalar', 'clock-wrap', 'clock-wrap', 'scalar', 'scalar', 'clock-wrap'],
     misses=[0, 16, 64, 384],
     samples_per_arm=12,
-    scope='Width-three K8V8 cooperative reference versus conditional clock-hand wrap. '
+    scope='Width-three K8V8 scalar reference versus conditional clock-hand wrap. '
           'Keep 65,536 logical pages, 5,120 resident pages, capacity 2,051 and interleaved misses.',
     validation='Trace second-chance wrap, protected overflow and reset of an invalid hand. '
                'Compare exact full-shape maps, payloads and physical last-cell repeats with parameter validation.',
@@ -83,7 +83,7 @@ def inputs(revision, plan=PLAN, build_dir=BUILD):
     live = retained.baseline()
     parent = bank.previous.read(PRIMARY / 'record.json')
     driver = basis.core.source.device.load_module('decode_kv_width3_link', bank.P / LINK_DRIVER)
-    overlay_paths = (FIXTURE, RESOLVERS[1], HEADER) if plan.get('clock_wrap') else (FIXTURE,)
+    overlay_paths = (FIXTURE, RESOLVERS[0], HEADER) if plan.get('clock_wrap') else (FIXTURE,)
     controls = {*overlay_paths, LINK_DRIVER, Path(__file__).resolve().relative_to(bank.P).as_posix(),
                 'tools/sycl/measurement_environment.json'}
     for module in tuple(sys.modules.values()):
@@ -184,7 +184,7 @@ def check_binary(row, build_dir=BUILD):
 
 
 def matches_arm(sample, clock_wrap, candidate):
-    return (sample['cooperative'] is (clock_wrap or candidate)
+    return (sample['cooperative'] is (not clock_wrap and candidate)
             and sample.get('clock_wrap', False) is (clock_wrap and candidate))
 
 
@@ -210,7 +210,7 @@ def observations(lines, stage, plan=PLAN):
         for missing in plan['misses']:
             for candidate in (False, True):
                 case = dict(phase='planner_perf_cases', nq=3, missing=missing,
-                            cooperative=(clock_wrap or candidate), replays=2, oracle_exact=True)
+                            cooperative=(not clock_wrap and candidate), replays=2, oracle_exact=True)
                 if clock_wrap:
                     case['miss_pattern'] = 'interleaved'
                     if candidate:
@@ -448,11 +448,13 @@ def main(action, clock_wrap=False):
     build_dir = root / 'fixture-build'
     stages = plan['stages']
     if clock_wrap:
-        prior = bank.previous.read(bank.B / 'decode-kv-resident-batch-v1' / 'record.json')
-        original = bank.previous.historic('11dff2bb5d7e6db8f8628d007efc7b39f0bbbafb', 'decode_kv_resident_batch_v1')
+        prior_root = bank.B / 'decode-kv-clock-wrap-v1'
+        prior = bank.previous.read(prior_root / 'record.json')
+        original = bank.previous.historic('1b671df2e1f23f2f9743817966f171232f5d05f8', 'decode_kv_clock_wrap_v1')
         require(prior == original and prior['stage'] == 'closed' and prior['ownership_closed']
-                and not prior['decision']['eligible_for_model_check'],
-                'require the exact closed resident KV experiment')
+                and prior['decision']['eligible_for_model_check']
+                and not (prior_root / 'fixture-build').exists(),
+                'require the closed cooperative clock wrap result and retired fixture')
 
     if action == 'prepare':
         prior = validation.committed(bank.RESULT, ('dflash2_decode_kv_speed_v1',))

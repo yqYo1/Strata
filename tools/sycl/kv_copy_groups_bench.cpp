@@ -398,8 +398,8 @@ void planner_context_graph(Fixture &f, int queries = 4,
     std::cout << "{\"phase\":\"planner_context_graph\",\"fmt\":" << f.shape.fmt;
     if (queries == 3) {
       std::cout << ",\"nq\":3,\"cooperative\":"
-                << (resolver == kv_stream_resolve_with_copy_groups ? "false" : "true");
-      if (resolver == decode_kv_stream_resolve_clock_wrap)
+                << (resolver == decode_kv_stream_resolve_coalesced ? "true" : "false");
+      if (resolver == decode_kv_stream_resolve_scalar_clock_wrap)
         std::cout << ",\"clock_wrap\":true";
     }
     std::cout
@@ -557,12 +557,12 @@ void planner_clock_wrap_smoke(std::shared_ptr<Runtime> rt, sycl::queue &q) {
     const auto payload = expected_payload(shape, c.before, expected);
     f.put(c.before, initial);
     pending_or_hold("clock wrap smoke", [&] {
-      in.submit(f, 0, decode_kv_stream_resolve_clock_wrap);
+      in.submit(f, 0, decode_kv_stream_resolve_scalar_clock_wrap);
     });
     checked_all(rt, q, "clock wrap smoke completion");
     (void)check(f, in, expected, payload);
     f.put(c.before, initial);
-    auto graph = capture(f, in, 0, decode_kv_stream_resolve_clock_wrap);
+    auto graph = capture(f, in, 0, decode_kv_stream_resolve_scalar_clock_wrap);
     (void)timed(f, in, 0, false, graph.get());
     (void)check(f, in, expected, payload);
   }
@@ -605,7 +605,7 @@ void planner_perf_validation(std::shared_ptr<Runtime> rt, sycl::queue &q,
   const bool width_three = std::find(widths.begin(), widths.end(), 3) != widths.end();
   const Shape s{65536,5120,4,2,256,kKvInt8};Fixture f(s,rt,q);
   const std::array<Resolver, 2> resolvers = interleaved_misses
-      ? std::array<Resolver, 2>{decode_kv_stream_resolve_coalesced, decode_kv_stream_resolve_clock_wrap}
+      ? std::array<Resolver, 2>{kv_stream_resolve_with_copy_groups, decode_kv_stream_resolve_scalar_clock_wrap}
       : std::array<Resolver, 2>{kv_stream_resolve_with_copy_groups, decode_kv_stream_resolve_coalesced};
   if (width_three) {
     for (const auto resolver : resolvers)
@@ -626,8 +626,8 @@ void planner_perf_validation(std::shared_ptr<Runtime> rt, sycl::queue &q,
       }
       std::cout << "{\"phase\":\"planner_perf_cases\",\"nq\":" << nq
         << ",\"missing\":" << missing << ",\"cooperative\":"
-        << (resolver == kv_stream_resolve_with_copy_groups ? "false" : "true");
-      if (resolver == decode_kv_stream_resolve_clock_wrap)
+        << (resolver == decode_kv_stream_resolve_coalesced ? "true" : "false");
+      if (resolver == decode_kv_stream_resolve_scalar_clock_wrap)
         std::cout << ",\"clock_wrap\":true";
       if (interleaved_misses)
         std::cout << ",\"miss_pattern\":\"interleaved\"";
@@ -675,8 +675,8 @@ void planner_benchmark(std::shared_ptr<Runtime> rt, sycl::queue &q, Resolver res
       require(elapsed>=250000000. && fraction<=.01,"eligible planner duration/timer fraction");
       std::cout << "{\"phase\":\"planner_sample\",\"nq\":" << nq << ",\"missing\":" << missing
         << ",\"unique_pages\":" << 513*nq << ",\"cooperative\":"
-        << (resolver == kv_stream_resolve_with_copy_groups ? "false" : "true");
-      if (resolver == decode_kv_stream_resolve_clock_wrap)
+        << (resolver == decode_kv_stream_resolve_coalesced ? "true" : "false");
+      if (resolver == decode_kv_stream_resolve_scalar_clock_wrap)
         std::cout << ",\"clock_wrap\":true";
       if (interleaved_misses)
         std::cout << ",\"miss_pattern\":\"interleaved\"";
@@ -772,7 +772,7 @@ int main(int argc,char **argv) {
       require(argc<=2,"help takes no extra args");
       std::cout << "sycl_kv_copy_groups_bench --host-env|--validate|--validate-exhaustive|--planner-smoke|--planner-validate|--planner-benchmark scalar|cooperative|--planner-width3-smoke|--planner-width3-validate|--planner-width3-benchmark scalar|cooperative|--planner-width3-trace ARM MISSES|--benchmark GROUPS SAMPLES|--event-benchmark GROUPS SAMPLES|--graph-benchmark GROUPS SAMPLES|--graph-event-benchmark GROUPS SAMPLES\n";
       std::cout << "--planner-clock-wrap-smoke | --planner-clock-wrap-validate | "
-                   "--planner-clock-wrap-benchmark cooperative|clock-wrap\n";
+                   "--planner-clock-wrap-benchmark scalar|clock-wrap\n";
       return 0;
     }
     const bool graph=mode=="--graph-benchmark"||mode=="--graph-event-benchmark";
@@ -795,7 +795,7 @@ int main(int argc,char **argv) {
         "invalid arguments");
     const std::string arm = planner_arm ? argv[2] : "";
     if (clock_wrap_timing)
-      require(arm == "cooperative" || arm == "clock-wrap", "clock wrap planner arm required");
+      require(arm == "scalar" || arm == "clock-wrap", "clock wrap planner arm required");
     else if (planner_arm)
       require(arm == "scalar" || arm == "cooperative", "planner arm required");
     int candidate=0,samples=0,trace_misses=0;
@@ -823,7 +823,7 @@ int main(int argc,char **argv) {
     else if (planner_speed) {
       Resolver resolver = kv_stream_resolve_with_copy_groups;
       if (arm == "cooperative") resolver = decode_kv_stream_resolve_coalesced;
-      if (arm == "clock-wrap") resolver = decode_kv_stream_resolve_clock_wrap;
+      if (arm == "clock-wrap") resolver = decode_kv_stream_resolve_scalar_clock_wrap;
       planner_benchmark(rt, q, resolver, planner_widths, clock_wrap_timing);
     }
     else if(smoke) planner_smoke(rt,q);

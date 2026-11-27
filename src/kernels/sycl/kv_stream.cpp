@@ -91,6 +91,7 @@ void increment(int32_t *c, uint64_t amount) {
 }
 // Shared unchanged clock policy. Only one work-item calls this after every
 // selected resident block has been marked with the current epoch.
+template <bool WrapClock>
 void resolve_victims(const KvStreamMap &m, int epoch, int need,
                      uint64_t lookups) {
   int hand = m.ctl[1];
@@ -101,7 +102,13 @@ void resolve_victims(const KvStreamMap &m, int epoch, int need,
     int victim = -1;
     for (int64_t scanned = 0; scanned < 2 * m.n_slots; ++scanned) {
       const int sl = hand;
-      hand = int((int64_t(hand) + 1) % m.n_slots);
+      if constexpr (WrapClock) {
+        // map_spans bounds the slot count by INT_MAX and hand is a valid slot.
+        if (++hand == m.n_slots)
+          hand = 0;
+      } else {
+        hand = int((int64_t(hand) + 1) % m.n_slots);
+      }
       if (m.slot_stamp[sl] == epoch)
         continue;
       if (m.slot_block[sl] < 0 || m.slot_ref[sl] == 0) {
@@ -175,6 +182,7 @@ void kv_stream_resolve(const KvStreamMap &m, const QsaAttnPools &slots,
   kv_stream_resolve_with_copy_groups(m, slots, host, fmt, ids, steps, nq, cap,
                                      s, stream, group_cap);
 }
+template <bool WrapClock>
 static void resolve_impl(const KvStreamMap &m, const QsaAttnPools &slots,
                          const KvHostPools &host, int fmt, const int32_t *ids,
                          const int32_t *steps, int64_t nq, int64_t cap,
@@ -239,7 +247,7 @@ static void resolve_impl(const KvStreamMap &m, const QsaAttnPools &slots,
             m.ctl[3] = 1;
         }
       }
-      resolve_victims(m, epoch, need, lookups);
+      resolve_victims<WrapClock>(m, epoch, need, lookups);
     });
   } else {
     // Main-authored bounded candidate, based on the owned serial policy above
@@ -336,7 +344,7 @@ static void resolve_impl(const KvStreamMap &m, const QsaAttnPools &slots,
           }
         }
         if (lane == 0)
-          resolve_victims(m, epoch, need, lookups);
+          resolve_victims<false>(m, epoch, need, lookups);
       });
     });
   }
@@ -377,8 +385,15 @@ void kv_stream_resolve_with_copy_groups(
     const KvStreamMap &m, const QsaAttnPools &slots, const KvHostPools &host,
     int fmt, const int32_t *ids, const int32_t *steps, int64_t nq, int64_t cap,
     const QsaShapes &s, void *stream, uint32_t copy_group_cap) {
-  resolve_impl(m, slots, host, fmt, ids, steps, nq, cap, s, stream,
-               copy_group_cap, false);
+  resolve_impl<false>(m, slots, host, fmt, ids, steps, nq, cap, s, stream,
+                      copy_group_cap, false);
+}
+void decode_kv_stream_resolve_scalar_clock_wrap(
+    const KvStreamMap &m, const QsaAttnPools &slots, const KvHostPools &host,
+    int fmt, const int32_t *ids, const int32_t *steps, int64_t nq, int64_t cap,
+    const QsaShapes &s, void *stream, uint32_t copy_group_cap) {
+  resolve_impl<true>(m, slots, host, fmt, ids, steps, nq, cap, s, stream,
+                     copy_group_cap, false);
 }
 void kv_ring_table(int32_t *table, int64_t blocks, int64_t slots,
                    void *stream) {
