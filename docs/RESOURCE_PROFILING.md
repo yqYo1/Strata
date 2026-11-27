@@ -1612,6 +1612,18 @@ completes zero prefix jobs in the reserved arm and 363 with help enabled.
 Both processes exit normally with quiet validation and no fresh Xe fault.
 Advance to the six-process 96K comparison on this exact executable.
 
+The 96K controller reads the compact short-model proof and the coherent
+engine build. The two closed short validations have no remaining raw-output
+consumer. Retired 103 files totaling 23,601,467 bytes under the measurement
+lock after verifying the pushed result at `591cfc4ef`. Both receipts and
+the candidate executable still match. The inventory excludes `record.json`
+and hashes sorted paths, sizes and hashes.
+
+| Root | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-decode-t4-prefix-help-shared-plan-v1` | 11 | 524,909 | `8f52fb36638cf665d074a9e875073e437b3eddad04ae54919cc447d2a047c41e` |
+| `dflash2-decode-t4-prefix-help-model-v1` | 92 | 23,076,558 | `c64f265f6488d5b739c9a9cee5492b1e63408a833d260deffe2c5a65603214fa` |
+
 The closed roots below have no active consumer beyond their receipts.
 The recovery audit verifies each build's 210 Git project files,
 1,376 Git ggml files, 633 actual compiler dependencies, link inputs and
