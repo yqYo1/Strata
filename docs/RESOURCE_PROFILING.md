@@ -2298,6 +2298,21 @@ finish and a cancellation reproduce the stock output and active state.
 The diagnostic result qualifies the bounded path. Its prompt lengths,
 readbacks and different draft counts require separate throughput evidence.
 
+The model controller retrieves the qualified fixture evidence and failed
+stock admission from `6f4782848`. Both older attempts are recoverable at
+`085f702ea` and `6f4782848`. The complete closed diagnostic at `3c0a8d8aa`
+supplies the timing admission. Its transition samples, comparisons and
+device evidence cover the decisions that used the raw diagnostic output.
+The closed raw output is eligible for retirement below, retaining each
+`record.json` and the coherent executable generation. Inventory hashes
+cover the sorted relative file paths, sizes and hashes.
+
+| Diagnostic root and selected children | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-decode-phase-placement-check-v1/{host,arc,stock,blend}` | 7 | 1232991 | `36e6496832bdbb764b05af3135a7592cfa30dc0ad20adcdf127b3436596f56c9` |
+| `dflash2-decode-phase-placement-check-v2/{host,arc,stock,blend}` | 53 | 14777586 | `14f3f22ba1495baf69b9361a42636fbf65d7fed5779fa5ad90db5c3f37c23025` |
+| `dflash2-decode-phase-placement-check-v3/{stock,blend}` | 92 | 23171888 | `bfef44dcf16bde93c0678d7f9a16f32c1934177819a9536885731a6eb3f682d4` |
+
 The [96K timing controller](../bench/dflash2_decode_phase_placement_speed.py)
 uses the two original thinking workloads in three counterbalanced pairs.
 It binds the switch and restore to the client request's first nonempty

@@ -9,6 +9,7 @@ import dflash2_decode_phase_placement_check as original
 
 bank, validation, require = original.bank, original.validation, original.require
 FIXTURES = 'dflash2_decode_phase_placement_check_v2'
+FIXTURE_RECORD = '6f47828489fe57fa4cd684f11cb5fb023de977c5'
 FIXTURE_ARMS = ('host', 'arc')
 MODEL_ARMS = ('stock', 'blend')
 KEY = 'dflash2_decode_phase_placement_check_v3'
@@ -18,7 +19,7 @@ first_inputs = original.inputs
 
 
 def previous():
-    row = validation.committed(bank.RESULT, (FIXTURES,))
+    row = bank.previous.historic(FIXTURE_RECORD, FIXTURES)
     outcomes = row['outcomes']
     stock = outcomes['stock']
     require(row['stage'] == 'failed' and row['ownership_closed'] and not row['active']
