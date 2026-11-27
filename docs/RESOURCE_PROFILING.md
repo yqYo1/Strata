@@ -1860,6 +1860,17 @@ slot, emits zero output tokens, exits normally and records no fresh Xe
 fault. The diagnostic uses the stock profile without a serving cache loan.
 The live tests above qualify the separate ranked handoff.
 
+The timing plan at `796e418c1` consumes the committed validation results.
+The two closed validation captures were retired after matching the terminal
+receipts to `3d260ae32` and `d74bc9428`. Both original `record.json` files
+remain byte-identical. Inventory hashes cover sorted state-relative paths,
+byte counts and file hashes.
+
+| Scope under tuning state | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-decode-ranked-refill-restore-v1` | 290 | 62,771,581 | `52a4ba3e7761a461ecf07072d57627db1d2bb52ecfc85d219b929e96a84583bd` |
+| `dflash2-decode-ranked-refill-context-v1` | 119 | 26,523,244 | `6c3f079a7f625edc8e7b8e801160aa1ac46901532f51e3b0fc0edcb18b160ecb` |
+
 Retired the closed device fixture traces after the first live pair and
 verified both original `record.json` files are unchanged. The failed V1
 evidence at `1afe5f82e` remains
@@ -1888,6 +1899,8 @@ Require both workloads to keep their actual prefill work and pass the phase
 preservation gates. This prototype is original fork code. The speed
 controller requires the closed live RESTORE and physical-context receipts
 from this executable's build before launch.
+The frontend checks pass at `af9c68a6a`. Run the fixed stock/refill,
+refill/stock and stock/refill process pairs on that plan.
 
 The first two closed blend processes also bound the benefit of draft yield
 at the current decode time. Let `e` be emitted tokens and `a` and `d`
