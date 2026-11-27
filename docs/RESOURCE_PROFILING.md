@@ -764,6 +764,40 @@ separate unprofiled samples for the speed decision. Physical PCIe traffic
 and model TG remain unmeasured in this fixture. Retire complete traces
 after reviewing the build and log dependencies.
 
+The next device-side resolver candidate uses the same cooperative planner.
+Each workgroup tile of selection IDs reduces its resident run-start count.
+An invalid ID, a nonresident run, or an invalid preceding cell sends the
+whole tile through the existing ordered scan. The fast path uses a group
+barrier to publish the relaxed hit marks before any victim selection. It
+preserves the previous page across tile boundaries, the original miss copy
+graph, and the scalar and cooperative reference entries. This fork's
+resolver supplies the implementation basis. The new collective and its
+memory ordering follow the SYCL group algorithms and barrier contracts.
+[SYCL group algorithms](https://github.khronos.org/SYCL_Reference/iface/group-algorithms-library.html)
+· [SYCL barriers](https://github.khronos.org/SYCL_Reference/iface/barriers-and-fences.html).
+
+Prepare the standalone three-unit fixture using the original width-three
+compiler and provider recipe, with the committed resolver, header and
+fixture overlays. Reuse the retained runtime archive and prerequisite
+ownership checks. Build and run after the current 96K placement comparison.
+First check `--planner-resident-batch-smoke` with the qualified tracing.
+It repeats resident runs across a 256-cell boundary with epoch rollover,
+the same run separated by an invalid boundary cell, and ordered misses
+among hits. Check the complete map, counters, copies and guarded inputs
+against the existing host oracle after direct execution and graph replay.
+Exercise the actual 65,536-page/5,120-slot K8V8 shape with parameter
+validation before clean timing.
+
+Compare `--planner-resident-batch-benchmark cooperative` and
+`--planner-resident-batch-benchmark resident-batch` at width three.
+Use zero, 16, 64 and 384 interleaved misses among 1,539 requested pages.
+Keep the original copy geometry. Use three counterbalanced independent
+process pairs and three eligible batches per shape in each process.
+Require a repeated launch-through-completion gain on every miss shape
+before considering model admission. Preserve the separate scalar-versus-
+cooperative result. The new entry is scoped to the component fixture until
+the device comparison qualifies it.
+
 #### Width-four KV cache working set
 
 The retained K8V8 verifier at `968e71988` scores four-cell blocks and

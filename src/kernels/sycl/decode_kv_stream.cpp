@@ -138,8 +138,8 @@ void resolve_victims(const KvStreamMap &m, int epoch, int need,
   increment(m.ctl + 8, 1);
 }
 } // namespace decode_kv_detail
-} // namespace
-void decode_kv_stream_resolve_coalesced(
+template <bool ReduceResidentRuns>
+void decode_kv_stream_resolve_coalesced_impl(
     const KvStreamMap &m, const QsaAttnPools &slots, const KvHostPools &host,
     int fmt, const int32_t *ids, const int32_t *steps, int64_t nq, int64_t cap,
     const QsaShapes &s, void *stream, uint32_t copy_group_cap) {
@@ -195,11 +195,12 @@ void decode_kv_stream_resolve_coalesced(
         for (int64_t base = 0; base < width; base += Wg) {
           const int64_t i = base + int64_t(lane);
           int block = -1, slot = -3;
+          bool same = false;
           if (i < width) {
             const int cell = ids[qi * cap + i];
             if (cell >= 0 && int64_t(cell) / s.page_size < m.n_blocks) {
               block = int(int64_t(cell) / s.page_size);
-              const bool same =
+              same =
                   i > 0 && ids[qi * cap + i - 1] >= 0 &&
                   int64_t(ids[qi * cap + i - 1]) / s.page_size == block;
               if (!same) {
@@ -211,6 +212,30 @@ void decode_kv_stream_resolve_coalesced(
                   HitAtomic{m.slot_ref[slot]}.store(1);
                 }
               }
+            }
+          }
+          if constexpr (ReduceResidentRuns) {
+            constexpr int ordered_scan = int(Wg) + 1;
+            int run = 0;
+            if (i < width && !same)
+              run = slot >= 0 && slot < m.n_slots ? 1 : ordered_scan;
+            if (lane == 0 && base > 0) {
+              const int prev_cell = ids[qi * cap + base - 1];
+              if (prev_cell < 0 || int64_t(prev_cell) / s.page_size >= m.n_blocks)
+                run += ordered_scan;
+            }
+            const int resident_runs = sycl::reduce_over_group(group, run, sycl::plus<int>{});
+            if (resident_runs < ordered_scan) {
+              // With a valid preceding cell and no invalid IDs or misses,
+              // run starts are independent. The barrier orders all relaxed
+              // hit marks before the eventual ordered victim selection.
+              sycl::group_barrier(group);
+              if (lane == 0) {
+                lookups += uint64_t(resident_runs);
+                const int64_t tail = base + std::min<int64_t>(Wg, width - base) - 1;
+                previous = int(int64_t(ids[qi * cap + tail]) / s.page_size);
+              }
+              continue;
             }
           }
           blocks[lane] = block;
@@ -287,5 +312,22 @@ void decode_kv_stream_resolve_coalesced(
         });
   }
   finish(stream, event);
+}
+} // namespace
+
+void decode_kv_stream_resolve_coalesced(
+    const KvStreamMap &m, const QsaAttnPools &slots, const KvHostPools &host,
+    int fmt, const int32_t *ids, const int32_t *steps, int64_t nq, int64_t cap,
+    const QsaShapes &s, void *stream, uint32_t copy_group_cap) {
+  decode_kv_stream_resolve_coalesced_impl<false>(
+      m, slots, host, fmt, ids, steps, nq, cap, s, stream, copy_group_cap);
+}
+
+void decode_kv_stream_resolve_resident_batch(
+    const KvStreamMap &m, const QsaAttnPools &slots, const KvHostPools &host,
+    int fmt, const int32_t *ids, const int32_t *steps, int64_t nq, int64_t cap,
+    const QsaShapes &s, void *stream, uint32_t copy_group_cap) {
+  decode_kv_stream_resolve_coalesced_impl<true>(
+      m, slots, host, fmt, ids, steps, nq, cap, s, stream, copy_group_cap);
 }
 } // namespace strata::kernels
