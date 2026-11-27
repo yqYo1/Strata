@@ -70,6 +70,11 @@ void q6_dpas_columns(const uint16_t* packed, const void* q8, float* output,
 void q6_dpas_c4_canonical(const void* canonical, const void* q8, float* output,
                          int k, int n, int columns, void* stream);
 
+// Two live columns for split-decode experiments. Input and output spans
+// stop after the second column; the canonical weight layout is unchanged.
+void q6_dpas_c2_canonical(const void* canonical, const void* q8, float* output,
+                         int k, int n, int columns, void* stream);
+
 // Five live columns with the same canonical allocation contract as C4.
 void q6_dpas_c5_canonical(const void* canonical, const void* q8, float* output,
                          int k, int n, int columns, void* stream);

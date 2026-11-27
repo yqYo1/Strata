@@ -108,6 +108,24 @@ void host_c5() {
     std::cout << "HOST_C5 passed=1 cases=" << cases << " GPU=0\n";
 }
 
+void host_split_c2() {
+    alignas(2) uint8_t weights[4]{};
+    auto stream = reinterpret_cast<void*>(uintptr_t(1));
+    int cases = 0;
+    for (int width : {1, 3, 4, 5}) {
+        bool rejected = false;
+        try { cp::q6_dpas_c2_canonical(weights, nullptr, nullptr, 256, 1, width, stream); }
+        catch (const std::invalid_argument&) { rejected = true; }
+        need(rejected, "C2 must reject other column counts before device access");
+        ++cases;
+    }
+    bool rejected = false;
+    try { cp::q6_dpas_c2_canonical(weights + 1, nullptr, nullptr, 256, 1, 2, stream); }
+    catch (const std::invalid_argument&) { rejected = true; }
+    need(rejected, "C2 must reject unaligned weights before device access");
+    std::cout << "HOST_SPLIT_C2 passed=1 cases=" << cases + 1 << " GPU=0\n";
+}
+
 void host_packed_c5() {
     need(cp::q6_dpas_packed_bytes(2560, 248320) == size_t(248320) * 10 * 210,
          "packed model head must have the same weight bytes as the canonical head");
@@ -154,17 +172,23 @@ template<class T> struct Buffer {
     }
 };
 
+enum class SplitControl { none, c4, columns };
+
 struct Fixture {
     std::shared_ptr<sb::Runtime> rt; int ni,no,columns;
+    SplitControl split;
     std::vector<uint8_t> w,x;
     Buffer<uint8_t> dw,dx;Buffer<float> yr,yc;
     std::vector<uint16_t> packed_weights;
     std::unique_ptr<Buffer<uint16_t>> packed_device;
     cudaStream_t stream=nullptr;cudaEvent_t completion=nullptr;
-    std::array<cudaGraphExec_t,2> graphs{};uint64_t calls=0;
-    Fixture(std::shared_ptr<sb::Runtime> r,int input,int output,int width,bool packed_c5=false):rt(r),ni(input),no(output),columns(width),
+    std::array<std::array<cudaGraphExec_t, 2>, 2> graphs{};
+    uint64_t calls=0;
+    Fixture(std::shared_ptr<sb::Runtime> r,int input,int output,int width,bool packed_c5=false,
+            SplitControl split_control=SplitControl::none):rt(r),ni(input),no(output),columns(width),split(split_control),
         w(size_t(ni/256)*no*210),x(size_t(ni/32)*36*columns),
         dw(r,w.size()),dx(r,x.size()),yr(r,size_t(no)*columns),yc(r,size_t(no)*columns) {
+        need(split == SplitControl::none || (width == 4 && !packed_c5), "split check uses four canonical columns");
         if (packed_c5) {
             need(width == 5, "packed comparison requires five columns");
             packed_weights.resize(cp::q6_dpas_packed_bytes(ni, no) / sizeof(uint16_t));
@@ -173,18 +197,25 @@ struct Fixture {
         check(cudaStreamCreate(&stream));check(cudaEventCreateWithFlags(&completion,cudaEventDisableTiming));
         need(k::native_mmvq_multi_exact(),"production reference requires exact layout");
         fill(7);
-        for(int arm=0;arm<2;++arm) {
-            cudaGraph_t graph=nullptr;
-            check(cudaStreamBeginCapture(stream,cudaStreamCaptureModeThreadLocal));
-            try {
-                entry(arm,columns);check(cudaStreamEndCapture(stream,&graph));
-                size_t nodes=0;check(cudaGraphGetNodes(graph,nullptr,&nodes));need(nodes==1,"exact one-node graph");
-                check(cudaGraphInstantiate(&graphs[size_t(arm)],graph,0ull));check(cudaGraphDestroy(graph));
-            } catch (...) {
-                // A partial capture cannot cross source retirement. Terminate
-                // the owned fixture instead of unwinding uncertain graph state.
-                std::cerr << "Q6 capture construction failed\n" << std::flush;
-                std::_Exit(3);
+        for (int arm=0;arm<2;++arm) {
+            const int parts = graphs_for(arm);
+            for (int half=0;half<parts;++half) {
+                cudaGraph_t graph=nullptr;
+                check(cudaStreamBeginCapture(stream,cudaStreamCaptureModeThreadLocal));
+                try {
+                    if (parts == 2) split_half(arm, half);
+                    else entry(arm, columns);
+                    check(cudaStreamEndCapture(stream,&graph));
+                    size_t nodes=0;check(cudaGraphGetNodes(graph,nullptr,&nodes));
+                    need(nodes == 1, "exact one-node graph");
+                    check(cudaGraphInstantiate(&graphs[size_t(arm)][size_t(half)],graph,0ull));
+                    check(cudaGraphDestroy(graph));
+                } catch (...) {
+                    // A partial capture cannot cross source retirement. Terminate
+                    // the owned fixture instead of unwinding uncertain graph state.
+                    std::cerr << "Q6 capture construction failed\n" << std::flush;
+                    std::_Exit(3);
+                }
             }
         }
         const size_t packed_bytes = packed_weights.size() * sizeof(uint16_t);
@@ -193,23 +224,48 @@ struct Fixture {
             << " device_payload_bytes="
             << w.size()+packed_bytes+x.size()+size_t(no)*columns*2*sizeof(float)
             << " max_alloc_bytes=" << rt->device().get_info<sycl::info::device::max_mem_alloc_size>()
-            << " graphs=2 nodes_each=1 reference=" << reference_route()
-            << " scope=prequantized-" << (packed_device ? "packed-C" : "canonical-C") << columns << '\n' << std::flush;
+            << " graphs=" << graphs_for(0) + graphs_for(1) << " nodes_each=1";
+        if (split != SplitControl::none) std::cout << " graph_counts=" << graphs_for(0) << '/' << graphs_for(1);
+        std::cout << " reference=" << reference_route()
+                  << " scope=prequantized-" << (packed_device ? "packed-C" : "canonical-C") << columns << '\n';
     }
     ~Fixture() {
         // Never free graph storage or allocations while either queue owns work.
         if(stream && cudaStreamSynchronize(stream)!=cudaSuccess) std::_Exit(4);
         try { rt->wait(); } catch (...) { std::_Exit(4); }
-        for(auto g:graphs) if(g&&cudaGraphExecDestroy(g)!=cudaSuccess)std::_Exit(4);
+        for (const auto& arm : graphs)
+            for (auto graph : arm)
+                if (graph && cudaGraphExecDestroy(graph) != cudaSuccess) std::_Exit(4);
         if(completion&&cudaEventDestroy(completion)!=cudaSuccess)std::_Exit(4);
         if(stream&&cudaStreamDestroy(stream)!=cudaSuccess)std::_Exit(4);
     }
     void drain() { check(cudaStreamSynchronize(stream));rt->wait(); }
+    int graphs_for(int arm) const {
+        return split != SplitControl::none && (arm == 1 || split == SplitControl::columns) ? 2 : 1;
+    }
     const char* reference_route() const {
+        if (split == SplitControl::c4) return "canonical_c4";
+        if (split == SplitControl::columns) return use_columns(ni,no,2) ? "columns_c2_pair" : "generic_c2_pair";
         if (packed_device) return "canonical_c5";
         return use_columns(ni,no,columns) ? "columns" : "generic";
     }
+    void split_half(int arm, int half) {
+        const size_t first_column = size_t(2 * half);
+        const auto* input = dx.data() + first_column * size_t(ni / 32) * 36;
+        auto* output = (arm == 0 ? yr : yc).data() + first_column * size_t(no);
+        if (arm == 1)
+            cp::q6_dpas_c2_canonical(dw.data(), input, output, ni, no, 2, stream);
+        else if (use_columns(ni,no,2))
+            k::native_q6_k_columns_mmvq(dw.data(), input, output, ni, no, 2, stream);
+        else
+            k::native_mmvq(14, dw.data(), input, output, ni, no, 2, stream);
+    }
     void entry(int arm,int width) {
+        if (split == SplitControl::c4) {
+            need(arm == 0 && width == 4, "canonical C4 capture requires the complete control");
+            cp::q6_dpas_c4_canonical(dw.data(), dx.data(), yr.data(), ni, no, 4, stream);
+            return;
+        }
         if (packed_device) {
             if (arm == 0) cp::q6_dpas_c5_canonical(dw.data(), dx.data(), yr.data(), ni, no, width, stream);
             else cp::q6_dpas_c5_packed(packed_device->data(), dx.data(), yc.data(), ni, no, width, stream);
@@ -243,7 +299,11 @@ struct Fixture {
             << " upload_cpu_ns=" << b.cpu-a.cpu << '\n' << std::flush;
     }
     void launch(int arm) {
-        check(sb::compat::graph_launch_with_completion(graphs[size_t(arm)],stream,completion));++calls;
+        const auto& selected = graphs[size_t(arm)];
+        const int parts = graphs_for(arm);
+        for (int i=0;i<parts-1;++i) check(cudaGraphLaunch(selected[size_t(i)],stream));
+        check(sb::compat::graph_launch_with_completion(selected[size_t(parts-1)],stream,completion));
+        calls+=parts;
     }
     void wait() { check(cudaEventSynchronize(completion)); }
     // Independent byte-wise scalar dot and actual L1 envelope for selected rows.
@@ -282,6 +342,9 @@ struct Fixture {
             for(int c=0;c<columns;++c) {
                 const size_t at=size_t(c)*no+row;
                 need(std::isfinite(ref[at])&&std::isfinite(cand[at]),"finite Q6 results");
+                if (split == SplitControl::c4)
+                    need(std::bit_cast<uint32_t>(ref[at]) == std::bit_cast<uint32_t>(cand[at]),
+                         "canonical C2 must match each C4 output bit");
                 const double err=std::abs(double(cand[at])-ref[at]);worst=std::max(worst,err);
                 need(err<=bound,"Q6 forward envelope");
                 if(selected) {
@@ -295,6 +358,20 @@ struct Fixture {
         std::cout << "NUMERIC passed=1 k=" << ni << " n=" << no << " columns=" << columns
             << " outputs=" << size_t(no)*columns
             << " oracle_rows=" << oracle_rows << " max_abs_error=" << std::setprecision(12) << worst << " guards=1\n" << std::flush;
+    }
+    void verify_first_half() {
+        drain();
+        const size_t half = size_t(2) * no;
+        yc.put(std::vector<float>(2 * half, sentinel<float>()));
+        check(sb::compat::graph_launch_with_completion(graphs[1][0],stream,completion));
+        wait();
+        const auto partial = yc.get();
+        const auto reference = yr.get();
+        for (size_t i = 0; i < half; ++i) {
+            need(std::bit_cast<uint32_t>(partial[i]) == std::bit_cast<uint32_t>(reference[i]),
+                 "first C2 handoff must match the corresponding C4 slice");
+            need(partial[i + half] == sentinel<float>(), "first C2 handoff overwrote the second half");
+        }
     }
     void c1() {
         drain();entry(0,1);check(cudaStreamSynchronize(stream));const auto ref=yr.get();
@@ -326,23 +403,49 @@ void checks(bool small,int columns,std::shared_ptr<sb::Runtime>& keep,bool packe
     std::cout << "CHECK passed=1 small=" << int(small) << " cases=" << cases
         << " route=compat_graph columns=" << columns << '\n';
 }
-void timing(int process,int columns,std::shared_ptr<sb::Runtime>& keep,bool packed_c5=false) {
+void checks_split_c2(std::shared_ptr<sb::Runtime>& keep) {
+    auto r = runtime();
+    keep = r;
+    int cases = 0;
+    const auto check_shape = [&](int k, int n) {
+        Fixture f(r, k, n, 4, false, SplitControl::c4);
+        for (uint32_t seed : {7u, 19u}) {
+            f.fill(seed);
+            f.launch(0); f.wait();
+            f.verify_first_half();
+            f.launch(1); f.wait();
+            f.verify(true);
+            ++cases;
+        }
+    };
+    check_shape(512, 33);
+    for (const auto& shape : std::span(production_shapes).subspan(1,4))
+        check_shape(shape.input, shape.output);
+    std::cout << "SPLIT_C2_CHECK passed=1 cases=" << cases << " bitwise=1 guards=1 first_half=1\n";
+}
+
+void timing(int process,int columns,std::shared_ptr<sb::Runtime>& keep,bool packed_c5=false,
+            SplitControl split=SplitControl::none) {
     auto r=runtime();keep=r;
     std::vector<int64_t> overhead;for(int i=0;i<1000;++i){const auto a=stamp(),b=stamp();overhead.push_back(b.wall-a.wall);}std::sort(overhead.begin(),overhead.end());
     const auto timer=overhead[500];std::cout << "CLOCK median_stamp_ns=" << timer << " floor_ns=10000000 process=" << process << '\n';
     int samples=0;
     std::span<const Shape> shapes(production_shapes);
     if(packed_c5)shapes=shapes.last(1);
+    if(split != SplitControl::none) shapes=shapes.subspan(1,4);
     for(const auto& shape:shapes) {
-        Fixture f(r,shape.input,shape.output,columns,packed_c5);for(int arm=0;arm<2;++arm){f.launch(arm);f.wait();}f.verify();
+        Fixture f(r,shape.input,shape.output,columns,packed_c5,split);
+        for(int arm=0;arm<2;++arm){f.launch(arm);f.wait();}f.verify();
         const int batch=shape.output<=1024?4096:(shape.output==248320?256:1024);
         for(int at=0;at<2;++at) {const int arm=process==1?1-at:at;
             for(int sample=-2;sample<5;++sample) {
                 const auto before=f.calls;const auto a=stamp();for(int i=0;i<batch;++i)f.launch(arm);const auto b=stamp();f.wait();const auto c=stamp();
-                need(f.calls-before==uint64_t(batch)&&c.wall-a.wall>=std::max<int64_t>(10000000,300*timer),"timing eligibility");
+                need(f.calls-before==uint64_t(batch)*f.graphs_for(arm)
+                     &&c.wall-a.wall>=std::max<int64_t>(10000000,300*timer),"timing eligibility");
                 if(sample>=0){++samples;std::cout << "SAMPLE process=" << process << " arm=" << arm << " k=" << f.ni << " n=" << f.no
                     << " columns=" << columns << " sample=" << sample
-                    << " launches=" << batch << " graph_launches=" << f.calls-before << " nodes_per_graph=1 route=compat_graph wall_ns=" << c.wall-a.wall
+                    << " launches=" << batch << " graph_launches=" << f.calls-before
+                    << " nodes_per_graph=1 route=compat_graph wall_ns=" << c.wall-a.wall
                     << " cpu_ns=" << c.cpu-a.cpu << " submit_wall_ns=" << b.wall-a.wall << " submit_cpu_ns=" << b.cpu-a.cpu
                     << " wait_wall_ns=" << c.wall-b.wall << " wait_cpu_ns=" << c.cpu-b.cpu
                     << " reference=" << f.reference_route() << '\n' << std::flush;}
@@ -360,23 +463,27 @@ int main(int argc,char** argv) {
     try {
         need(argc==2||argc==3,"use --host, --check[-small], or --time 0..2, with optional -c5 or -packed-c5");
         const std::string mode=argv[1];
-        if (mode=="--host" || mode=="--host-c5" || mode=="--host-packed-c5") {
+        if (mode=="--host" || mode=="--host-c5" || mode=="--host-packed-c5" || mode=="--host-split-c2") {
             if (mode=="--host") host();
             else if (mode=="--host-c5") host_c5();
-            else host_packed_c5();
+            else if (mode=="--host-packed-c5") host_packed_c5();
+            else host_split_c2();
             std::cout.flush();
             std::_Exit(0);
         }
         gate("STRATA_Q6_DPAS_GATE");
         std::shared_ptr<sb::Runtime> keep;
-        if (mode=="--check-small" || mode=="--check") checks(mode=="--check-small",4,keep);
+        if (mode=="--check-split-c2") checks_split_c2(keep);
+        else if (mode=="--check-small" || mode=="--check") checks(mode=="--check-small",4,keep);
         else if (mode=="--check-c5-small" || mode=="--check-c5") checks(mode=="--check-c5-small",5,keep);
         else if (mode=="--check-packed-c5-small" || mode=="--check-packed-c5")
             checks(mode=="--check-packed-c5-small",5,keep,true);
         else {
-            need((mode=="--time" || mode=="--time-c5" || mode=="--time-packed-c5") && argc==3 && std::strlen(argv[2])==1 &&
-                 argv[2][0]>='0' && argv[2][0]<='2',"time process 0..2");
-            timing(argv[2][0]-'0',mode=="--time"?4:5,keep,mode=="--time-packed-c5");
+            const SplitControl split = mode=="--time-split-c2-c4" ? SplitControl::c4 :
+                mode=="--time-split-c2-columns" ? SplitControl::columns : SplitControl::none;
+            need((mode=="--time" || mode=="--time-c5" || mode=="--time-packed-c5" || split != SplitControl::none)
+                 && argc==3 && std::strlen(argv[2])==1 && argv[2][0]>='0' && argv[2][0]<='2',"time process 0..2");
+            timing(argv[2][0]-'0',mode=="--time" || split != SplitControl::none ? 4 : 5,keep,mode=="--time-packed-c5",split);
         }
         std::cout.flush();std::cerr.flush();std::_Exit(0); // qualified retained-loader exit;ordinary provider teardown remains unqualified
     } catch(const std::exception& e) {std::cerr << "Q6 DPAS component failed: " << e.what() << '\n' << std::flush;std::_Exit(2);}

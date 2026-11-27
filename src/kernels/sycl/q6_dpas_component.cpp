@@ -187,11 +187,13 @@ struct Q6DpasColumns {
 template <bool Canonical, int Columns = 4>
 void launch(const void* weights, const void* q8, float* output,
             int k, int n, int columns, void* stream) {
-    static_assert(Columns == 4 || Columns == 5);
+    static_assert(Columns == 4 || Columns == 5 || (Canonical && Columns == 2));
+    constexpr const char* invalid_shape = Columns == 2 ? "Q6 DPAS needs explicit queue and eligible C2 shape" :
+        Columns == 4 ? "Q6 DPAS needs explicit queue and eligible C4 shape" :
+                       "Q6 DPAS needs explicit queue and eligible C5 shape";
     if (columns != Columns || !q6_dpas_matrix_shape(k, n) || !stream ||
         (reinterpret_cast<uintptr_t>(weights) & 1))
-        throw std::invalid_argument(Columns == 4 ? "Q6 DPAS needs explicit queue and eligible C4 shape" :
-            "Q6 DPAS needs explicit queue and eligible C5 shape");
+        throw std::invalid_argument(invalid_shape);
     auto& q = queue_for(stream);
     const size_t wb = Canonical ? size_t(n) * size_t(k / 256) * 210 : q6_dpas_packed_bytes(k, n);
     const size_t xb = size_t(k / 32) * 36 * Columns;
@@ -205,8 +207,8 @@ void launch(const void* weights, const void* q8, float* output,
     const size_t items = (size_t(n) + 15) / 16;
     const sycl::nd_range<1> range(((items + 3) / 4) * 4, 4);
     using C4Kernel = std::conditional_t<Canonical, Q6DpasC4Canonical, Q6DpasC4>;
-    using C5Kernel = std::conditional_t<Canonical, Q6DpasCanonicalColumns<5>, Q6DpasColumns<5>>;
-    using Kernel = std::conditional_t<Columns == 4, C4Kernel, C5Kernel>;
+    using OtherKernel = std::conditional_t<Canonical, Q6DpasCanonicalColumns<Columns>, Q6DpasColumns<Columns>>;
+    using Kernel = std::conditional_t<Columns == 4, C4Kernel, OtherKernel>;
     const auto event = q.parallel_for(range,
         Kernel{static_cast<const uint16_t*>(weights), static_cast<const uint8_t*>(q8), output, k, n});
     finish(stream, event);
@@ -220,6 +222,11 @@ void q6_dpas_c4(const uint16_t* packed, const void* q8, float* output,
 void q6_dpas_c4_canonical(const void* canonical, const void* q8, float* output,
                          int k, int n, int columns, void* stream) {
     launch<true>(canonical, q8, output, k, n, columns, stream);
+}
+
+void q6_dpas_c2_canonical(const void* canonical, const void* q8, float* output,
+                         int k, int n, int columns, void* stream) {
+    launch<true, 2>(canonical, q8, output, k, n, columns, stream);
 }
 
 void q6_dpas_c5_canonical(const void* canonical, const void* q8, float* output,
