@@ -12,6 +12,7 @@ using strata::core::verify_q6_centering;
 using strata::core::verify_q6_native_half;
 using strata::core::verify_q6_dpas_head;
 using strata::core::verify_q6_dpas_dense;
+using strata::core::verify_q6_dpas_dense_c2;
 using strata::core::VerifyQ6Route;
 
 static void need(bool ok, const char* message) {
@@ -88,13 +89,18 @@ int main() try {
                     const bool expected=enabled && exact && phase==VerifyInput::decode && type==14 && c==4;
                     need(verify_q6_dpas_dense(enabled,phase,exact,type,shape[0],shape[1],c)==expected,
                          "dense DPAS escaped the independently measured phase/layout/type/shape set");
+                    const bool c2_expected = enabled && exact && phase == VerifyInput::decode && type == 14 && c == 2;
+                    need(verify_q6_dpas_dense_c2(enabled, true, phase, exact, type, shape[0], shape[1], c) == c2_expected &&
+                         !verify_q6_dpas_dense_c2(enabled, false, phase, exact, type, shape[0], shape[1], c),
+                         "C2 escaped its independently measured split decode scope");
                     dense_selected += expected;
                 }
     need(dense_selected==4,"wrong number of qualified dense-DPAS cells");
     for (const auto& shape : {std::array<int,2>{2560,512}, {2560,640}, {2560,248320},
                               {6144,2559}, {2561,6144}, {0,0}, {-2560,10240}})
         for (int c=0;c<=9;++c)
-            need(!verify_q6_dpas_dense(true,VerifyInput::decode,true,14,shape[0],shape[1],c),
+            need(!verify_q6_dpas_dense(true,VerifyInput::decode,true,14,shape[0],shape[1],c) &&
+                 !verify_q6_dpas_dense_c2(true, true, VerifyInput::decode, true, 14, shape[0], shape[1], c),
                  "unqualified dense DPAS shape selected");
     for (bool enabled : {false, true}) for (bool exact : {false, true})
         for (auto phase : {VerifyInput::prompt, VerifyInput::decode, static_cast<VerifyInput>(255)})
@@ -203,6 +209,7 @@ int main() try {
     decode.q6_centered_calls = 12;
     decode.q6_dpas_head_calls = 1;
     decode.q6_dpas_dense_calls = {40,14,22,5};
+    decode.q6_dpas_dense_c2_calls = {38, 12, 14, 6};
     need(!decode.ready, "a partial graph cache became replayable");
     need(prompt.kv_scalar_calls==10 && prompt.kv_coalesced_calls==0 &&
          decode.kv_scalar_calls==0 && decode.kv_coalesced_calls==10 &&
@@ -221,6 +228,10 @@ int main() try {
          cache.at(VerifyInput::decode,4).q6_dpas_dense_calls==std::array<uint64_t,4>{40,14,22,5} &&
          cache.at(VerifyInput::decode,3).q6_dpas_dense_calls==std::array<uint64_t,4>{},
          "dense DPAS capture metadata crossed phase/token keys");
+    need(prompt.q6_dpas_dense_c2_calls == std::array<uint64_t, 4>{} &&
+         decode.q6_dpas_dense_c2_calls == std::array<uint64_t, 4>{38, 12, 14, 6} &&
+         cache.at(VerifyInput::decode, 2).q6_dpas_dense_c2_calls == std::array<uint64_t, 4>{},
+         "C2 capture metadata crossed phase/token keys");
     auto& decode5 = cache.at(VerifyInput::decode, 5);
     decode5.q6_dpas_dense_c5_calls = 22;
     need(cache.at(VerifyInput::prompt, 5).q6_dpas_dense_c5_calls == 0 &&
@@ -272,6 +283,7 @@ int main() try {
          prompt.q6_dpas_head_calls==0 && decode.q6_dpas_head_calls==0 &&
          prompt.q6_dpas_dense_calls==std::array<uint64_t,4>{} &&
          decode.q6_dpas_dense_calls==std::array<uint64_t,4>{} &&
+         decode.q6_dpas_dense_c2_calls == std::array<uint64_t, 4>{} &&
          decode5.q6_dpas_dense_c5_calls == 0 &&
          decode8.q6_native_half_calls == 0 && decode8.q6_shapes.empty() &&
          decode8.q6_capture_id == 0 && decode8.q6_replay_started == 0 &&

@@ -59,6 +59,13 @@ constexpr bool verify_q6_dpas_dense(bool enabled, VerifyInput input, bool exact,
         verify_q6_dense_dpas_index(n_in, n_out) < verify_q6_dense_dpas_shapes.size();
 }
 
+// a5b13036e: two C2 launches beat the existing two-column pair for all
+// four shapes. Use C2 only in the halves of the opt-in split T4 decode.
+constexpr bool verify_q6_dpas_dense_c2(bool enabled, bool split_t4, VerifyInput input, bool exact,
+                                      int type, int n_in, int n_out, int columns) {
+    return split_t4 && columns == 2 && verify_q6_dpas_dense(enabled, input, exact, type, n_in, n_out, 4);
+}
+
 inline constexpr std::array<int, 2> verify_q6_dense_c5_shape{2560, 10240};
 
 // f282d174d measured this projection independently at five columns.
@@ -140,6 +147,7 @@ public:
         // Separate from the four-arm legacy Q6_SHAPE schema. These are static
         // capture counts, never a per-replay global/atomic counter.
         std::array<uint64_t, verify_q6_dense_dpas_shapes.size()> q6_dpas_dense_calls{};
+        std::array<uint64_t, verify_q6_dense_dpas_shapes.size()> q6_dpas_dense_c2_calls{};
         uint64_t q6_dpas_dense_c5_calls = 0;
         struct Q6Shape {
             int n_in, n_out, columns;
@@ -182,6 +190,7 @@ public:
             q6_dpas_head_calls = 0;
             q6_packed_head_calls = 0;
             q6_dpas_dense_calls.fill(0);
+            q6_dpas_dense_c2_calls.fill(0);
             q6_dpas_dense_c5_calls = 0;
             q6_shapes.clear();
             q6_capture_id = q6_cache_hits = q6_replay_started = q6_replay_completed = 0;

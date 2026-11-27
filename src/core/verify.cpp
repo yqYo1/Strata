@@ -264,10 +264,16 @@ bool Verifier::report_q6_routes(std::FILE* file, uint64_t request) const {
         for (const auto& shape : window.q6_shapes)
             for (size_t arm = 0; arm < total.size(); ++arm) total[arm] += shape.calls[arm];
         bool dense_complete = true;
+        const bool split_t4 = decode_t4_window(input, T);
         for (size_t i = 0; i < window.q6_dpas_dense_calls.size(); ++i) {
             const auto& shape = verify_q6_dense_dpas_shapes[i];
             if (window.q6_dpas_dense_calls[i] && !verify_q6_dpas_dense(decode_q6_dpas_dense_,
                 input, strata::kernels::native_mmvq_multi_exact(), 14, shape[0], shape[1], 4))
+                dense_complete = false;
+            const uint64_t c2_calls = window.q6_dpas_dense_c2_calls[i];
+            if (c2_calls && (c2_calls % 2 != 0 ||
+                !verify_q6_dpas_dense_c2(decode_q6_dpas_dense_c2_, split_t4, input,
+                    strata::kernels::native_mmvq_multi_exact(), 14, shape[0], shape[1], 2)))
                 dense_complete = false;
         }
         const auto [c5_in, c5_out] = verify_q6_dense_c5_shape;
@@ -317,6 +323,16 @@ bool Verifier::report_q6_routes(std::FILE* file, uint64_t request) const {
                 "canonical_table_excludes_dpas=1 calls=%llu complete=%d\n",
                 (unsigned long long)request, device_, phase, T, (unsigned long long)window.q6_capture_id,
                 shape[0], shape[1], (unsigned long long)window.q6_dpas_dense_calls[i], int(complete)) >= 0 && valid;
+        }
+        if (decode_q6_dpas_dense_c2_ && split_t4) {
+            for (size_t i = 0; i < window.q6_dpas_dense_c2_calls.size(); ++i) {
+                const auto& shape = verify_q6_dense_dpas_shapes[i];
+                valid = std::fprintf(file, "strata Q6_DPAS_DENSE request=%llu device=%d phase=%s tokens=%d "
+                    "capture_id=%llu ni=%d no=%d nc=2 layout=canonical extra_weight_bytes=0 "
+                    "canonical_table_excludes_dpas=1 calls=%llu complete=%d\n",
+                    (unsigned long long)request, device_, phase, T, (unsigned long long)window.q6_capture_id,
+                    shape[0], shape[1], (unsigned long long)window.q6_dpas_dense_c2_calls[i], int(complete)) >= 0 && valid;
+            }
         }
         if (dense_c5_allowed)
             valid = std::fprintf(file, "strata Q6_DPAS_DENSE request=%llu device=%d phase=%s tokens=%d "
@@ -650,6 +666,14 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
     if (decode_q6_dpas_dense_ && (!decode_q6_columns_ || decode_q6_centering_ || decode_q6_native_half_)) {
         err = "verify: decode Q6 dense-DPAS requires columns=1,centering=0,native-half=0"; return false;
     }
+    const char* q6_dense_c2 = std::getenv("STRATA_SYCL_DECODE_Q6_DPAS_DENSE_C2");
+    if (q6_dense_c2 && std::strcmp(q6_dense_c2, "0") != 0 && std::strcmp(q6_dense_c2, "1") != 0) {
+        err = "verify: STRATA_SYCL_DECODE_Q6_DPAS_DENSE_C2 must be 0 or 1"; return false;
+    }
+    decode_q6_dpas_dense_c2_ = q6_dense_c2 && std::strcmp(q6_dense_c2, "1") == 0;
+    if (decode_q6_dpas_dense_c2_ && (!decode_q6_dpas_dense_ || !strata::kernels::native_mmvq_multi_exact())) {
+        err = "verify: split decode Q6 C2 requires dense DPAS and exact MMVQ"; return false;
+    }
     const char* q6_dense_c5 = std::getenv("STRATA_SYCL_DECODE_Q6_DPAS_C5_10240");
     if (q6_dense_c5 && std::strcmp(q6_dense_c5, "0") != 0 && std::strcmp(q6_dense_c5, "1") != 0) {
         err = "verify: STRATA_SYCL_DECODE_Q6_DPAS_C5_10240 must be 0 or 1"; return false;
@@ -963,6 +987,7 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
     using namespace strata::kernels;
 #ifdef STRATA_ENABLE_SYCL
     auto& graph_window = window_graphs_.at(input, T);
+    const bool decode_t4 = decode_t4_window(input, T);
     graph_window.kv_scalar_calls = graph_window.kv_coalesced_calls = 0;
     graph_window.qsa_reference_calls = graph_window.qsa_grid_calls = 0;
     const bool qsa_score_grid = decode_verify_qsa_score_grid(decode_qsa_score_grid_, input, T, max_blocks_);
@@ -971,6 +996,7 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
     graph_window.q6_dpas_head_calls = 0;
     graph_window.q6_packed_head_calls = 0;
     graph_window.q6_dpas_dense_calls.fill(0);
+    graph_window.q6_dpas_dense_c2_calls.fill(0);
     graph_window.q6_dpas_dense_c5_calls = 0;
 #endif
     auto window_mmvq = [&](int type, const void* weights, const void* x, float* y,
@@ -980,6 +1006,14 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
         if (verify_q6_dpas_dense(decode_q6_dpas_dense_, input, exact, type, n_in, n_out, columns)) {
             component::q6_dpas_c4_canonical(weights, x, y, n_in, n_out, columns, stream);
             ++graph_window.q6_dpas_dense_calls[verify_q6_dense_dpas_index(n_in, n_out)];
+            return;
+        }
+        // Split T4 uses a single base group. Its two-column projections come
+        // from the two captured halves of the next-layer pre-mixer.
+        if (verify_q6_dpas_dense_c2(decode_q6_dpas_dense_c2_, decode_t4, input, exact,
+                                   type, n_in, n_out, columns)) {
+            component::q6_dpas_c2_canonical(weights, x, y, n_in, n_out, columns, stream);
+            ++graph_window.q6_dpas_dense_c2_calls[verify_q6_dense_dpas_index(n_in, n_out)];
             return;
         }
         if (verify_q6_dpas_dense_c5(decode_q6_dpas_dense_c5_, input, exact, type, n_in, n_out, T, columns)) {
@@ -1039,7 +1073,6 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
     const bool decode_combine = decode_combine_mapped_rows && input == VerifyInput::decode &&
         T == 4 && G == 1 && N == 2560 && K == 10 && dec_batch &&
         native_moe_combine_enabled() && !device_plan_;
-    const bool decode_t4 = decode_t4_window(input, T);
     if (decode_t4 && (G != 1 || !dec_batch || !native_moe_combine_enabled())) {
         err = "verify: decode T4 schedule requires batched native combine";
         return false;
