@@ -13,7 +13,9 @@ from check_dflash2_model import request_ids
 
 bank, basis, require = primary.bank, primary.basis, primary.require
 validation = basis.validation
-KEY = 'dflash2_decode_kv_clock_wrap_admission_v1'
+FIRST_KEY = 'dflash2_decode_kv_clock_wrap_admission_v1'
+FIRST_RESULT = 'ac4e646a2108b1ad45250c0a3d87fd906ec6e709'
+KEY = 'dflash2_decode_kv_clock_wrap_admission_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 ORDER = ('scalar', 'clock-wrap')
@@ -67,8 +69,11 @@ def baseline():
     return fields
 
 
-def check_profile(text):
-    primary.continuation.standard.profiles.check_profile_startup(text, 'original')
+def check_profile(text, path):
+    native.ranked.restore.check_loader(text, path, per_layer=True)
+    require(text.count('strata generate: profile ') == 1
+            and text.count('R4.2g PER-LAYER: each layer owns 26 slots (0..25).') == 1,
+            'the actual per-layer profile and 26-slot layout are required')
 
 
 def short_routes(text, selected):
@@ -93,6 +98,12 @@ def inputs(revision):
             'keep the validated primary placement and verifier')
     for flag, value in (('--kv', 'int8'), ('--kv-resident', '20480'), ('--max-context', '262144'), ('--spec', '4')):
         require(args.count(flag) == 1 and args[args.index(flag) + 1] == value, 'unexpected target geometry: ' + flag)
+    require(args.count('--expert-profile') == 1, 'require the validated primary profile path')
+    profile_path = args[args.index('--expert-profile') + 1]
+    profile_sha = bank.sha(profile_path)
+    timing = bank.previous.historic(build.retained.TIMING, primary.speed.KEY)
+    require(profile_sha == timing['sources']['data/expert-profile.bin'],
+            'the configured profile bytes differ from the primary benchmark')
     request = request_ids(Path(cfg['tokenizer']))
     require(len(request['ids']) == PLAN['input_tokens'] and request['generated'] == PLAN['output_tokens']
             and request['thinking'], 'the exact short probe changed')
@@ -108,7 +119,17 @@ def inputs(revision):
         environments[arm] = env
         cases.append(dict(arm=arm, root=str(case), command=[reference['binary']['path'], '--serve', *args],
                           environment_sha256=bank.signature(env), limits=primary.speed.generation.model.LIMITS))
-    row = dict(source_commit=revision, source_inputs=dict(files=len(pins), sha256=bank.signature(pins)),
+    first = bank.previous.historic(FIRST_RESULT, FIRST_KEY)
+    require(first == validation.committed(bank.RESULT, (FIRST_KEY,))
+            and first['stage'] == 'failed' and first['ownership_closed'] and not first['active']
+            and first['outcomes']['scalar']['native_exit_code'] == 0
+            and not first['outcomes']['scalar']['fresh_faults']
+            and first['request'] == request and first['binary'] == reference['binary']
+            and [c['command'] for c in first['cases']] == [c['command'] for c in cases],
+            'keep the original checker rejection and exact native commands')
+    row = dict(first_result_sha256=bank.signature(first),
+               stock=dict(path=profile_path, sha256=profile_sha),
+               source_commit=revision, source_inputs=dict(files=len(pins), sha256=bank.signature(pins)),
                native_source_commit=reference['native_source_commit'], build_sha256=reference['native_build_sha256'],
                binary=reference['binary'], boot=reference['boot'], driver=reference['driver'],
                runtime_manifest=reference['runtime_manifest'], plan=PLAN, cases=cases,
@@ -145,7 +166,8 @@ def main(action):
                 and list(row['outcomes']) == list(ORDER[:ORDER.index(action)]), 'commit the exact next admission case')
         request = (row['request']['ids'], row['output_cap'])
         native.execute(row, environments[action], request, reference, action, order=ORDER, publish=save,
-                       check_profile=check_profile, read_routes=lambda text, **_: short_routes(text, action == 'clock-wrap'))
+                       check_profile=lambda text: check_profile(text, row['stock']['path']),
+                       read_routes=lambda text, **_: short_routes(text, action == 'clock-wrap'))
 
 
 if __name__ == '__main__':
