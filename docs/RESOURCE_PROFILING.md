@@ -1637,6 +1637,21 @@ the selected reference and use stock scheduling for the separate placement
 trial. This audited result does not qualify clean throughput.
 [Original samples](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
+The closed caller-help result at `494d91b2e` has no remaining executable
+or raw-output consumer. The placement build reads its predecessor's
+committed recipe and source identity. The retirement audit recovered the
+1,337 native project files, matched 1,481 compiler inputs and 30 link
+inputs and verified all 13 executable sizes and hashes. The primary
+reference remains selected and matches its original executable. The
+approved retirement covers the following paths, leaving both `record.json`
+receipts. Each inventory hashes sorted relative paths, byte counts and
+file hashes.
+
+| Root and paths selected for retirement | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-decode-t4-prefix-help-native-v1/{build,cache,owned,ownership.json,source,tmp}` | 1537 | 236806193 | `eb8a203fb6fb1e4a5123aa41cc23490a9756c194498a35e20f2b621025ded3cd` |
+| `dflash2-decode-t4-prefix-help-speed-v1/{0,1,2,3,4,5,host}` | 436 | 91199545 | `089c215e7855b9e1840ca06335e07aa21814eb80ea50557b66b9e159c9f72866` |
+
 The 96K controller reads the compact short-model proof and the coherent
 engine build. The two closed short validations have no remaining raw-output
 consumer. Retired 103 files totaling 23,601,467 bytes under the measurement
