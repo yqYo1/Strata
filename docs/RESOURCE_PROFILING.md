@@ -800,6 +800,15 @@ slots and overflow before timing. The small copy estimate does not measure
 scattered device reads or establish how often this initial state occurs in
 the model.
 
+The fixture and eight case directories can be retired after the recorded
+inputs are recoverable from the pushed `feature/sycl`. The audit matches
+234 pinned build inputs, the four compiler and link commands, 672 actual
+compiler inputs, 25 link inputs and all terminal outcomes. Keep
+`decode-kv-resident-batch-v1/record.json`. Retire the fixture build and
+`{smoke,validate,0,1,2,3,4,5}` beneath that root. Its 76 files total
+2,524,016 bytes with sorted path, size and content-hash inventory SHA-256
+`1f7a46c38891fe54548e4eea09a22b30ddae2d8245fa923601d8a9ab3dfb2d68`.
+
 #### Width-four KV cache working set
 
 The retained K8V8 verifier at `968e71988` scores four-cell blocks and
