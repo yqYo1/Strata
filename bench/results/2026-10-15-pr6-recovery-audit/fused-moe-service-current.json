@@ -743395,12 +743395,215 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "early": {
+        "requests": [
+          {
+            "prompt": 82,
+            "generated": 32,
+            "output_sha256": "f89d5882a33ff7b3ee2bfd3a8f0a8198708262128344be889add1419eb85dadd",
+            "accepted": 23,
+            "offered": 23,
+            "finish": "length"
+          }
+        ],
+        "host_probe_accepted": true,
+        "native_exit_code": 0,
+        "tap_payloads": [
+          {
+            "prompt": 82,
+            "first": 0,
+            "rows": 81,
+            "width": 2560,
+            "readback_bytes": 4147200,
+            "layer_digests": {
+              "5": "ccca5b76e361a98d",
+              "15": "ecabd168a31c99ea",
+              "25": "c2830715533c6d35",
+              "35": "6c7282e5768ae508",
+              "45": "ed7e4c50369e8ea0"
+            }
+          }
+        ],
+        "states": [
+          {
+            "L": "114",
+            "gdn": "24b7bf4c41ef5493",
+            "ple": "658c6b4cf144dfa8",
+            "tail": "ebc2001597c34225",
+            "pooled": "9c1c7510fc22f41a",
+            "kv": "8c8fa59a18d1054a",
+            "mtp": "14650fb0739d0383",
+            "ple_prev": "2790,1518"
+          }
+        ],
+        "validation": {
+          "pid": 2014873,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "dense_capture": [
+          [
+            2560,
+            6144,
+            8
+          ],
+          [
+            2560,
+            10240,
+            15
+          ],
+          [
+            2560,
+            12288,
+            2
+          ],
+          [
+            6144,
+            2560,
+            21
+          ]
+        ],
+        "widths": [
+          [
+            81,
+            1
+          ],
+          [
+            82,
+            2
+          ],
+          [
+            84,
+            2
+          ],
+          [
+            86,
+            4
+          ],
+          [
+            90,
+            4
+          ],
+          [
+            94,
+            4
+          ],
+          [
+            98,
+            4
+          ],
+          [
+            102,
+            4
+          ],
+          [
+            106,
+            4
+          ],
+          [
+            110,
+            4
+          ]
+        ],
+        "publications": [
+          [
+            "early",
+            86,
+            48,
+            23,
+            23,
+            23
+          ],
+          [
+            "early",
+            90,
+            48,
+            23,
+            23,
+            23
+          ],
+          [
+            "early",
+            94,
+            48,
+            23,
+            23,
+            23
+          ],
+          [
+            "early",
+            98,
+            48,
+            23,
+            23,
+            23
+          ],
+          [
+            "early",
+            102,
+            48,
+            23,
+            23,
+            23
+          ],
+          [
+            "early",
+            106,
+            48,
+            23,
+            23,
+            23
+          ],
+          [
+            "early",
+            110,
+            48,
+            23,
+            23,
+            23
+          ]
+        ],
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     },
-    "stage": "partial",
+    "stage": "closed",
     "active": false,
     "ownership_closed": true,
-    "complete": false,
-    "passed": false
+    "complete": true,
+    "passed": true,
+    "comparison": {
+      "stock/after-cpu": {
+        "requests": true,
+        "states": false,
+        "tap_payloads": true,
+        "widths": true
+      },
+      "after-cpu/early": {
+        "requests": true,
+        "states": true,
+        "tap_payloads": true,
+        "widths": true
+      }
+    },
+    "production_dpas_preserved": true
   }
 }
