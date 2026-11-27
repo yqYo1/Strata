@@ -2546,6 +2546,29 @@ TTFT independently, and match early/deferred decode work before
 attributing a time difference to that ordering. A positive speed screen
 selects a separate clean comparison; clean performance, weak-draft and
 agent checks, physical-context and RESTORE qualification remain open.
+
+The first block of `dflash2_decode_t4_speed_v1` completes with quiet
+validation and no fresh Xe fault. Stock, deferred and early deliver
+16.139, 14.902 and 15.788 tok/s respectively, with equal checked prefill
+work. The two split schedules match output and reasoning hashes, all
+3,440 generated tokens, draft counts and expert work. Their 680 T4
+windows exercise 23 split steps each. Early publishes 15,640 halves and
+saves 12.945 seconds of decode against deferred. Stock emits 3,195 tokens
+with different draft work. Under the final-window emission bound, early
+averages 185.44–185.92 ms per verifier window against stock's
+193.14–193.70 ms, with fewer emitted tokens per window. Keep this as one
+observed block and finish the frozen repetitions.
+
+The first block selects arithmetic preservation as a follow-up component
+question. The existing Q6 DPAS tile shares integer dot and per-column FP32
+accumulation code across repeat counts. Check two canonical C2 launches
+against the corresponding columns of one C4 launch at the four actual
+dense shapes. Require bitwise output and guards with the original Q8
+column pitch. Measure the two C2 launches against the current two-column
+kernel pair and against C4 to price repeated weight traversal. If this
+passes, scope C2 to the eligible split decode steps and recheck long
+draft yield. This is a new candidate; restored yield and model speed
+remain unmeasured.
 [Original model result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The first build at `8bd19a9b9` compiles and links all three named targets.
