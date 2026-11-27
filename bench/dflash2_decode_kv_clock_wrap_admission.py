@@ -101,8 +101,7 @@ def inputs(revision):
     require(args.count('--expert-profile') == 1, 'require the validated primary profile path')
     profile_path = args[args.index('--expert-profile') + 1]
     profile_sha = bank.sha(profile_path)
-    timing = bank.previous.historic(build.retained.TIMING, primary.speed.KEY)
-    require(profile_sha == timing['sources']['data/expert-profile.bin'],
+    require(profile_sha == bank.sha(bank.P / 'data/expert-profile.bin'),
             'the configured profile bytes differ from the primary benchmark')
     request = request_ids(Path(cfg['tokenizer']))
     require(len(request['ids']) == PLAN['input_tokens'] and request['generated'] == PLAN['output_tokens']
