@@ -8,6 +8,7 @@
 #include "strata/kernels/f16_bits.hpp"
 #include "strata/sycl/runtime.hpp"
 #include "strata/sycl/compat/cuda_runtime.h"
+#include <algorithm>
 #include <array>
 #include <bit>
 #include <cmath>
@@ -359,19 +360,31 @@ struct Fixture {
             << " outputs=" << size_t(no)*columns
             << " oracle_rows=" << oracle_rows << " max_abs_error=" << std::setprecision(12) << worst << " guards=1\n" << std::flush;
     }
-    void verify_first_half() {
+    void verify_split_halves() {
         drain();
-        const size_t half = size_t(2) * no;
-        yc.put(std::vector<float>(2 * half, sentinel<float>()));
-        check(sb::compat::graph_launch_with_completion(graphs[1][0],stream,completion));
-        wait();
-        const auto partial = yc.get();
         const auto reference = yr.get();
-        for (size_t i = 0; i < half; ++i) {
-            need(std::bit_cast<uint32_t>(partial[i]) == std::bit_cast<uint32_t>(reference[i]),
-                 "first C2 handoff must match the corresponding C4 slice");
-            need(partial[i + half] == sentinel<float>(), "first C2 handoff overwrote the second half");
+        const size_t input_per_half = size_t(2) * (ni / 32) * 36;
+        const size_t rows_per_half = size_t(2) * no;
+        for (size_t half = 0; half < 2; ++half) {
+            const size_t inactive = 1 - half;
+            auto input = x;
+            // An inactive half supplies different but valid Q8 blocks with zero scales.
+            std::fill_n(input.data() + inactive * input_per_half, input_per_half, uint8_t{});
+            dx.put(input);
+            yc.put(std::vector<float>(2 * rows_per_half, sentinel<float>()));
+            check(sb::compat::graph_launch_with_completion(graphs[1][half], stream, completion));
+            wait();
+            const auto partial = yc.get();
+            for (size_t i = 0; i < rows_per_half; ++i) {
+                const size_t active_row = half * rows_per_half + i;
+                need(std::bit_cast<uint32_t>(partial[active_row]) == std::bit_cast<uint32_t>(reference[active_row]),
+                     "each C2 handoff must match C4 with the other input half unpublished");
+                need(partial[inactive * rows_per_half + i] == sentinel<float>(),
+                     "C2 handoff overwrote the other output half");
+            }
+            need(dx.get() == input, "C2 handoff changed the input");
         }
+        dx.put(x);
     }
     void c1() {
         drain();entry(0,1);check(cudaStreamSynchronize(stream));const auto ref=yr.get();
@@ -412,7 +425,7 @@ void checks_split_c2(std::shared_ptr<sb::Runtime>& keep) {
         for (uint32_t seed : {7u, 19u}) {
             f.fill(seed);
             f.launch(0); f.wait();
-            f.verify_first_half();
+            f.verify_split_halves();
             f.launch(1); f.wait();
             f.verify(true);
             ++cases;
@@ -421,7 +434,8 @@ void checks_split_c2(std::shared_ptr<sb::Runtime>& keep) {
     check_shape(512, 33);
     for (const auto& shape : std::span(production_shapes).subspan(1,4))
         check_shape(shape.input, shape.output);
-    std::cout << "SPLIT_C2_CHECK passed=1 cases=" << cases << " bitwise=1 guards=1 first_half=1\n";
+    std::cout << "SPLIT_C2_CHECK passed=1 cases=" << cases
+              << " bitwise=1 guards=1 isolated_halves=" << 2 * cases << '\n';
 }
 
 void timing(int process,int columns,std::shared_ptr<sb::Runtime>& keep,bool packed_c5=false,

@@ -35,7 +35,7 @@ CAPTURE_KEY = 'dflash2_decode_t4_production_dpas_v1'
 SHAPES = ((512, 33), (6144, 2560), (2560, 6144), (2560, 10240), (2560, 12288))
 TIMED_SHAPES = SHAPES[1:]
 ORDER = (('c4', 0), ('columns', 0), ('columns', 1), ('c4', 1), ('c4', 2), ('columns', 2))
-SUMMARY = 'SPLIT_C2_CHECK passed=1 cases=10 bitwise=1 guards=1 first_half=1'
+SUMMARY = 'SPLIT_C2_CHECK passed=1 cases=10 bitwise=1 guards=1 isolated_halves=20'
 TIMING_SUMMARY = 'TIMING passed=1 samples=40 shapes=4 model_speed=0 physical_traffic=0 cache=one-repeated-matrix'
 ARC_LIMITS = dict(wall=180, cpu=600, rss_cap=4 << 30, text_cap=24 << 20,
                   file_cap=32 << 20, total_cap=64 << 20)
@@ -347,7 +347,7 @@ def run_arc(ctx, mode):
                            evidence=read_timing(lines, plan['reference'], plan['repetition']))
         else:
             require(read_numerical(lines, SHAPES, 'c4') == 10 and lines.count(plan['summary']) == 1,
-                    'the full bitwise and first-half numerical check is required')
+                    'the full bitwise and independent-half numerical checks are required')
             outcome.update(summary=SUMMARY, shapes=plan['shapes'])
         log = err.read_text()
         proof, body = validated_trace(log, entry['pid'])
