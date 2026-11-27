@@ -750897,5 +750897,163 @@
       "partial_archive_reuse": false,
       "uncovered": 0
     }
+  },
+  "dflash2_decode_t4_c2_shared_plan_v1": {
+    "source_commit": "bb12fe362f27ea3dd0703c400668973e79ec77e7",
+    "controller_sources": {
+      "bench/dflash2_decode_t4_check.py": "eb38dae81560f8ac920b7e87056ac6a060253d6ddeb215367dea226c7cfe706f"
+    },
+    "native_source_commit": "1000f7a421d4ba8ba3aaf22090bb55b4951e3c42",
+    "native_build_sha256": "01f663448f176a61485dd60c91f4dbb015539f80bdf3bc1562c9a6216a0763a3",
+    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "native_validation_probe": {
+      "library": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
+      },
+      "loader": {
+        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
+      }
+    },
+    "runtime_manifest": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-speed-v2/runtime-inputs.json",
+      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
+      "files": 84
+    },
+    "binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-native-v1/build/sycl_decode_moe_combine_test",
+      "sha256": "eb0985f8c206604280a5384db24ca4639be552c0ed14935b2cd01ea501d5c4c7",
+      "bytes": 12134536
+    },
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:file,/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-shared-plan-v1/validation.log",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-shared-plan-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-shared-plan-v1/cache",
+      "STRATA_IQ_SINGLE_EXACT": "0",
+      "STRATA_IQ3_PAIR": "1",
+      "STRATA_IQ3_PAIR_AUDIT": "1",
+      "STRATA_CPU_SERVICE": "0",
+      "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+      "STRATA_SYCL_DECODE_Q6_CENTERING": "0",
+      "STRATA_SYCL_DECODE_SERVICE_PROFILE": "0",
+      "STRATA_SYCL_DECODE_Q6_NATIVE_HALF": "0",
+      "STRATA_SYCL_Q6_ROUTE_AUDIT": "0",
+      "STRATA_SYCL_DECODE_Q6_DPAS_HEAD": "0",
+      "STRATA_SYCL_DECODE_Q6_DPAS_DENSE": "0",
+      "STRATA_PREFILL_HEAD_HOST_BACKING": "0",
+      "STRATA_SYCL_PREFILL_QSA_STREAM": "1",
+      "LD_DEBUG": "libs",
+      "LD_PRELOAD": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
+      "STRATA_UR_PROBE_EXPECTED_LOADER": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0"
+    },
+    "host_binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-native-v1/build/sycl_verify_window_policy_test",
+      "sha256": "89958adea2f66d27927326708e8c5e272bdd126672268b1219090a5454d38ceb",
+      "bytes": 119064
+    },
+    "host_environment": {
+      "PATH": "/usr/bin:/bin",
+      "HOME": "/home/yayoi",
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+      "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+      "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+      "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+      "NEOReadDebugKeys": "1",
+      "EnableDirectSubmission": "0",
+      "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+      "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+      "SYCL_CACHE_PERSISTENT": "0",
+      "ZES_ENABLE_SYSMAN": "0",
+      "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+      "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+      "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+      "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+      "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-native-v1/tmp",
+      "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-native-v1/cache",
+      "STRATA_IQ_SINGLE_EXACT": "0",
+      "STRATA_IQ3_PAIR": "1",
+      "STRATA_IQ3_PAIR_AUDIT": "1",
+      "STRATA_CPU_SERVICE": "0",
+      "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+      "STRATA_SYCL_DECODE_Q6_CENTERING": "0",
+      "STRATA_SYCL_DECODE_SERVICE_PROFILE": "0",
+      "STRATA_SYCL_DECODE_Q6_NATIVE_HALF": "0",
+      "STRATA_SYCL_Q6_ROUTE_AUDIT": "0",
+      "STRATA_SYCL_DECODE_Q6_DPAS_HEAD": "0",
+      "STRATA_SYCL_DECODE_Q6_DPAS_DENSE": "0",
+      "STRATA_PREFILL_HEAD_HOST_BACKING": "0",
+      "STRATA_SYCL_PREFILL_QSA_STREAM": "1"
+    },
+    "host_expected": "verify-window-policy: passed selections=30 centering=18 native-half=26 dpas-head=1 dpas-dense=4 phase-roundtrip=1 invalid-keys=4 retirement=1 route-budget=64",
+    "host_limits": {
+      "wall": 30,
+      "cpu": 30,
+      "rss_cap": 1073741824,
+      "text_cap": 262144,
+      "file_cap": 1048576,
+      "total_cap": 4194304
+    },
+    "command": [
+      "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-decode-t4-c2-native-v1/build/sycl_decode_moe_combine_test",
+      "validate",
+      "--check-shared-plan"
+    ],
+    "limits": {
+      "wall": 180,
+      "cpu": 600,
+      "rss_cap": 4294967296,
+      "text_cap": 25165824,
+      "file_cap": 33554432,
+      "total_cap": 67108864
+    },
+    "expected": "decode MoE combine numerical=PASS guards=PASS nodes=3/1/1 completed=1",
+    "resident_counts": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      10,
+      39,
+      40
+    ],
+    "stage": "prepared",
+    "active": false,
+    "ownership_closed": true,
+    "passed": false,
+    "complete": false
   }
 }
