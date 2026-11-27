@@ -13,8 +13,13 @@ KEY = 'dflash2_decode_t4_shared_plan_v1'
 ROOT = bank.B / KEY.replace('_', '-')
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 SUMMARY = 'decode MoE combine numerical=PASS guards=PASS nodes=3/1/1 completed=1'
+HOST = 'sycl_verify_window_policy_test'
+HOST_SUMMARY = ('verify-window-policy: passed selections=30 centering=18 native-half=26 '
+                'dpas-head=1 dpas-dense=4 phase-roundtrip=1 invalid-keys=4 retirement=1 route-budget=64')
 LIMITS = dict(wall=180, cpu=600, rss_cap=4 << 30, text_cap=24 << 20,
               file_cap=32 << 20, total_cap=64 << 20)
+HOST_LIMITS = dict(wall=30, cpu=30, rss_cap=1 << 30, text_cap=256 << 10,
+                   file_cap=1 << 20, total_cap=4 << 20)
 
 
 def fields(revision):
@@ -32,6 +37,8 @@ def fields(revision):
                STRATA_UR_PROBE_EXPECTED_LOADER=probe['loader']['path'],
                UR_ENABLE_LAYERS='UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION',
                UR_LOG_TRACING='level:info;flush:info;output:stderr',
+               UR_LOG_LOADER='level:warning;flush:warning;output:stderr',
+               UR_LOG_LEVEL_ZERO='level:warning;flush:warning;output:stderr',
                UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(ROOT / 'validation.log'))
     require(env['UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD'] == '1' and env['NEOReadDebugKeys'] == '1'
             and env['EnableDirectSubmission'] == '0', 'pinned Arc safety envelope changed')
@@ -40,6 +47,8 @@ def fields(revision):
                 native_build_sha256=bank.signature(build.builder.compact(native)),
                 boot=evidence['boot'], driver=native['driver'], native_validation_probe=probe,
                 runtime_manifest=native['runtime_manifest'], binary=binary, environment=env,
+                host_binary=native['binaries'][HOST], host_environment=native['recipe']['environment'],
+                host_expected=HOST_SUMMARY, host_limits=HOST_LIMITS,
                 command=[binary['path'], 'validate', '--check-shared-plan'], limits=LIMITS,
                 expected=SUMMARY, resident_counts=[0, 1, 2, 3, 4, 5, 10, 39, 40])
 
@@ -73,6 +82,12 @@ def execute():
     owner = build.builder.ownership.Owner(ROOT / 'owned',
         lambda: bank.stage.write(ROOT / 'execution.json', owner.commands))
     try:
+        host, out, err = owner.run('host-policy', [row['host_binary']['path']],
+                                   row['host_environment'], ROOT, **HOST_LIMITS)
+        require(build.builder.ownership.closed(host) and host['exit_code'] == 0
+                and out.read_text().strip() == HOST_SUMMARY and err.stat().st_size == 0,
+                'same-build host policy check failed')
+        row['host_summary'] = HOST_SUMMARY
         entry, out, err = owner.run('shared-plan', row['command'], row['environment'], ROOT, **LIMITS)
         require(build.builder.ownership.closed(entry) and entry['exit_code'] == 0,
                 'Arc shared-plan fixture did not complete')
