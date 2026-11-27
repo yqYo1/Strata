@@ -22,7 +22,7 @@ int main() try {
     // The measured KV set must stay separate from prompt, non-streamed or
     // differently sized caches, and every unmeasured target width.
     const strata::core::VerifyKvShape kv{4,65536,5120,4,2,256,2051,true};
-    int kv_selected = 0;
+    int kv_selected = 0, clock_wrap_selected = 0;
     for (bool enabled : {false,true})
         for (auto phase : {VerifyInput::prompt,VerifyInput::decode,static_cast<VerifyInput>(255)})
             for (int queries=0;queries<=9;++queries) {
@@ -31,8 +31,13 @@ int main() try {
                 need(strata::core::decode_verify_coalesced_kv(enabled,phase,shape)==expected,
                     "KV planner escaped measured phase/window set");
                 kv_selected+=expected;
+                const bool expect_wrap = enabled && phase == VerifyInput::decode && queries >= 1 && queries <= 4;
+                need(strata::core::decode_verify_scalar_kv_clock_wrap(enabled, phase, shape) == expect_wrap,
+                     "scalar KV clock wrap escaped its decode widths");
+                clock_wrap_selected += expect_wrap;
             }
     need(kv_selected==2,"wrong measured KV width count");
+    need(clock_wrap_selected == 4, "wrong scalar KV clock-wrap width count");
     for (auto member : {&strata::core::VerifyKvShape::logical_pages,
                         &strata::core::VerifyKvShape::resident_pages,
                         &strata::core::VerifyKvShape::page_size,
@@ -43,10 +48,14 @@ int main() try {
             auto shape=kv;shape.*member+=delta;
             need(!strata::core::decode_verify_coalesced_kv(true,VerifyInput::decode,shape),
                 "unmeasured KV geometry selected");
+            need(!strata::core::decode_verify_scalar_kv_clock_wrap(true, VerifyInput::decode, shape),
+                 "scalar KV clock wrap selected a different KV geometry");
         }
     auto nonstreamed=kv;nonstreamed.streamed_int8=false;
     need(!strata::core::decode_verify_coalesced_kv(true,VerifyInput::decode,nonstreamed),
         "KV planner selected a non-streamed/other-format cache");
+    need(!strata::core::decode_verify_scalar_kv_clock_wrap(true, VerifyInput::decode, nonstreamed),
+         "scalar KV clock wrap selected a non-streamed/other-format cache");
     for (bool opt_in_c5 : {false, true}) {
         int dpas_selected = 0;
         for (bool ready : {false, true}) for (bool exact : {false, true})
@@ -189,6 +198,9 @@ int main() try {
     decode.layer = {21}; decode.resident = {22}; decode.pcie = {23};
     decode.q6_columns_calls = 42;
     decode.kv_coalesced_calls = 10;
+    cache.at(VerifyInput::decode, 1).kv_clock_wrap_calls = 10;
+    need(prompt.kv_clock_wrap_calls == 0 && decode.kv_clock_wrap_calls == 0,
+         "decode KV clock wrap metadata escaped its graph");
     decode.q6_centered_calls = 12;
     decode.q6_dpas_head_calls = 1;
     decode.q6_dpas_dense_calls = {40,14,22,5};
@@ -257,6 +269,7 @@ int main() try {
          prompt.q6_reference_calls == 0 && decode.q6_columns_calls == 0 &&
          prompt.kv_scalar_calls == 0 && prompt.kv_coalesced_calls == 0 &&
          decode.kv_scalar_calls == 0 && decode.kv_coalesced_calls == 0 &&
+         cache.at(VerifyInput::decode, 1).kv_clock_wrap_calls == 0 &&
          prompt.q6_centered_calls == 0 && decode.q6_centered_calls == 0 &&
          prompt.q6_dpas_head_calls==0 && decode.q6_dpas_head_calls==0 &&
          prompt.q6_dpas_dense_calls==std::array<uint64_t,4>{} &&

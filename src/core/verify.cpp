@@ -610,6 +610,24 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
             err = std::string("verify: ") + e.what(); return false;
         }
     }
+    const char* kv_clock_wrap = std::getenv("STRATA_SYCL_DECODE_KV_CLOCK_WRAP");
+    if (kv_clock_wrap && std::strcmp(kv_clock_wrap, "0") != 0 && std::strcmp(kv_clock_wrap, "1") != 0) {
+        err = "verify: STRATA_SYCL_DECODE_KV_CLOCK_WRAP must be 0 or 1"; return false;
+    }
+    decode_kv_scalar_clock_wrap_ = kv_clock_wrap && std::strcmp(kv_clock_wrap, "1") == 0;
+    if (decode_kv_scalar_clock_wrap_) {
+        if (decode_kv_coalesced_) {
+            err = "verify: scalar KV clock wrap requires the scalar decode planner"; return false;
+        }
+        try {
+            if (strata::kernels::kv_stream_copy_group_cap_from_text(
+                    std::getenv("STRATA_SYCL_KV_COPY_GROUPS")) != 0) {
+                err = "verify: scalar KV clock wrap requires STRATA_SYCL_KV_COPY_GROUPS=0"; return false;
+            }
+        } catch (const std::invalid_argument& e) {
+            err = std::string("verify: ") + e.what(); return false;
+        }
+    }
     const char* q6_columns = std::getenv("STRATA_SYCL_DECODE_Q6_COLUMNS");
     if (q6_columns && std::strcmp(q6_columns, "0") != 0 && std::strcmp(q6_columns, "1") != 0) {
         err = "verify: STRATA_SYCL_DECODE_Q6_COLUMNS must be 0 or 1"; return false;
@@ -914,7 +932,7 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
     using namespace strata::kernels;
 #ifdef STRATA_ENABLE_SYCL
     auto& graph_window = window_graphs_.at(input, T);
-    graph_window.kv_scalar_calls = graph_window.kv_coalesced_calls = 0;
+    graph_window.kv_scalar_calls = graph_window.kv_coalesced_calls = graph_window.kv_clock_wrap_calls = 0;
     graph_window.q6_reference_calls = graph_window.q6_columns_calls =
         graph_window.q6_centered_calls = graph_window.q6_native_half_calls = 0;
     graph_window.q6_dpas_head_calls = 0;
@@ -1268,7 +1286,13 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
                 const VerifyKvShape kv_shape{n, st.map.n_blocks, st.map.n_slots,
                     s.page_size, s.n_head_kv, s.head_dim, cap_,
                     st.kv_mode == 1 && qsa_kv_format(st) == kKvInt8};
-                if (decode_verify_coalesced_kv(decode_kv_coalesced_, input, kv_shape)) {
+                if (decode_verify_scalar_kv_clock_wrap(decode_kv_scalar_clock_wrap_, input, kv_shape)) {
+                    decode_kv_stream_resolve_scalar_clock_wrap(st.map, qsa_attn_pools(st), st.host,
+                        kKvInt8, sel_ + (size_t) tb * cap_, step_ + (size_t) tb * kStepCount,
+                        n, cap_, s, cs, 0);
+                    ++graph_window.kv_scalar_calls;
+                    ++graph_window.kv_clock_wrap_calls;
+                } else if (decode_verify_coalesced_kv(decode_kv_coalesced_, input, kv_shape)) {
                     decode_kv_stream_resolve_coalesced(st.map, qsa_attn_pools(st), st.host,
                         kKvInt8, sel_ + (size_t) tb * cap_, step_ + tb * kStepCount,
                         n, cap_, s, cs, 0);
@@ -1698,6 +1722,9 @@ bool Verifier::capture(int T, std::string& err, VerifyInput input) try {
                  input == VerifyInput::prompt ? "prompt" : "decode", T, int(decode_kv_coalesced_),
                  static_cast<unsigned long long>(window.kv_scalar_calls),
                  static_cast<unsigned long long>(window.kv_coalesced_calls));
+    std::fprintf(stderr, "strata verify KV_CLOCK_WRAP: phase=%s tokens=%d enabled=%d calls=%llu\n",
+                 input == VerifyInput::prompt ? "prompt" : "decode", T, int(decode_kv_scalar_clock_wrap_),
+                 static_cast<unsigned long long>(window.kv_clock_wrap_calls));
     std::fprintf(stderr, "strata verify centering: phase=%s tokens=%d enabled=%d centered_calls=%llu columns_calls=%llu\n",
                  input == VerifyInput::prompt ? "prompt" : "decode", T, decode_q6_centering_ ? 1 : 0,
                  static_cast<unsigned long long>(window.q6_centered_calls),
