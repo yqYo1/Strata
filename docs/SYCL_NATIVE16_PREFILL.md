@@ -11718,11 +11718,33 @@ unclassified time are below 4 ms.
 The frozen environment enables `STRATA_SYCL_PARALLEL_IQ_DEQUANT=1`.
 The model manifest places the first IQ2_S Gate/Up and Q2_0 Down at index 1.
 The compiled mode16 accumulator calls the type-specific dequantization
-wrappers there. Check their first host-side call duration at matching work
-before selecting a kernel warm-up change. The existing MoE command-service
-observer refuses the split accumulator before submission, so use bounded
-host observations without an extra queue drain. Keep first-use and
-subsequent-request clocks separate.
+wrappers there. The V4 ledger already classifies both wrappers. For the
+first request minus the subsequent median, their outside-wait totals change
+by −34.7 to +2.0 ms for Gate/Up and −30.2 to −14.5 ms for Down across
+the four processes. These calls are outside the unclassified interval.
+
+The next observer confines window accounting to layer index 1. It uses
+the existing host ledger to time each MoE window and its output handoff
+inside `run_impl`, leaving the remaining interval identifiable from the
+enclosing layer time. Require complete ordered coverage of the window rows
+and count wall time, caller CPU time and page faults. This uses the actual
+mode16 path without an added queue drain. The existing command-service
+observer refuses mode16 before submission. Compare the new observer off
+and on using the verified 118,785-token workload and the original
+subsequent-request overhead gate. The existing host fixture's
+`--windows` mode covers a complete ragged tail, a missing tail and a row gap.
+
+The closed V2 build and raw runs are retained in Git at `200ec7292`.
+Recovery matches 1,328 project files, 525 build controls, the exact
+compiler/link inputs, 139 objects and 11 executable identities. Both
+original receipts and all 23 phase-reference executables match after
+retirement. The inventories cover sorted state-relative paths, byte
+counts and SHA-256 values.
+
+| Root, excluding `record.json` | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-cold-layer-native-v2` | 1,524 | 223,688,598 | `d972bde6d47445fb715f4c1ed5c5d348361532748ff3f9da5d199a42288e971b` |
+| `dflash2-cold-layer-phases-v1` | 288 | 50,330,812 | `5a10cf1d8e096dde1224aa459198e37ab76fbd52a164f6a2e745fd96ae5a0fef` |
 
 The closed observer generation and outputs were retired after verifying all
 1,328 original source files against Git, the configure and build recipe, 139

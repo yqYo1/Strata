@@ -4356,9 +4356,12 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
             if (window_next < window_end) continue;
             if (window_next != window_end) { err = "prefill MoE window: incomplete final piece"; return false; }
             const int64_t first = window_first, count = c0 + T - first;
+            using ColdWindow = detail::ColdHostPhases::WindowBoundary;
+            detail::ColdHostPhases::mark_window(LB, first, count, ColdWindow::begin);
             const bool ok = m.moe_window->accumulation ? run_moe_accum_window(LB, first, count, err)
                                                       : run_moe_window(LB, first, count, err);
             if (!ok) return false;
+            detail::ColdHostPhases::mark_window(LB, first, count, ColdWindow::after_moe);
             if (m.layer_major_profile) m.layer_major_profile->chunk_retired();
             if (LE == g.n_layers) stats_.tokens += count;
             // All window writes are checked before MTP may reuse m.region/emb.
@@ -4367,6 +4370,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 if (on_stage_chunk && !on_stage_chunk(pos0 + row + size, err)) return false;
                 if (!m.moe_window->complete_piece || !m.moe_window->complete_piece(row, size, err)) return false;
             }
+            detail::ColdHostPhases::mark_window(LB, first, count, ColdWindow::end);
             window_first = window_end = window_next = -1;
             continue;
         }

@@ -32,11 +32,15 @@ bool Prefill::run(const int64_t* tokens, int64_t n, int64_t pos0, std::string& e
             const char* value = std::getenv("STRATA_PREFILL_COLD_LAYER_PHASES");
             return value && std::strcmp(value, "1") == 0;
         }();
-        const bool cold_observed = cold_host_phases || cold_layer_phases;
+        static const bool cold_layer_windows = [] {
+            const char* value = std::getenv("STRATA_PREFILL_COLD_LAYER_WINDOWS");
+            return value && std::strcmp(value, "1") == 0;
+        }();
+        const bool cold_observed = cold_host_phases || cold_layer_phases || cold_layer_windows;
         sycl_backend::cpu_wait_profile::Scope cpu_wait_scope(
             cold_observed || (cpu_wait_switch && std::strcmp(cpu_wait_switch, "1") == 0));
         std::optional<detail::ColdHostPhases> cold;
-        if (cold_observed) cold.emplace(true, cold_layer_phases);
+        if (cold_observed) cold.emplace(true, cold_layer_phases, cold_layer_windows);
 #endif
         const bool ok = run_layer_major(tokens, n, pos0, err);
 #if defined(STRATA_ENABLE_SYCL)
@@ -1065,7 +1069,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                      qsa16_on ? "BF16" : "FP32");
     detail::ColdHostPhases::mark(detail::ColdHostPhases::Boundary::provisioned);
     using ColdLayer = detail::ColdHostPhases::LayerBoundary;
-    detail::ColdHostPhases::set_layers(g.n_layers);
+    detail::ColdHostPhases::set_layers(g.n_layers, n);
     for (; layer < g.n_layers; ++layer) {
         detail::ColdHostPhases::mark_layer(layer, ColdLayer::begin);
         if (profile) profile->layer = int(layer);

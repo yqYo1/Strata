@@ -21,9 +21,10 @@ class ColdHostPhases {
 public:
     enum class Boundary { allocated_plan = 1, provisioned, layer_passes_finished };
     enum class LayerBoundary { begin, run, drain, end };
+    enum class WindowBoundary { begin, after_moe, end };
 
-    explicit ColdHostPhases(bool enabled, bool layer_detail = false) noexcept
-        : enabled_(enabled), layer_detail_(layer_detail) {
+    explicit ColdHostPhases(bool enabled, bool layer_detail = false, bool window_detail = false) noexcept
+        : enabled_(enabled), layer_detail_(layer_detail || window_detail), window_detail_(window_detail) {
         if (!enabled_) return;
         previous_ = active_;
         state_ = wait_profile::active;
@@ -38,16 +39,22 @@ public:
         if (active_->valid_) ++active_->next_;
     }
 
-    static void set_layers(int64_t count) noexcept {
+    static void set_layers(int64_t count, int64_t rows = 0) noexcept {
         if (!active_ || !active_->layer_detail_) return;
         active_->layers_valid_ = active_->valid_ && active_->next_ == 3 &&
                                  active_->layer_count_ < 0 && count > 0;
         active_->layer_count_ = std::max<int64_t>(0, count);
+        active_->window_expected_rows_ = rows;
     }
 
     static void mark_layer(int64_t layer, LayerBoundary boundary) noexcept {
         if (!active_ || !active_->layers_valid_) return;
         active_->capture_layer(layer, static_cast<unsigned>(boundary));
+    }
+
+    static void mark_window(int64_t layer, int64_t first, int64_t rows, WindowBoundary boundary) noexcept {
+        if (!active_ || !active_->window_detail_ || layer != detail_layer_) return;
+        active_->capture_window(first, rows, static_cast<unsigned>(boundary));
     }
 
     void finish(bool complete) noexcept {
@@ -64,6 +71,7 @@ public:
         }
         std::fputc('\n', stderr);
         if (layer_detail_) write_layers(available);
+        if (window_detail_) write_windows(available);
         errno = saved_errno;
     }
 
@@ -153,6 +161,8 @@ private:
                         capture(now) && (boundary == 0 || interval_valid(layer_previous_, now));
         if (!layers_valid_) return;
         if (boundary != 0) layer_segments_[boundary - 1].add(layer, layer_previous_, now);
+        if (window_detail_ && layer == detail_layer_ && boundary == static_cast<unsigned>(LayerBoundary::drain))
+            window_enclosing_.add(layer, layer_previous_, now);
         layer_previous_ = now;
         if (boundary == layer_segments_.size()) {
             ++next_layer_;
@@ -160,6 +170,59 @@ private:
         } else {
             ++next_layer_boundary_;
         }
+    }
+
+    void capture_window(int64_t first, int64_t rows, unsigned boundary) noexcept {
+        if (!windows_valid_) return;
+        const bool start = boundary == 0;
+        Point now;
+        windows_valid_ = layers_valid_ && next_layer_ == detail_layer_ &&
+            next_layer_boundary_ == static_cast<unsigned>(LayerBoundary::drain) &&
+            boundary == next_window_boundary_ && boundary <= window_segments_.size() &&
+            first == next_window_row_ && first >= 0 && first <= window_expected_rows_ &&
+            rows > 0 && rows <= window_expected_rows_ - first &&
+            (start || rows == window_rows_) && capture(now) &&
+            (start || interval_valid(window_previous_, now));
+        if (!windows_valid_) return;
+        if (start) window_rows_ = rows;
+        else window_segments_[boundary - 1].add(detail_layer_, window_previous_, now);
+        window_previous_ = now;
+        if (boundary == window_segments_.size()) {
+            next_window_row_ += rows;
+            next_window_boundary_ = 0;
+            ++window_count_;
+        } else {
+            ++next_window_boundary_;
+        }
+    }
+
+    static void write_window_segment(const char* name, const LayerSegment& phase) noexcept {
+        std::fprintf(stderr, " %s_wall_s=%.9f %s_cpu_s=%.9f %s_unclassified_wall_s=%.9f"
+            " %s_unclassified_cpu_s=%.9f %s_minor_faults=%ld %s_major_faults=%ld",
+            name, phase.wall, name, phase.cpu, name, phase.unclassified_wall,
+            name, phase.unclassified_cpu, name, phase.minor_faults, name, phase.major_faults);
+    }
+
+    void write_windows(bool complete) const noexcept {
+        const auto& moe = window_segments_[0];
+        const auto& handoff = window_segments_[1];
+        const auto& run = window_enclosing_;
+        const bool available = complete && layers_valid_ && next_layer_ == layer_count_ &&
+            next_layer_boundary_ == 0 && windows_valid_ && next_window_boundary_ == 0 &&
+            window_count_ > 0 && next_window_row_ == window_expected_rows_ && run.peak_layer == detail_layer_ &&
+            moe.wall + handoff.wall <= run.wall + 1e-7 && moe.cpu + handoff.cpu <= run.cpu + 1e-7 &&
+            moe.minor_faults + handoff.minor_faults <= run.minor_faults &&
+            moe.major_faults + handoff.major_faults <= run.major_faults;
+        std::fprintf(stderr, "strata prefill cold layer windows: version=1 available=%d layer=%lld windows=%lld rows=%lld",
+                     int(available), static_cast<long long>(detail_layer_),
+                     available ? static_cast<long long>(window_count_) : 0LL,
+                     available ? static_cast<long long>(next_window_row_) : 0LL);
+        if (available) {
+            write_window_segment("run", run);
+            write_window_segment("moe", moe);
+            write_window_segment("handoff", handoff);
+        }
+        std::fputc('\n', stderr);
     }
 
     void write_layers(bool complete) const noexcept {
@@ -205,6 +268,13 @@ private:
     unsigned next_ = 1;
     bool enabled_ = false, valid_ = false;
     bool layer_detail_ = false, layers_valid_ = false;
+    static constexpr int64_t detail_layer_ = 1;
+    Point window_previous_{};
+    LayerSegment window_enclosing_{};
+    std::array<LayerSegment, 2> window_segments_{};
+    int64_t window_expected_rows_ = 0, next_window_row_ = 0, window_rows_ = 0, window_count_ = 0;
+    unsigned next_window_boundary_ = 0;
+    bool window_detail_ = false, windows_valid_ = true;
 };
 
 } // namespace strata::prefill::detail
