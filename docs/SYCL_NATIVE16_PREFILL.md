@@ -11690,7 +11690,12 @@ are now closed. Source preparation recovers 1,328 files and the pinned
 revisions. It binds both original first-use deltas and validates the
 materialized sources. The diagnostic build's sole consumer is the matched
 118,785-token layer-detail comparison. Review it for retirement at that
-comparison's closure. The new executable and model runs remain pending.
+comparison's closure. The first configuration at `05a25c986` exited normally
+without compiling. Its pinned controller tree differs from the current
+checkout in nine files under `bench/sycl` and `tools/sycl`. Preserve that
+configuration receipt in Git and prepare a fresh V2 build under the current
+controller revision. The engine projection, workload and observer-cost gate
+stay fixed. The new executable and model runs remain pending.
 
 The closed observer generation and outputs were retired after verifying all
 1,328 original source files against Git, the configure and build recipe, 139
