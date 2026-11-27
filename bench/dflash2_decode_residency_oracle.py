@@ -1,4 +1,4 @@
-"""Bound full-expert cache gains for a fixed, source-pinned DFlash2 route."""
+"""Bound decode residency and verified-prefix work on a pinned DFlash2 route."""
 
 from collections import Counter
 import fcntl
@@ -115,8 +115,56 @@ def study():
                       'GPU service, transfers, actual DRAM use and decode rate are unmeasured.')
 
 
+def accepted_prefix_study():
+    revision, trace, windows, membership, formats, observed = replay.inputs()
+    require((replay.ROOT / THIS).read_bytes() == replay.git('show', revision + ':' + THIS),
+            'commit the exact accepted-prefix replay reader')
+    capture = json.loads(replay.git('show', replay.CAPTURE + ':' + replay.EVIDENCE))[replay.KEY]
+    process, = capture['processes']
+    sample = process['evidence']['samples'][-1]
+    widths = [width for _, width in windows]
+    # The next verifier position advances by the target token and its accepted drafts.
+    # Keep the last window intact because EOS can hide some committed positions.
+    prefix = [next_pos - pos for (pos, _), (next_pos, _) in zip(windows, windows[1:])]
+    emitted = sample['generated_tokens'] - sum(prefix)
+    accepted = sample['drafts_accepted'] - sum(width - 1 for width in prefix)
+    require(0 <= accepted < widths[-1] and 0 <= emitted <= accepted + 1,
+            'verifier position advances do not reconcile with generation and acceptance')
+    prefix.append(widths[-1])
+    verified_rows, prefix_rows = sum(widths), sum(prefix)
+
+    full = [Counter() for _ in formats]
+    kept = [Counter() for _ in formats]
+    frames = replay.window_routes(trace, widths)
+    for take, frame in zip(prefix, frames, strict=True):
+        for original, truncated, rows in zip(full, kept, frame, strict=True):
+            jobs = Counter(expert for row in rows for expert in row)
+            selected = jobs if take == len(rows) else Counter(expert for row in rows[:take] for expert in row)
+            original.update(jobs.items())
+            truncated.update(selected.items())
+
+    baseline, oracle = (replay.score(counts, membership, formats) for counts in (full, kept))
+    require(all(value == (observed[key][:4] if key == 'jobs_NT' else observed[key])
+                for key, value in baseline.items()), 'prefix replay does not conserve original CPU work')
+    metrics = (*METRICS, 'cpu_entries')
+    removed = {key: baseline[key] - oracle[key] for key in metrics}
+    require(0 <= removed['cpu_jobs'] <= removed['cpu_entries'] <= 10 * len(formats) * (verified_rows - prefix_rows)
+            and removed['logical_job_blob_bytes'] >= 0, 'removed work violates captured route geometry')
+    return dict(source_commit=revision, capture_commit=replay.CAPTURE, trace_sha256=observed['routing_sha256'],
+                read_tokens=sample['read_tokens'], generated_tokens=sample['generated_tokens'],
+                drafts_accepted=sample['drafts_accepted'], drafts_offered=sample['drafts_offered'],
+                windows=len(windows), trimmed_windows=sum(a < b for a, b in zip(prefix, widths, strict=True)),
+                verified_rows=verified_rows, prefix_rows=prefix_rows,
+                stock={key: baseline[key] for key in metrics}, removed=removed,
+                scope='Keep the observed advancing prefix and final window at each original position. '
+                      'All retained routes and residency stay fixed. This hindsight count covers CPU '
+                      'work only. Predictor cost, changed routes and attainable speed need separate evidence.')
+
+
 if __name__ == '__main__':
-    require(sys.executable == quota.PYTHON and len(sys.argv) == 1, 'use the pinned Python without arguments')
+    require(sys.executable == quota.PYTHON and sys.argv[1:] in ([], ['--accepted-prefix']),
+            'use the pinned Python with no arguments or --accepted-prefix')
     with (quota.STATE / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        print(json.dumps(study(), indent=2))
+        result = accepted_prefix_study() if sys.argv[1:] else study()
+        print(json.dumps(result, indent=2))
