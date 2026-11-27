@@ -2675,8 +2675,24 @@ executable identities. The two corrected Python controllers have separate
 launch provenance. The corrected four-arm plan is committed at
 `898b236e2`. The stock control at `18aed6534` reproduces the original
 request and state hashes, prompt taps, width sequence and 81 dense C4
-calls. It exits normally with no fresh Xe fault. The next control runs
-early submission with C2 disabled, before either C2 arm.
+calls. The original early control at `99f33c66d` reproduces its own state,
+46 C4 calls and seven split windows. At `65197cb93` both C2 arms close
+with 46 C4 calls and 70 C2 calls. The four processes match output tokens,
+prompt taps and width sequences. Both C2 schedules match the stock active
+state, including the GDN, tail, pooled and KV digests that differed on the
+original early arm. All four owners close normally with no fresh Xe fault.
+The final run verifies all 15 model assets.
+
+The long-code controller at `cd14a3bdc` compares stock, original early and
+early C2 in three counterbalanced blocks on this same image. All arms use
+96,204 fresh tokens with thinking enabled, and check the actual width-four
+replay delta and static C4/C2 call counts. The observer runs in all arms.
+Require equal logical prefill work and repeated speed gains against both
+references before a separate clean comparison. The first preparation
+rejects an expert-profile path inherited from the primary worktree. The
+fix at `e70438a35` verifies the profile and launcher bytes and uses the
+isolated worktree's paths for all arms. The nine plans are fixed at
+`41af84337`.
 [Original model result](../bench/results/2026-10-15-pr6-recovery-audit/fused-moe-service-current.json).
 
 The first build at `8bd19a9b9` compiles and links all three named targets.
