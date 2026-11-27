@@ -1244,6 +1244,20 @@ for stock, `f731c6a0fd04` for within-layer and `2863acb7b313` for cross-layer
 exact stock global layout and prefill/RESTORE control first, then use separate
 workloads to measure whether the change reduces decode time.
 
+The cost-weighted replay at `037164c91320b2b290cbaadbebd3497de95e4834`
+uses the two closed worker observations at `6bbd3e3e1` to estimate CPU
+leaf work by Gate/Up format, Down format and rows per job. Match the
+original 33,287-token route at `b28a9372b` and keep all 1,256 slot sizes,
+the first 132 experts and the prefill loan extent. Both rankings learn
+from the first 3,242 windows. In the remaining 3,243, the count and
+cost-weighted ranks visit 1,967,341 and 1,969,204 CPU jobs and
+3,999,896,140,800 and 4,002,498,560,000 logical weight bytes. Modeled
+summed CPU leaf time moves from 864.771 to 865.138 seconds. The weighted
+rank lowers the training cost but misses both held-out conditions.
+Keep the count rank. These timings model worker effort on the fixed
+trace. Actual request latency and physical traffic remain unmeasured.
+The original commit preserves the `--leaf-cost` reader for reconstruction.
+
 ### Decode Gate/Up task claims
 
 The reviewed Zen 3 report recommends trying coarser work claims with

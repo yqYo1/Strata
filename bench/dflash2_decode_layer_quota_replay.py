@@ -94,26 +94,7 @@ def rank_sha256(ranking):
     return replay.sha(b''.join(struct.pack('<HH', *pair) for pair in ranking))
 
 
-def measured_leaf_costs(revision, formats):
-    import dflash2_decode_adapt_cost_replay as calibration
-
-    for name in ('bench/dflash2_decode_adapt_cost_replay.py', 'tools/sycl/adaptive_cpu_leaf_evidence.py',
-                 'tools/sycl/cpu_service_evidence.py', 'tools/sycl/decode_footer.py'):
-        require((replay.ROOT / name).read_bytes() == replay.git('show', revision + ':' + name),
-                'commit the exact CPU leaf calibration reader: ' + name)
-    capture = calibration.historical(replay.CAPTURE, replay.KEY)
-    costs = calibration.calibration(capture)
-    return calibration.LEAF_RECORD, [tuple(costs[gu, down, nt] for nt in range(1, 5))
-                                     for gu, down, _ in formats]
-
-
-def leaf_cost(counts, membership, leaf_cost_ns):
-    return sum(count * costs[width - 1]
-               for jobs, mask, costs in zip(counts, membership, leaf_cost_ns, strict=True)
-               for (expert, width), count in jobs.items() if not mask >> expert & 1)
-
-
-def profile_study(*, weight_leaf_cost=False):
+def profile_study():
     revision, route, windows, stock_masks, formats, observed = replay.inputs()
     for name in (THIS, PROFILE, 'tools/make_profile.py', 'src/program/generate.cpp', 'src/core/expert_cache.cpp',
                  'include/strata/core/expert_cache.hpp', 'include/strata/core/expert_slot_sizes.hpp'):
@@ -129,13 +110,6 @@ def profile_study(*, weight_leaf_cost=False):
     selections = dict(stock=stock,
                       within_layer=ranked_slots(stock, order, train, lambda pair: pair[0]),
                       across_equal_size_layers=ranked_slots(stock, order, train, lambda pair: sizes[pair[0]]))
-    if weight_leaf_cost:
-        calibration_commit, costs = measured_leaf_costs(revision, formats)
-        weighted_train = [{(expert, width): count * layer_costs[width - 1]
-                           for (expert, width), count in jobs.items()}
-                          for jobs, layer_costs in zip(train, costs, strict=True)]
-        selections['across_equal_size_leaf_cost'] = ranked_slots(
-            stock, order, weighted_train, lambda pair: sizes[pair[0]])
     cases, profiles = {}, {}
     for label, slots in selections.items():
         require(slots[:PROTECTED] == stock[:PROTECTED] and [sizes[layer] for layer, _ in slots] == stock_sizes,
@@ -149,9 +123,6 @@ def profile_study(*, weight_leaf_cost=False):
                             changed_members=len(set(stock) - set(slots)),
                             train=replay.score(train, selected, formats),
                             holdout=replay.score(holdout, selected, formats))
-        if weight_leaf_cost:
-            cases[label]['train']['modeled_leaf_cpu_ns'] = leaf_cost(train, selected, costs)
-            cases[label]['holdout']['modeled_leaf_cpu_ns'] = leaf_cost(holdout, selected, costs)
     center = len(windows) // 2
     cross = cases['across_equal_size_layers']['holdout']
     advance = all(cross[k] < cases[case]['holdout'][k] for case in ('stock', 'within_layer')
@@ -163,31 +134,16 @@ def profile_study(*, weight_leaf_cost=False):
                 scope='Observed single-workload route replay. Global stock preserves the original '
                 'slot identities and widths. The two rankings change only membership after slot 132. '
                 'Future model checks require actual placement, the same loan/restore and independent workloads.')
-    if weight_leaf_cost:
-        weighted = cases['across_equal_size_leaf_cost']
-        count_rank = cases['across_equal_size_layers']
-        require(weighted['train']['modeled_leaf_cpu_ns'] <= count_rank['train']['modeled_leaf_cpu_ns'],
-                'weighted selection failed to minimize the training cost for the original byte geometry')
-        result.update(calibration_commit=calibration_commit,
-                      leaf_cost_advance=(weighted['holdout']['modeled_leaf_cpu_ns'] <
-                                         count_rank['holdout']['modeled_leaf_cpu_ns']
-                                         and weighted['holdout']['logical_job_blob_bytes'] <=
-                                         count_rank['holdout']['logical_job_blob_bytes']),
-                      leaf_cost_scope='Equal-size slots and protected experts stay fixed. Use the first half '
-                                      'of the prose trace to rank by the summed worker-leaf time per job shape '
-                                      'from separate code runs. Compare held-out work with the count rank. '
-                                      'Actual wall time, DRAM traffic and GPU cost require device measurements.')
     return result, profiles
 
 
-def analyze(*, weight_leaf_cost=False):
-    result, _ = profile_study(weight_leaf_cost=weight_leaf_cost)
+def analyze():
+    result, _ = profile_study()
     return result
 
 
 if __name__ == '__main__':
-    require(sys.executable == PYTHON and sys.argv[1:] in ([], ['--leaf-cost']),
-            'use the pinned Python with no arguments or --leaf-cost')
+    require(sys.executable == PYTHON and len(sys.argv) == 1, 'use the pinned Python without arguments')
     with (STATE / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        print(json.dumps(analyze(weight_leaf_cost=bool(sys.argv[1:])), indent=2))
+        print(json.dumps(analyze(), indent=2))
