@@ -2243,7 +2243,11 @@ The caller-help campaign is closed and its extra executable is retired.
 The source-only preflight at `d43350b2a` verified 1,338 project inputs,
 the two pinned dependencies, the four planned targets and both ranking
 profile hashes. The preflight did not configure, compile or execute a GPU
-fixture. The closed early-PLE executable was retired after exact recipe
+fixture. The V1 target list omitted the GEMM and MoE callers required by
+the inherited compiler census. The plan was closed before configuration,
+and its 19,031,019-byte source copy was retired after recording `d7e2a7261`.
+V2 compiles the existing census targets with both scratch fixtures.
+The closed early-PLE executable was retired after exact recipe
 recovery. Use that build slot for placement and keep the validated primary
 binary. The independent `dflash2-prefill-kv-stage-native-v1` decode reference
 remains pinned by the existing route-census plan. Select and retire the

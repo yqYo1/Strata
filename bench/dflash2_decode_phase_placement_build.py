@@ -10,7 +10,7 @@ import dflash2_primary_retained as retained
 primary = retained.PRIMARY
 bank, builder, require = primary.bank, primary.builder, primary.require
 source, validation = bank.stage.source, bank.basis.validation
-KEY = 'dflash2_decode_phase_placement_native_v1'
+KEY = 'dflash2_decode_phase_placement_native_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 TREE = ROOT / 'source'
 THIS = Path(__file__).resolve().relative_to(bank.P).as_posix()
@@ -23,7 +23,8 @@ CONTROLLERS = (THIS, retained.THIS, 'bench/dflash2_decode_phase_placement_check.
                'bench/dflash2_primary_checks.py', 'bench/dflash2_primary_context.py', 'data/expert-profile.bin')
 REQUIRED = (GENERATOR, 'src/core/expert_cache.cpp', 'src/core/verify.cpp',
             'tests/core/prefill_scratch_test.cpp', 'tests/sycl/prefill_scratch.cpp')
-TARGETS = ['strata', 'strata_full_context_diagnostic', 'prefill_scratch_host_test', 'sycl_prefill_scratch_test']
+# The shared compiler census checks the native GEMM and MoE class users.
+TARGETS = [*builder.TARGETS, 'prefill_scratch_host_test', 'sycl_prefill_scratch_test']
 
 
 def inputs(revision):
