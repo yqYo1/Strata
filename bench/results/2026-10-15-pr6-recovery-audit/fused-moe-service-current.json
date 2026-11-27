@@ -736186,7 +736186,7 @@
       "stop_deadline_s": 150,
       "scope": "Send STOP at the layer-0 trace after the scheduled gather, then repeat the short request on the same server. A fresh process completes the original direct-writer short/long/short requests and checks target state, taps and token IDs."
     },
-    "stage": "partial",
+    "stage": "failed",
     "outcomes": {
       "cancel": {
         "complete": true,
@@ -736297,6 +736297,28 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "direct": {
+        "complete": false,
+        "host_probe_accepted": false,
+        "native_exit_code": 0,
+        "native_identity": {
+          "pid": 1437024,
+          "start_ticks": 411718757
+        },
+        "error": "RuntimeError('first gather did not reach layer 1')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
       }
     },
     "active": false,

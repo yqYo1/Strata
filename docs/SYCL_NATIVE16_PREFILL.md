@@ -11834,6 +11834,16 @@ tap payloads and output against the previous direct-store result. These requests
 check scheduling and state handoff. Timing and physical full-context validation
 use separate runs.
 
+Both V1 diagnostic processes exited normally and recorded no fresh Xe fault.
+STOP occurred before layer 1 with zero prompt tokens committed. The two
+82-input requests returned the reference 32 outputs and matched active state.
+The complete 122,881-input request reached all 48 layers and emitted 32
+outputs with zero early gathers. The dense-phase trace showed 48 layer
+activations. V1 excludes the installed dense callback from early scheduling.
+Its STOP result establishes server recovery. The outstanding-gather lifetime and timed cohort
+requires a new native proof. The failed direct trace hashes to
+`7ca9c9c94e2be75e032ee40c4382b3187789ccb2c3226d26ba1513fa85dfc2bd`.
+
 The closed comparison at `bdfd43ec9` preserves the 12 requests and
 passes the PLE reader's admission. After verifying all four terminal
 receipts against the pushed record, retired `host` and `0`–`3` under
