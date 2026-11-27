@@ -2196,65 +2196,65 @@ unresolved. The compact result retains all samples and the verdict under
 
 #### Placement after early decode output
 
-Evaluate the measured blend by installing it during decode and restoring
-stock before request completion. Use stock residency throughout prefill
-and for at least the first 32 native outputs.
-The serving loop flushes emitted tokens before drafting and closes the
-round before the next verifier call. Check that first nonempty client
-output precedes the placement change, since a flushed native token can
-have no visible content. Change only the 979 verified tail slots after
-the last stock reader retires. Restore those slots to stock after the
-last decode reader retires and before the request completes. The next
-prompt, including a resumed conversation, starts with the stock map.
-Skip the experimental switch when the output budget cannot amortize it.
-[Serving window](../src/program/generate.cpp#L7122) ·
-[Residency publication contract](../include/strata/core/expert_cache.hpp#L145).
+The same-binary comparison at `ac3638fb3` closes all six independent
+processes in stock/blend, blend/stock, stock/blend order. The native source
+is `d3618e336`. Both arms use the same stock prefill placement and T4
+schedule. Each process runs the 96,204-token code and 96,274-token prose
+inputs with thinking enabled and zero prefix reuse. The native route and
+logical prefill work match between arms. All owners close with normal
+exits, matched final model assets and zero fresh Xe faults.
 
-The 1,256-slot global profiles from `a57499a15` match their recorded hashes.
-All 277 expert identities shared by the profiles occupy the same slots.
-The 979 outgoing and 979 incoming identities are disjoint. Build the stock
-map, blended map and one common mask at startup. The mask lists the
-277 shared slots in both directions while the transition owns the cache.
-Copy only the changed slots. Their 109 runs span slot 132 through slot 1255.
+| Workload and pair | Prefill seconds, stock → blend | Client TTFT seconds, stock → blend | Decode tok/s, stock → blend |
+| --- | ---: | ---: | ---: |
+| Code 1 | 102.1628 → 102.3075 | 103.519 → 103.656 | 16.389 → 17.740 |
+| Code 2 | 102.2576 → 102.6707 | 103.683 → 104.034 | 16.368 → 17.776 |
+| Code 3 | 102.2289 → 102.1406 | 103.566 → 103.481 | 16.068 → 17.680 |
+| Prose 1 | 92.5147 → 92.4994 | 92.705 → 92.685 | 11.592 → 12.017 |
+| Prose 2 | 93.1709 → 92.6509 | 93.358 → 92.835 | 11.613 → 12.017 |
+| Prose 3 | 92.7722 → 92.4856 | 93.025 → 92.669 | 9.719 → 11.863 |
 
-The same slot geometry would request 2,010,419,200 H2D bytes each way.
-The 6.292–6.485 GB/s bulk-copy calibration gives 0.620–0.639 seconds for
-the two payloads before waits and publication. Holding the previous
-median rate difference fixed gives a copy-only crossover after 138–142
-additional code outputs or 327–337 additional prose outputs. These
-estimates use the ranked-refill medians (15.604 → 16.789 and
-11.184 → 11.427 tok/s). Output and acceptance changed in that comparison.
-Measure the actual switch and restore clocks, time to first nonempty
-client output, the inter-token gap at the switch and throughput with
-both placement costs included.
+The candidate installs after the first client output and at least 32 native
+outputs. It restores stock before request completion. Each direction
+requests 2,010,419,200 H2D bytes across 979 slots. The combined transitions
+take 670.064–672.456 ms per request, included in the measured decode clock.
+Both arms charge final commit retirement. Earlier bounded checks at
+`3c0a8d8aa` verified the map, boundary payloads, cancellation and successive
+requests on the same executable.
 
-Start with a component check for changed-slot sizes, reader retirement,
-CPU and GPU map publication, cancellation and partial-copy failure.
-Recover the original profile and the stock control from `a57499a15`.
-Check RAM residency for both experts at every changed slot. The current
-resident source can keep only part of the loan tail in RAM when the
-budget is tight. Require the actual resident sources and stable lifetimes
-before evaluating the two-copy estimate. Preserve the stock route when
-that admission fails. Keep ordinary adaptive swaps off in both arms.
-[Resident tail selection](../src/core/expert_source.cpp#L1343) ·
-[Resident source check](../src/core/expert_source.cpp#L1610).
+The candidate wins all three pairs in both workloads. Paired geometric
+decode gains are 8.96% for code and 9.40% for prose. The third prose control
+has the same output, draft and expert-job counts as the first two but is
+about 16% slower. Its cause is unresolved. The first two prose gains are
+3.67% and 3.48%. Output lengths are 3,195 → 3,135 for code and
+8,618 → 8,052 for prose. CPU expert jobs per output fall from 354.84 to
+296.67 and from 398.11 to 361.01. These are job counts on the observed
+routes. The comparison leaves physical DRAM traffic and CPU service time
+unmeasured.
 
-Use the existing validated slot extent and copy retirement checks and
-publish both maps before admitting another verifier window. The fixed
-cache's adaptive publication already validates its CPU map and uploads
-the device table. Verify the graph consumes the new mapping and each
-payload before reusing the captured route. At request completion the
-reported native decode interval currently ends before final commit
-retirement. Account for the restore and its wait in an effective decode
-clock and measure client completion separately.
-[Residency publication](../src/program/generate.cpp#L4900) ·
-[Decode clock](../src/program/generate.cpp#L7180).
+The median paired code prefill time and TTFT rise 0.142% and 0.132%.
+The predeclared preservation gate fails. Keep the stock route and close
+qualification for this version. Task and agent validation, physical
+262,144-token capacity and live RESTORE remain separate checks for any
+future version. The measured implementation prepares the placement tables
+before serving. A follow-up can defer that work to decode and hold the
+entire prefill path constant. The current timing evidence leaves the cause
+of the prefill difference unresolved.
+[Committed timing and decision](https://github.com/yqYo1/Strata/commit/ac3638fb3708cccaa6e73bc8629cb048af148e7d).
 
-Before a long comparison, verify that the stock prefix, prefill and early
-decode match, and that two successive requests on the same process begin
-with the stock map. The long comparison uses code and prose in independent
-matched processes with equal inputs and reports draft totals and task output.
-Run this separately from the caller-help scheduling change.
+The placement build and raw timing outputs have no remaining measurement
+consumer. The recovery check matched all 1,338 original source files and
+the build recipe, 1,478 compiler inputs, 30 link inputs, 136 objects and
+10 executables. All six terminal timing receipts match the committed
+result. Retire the following owned descendants, keeping each original
+`record.json` for provenance and the subsequent KV fixture's closure check.
+Inventory hashes cover sorted paths relative to each root, byte counts and
+file hashes. The primary and independent expert-service builds remain
+selected for their existing measurements.
+
+| Scope under tuning state | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-decode-phase-placement-native-v2/{build,cache,owned,ownership.json,source,tmp}` | 1,530 | 217,734,669 | `e2cef1e3c3d2a672dfd8d42fe80c5851502df008f17c8d67a4855796a61e32f2` |
+| `dflash2-decode-phase-placement-speed-v1/{0,1,2,3,4,5,host}` | 436 | 90,912,271 | `c42b5c451d17c8a2289d4711511535112781453bf56684fcb3cd478dd73a053e` |
 
 The closed comparison at `a57499a15` is reachable on `feature/sycl`.
 The recovery audit matched 1,327 original source files, 520 committed
