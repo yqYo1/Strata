@@ -3,12 +3,15 @@
 
 import fcntl
 import json
+import math
 from pathlib import Path
+import statistics
 import subprocess
 import sys
 
 sys.dont_write_bytecode = True
 import build_q6_c5_component as existing
+from q6_canonical_component import batch_size, fields, number, validated_trace
 
 base, P, B, RESULT = existing.base, existing.P, existing.B, existing.RESULT
 require, sha = existing.require, existing.sha
@@ -26,8 +29,12 @@ PREFIXES = ('CMakeLists.txt', 'cmake', 'src', 'include', 'third_party', 'bench/s
             source_build.fixture.THIS, source_build.retained.THIS)
 CONTROL = ('--host-split-c2', 'HOST_SPLIT_C2 passed=1 cases=5 GPU=0')
 ARC_GATE = 'dflash2_decode_t4_shared_plan_v2'
+T4_SPEED = 'dflash2_decode_t4_speed_v1'
 SHAPES = ((512, 33), (6144, 2560), (2560, 6144), (2560, 10240), (2560, 12288))
+TIMED_SHAPES = SHAPES[1:]
+ORDER = (('c4', 0), ('columns', 0), ('columns', 1), ('c4', 1), ('c4', 2), ('columns', 2))
 SUMMARY = 'SPLIT_C2_CHECK passed=1 cases=10 bitwise=1 guards=1 first_half=1'
+TIMING_SUMMARY = 'TIMING passed=1 samples=40 shapes=4 model_speed=0 physical_traffic=0 cache=one-repeated-matrix'
 ARC_LIMITS = dict(wall=180, cpu=600, rss_cap=4 << 30, text_cap=24 << 20,
                   file_cap=32 << 20, total_cap=64 << 20)
 
@@ -69,6 +76,41 @@ def numerical_plan(ctx):
                 environment=env, limits=ARC_LIMITS, shapes=[list(s) for s in SHAPES], summary=SUMMARY)
 
 
+def timing_plan(ctx):
+    arc = numerical_plan(ctx)
+    env = dict(arc['environment'], UR_ENABLE_LAYERS='UR_LAYER_PARAMETER_VALIDATION')
+    env.pop('UR_LOG_TRACING')
+    return dict(stages=[
+        dict(mode=f'time-{i}', reference=reference, repetition=repetition,
+             command=[arc['command'][0], f'--time-split-c2-{reference}', str(repetition)],
+             environment=dict(env, UR_LOG_VALIDATION=env['UR_LOG_VALIDATION'].replace(
+                 '/validation.log', f'/time-{i}-validation.log')))
+        for i, (reference, repetition) in enumerate(ORDER)],
+        shapes=[list(shape) for shape in TIMED_SHAPES], limits=dict(ARC_LIMITS, wall=300),
+        scope='Two independent one-node graph launches versus canonical C4 and versus the existing '
+              'two-launch column path, on repeated matrices. Preserve parameter validation and runtime safety.',
+        eligibility='Five batches per arm per shape per process, after two warm-up batches. Each batch '
+                    'contains 1024 complete four-column replays and lasts at least 10 ms and 300 timer units. '
+                    'Record submission, completion and caller CPU separately. Keep every sample.',
+        decision='For each shape require at least two of three faster C2 medians and a geometric time '
+                 'ratio below one versus the existing column pair for a follow-up. Use C4 to price the '
+                 'split. Scope any follow-up to eligible shapes; model draft yield and speed need a new test.',
+        stop='Stop on an identity, numerical, allocation, timing, validation, ownership, fault or budget failure.')
+
+
+def closed_comparison(identity):
+    bank = source_build.bank
+    revision = source_build.source.git(P, 'rev-parse', 'refs/remotes/origin/feature/sycl').decode().strip()
+    row = bank.previous.historic(revision, T4_SPEED)
+    require(source_build.retained.closed(row, 'closed') and row['binary'] == identity['reference_binary']
+            and len(row['processes']) == 9 and all(
+                entry['complete'] and entry['passed'] and entry['ownership_closed']
+                and entry['native_exit_code'] == 0 and entry['fresh_faults'] == []
+                for entry in row['processes']),
+            'close and publish all nine owned model processes before the standalone comparison')
+    return dict(commit=revision, result_sha256=bank.signature(row), decision=row['decision'])
+
+
 def context():
     ctx = existing.context()
     ctx.ROOT, ctx.KEY = ROOT, KEY
@@ -83,7 +125,8 @@ def context():
         ctx.build.check_inputs(row)
         require(row['recipe']['targets'] == row['recipe']['build_targets'] == [ctx.TARGET]
                 and not row['recipe']['environment'].get('LD_PRELOAD')
-                and row['plan']['arc'] == numerical_plan(ctx), 'use the frozen standalone Q6 component plan')
+                and row['plan']['arc'] == numerical_plan(ctx)
+                and row['plan']['timing'] == timing_plan(ctx), 'use the frozen standalone Q6 component plan')
         if 'binary' in row:
             binary = row['binary']
             require(Path(binary['path']).stat().st_size == binary['bytes']
@@ -102,6 +145,7 @@ def prepare(ctx):
     require(not ROOT.exists() and KEY not in source_build.validation.committed(RESULT),
             'prepare one fresh C2 component build')
     native, compiler, identity = reference()
+    cohort = closed_comparison(identity)
     previous_root = str(source_build.ROOT)
     args = [value.replace(previous_root + '/source', str(P)).replace(previous_root, str(ROOT))
             for value in native['recipe']['configure']]
@@ -118,8 +162,9 @@ def prepare(ctx):
                                 file_cap=2 << 20, total_cap=8 << 20),
                plan=dict(compile_target=ctx.TARGET, initial_native_checks=['--host', '--host-c5', CONTROL[0]],
                          scope='Build the fixture only with the retained production DPC++ recipe.',
-                         arc=numerical_plan(ctx),
+                         arc=numerical_plan(ctx), timing=timing_plan(ctx), closed_model_comparison=cohort,
                          next='Commit the same-build Arc bitwise and guard check before timing either control.'),
+               timing=[],
                retention='One standalone fixture through the C2 component decision. No serving engine build.')
     ctx.current(row, committed=False)
     ROOT.mkdir(mode=0o700)
@@ -128,16 +173,116 @@ def prepare(ctx):
     ctx.save(row)
 
 
-def check(ctx):
+def read_numerical(lines, shapes, reference):
+    require(sum(line.startswith('DEVICE name=') and 'B570' in line for line in lines) == 1,
+            'the fixture must identify the Arc B570')
+    admissions = [fields(line, 'ADMISSION ') for line in lines if line.startswith('ADMISSION ')]
+    require(tuple((number(item, 'k'), number(item, 'n')) for item in admissions) == shapes,
+            'C2 fixture shape admissions differ')
+    expected_route = 'canonical_c4' if reference == 'c4' else 'columns_c2_pair'
+    control_graphs = 1 if reference == 'c4' else 2
+    for item, (k, n) in zip(admissions, shapes):
+        weights = n * (k // 256) * 210
+        require(item['graph_counts'] == f'{control_graphs}/2' and item['reference'] == expected_route
+                and number(item, 'graphs') == control_graphs + 2 and number(item, 'nodes_each') == 1
+                and item['scope'] == 'prequantized-canonical-C4'
+                and number(item, 'additional_candidate_weight_bytes') == number(item, 'packed_bytes') == 0
+                and number(item, 'canonical_bytes') == weights
+                and number(item, 'device_payload_bytes') == weights + (k // 32) * 36 * 4 + n * 32
+                and number(item, 'max_alloc_bytes') >= weights,
+                'C2 allocation, reference, or graph admission differs')
+    values = [fields(line, 'NUMERIC ') for line in lines if line.startswith('NUMERIC ')]
+    require([(number(v, 'k'), number(v, 'n')) for v in values] ==
+            [s for s in shapes for _ in range(2)], 'complete ordered per-shape numerical checks required')
+    for v in values:
+        n = number(v, 'n')
+        error = float(v['max_abs_error'])
+        require(v['passed'] == v['guards'] == '1' and number(v, 'columns') == 4
+                and number(v, 'outputs') == 4 * n and min(n, 512) <= number(v, 'oracle_rows') <= n
+                and (n > 1024 or number(v, 'oracle_rows') == n)
+                and math.isfinite(error) and error >= 0 and (reference != 'c4' or error == 0),
+                'numerical or guard outcome differs')
+    return len(values)
+
+
+def read_timing(lines, reference, repetition):
+    numerical_cases = read_numerical(lines, TIMED_SHAPES, reference)
+    clocks = [fields(line, 'CLOCK ') for line in lines if line.startswith('CLOCK ')]
+    require(len(clocks) == 1 and number(clocks[0], 'process') == repetition
+            and number(clocks[0], 'floor_ns') == 10_000_000, 'timing control missing or changed')
+    timer = number(clocks[0], 'median_stamp_ns')
+    require(timer > 0, 'timer overhead must be positive')
+    rows = []
+    for line in lines:
+        if not line.startswith('SAMPLE '):
+            continue
+        f = fields(line, 'SAMPLE ')
+        v = {key: number(f, key) for key in
+             ('process', 'arm', 'sample', 'k', 'n', 'columns', 'launches', 'graph_launches',
+              'nodes_per_graph', 'wall_ns', 'cpu_ns', 'submit_wall_ns', 'submit_cpu_ns', 'wait_wall_ns', 'wait_cpu_ns')}
+        batch = batch_size(v['n'])
+        graphs = 1 if reference == 'c4' and v['arm'] == 0 else 2
+        require(v['process'] == repetition and v['columns'] == 4 and batch == v['launches'] == 1024
+                and v['graph_launches'] == graphs * batch and v['nodes_per_graph'] == 1
+                and f['route'] == 'compat_graph'
+                and f['reference'] == ('canonical_c4' if reference == 'c4' else 'columns_c2_pair'),
+                'actual timed route or extent differs')
+        require(v['wall_ns'] >= max(10_000_000, 300 * timer)
+                and v['wall_ns'] == v['submit_wall_ns'] + v['wait_wall_ns']
+                and v['cpu_ns'] == v['submit_cpu_ns'] + v['wait_cpu_ns']
+                and v['cpu_ns'] <= v['wall_ns'] + 10 * timer, 'timing floor or accounting differs')
+        rows.append(v)
+    order = (1, 0) if repetition == 1 else (0, 1)
+    require([(v['k'], v['n'], v['arm'], v['sample']) for v in rows] ==
+            [(k, n, arm, sample) for k, n in TIMED_SHAPES for arm in order for sample in range(5)]
+            and [line for line in lines if line.startswith('TIMING ')] == [TIMING_SUMMARY],
+            'all ordered timing samples and the completion footer are required')
+    medians = {f'{k}x{n}': [statistics.median(v['wall_ns'] / v['launches'] for v in rows
+                                            if (v['k'], v['n'], v['arm']) == (k, n, arm))
+                            for arm in (0, 1)] for k, n in TIMED_SHAPES}
+    return dict(samples=rows, median_ns_per_four_columns=medians, timer_overhead_ns=timer,
+                numerical_cases=numerical_cases)
+
+
+def decide(outcomes):
+    require(tuple((v['reference'], v['repetition']) for v in outcomes) == ORDER
+            and all(v['passed'] for v in outcomes), 'six accepted timing processes required')
+    summary = {}
+    for k, n in TIMED_SHAPES:
+        shape = f'{k}x{n}'
+        comparisons = {}
+        for reference in ('c4', 'columns'):
+            medians = [v['evidence']['median_ns_per_four_columns'][shape]
+                       for v in outcomes if v['reference'] == reference]
+            ratios = [candidate / control for control, candidate in medians]
+            comparisons[reference] = dict(candidate_over_reference=ratios,
+                                          geometric_ratio=statistics.geometric_mean(ratios),
+                                          faster=sum(r < 1 for r in ratios))
+        summary[shape] = comparisons
+    return dict(shapes=summary, eligible_shapes=[shape for shape, values in summary.items()
+                if values['columns']['faster'] >= 2 and values['columns']['geometric_ratio'] < 1],
+                model_speed_qualified=False, model_draft_yield_qualified=False, adopted=False)
+
+
+def run_arc(ctx, mode):
     bank, validation = source_build.bank, source_build.validation
     row = bank.previous.read(ROOT / 'record.json')
     ctx.current(row)
-    plan, identity = row['plan']['arc'], row['selected_native']
+    identity = row['selected_native']
+    timing = mode != 'check'
+    if timing:
+        stages = row['plan']['timing']['stages']
+        index = [stage['mode'] for stage in stages].index(mode)
+        plan = dict(stages[index], limits=row['plan']['timing']['limits'])
+        require(row.get('numerical', {}).get('passed') and len(row['timing']) == index
+                and all(v['passed'] for v in row['timing']), 'commit numerical and all prior timing outcomes first')
+    else:
+        plan = row['plan']['arc']
+        require('numerical' not in row and not row['timing'], 'require a fresh numerical check')
     require(row['stage'] == 'built' and row['passed'] and row['ownership_closed']
             and row['host']['passed'] and row['host']['ownership_closed']
             and plan['command'][0] == row['binary']['path']
-            and 'numerical' not in row and not (ROOT / 'owned-arc').exists(),
-            'require the same-build host outcomes and a fresh Arc check')
+            and not (ROOT / f'owned-{mode}').exists(), 'require the same-build host outcomes and fresh Arc stage')
     runtime = identity['runtime_manifest']
     pins = bank.previous.read(Path(runtime['path']))
     require(sha(runtime['path']) == runtime['sha256']
@@ -149,42 +294,53 @@ def check(ctx):
     cursor, = [line.removeprefix('-- cursor: ') for line in subprocess.check_output(
         ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15).splitlines()
         if line.startswith('-- cursor: ')]
-    owner = base.ownership.Owner(ROOT / 'owned-arc', lambda: ctx.write(
-        ROOT / 'arc-execution.json', dict(active=bool(owner.active), commands=owner.commands)))
-    outcome = dict(host_probe_accepted=False)
+    owner = base.ownership.Owner(ROOT / f'owned-{mode}', lambda: ctx.write(
+        ROOT / f'{mode}-execution.json', dict(active=bool(owner.active), commands=owner.commands)))
+    outcome = dict(mode=mode, host_probe_accepted=False)
     try:
-        entry, out, err = owner.run('check-split-c2', plan['command'], plan['environment'], P, **plan['limits'])
+        entry, out, err = owner.run(mode, plan['command'], plan['environment'], P, **plan['limits'])
         outcome['native_exit_code'] = entry.get('exit_code')
         require(base.ownership.closed(entry) and outcome['native_exit_code'] == 0,
                 'the Arc C2 fixture did not complete')
         lines = out.read_text().splitlines()
-        admissions = [dict(p.split('=', 1) for p in line.split()[1:]) for line in lines if line.startswith('ADMISSION ')]
-        require([[int(item['k']), int(item['n'])] for item in admissions] == plan['shapes']
-                and all(item['graph_counts'] == '1/2' and item['reference'] == 'canonical_c4'
-                        and item['additional_candidate_weight_bytes'] == '0' for item in admissions)
-                and lines.count(plan['summary']) == 1, 'C2 numerical, graph, or shape outcome differs')
+        if timing:
+            outcome.update(reference=plan['reference'], repetition=plan['repetition'],
+                           evidence=read_timing(lines, plan['reference'], plan['repetition']))
+        else:
+            require(read_numerical(lines, SHAPES, 'c4') == 10 and lines.count(plan['summary']) == 1,
+                    'the full bitwise and first-half numerical check is required')
+            outcome.update(summary=SUMMARY, shapes=plan['shapes'])
         log = err.read_text()
-        proof = validation.preload_evidence(log, entry['pid'])
-        warning = ROOT / 'validation.log'
-        require(proof['loader'] == identity['validation_probe']['loader']['path'] and 'urEnqueue' in log
+        proof, body = validated_trace(log, entry['pid'])
+        warning = Path(plan['environment']['UR_LOG_VALIDATION'].split('output:file,', 1)[1])
+        require(proof['loader'] == identity['validation_probe']['loader']['path']
+                and (timing or 'urEnqueueCommandBufferExp' in body)
                 and (not warning.exists() or warning.stat().st_size == 0), 'C2 runtime validation differs')
         providers = bank.device.loaded_providers(log, dict(runtime_manifest=runtime,
             native_validation_probe=identity['validation_probe'], environment=plan['environment']))
-        outcome.update(host_probe_accepted=True, summary=SUMMARY, shapes=plan['shapes'],
-                       validation=proof, providers=providers)
-    except Exception as error:
+        outcome.update(host_probe_accepted=True, validation=proof, providers=providers)
+    except BaseException as error:
         outcome['error'] = repr(error)
     finally:
         validation.finish(outcome, owner, cursor, identity['boot'])
         outcome['passed'] &= outcome.get('driver_after') == identity['driver']
-        row['numerical'] = outcome
+        if timing:
+            row['timing'].append(outcome)
+        else:
+            row['numerical'] = outcome
+        row['active'], row['ownership_closed'] = bool(owner.active), outcome['ownership_closed']
+        if not outcome['passed']:
+            row.update(stage='failed', passed=False, complete=False)
+        elif len(row['timing']) == len(ORDER):
+            row.update(stage='closed', complete=True, decision=decide(row['timing']))
         ctx.save(row)
-    require(outcome['passed'], outcome.get('error', 'C2 numerical or ownership gate failed'))
+    require(outcome['passed'], outcome.get('error', 'C2 runtime, timing or ownership gate failed'))
 
 
 if __name__ == '__main__':
+    stages = ('prepare', 'build', 'host', 'check', *(f'time-{i}' for i in range(len(ORDER))))
     require(sys.executable == source_build.bank.basis.reference.model.PYTHON
-            and len(sys.argv) == 2 and sys.argv[1] in ('prepare', 'build', 'host', 'check'),
+            and len(sys.argv) == 2 and sys.argv[1] in stages,
             'use the pinned interpreter and one C2 component stage')
     with (B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -197,4 +353,4 @@ if __name__ == '__main__':
         elif sys.argv[1] == 'host':
             existing.host(ctx, extra_controls=(CONTROL,))
         else:
-            check(ctx)
+            run_arc(ctx, sys.argv[1])
