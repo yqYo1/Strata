@@ -33,7 +33,7 @@ def inputs(revision, ctx):
     require(build.wait.retained.closed(reference, 'closed')
             and reference['outcomes']['direct']['passed'], 'recover the original direct-writer parity')
     expected = reference['outcomes']['direct']
-    old, base, envs, requests = tap.inputs(revision)
+    old, base, envs, requests = tap.inputs(revision, base=build.wait.retained.baseline())
     require(all(reference['plan'][k] == old[k] for k in (
         'binary', 'command', 'cases', 'driver', 'boot', 'runtime_manifest',
         'native_validation_probe', 'dflash2_assets', 'model_assets_sha256')),

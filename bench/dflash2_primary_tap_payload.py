@@ -26,8 +26,8 @@ ORDER = ('smoke', 'copy', 'direct')
 LIMITS = dict(model.LIMITS)
 
 
-def inputs(revision):
-    row = curve.baseline()
+def inputs(revision, *, base=None):
+    row = curve.baseline() if base is None else base
     prior = bank.previous.historic(REFERENCE, REFERENCE_KEY)
     stopped = bank.previous.historic(PREVIOUS_ATTEMPT, 'dflash2_primary_tap_payload_v1')
     require(stopped['stage'] == 'failed' and stopped['ownership_closed'] and not stopped['active']
