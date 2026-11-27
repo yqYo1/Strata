@@ -1501,9 +1501,28 @@ The first timing attempt at `8191a29dd` passes both host correctness
 cases. Its first timed process hits the 180 CPU-second limit after
 31.011 wall seconds with 22 of 25 samples and no success marker.
 The owner exits with SIGXCPU and is reaped. The attempt has no eligible
-pair. Repeat the frozen comparison in a fresh root with 300 CPU seconds
-per process and the same 60 wall seconds, preserving the workloads,
-order, sample floor, timer limit and decision.
+pair. The retry uses the same executable hash, workloads, order, sample
+floor, timer limit and decision. It gives each process 300 CPU seconds
+within the same 60 wall seconds.
+
+The comparison at `b4500d7f5` closes with all six processes and 150
+timed samples. Exact outputs, job counts and worker placement pass in
+every process. Use the original phase-split CPU scheduler for width two.
+Restrict the early-publication follow-up to width four, where both
+format cells pass all three pairs.
+
+| Replay scope | By-expert over split time, three pairs | Geometric mean |
+| --- | ---: | ---: |
+| All eight batches | 0.9305 / 0.8480 / 0.9666 | 0.9136 |
+| IQ3_XXS, width two | 0.9778 / 0.7926 / 1.0618 | 0.9371 |
+| IQ3_XXS, width four | 0.8368 / 0.7186 / 0.9239 | 0.8221 |
+| IQ3_S, width two | 1.0878 / 1.0710 / 1.0736 | 1.0774 |
+| IQ3_S, width four | 0.9742 / 0.9780 / 0.9684 | 0.9735 |
+
+The production reference and candidate both use five workers plus the
+caller in this fixture. Measure the same width-four work with the
+caller reserved before attributing an overlap gain to the early callback.
+[CPU scheduling results](../bench/results/2026-10-15-pr6-recovery-audit/cpu-fixed-expert-schedule-current.json).
 
 The [stock admission controller](../bench/dflash2_decode_stock_global_restore.py)
 uses the retained primary executable and recovers the original restore plans
@@ -2364,6 +2383,12 @@ complete the first half's next-layer pre-mixer before waiting for the
 second half and defer its mapped publication until those consumers
 retire, or use a separately owned destination. Verify the next-layer
 IDs and the preceding layer's job map and trace as distinct payloads.
+The current GDN replay loops from token zero in both half graphs and
+suppresses earlier outputs in the second half. A width-four split
+therefore executes two extra GDN recurrence steps per applicable layer.
+The existing unsplit segment observer excludes split windows. Count the
+actual graph and recurrent work and time the two-half control through
+its own completion events.
 [CPU dispatcher](../src/core/expert_source.cpp) and
 [server trace](../src/program/generate.cpp).
 
