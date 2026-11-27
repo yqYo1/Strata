@@ -2241,6 +2241,21 @@ entire prefill path constant. The current timing evidence leaves the cause
 of the prefill difference unresolved.
 [Committed timing and decision](https://github.com/yqYo1/Strata/commit/ac3638fb3708cccaa6e73bc8629cb048af148e7d).
 
+The placement build and raw timing outputs have no remaining measurement
+consumer. The recovery check matched all 1,338 original source files and
+the build recipe, 1,478 compiler inputs, 30 link inputs, 136 objects and
+10 executables. All six terminal timing receipts match the committed
+result. Retire the following owned descendants, keeping each original
+`record.json` for provenance and the subsequent KV fixture's closure check.
+Inventory hashes cover sorted paths relative to each root, byte counts and
+file hashes. The primary and independent expert-service builds remain
+selected for their existing measurements.
+
+| Scope under tuning state | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-decode-phase-placement-native-v2/{build,cache,owned,ownership.json,source,tmp}` | 1,530 | 217,734,669 | `e2cef1e3c3d2a672dfd8d42fe80c5851502df008f17c8d67a4855796a61e32f2` |
+| `dflash2-decode-phase-placement-speed-v1/{0,1,2,3,4,5,host}` | 436 | 90,912,271 | `c42b5c451d17c8a2289d4711511535112781453bf56684fcb3cd478dd73a053e` |
+
 The closed comparison at `a57499a15` is reachable on `feature/sycl`.
 The recovery audit matched 1,327 original source files, 520 committed
 build-control inputs, the compiler and link inputs, 141 fresh objects and
