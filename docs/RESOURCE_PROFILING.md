@@ -779,7 +779,10 @@ memory ordering follow the SYCL group algorithms and barrier contracts.
 Prepare the standalone three-unit fixture using the original width-three
 compiler and provider recipe, with the committed resolver, header and
 fixture overlays. Reuse the retained runtime archive and prerequisite
-ownership checks. Build and run after the current 96K placement comparison.
+ownership checks through [the width-three controller](../bench/decode_kv_width3.py)
+in `--resident-batch` mode. After the current 96K placement comparison,
+use the pinned interpreter for `prepare`, `build`, `smoke`, `validate` and
+the six numbered processes. Commit each recorded stage before advancing.
 First check `--planner-resident-batch-smoke` with the qualified tracing.
 It repeats resident runs across a 256-cell boundary with epoch rollover,
 the same run separated by an invalid boundary cell, and ordered misses

@@ -1,4 +1,4 @@
-"""Measure the existing scalar and cooperative KV resolvers at verifier width three."""
+"""Measure KV resolvers at verifier width three on the retained Arc recipe."""
 
 import fcntl
 import json
@@ -23,13 +23,15 @@ sha, write, validation = bank.sha, bank.stage.write, basis.validation
 owner_api = bank.builder.ownership
 PRIMARY = retained.PRIMARY.ROOT
 KEY = 'decode_kv_width3_v1'
+RESIDENT_BATCH_KEY = 'decode_kv_resident_batch_v1'
 ROOT = bank.B / KEY.replace('_', '-')
 BUILD = ROOT / 'fixture-build'
 TARGET = 'sycl_kv_copy_groups_bench'
 FIXTURE = 'tools/sycl/kv_copy_groups_bench.cpp'
 RESOLVERS = ('src/kernels/sycl/kv_stream.cpp', 'src/kernels/sycl/decode_kv_stream.cpp')
+HEADER = 'include/strata/kernels/kv_stream.hpp'
 CONTRACT = (*RESOLVERS, 'tools/sycl/kv_copy_groups_oracle.hpp',
-            'include/strata/kernels/kv_stream.hpp', 'include/strata/kernels/kv_stream_copy_groups.hpp')
+            HEADER, 'include/strata/kernels/kv_stream_copy_groups.hpp')
 LINK_DRIVER = 'bench/sycl/build_prefill_mixed_gather.py'
 ARCHIVE = 'libstrata_sycl_runtime.a'
 ARMS = ('scalar', 'cooperative', 'cooperative', 'scalar', 'scalar', 'cooperative')
@@ -60,13 +62,27 @@ PLAN = dict(
     retention='Keep the private fixture through the bounded resolver and copy kernel trace. '
               'Retire the fixture and routine logs after the decisions and build recovery are verified. '
               'Reuse the retained runtime archive and keep the selected serving executable.')
+RESIDENT_BATCH_PLAN = dict(
+    PLAN,
+    resident_batch=True,
+    arms=['cooperative', 'resident-batch', 'resident-batch', 'cooperative', 'cooperative', 'resident-batch'],
+    misses=[0, 16, 64, 384],
+    samples_per_arm=12,
+    scope='Width-three K8V8 cooperative reference versus whole-tile resident run counting. '
+          'Keep 65,536 logical pages, 5,120 resident pages, capacity 2,051 and interleaved misses.',
+    validation='Three traced direct cases and graph replays, including invalid gaps across tiles. '
+               'Compare both full-shape graphs and physical last-cell repeats with parameter validation.',
+    trace=None,
+    retention='Retain the private fixture until its decision and original inputs are recoverable. '
+              'Keep the committed batch samples and retire the closed raw output.')
 
 
-def inputs(revision):
+def inputs(revision, plan=PLAN, build_dir=BUILD):
     live = retained.baseline()
     parent = bank.previous.read(PRIMARY / 'record.json')
     driver = basis.core.source.device.load_module('decode_kv_width3_link', bank.P / LINK_DRIVER)
-    controls = {FIXTURE, LINK_DRIVER, Path(__file__).resolve().relative_to(bank.P).as_posix(),
+    overlay_paths = (FIXTURE, RESOLVERS[1], HEADER) if plan.get('resident_batch') else (FIXTURE,)
+    controls = {*overlay_paths, LINK_DRIVER, Path(__file__).resolve().relative_to(bank.P).as_posix(),
                 'tools/sycl/measurement_environment.json'}
     for module in tuple(sys.modules.values()):
         origin = getattr(module, '__file__', None)
@@ -77,8 +93,12 @@ def inputs(revision):
             'commit the exact fixture and its controllers')
     original = dict(bank.stage.source.blobs(bank.P, live['native_source_commit'], CONTRACT))
     require(original.keys() == set(CONTRACT)
-            and all((PRIMARY / 'source' / p).read_bytes() == (bank.P / p).read_bytes() == raw
-                for p, raw in original.items()), 'retained resolver or fixture contracts changed')
+            and all((PRIMARY / 'source' / p).read_bytes() == raw
+                    and (p in overlay_paths or (bank.P / p).read_bytes() == raw)
+                    for p, raw in original.items()), 'retained resolver or fixture contracts changed')
+    overlay = {path: files[path] for path in overlay_paths}
+    require(all(overlay[path] != original[path] for path in overlay if path in original),
+            'resident batch requires the committed resolver and declaration overlays')
 
     parent_build = PRIMARY / 'build'
     database = parent_build / 'compile_commands.json'
@@ -93,12 +113,15 @@ def inputs(revision):
                 and all(flag in argv for flag in ('-fsycl', '-fno-fast-math', '-ffp-contract=off'))
                 and not any(flag in argv for flag in ('-ffast-math', '-Ofast')),
                 'unexpected retained KV compiler command')
-        dest = str(BUILD / Path(obj).name)
+        dest = str(build_dir / Path(obj).name)
         replacements[obj] = dest
+        if name in overlay:
+            source = str(build_dir / name)
         quote = []
         if name == FIXTURE:
-            source = str(BUILD / FIXTURE)
             quote = ['-iquote', str(PRIMARY / 'source' / 'tools/sycl')]
+        if HEADER in overlay:
+            argv = [argv[0], '-I', str(build_dir / 'include'), *argv[1:]]
         commands.append([*argv[:-4], *quote, '-MD', '-MF', dest + '.d', '-o', dest, '-c', source])
     ninja = '/usr/bin/ninja'
     require(sha(ninja) == parent['build_tools'][ninja], 'retained Ninja changed')
@@ -108,7 +131,7 @@ def inputs(revision):
             and all(link.count(obj) == 1 for obj in replacements) and link[link.index('-o') + 1] == TARGET
             and all(argv[0] == link[2] for argv in commands)
             and [p for p in link if p.endswith('.a')] == [ARCHIVE], 'unexpected component link recipe')
-    replacements[TARGET] = str(BUILD / TARGET)
+    replacements[TARGET] = str(build_dir / TARGET)
     commands.append([link[2], '-v', *(replacements.get(x, x) for x in link[3:-2])])
 
     archive = str(parent_build / ARCHIVE)
@@ -120,35 +143,35 @@ def inputs(revision):
                   resolver_source=bank.stage.hashed(original), compile_database_sha256=sha(database),
                   parent_environment_sha256=bank.signature(parent['recipe']['environment']),
                   driver_library=live['environment_template']['ZE_ENABLE_ALT_DRIVERS'],
-                  archives={archive: archive_sha}, commands=commands, plan=PLAN)
+                  archives={archive: archive_sha}, commands=commands, plan=plan)
     driver.BUILD, driver.SOURCE = parent_build, PRIMARY / 'source'
-    return fields, parent, driver, {FIXTURE: files[FIXTURE]}
+    return fields, parent, driver, overlay
 
 
-def save(row):
-    write(ROOT / 'record.json', row)
+def save(row, root=ROOT, key=KEY):
+    write(root / 'record.json', row)
     results = bank.previous.read(bank.RESULT)
-    results[KEY] = row
+    results[key] = row
     write(bank.RESULT, results)
 
 
-def build(row, parent, driver, overlay):
-    require(row['stage'] == 'prepared' and not BUILD.exists(), 'one fresh component build required')
-    allowed = driver.build_inputs(parent, BUILD, overlay, row['commands'])
-    driver.build_fixture(BUILD, TARGET, parent, overlay, row['commands'], allowed,
+def build(row, parent, driver, overlay, build_dir=BUILD):
+    require(row['stage'] == 'prepared' and not build_dir.exists(), 'one fresh component build required')
+    allowed = driver.build_inputs(parent, build_dir, overlay, row['commands'])
+    driver.build_fixture(build_dir, TARGET, parent, overlay, row['commands'], allowed,
                          dict(source_commit=row['source_commit'], overlay_sha256=bank.stage.hashed(overlay)))
-    receipt = bank.previous.read(BUILD / 'record.json')
+    receipt = bank.previous.read(build_dir / 'record.json')
     require(receipt['complete'] and receipt['ownership_closed'] and receipt['commands'] == row['commands']
             and all(receipt['linked'].get(p) == h for p, h in row['archives'].items()),
             'fixture link did not consume the qualified runtime archive')
     binary = receipt['binary']
     row.update(stage='built', binary=dict(binary, bytes=Path(binary['path']).stat().st_size),
-               build_receipt_sha256=sha(BUILD / 'record.json'),
+               build_receipt_sha256=sha(build_dir / 'record.json'),
                compiled_inputs=len(receipt['compiled']), linked_inputs=len(receipt['linked']))
 
 
-def check_binary(row):
-    receipt_path = BUILD / 'record.json'
+def check_binary(row, build_dir=BUILD):
+    receipt_path = build_dir / 'record.json'
     require(sha(receipt_path) == row['build_receipt_sha256'], 'fixture build receipt changed')
     receipt = bank.previous.read(receipt_path)
     binary = row['binary']
@@ -158,33 +181,51 @@ def check_binary(row):
             'fixture executable or actual build inputs changed')
 
 
-def observations(lines, stage):
+def matches_arm(sample, resident_batch, candidate):
+    return (sample['cooperative'] is (resident_batch or candidate)
+            and sample.get('resident_batch', False) is (resident_batch and candidate))
+
+
+def observations(lines, stage, plan=PLAN):
+    resident_batch = plan.get('resident_batch', False)
     if stage == 'smoke':
-        require(lines == ['planner_width3_smoke=PASS direct_cases=2 graph_replays=2'],
-                'incomplete small width-three fixture')
-        return dict(direct_cases=2, graph_replays=2)
+        name, count = ('resident_batch', 3) if resident_batch else ('width3', 2)
+        require(lines == [f'planner_{name}_smoke=PASS direct_cases={count} graph_replays={count}'],
+                'incomplete small KV fixture')
+        return dict(direct_cases=count, graph_replays=count)
     if stage == 'validate':
         recorded = [json.loads(line) for line in lines]
         graphs = recorded[:10]
-        expected_graphs = [(c, p) for c in (False, True) for p in range(5)]
-        require([(s['cooperative'], s['replay']) for s in graphs] == expected_graphs
-                and all(type(s['cooperative']) is bool and type(s['fingerprint_fnv64']) is int
+        require(len(graphs) == 10 and all(
+                    matches_arm(sample, resident_batch, index >= 5) and sample['replay'] == index % 5
+                    for index, sample in enumerate(graphs))
+                and all(type(s['fingerprint_fnv64']) is int
                         and s['phase'] == 'planner_context_graph' and s['fmt'] == 1 and s['nq'] == 3
                         and s['last_cell'] == 262143 and s['oracle_exact'] is True for s in graphs)
                 and [s['fingerprint_fnv64'] for s in graphs[:5]] == [s['fingerprint_fnv64'] for s in graphs[5:]],
                 'missing or mismatched width-three graph parity')
-        expected = [dict(phase='planner_perf_cases', nq=3, missing=m, cooperative=c,
-                         replays=2, oracle_exact=True) for m in MISSES for c in (False, True)]
+        expected = []
+        for missing in plan['misses']:
+            for candidate in (False, True):
+                case = dict(phase='planner_perf_cases', nq=3, missing=missing,
+                            cooperative=(resident_batch or candidate), replays=2, oracle_exact=True)
+                if resident_batch:
+                    case['miss_pattern'] = 'interleaved'
+                    if candidate:
+                        case['resident_batch'] = True
+                expected.append(case)
         require(recorded[10:] == expected, 'miss-case validation census differs')
         return dict(graph_fingerprints=[s['fingerprint_fnv64'] for s in graphs[:5]], exact_miss_cases=expected)
-    arm = ARMS[int(stage)]
-    marker = ('planner_benchmark=PASS samples=9 timing=sum_of_isolated_graph_launch_and_wait '
+    arm = plan['arms'][int(stage)]
+    count = plan['samples_per_arm']
+    marker = (f'planner_benchmark=PASS samples={count} timing=sum_of_isolated_graph_launch_and_wait '
               'reset_and_oracle=excluded physical_bus_bytes=unknown')
-    require(len(lines) == 10 and lines[-1] == marker, 'incomplete width-three timings')
+    require(len(lines) == count + 1 and lines[-1] == marker, 'incomplete width-three timings')
     samples = [json.loads(line) for line in lines[:-1]]
-    for s, (missing, rep) in zip(samples, ((m, i) for m in MISSES for i in range(3)), strict=True):
+    for s, (missing, rep) in zip(samples, ((m, i) for m in plan['misses'] for i in range(3)), strict=True):
         calls = s['calls']
-        require(s['phase'] == 'planner_sample' and s['cooperative'] is (arm == 'cooperative')
+        require(s['phase'] == 'planner_sample' and matches_arm(s, resident_batch, arm != plan['arms'][0])
+                and s.get('miss_pattern') == ('interleaved' if resident_batch else None)
                 and (s['nq'], s['missing'], s['rep'], s['unique_pages'], s['graph_nodes']) == (3, missing, rep, 1539, 2)
                 and s['oracle_exact'] is True and s['requested_host_payload_bytes_per_call'] == missing * 4224
                 and type(calls) is int and 64 <= calls <= 16384 and calls & (calls - 1) == 0,
@@ -263,9 +304,11 @@ def trace_provider(row):
                 probe_sha256=bank.signature(probe))
 
 
-def device_case(row, parent, stage, profile=None):
-    check_binary(row)
-    root = ROOT / stage
+def device_case(row, parent, stage, profile=None, run_root=ROOT):
+    build_dir = run_root / 'fixture-build'
+    check_binary(row, build_dir)
+    plan = row['plan']
+    root = run_root / stage
     root.mkdir(mode=0o700)
     for name in ('tmp', 'cache'):
         (root / name).mkdir(mode=0o700)
@@ -282,9 +325,10 @@ def device_case(row, parent, stage, profile=None):
         env.pop('UR_LOG_TRACING', None)
         env['UR_ENABLE_LAYERS'] = 'UR_LAYER_PARAMETER_VALIDATION'
     verb = 'trace' if profile else stage if stage in ('smoke', 'validate') else 'benchmark'
-    argv = [row['binary']['path'], '--planner-width3-' + verb]
+    fixture = 'resident-batch' if plan.get('resident_batch') else 'width3'
+    argv = [row['binary']['path'], f'--planner-{fixture}-{verb}']
     if verb == 'benchmark':
-        argv.append(ARMS[int(stage)])
+        argv.append(plan['arms'][int(stage)])
     if profile:
         arm, missing = TRACE_CASES[stage]
         argv.extend((arm, str(missing)))
@@ -320,7 +364,7 @@ def device_case(row, parent, stage, profile=None):
             if line == 'KV_PLAN_WAIT':
                 break
             lines.append(line)
-        result.update(trace_windows(lines, stage) if profile else observations(lines, stage))
+        result.update(trace_windows(lines, stage) if profile else observations(lines, stage, plan))
         require(Path(f'/proc/{entry["pid"]}/exe').resolve() == Path(row['binary']['path']).resolve(),
                 'native fixture did not exec under the owned PID')
         mapped = runtime_probe.executable_mappings(Path(f'/proc/{entry["pid"]}/maps').read_text())
@@ -343,7 +387,7 @@ def device_case(row, parent, stage, profile=None):
         if stage == 'smoke':
             calls = r'^\s*<--- urEnqueueCommandBufferExp\(.* -> UR_RESULT_SUCCESS;'
             count = len(re.findall(calls, errors, re.M))
-            require(count == 2, 'expected two successful traced graph replays')
+            require(count == result['graph_replays'], 'expected all traced graph replays')
             result['traced_graph_replays'] = count
         require(owner_api.closed(entry) and entry['exit_code'] == 0 and
                 'PASS bounded component scope only' in errors and
@@ -364,7 +408,7 @@ def device_case(row, parent, stage, profile=None):
             timings = trace_services(events, entry['pid'], result['replay_windows'], capture_begin, capture_end)
             result.update(trace_sha256=sha(paths[0]), trace_services=timings,
                           capture_raw_ns=[capture_begin, capture_end], trace_provider=profile)
-        check_binary(row)
+        check_binary(row, build_dir)
         identity, = [item for item in entry['owners'] if item['pid'] == entry['pid']]
         result.update(host_probe_accepted=True, validation=actual_probe, native_identity=identity, native_exit_code=0)
     except BaseException as error:
@@ -376,12 +420,13 @@ def device_case(row, parent, stage, profile=None):
     return result
 
 
-def decision(processes):
+def decision(processes, plan=PLAN):
     ids = {(p['native_identity']['pid'], p['native_identity']['start_ticks']) for p in processes}
-    require(len(ids) == len(STAGES) and [p['stage'] for p in processes] == list(STAGES),
+    stages = plan['stages']
+    require(len(ids) == len(stages) and [p['stage'] for p in processes] == stages,
             'all independent component processes required')
     cells = []
-    for missing in MISSES:
+    for missing in plan['misses']:
         medians = [statistics.median(s['ns_per_call'] for s in p['samples'] if s['missing'] == missing)
                    for p in processes[2:]]
         ratios = [medians[1] / medians[0], medians[2] / medians[3], medians[5] / medians[4]]
@@ -390,65 +435,79 @@ def decision(processes):
     return dict(cells=cells, eligible_for_model_check=all(c['faster'] for c in cells))
 
 
-def main(action):
+def main(action, resident_batch=False):
+    key, plan = (RESIDENT_BATCH_KEY, RESIDENT_BATCH_PLAN) if resident_batch else (KEY, PLAN)
+    root = bank.B / key.replace('_', '-')
+    build_dir = root / 'fixture-build'
+    stages = plan['stages']
+    if resident_batch:
+        placement = bank.previous.read(bank.B / 'dflash2-decode-phase-placement-speed-v1' / 'record.json')
+        require(placement['stage'] in ('closed', 'failed') and not placement['active']
+                and placement['ownership_closed'], 'close the frozen 96K placement comparison first')
+
     if action == 'prepare':
         prior = validation.committed(bank.RESULT, ('dflash2_decode_kv_speed_v1',))
         require(prior['stage'] in ('closed', 'failed') and not prior['active'] and prior['ownership_closed'],
                 'close the existing DFlash2 comparison before preparing this fixture')
-        require(not ROOT.exists() and KEY not in validation.committed(bank.RESULT), 'one fresh width-three run')
+        require(not root.exists() and key not in validation.committed(bank.RESULT), 'one fresh width-three run')
         revision = validation.git('rev-parse', 'HEAD').decode().strip()
-        fields, _, _, _ = inputs(revision)
-        ROOT.mkdir(mode=0o700)
+        fields, _, _, _ = inputs(revision, plan, build_dir)
+        root.mkdir(mode=0o700)
         save(dict(fields, stage='prepared', processes=[], complete=False, passed=False,
-                  ownership_closed=True, model_qualified=False))
+                  ownership_closed=True, model_qualified=False), root, key)
         return
-    row = bank.previous.read(ROOT / 'record.json')
-    require(validation.committed(bank.RESULT, (KEY,)) == row and row['ownership_closed'],
+    row = bank.previous.read(root / 'record.json')
+    require(validation.committed(bank.RESULT, (key,)) == row and row['ownership_closed'],
             'commit the exact preceding component stage')
-    fields, parent, driver, overlay = inputs(row['source_commit'])
+    fields, parent, driver, overlay = inputs(row['source_commit'], plan, build_dir)
     require(all(row[k] == v for k, v in fields.items()), 'frozen fixture inputs changed')
     if action in TRACE_CASES:
+        require(not resident_batch, 'resident batch timing uses no kernel trace stages')
         traces = row.setdefault('traces', [])
         require(row['stage'] == 'closed' and row['complete'] and row['passed']
                 and len(traces) < len(TRACE_CASES) and action == list(TRACE_CASES)[len(traces)]
                 and all(result['passed'] for result in traces), 'run only the next trace after clean closure')
         profile = trace_provider(row)
-        result = device_case(row, parent, action, profile)
+        result = device_case(row, parent, action, profile, root)
         traces.append(result)
         row['ownership_closed'] = result['ownership_closed']
-        save(row)
+        save(row, root, key)
         require(result['passed'], result.get('error', 'trace or ownership gate failed'))
         return
     if action != 'build':
         index = len(row['processes'])
-        require(index < len(STAGES) and action == STAGES[index]
-                and row['stage'] == ('built' if index == 0 else STAGES[index - 1]),
+        require(index < len(stages) and action == stages[index]
+                and row['stage'] == ('built' if index == 0 else stages[index - 1]),
                 'run only the next committed case')
     try:
         if action == 'build':
-            build(row, parent, driver, overlay)
+            build(row, parent, driver, overlay, build_dir)
         else:
-            result = device_case(row, parent, action)
+            result = device_case(row, parent, action, run_root=root)
             row['processes'].append(result)
             row['ownership_closed'] = result['ownership_closed']
             require(result['passed'], result.get('error', 'device or ownership gate failed'))
             row['stage'] = action
-            if action == STAGES[-1]:
-                row.update(stage='closed', complete=True, passed=True, decision=decision(row['processes']))
+            if action == stages[-1]:
+                row.update(stage='closed', complete=True, passed=True,
+                           decision=decision(row['processes'], plan))
     except BaseException as error:
         row.update(stage='failed', error=repr(error))
-        if action == 'build' and (BUILD / 'record.json').is_file():
-            row['ownership_closed'] = bank.previous.read(BUILD / 'record.json')['ownership_closed']
+        if action == 'build' and (build_dir / 'record.json').is_file():
+            row['ownership_closed'] = bank.previous.read(build_dir / 'record.json')['ownership_closed']
         raise
     finally:
-        save(row)
+        save(row, root, key)
 
 
 if __name__ == '__main__':
-    action, = sys.argv[1:]
-    require(sys.executable == basis.reference.model.PYTHON and action in ('prepare', 'build', *STAGES, *TRACE_CASES),
+    resident_batch = sys.argv[1:2] == ['--resident-batch']
+    args = sys.argv[2:] if resident_batch else sys.argv[1:]
+    traces = () if resident_batch else tuple(TRACE_CASES)
+    require(sys.executable == basis.reference.model.PYTHON and len(args) == 1
+            and args[0] in ('prepare', 'build', *STAGES, *traces),
             'use the pinned interpreter and select the next component stage')
     with (bank.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         bank.builder.guards.no_model_owners([])
-        main(action)
+        main(args[0], resident_batch)
