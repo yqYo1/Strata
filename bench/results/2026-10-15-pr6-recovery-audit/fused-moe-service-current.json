@@ -774401,6 +774401,546 @@
         },
         "passed": true,
         "arm": "one"
+      },
+      {
+        "index": 2,
+        "read": 118785,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-window-native-v1/build/strata",
+          "sha256": "4bedf4541afcb6d3407e45e4976819f8695ba680ff44a4dd95fec5ca0c99fcfd",
+          "bytes": 26774600
+        },
+        "native_source_commit": "be65a4811e953e3299dea61e802d09c59071f025",
+        "native_identity": {
+          "pid": 1125187,
+          "start_ticks": 421886399,
+          "sid": 1125114
+        },
+        "storage_counters": [
+          {
+            "zfs_direct_records": 731274,
+            "zfs_direct_bytes": 95849545728,
+            "partition_reads": 775119,
+            "partition_read_bytes": 98736668672,
+            "partition_read_wait_ms": 825348,
+            "partition_write_bytes": 586043392,
+            "request_window_ns": 200778206930
+          },
+          {
+            "zfs_direct_records": 285248,
+            "zfs_direct_bytes": 37388025856,
+            "partition_reads": 315430,
+            "partition_read_bytes": 39415873536,
+            "partition_read_wait_ms": 345353,
+            "partition_write_bytes": 369840128,
+            "request_window_ns": 147721366357
+          },
+          {
+            "zfs_direct_records": 277030,
+            "zfs_direct_bytes": 36310876160,
+            "partition_reads": 303966,
+            "partition_read_bytes": 37952483328,
+            "partition_read_wait_ms": 309100,
+            "partition_write_bytes": 461000704,
+            "request_window_ns": 144489919790
+          }
+        ],
+        "request_routes_checked_before_continue": 3,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1125187,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              12,
+              17
+            ],
+            "bank_upload_bytes": 49896832000,
+            "read_jobs": 730279,
+            "requested_read_bytes": 12982124544,
+            "returned_read_bytes": 12982124544,
+            "first_chunk_exposed_ms": 2389.885,
+            "producer_ms": [
+              {
+                "first_ready": 5498.387,
+                "complete": 9051.366,
+                "cache_scan": 5.575,
+                "plan": 26.611,
+                "file_setup": 0.593
+              },
+              {
+                "first_ready": 7402.12,
+                "complete": 15119.695,
+                "cache_scan": 10.915,
+                "plan": 14.109,
+                "file_setup": 0.51
+              },
+              {
+                "first_ready": 5983.538,
+                "complete": 11825.54,
+                "cache_scan": 10.946,
+                "plan": 13.325,
+                "file_setup": 0.51
+              },
+              {
+                "first_ready": 7485.529,
+                "complete": 12418.514,
+                "cache_scan": 10.475,
+                "plan": 7.529,
+                "file_setup": 3.698
+              },
+              {
+                "first_ready": 6909.244,
+                "complete": 10700.374,
+                "cache_scan": 10.492,
+                "plan": 9.952,
+                "file_setup": 0.607
+              },
+              {
+                "first_ready": 4386.751,
+                "complete": 9257.064,
+                "cache_scan": 12.113,
+                "plan": 6.307,
+                "file_setup": 3.716
+              },
+              {
+                "first_ready": 5056.474,
+                "complete": 8640.609,
+                "cache_scan": 14.128,
+                "plan": 6.202,
+                "file_setup": 0.543
+              },
+              {
+                "first_ready": 4547.799,
+                "complete": 4556.89,
+                "cache_scan": 4.742,
+                "plan": 2.088,
+                "file_setup": 3.712
+              }
+            ],
+            "consumer_ms": [
+              [
+                2389.885,
+                19.977
+              ],
+              [
+                3430.864,
+                20.193
+              ],
+              [
+                7332.201,
+                12.884
+              ],
+              [
+                7599.711,
+                12.979
+              ],
+              [
+                5898.062,
+                12.948
+              ],
+              [
+                5725.594,
+                12.918
+              ],
+              [
+                7401.026,
+                12.838
+              ],
+              [
+                4818.223,
+                13.294
+              ],
+              [
+                6823.796,
+                12.958
+              ],
+              [
+                3676.153,
+                13.421
+              ],
+              [
+                4302.772,
+                13.188
+              ],
+              [
+                4755.281,
+                13.8
+              ],
+              [
+                4971.745,
+                12.832
+              ],
+              [
+                3468.257,
+                12.928
+              ],
+              [
+                4456.815,
+                6.875
+              ]
+            ],
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 77055.997,
+              "host_ple_ms": 77080.406
+            }
+          },
+          {
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              16,
+              18
+            ],
+            "bank_upload_bytes": 49898444800,
+            "read_jobs": 284401,
+            "requested_read_bytes": 2491547648,
+            "returned_read_bytes": 2491547648,
+            "first_chunk_exposed_ms": 626.25,
+            "producer_ms": [
+              {
+                "first_ready": 2624.312,
+                "complete": 4353.959,
+                "cache_scan": 23.507,
+                "plan": 7.592,
+                "file_setup": 5.714
+              },
+              {
+                "first_ready": 2634.425,
+                "complete": 4635.168,
+                "cache_scan": 21.089,
+                "plan": 5.544,
+                "file_setup": 0.524
+              },
+              {
+                "first_ready": 2625.722,
+                "complete": 5201.999,
+                "cache_scan": 18.093,
+                "plan": 5.45,
+                "file_setup": 0.513
+              },
+              {
+                "first_ready": 5396.798,
+                "complete": 7497.634,
+                "cache_scan": 21.511,
+                "plan": 5.433,
+                "file_setup": 0.523
+              },
+              {
+                "first_ready": 2602.447,
+                "complete": 4125.575,
+                "cache_scan": 19.902,
+                "plan": 4.171,
+                "file_setup": 0.521
+              },
+              {
+                "first_ready": 1605.673,
+                "complete": 3446.404,
+                "cache_scan": 20.845,
+                "plan": 1.783,
+                "file_setup": 3.996
+              },
+              {
+                "first_ready": 1704.902,
+                "complete": 3013.014,
+                "cache_scan": 17.112,
+                "plan": 4.666,
+                "file_setup": 0.52
+              },
+              {
+                "first_ready": 1420.498,
+                "complete": 1428.11,
+                "cache_scan": 5.944,
+                "plan": 0.798,
+                "file_setup": 3.709
+              }
+            ],
+            "consumer_ms": [
+              [
+                626.25,
+                13.162
+              ],
+              [
+                1619.482,
+                13.53
+              ],
+              [
+                2550.112,
+                13.81
+              ],
+              [
+                1883.804,
+                13.025
+              ],
+              [
+                2542.224,
+                13.068
+              ],
+              [
+                2459.185,
+                16.864
+              ],
+              [
+                5312.528,
+                13.972
+              ],
+              [
+                1986.089,
+                13.146
+              ],
+              [
+                2517.358,
+                13.209
+              ],
+              [
+                1407.155,
+                13.198
+              ],
+              [
+                1522.419,
+                13.393
+              ],
+              [
+                1724.301,
+                16.235
+              ],
+              [
+                1622.289,
+                13.297
+              ],
+              [
+                1193.523,
+                13.851
+              ],
+              [
+                1328.586,
+                6.482
+              ]
+            ],
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 30295.892,
+              "host_ple_ms": 30319.93
+            }
+          },
+          {
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              15,
+              17
+            ],
+            "bank_upload_bytes": 49871436800,
+            "read_jobs": 276357,
+            "requested_read_bytes": 2327134208,
+            "returned_read_bytes": 2327134208,
+            "first_chunk_exposed_ms": 0.001,
+            "producer_ms": [
+              {
+                "first_ready": 1822.575,
+                "complete": 3454.542,
+                "cache_scan": 18.644,
+                "plan": 6.911,
+                "file_setup": 0.538
+              },
+              {
+                "first_ready": 1993.042,
+                "complete": 3474.736,
+                "cache_scan": 21.337,
+                "plan": 2.293,
+                "file_setup": 3.716
+              },
+              {
+                "first_ready": 2220.367,
+                "complete": 4901.507,
+                "cache_scan": 17.826,
+                "plan": 5.453,
+                "file_setup": 0.701
+              },
+              {
+                "first_ready": 2847.158,
+                "complete": 5252.117,
+                "cache_scan": 18.208,
+                "plan": 5.466,
+                "file_setup": 0.534
+              },
+              {
+                "first_ready": 2670.145,
+                "complete": 4436.681,
+                "cache_scan": 17.909,
+                "plan": 5.298,
+                "file_setup": 0.528
+              },
+              {
+                "first_ready": 1638.745,
+                "complete": 3744.183,
+                "cache_scan": 18.455,
+                "plan": 5.496,
+                "file_setup": 0.569
+              },
+              {
+                "first_ready": 1865.86,
+                "complete": 3419.138,
+                "cache_scan": 16.541,
+                "plan": 4.909,
+                "file_setup": 0.527
+              },
+              {
+                "first_ready": 1627.472,
+                "complete": 1636.081,
+                "cache_scan": 5.924,
+                "plan": 0.866,
+                "file_setup": 3.703
+              }
+            ],
+            "consumer_ms": [
+              [
+                0.001,
+                12.966
+              ],
+              [
+                1351.773,
+                13.572
+              ],
+              [
+                1909.411,
+                13.171
+              ],
+              [
+                1365.508,
+                14.305
+              ],
+              [
+                2136.102,
+                13.213
+              ],
+              [
+                2564.83,
+                13.109
+              ],
+              [
+                2761.294,
+                13.712
+              ],
+              [
+                2288.102,
+                13.534
+              ],
+              [
+                2586.553,
+                13.203
+              ],
+              [
+                1651.457,
+                13.569
+              ],
+              [
+                1554.752,
+                13.997
+              ],
+              [
+                1988.477,
+                13.746
+              ],
+              [
+                1783.112,
+                13.806
+              ],
+              [
+                1438.203,
+                13.326
+              ],
+              [
+                1536.288,
+                7.273
+              ]
+            ],
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 26916.304,
+              "host_ple_ms": 26944.039
+            }
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 198179.8,
+            "prompt_tps": 599.4,
+            "ttft_s": 198.464,
+            "total_s": 200.728,
+            "generated_tokens": 24,
+            "request_sha256": "8aca834dae0db1f6731a2c817c463c61f9fbff320b39b253b900e91e2b03d249",
+            "drafts_offered": 17,
+            "drafts_accepted": 12,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 145578.1,
+            "prompt_tps": 816.0,
+            "ttft_s": 145.873,
+            "total_s": 147.7,
+            "generated_tokens": 24,
+            "request_sha256": "fe36c44e5fd159a084612f94685c54a2c1ffef31dbc1a613f62732a779fb4608",
+            "drafts_offered": 18,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 142339.0,
+            "prompt_tps": 834.5,
+            "ttft_s": 142.615,
+            "total_s": 144.449,
+            "generated_tokens": 24,
+            "request_sha256": "8cbe292463fd8403c38c605952d2f6f527e9a642cc70d625d6ebf64093a5749e",
+            "drafts_offered": 17,
+            "drafts_accepted": 15,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 143958.55,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "arm": "two"
       }
     ],
     "budgets": {
