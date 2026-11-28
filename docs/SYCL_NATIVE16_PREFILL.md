@@ -12105,6 +12105,13 @@ wait and storage counters are next. The rebuilt final-slot, RESTORE,
 sustained DFlash2 and agent-session checks remain open.
 [Rebuilt timing evidence](https://github.com/yqYo1/Strata/commit/a68dbc97dcd6efd45b61b0360028723877a4b539).
 
+The [rebuilt RESTORE controller](../bench/dflash2_prefill_ple_early_restore.py)
+checks the absolute suffix positions with the existing per-layer KV trace
+reader. The restored prefix starts the suffix one token into a four-token
+page. Verify every chunk's head, whole pages, tail and published byte count
+against its position. Compare compact KV totals, output and active state
+across the two arms.
+
 The first wait participant closes at `8769880c0` with the stock schedule.
 Across the same three 118,785-token requests, exposed PLE wait is 5.448,
 0.048 and 0.067 seconds, and pool-wide direct reads are 8.024, 0.084 and
