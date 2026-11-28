@@ -192,6 +192,34 @@ def checked_host(built):
     return bank.signature(receipt)
 
 
+def timed_phase_reference(native):
+    measured = bank.previous.read(phase.ROOT / 'record.json')
+    sealed = validate.committed(bank.RESULT, (phase.KEY,))
+    archived = validate.committed(bank.RESULT, (phase.BUILD_KEY,))
+    require(wait.retained.closed(measured, 'closed') and wait.basis.compact(measured) == sealed
+            and measured['decision'] == capacity.decision(measured['processes'])
+            and measured['native_build_sha256'] == native['phase_build_sha256'] == bank.signature(archived)
+            and measured['native_source_commit'] == archived['native_source_commit'] == PREIMAGE
+            and measured['capacity_proof_sha256'] == native['capacity_proof_sha256']
+            and measured['binary'] == archived['binaries']['strata'],
+            'recover the closed timing on the exact phase-cache source and build')
+    selected = wait.baseline()
+    # Validate current model and runtime through the primary fallback. The
+    # phase and early candidates supply evidence through their sealed receipts.
+    physical = selected.pop('physical_context_sha256')
+    for name in ('binary', 'native_source_commit', 'native_build_sha256', 'request_hashes', 'frozen_prefill_work'):
+        selected.pop(name)
+    require(all(measured[k] == v for k, v in selected.items())
+            and measured['base_physical_context_sha256'] == physical
+            and measured['storage_geometry'] == attribution.storage_geometry(measured)
+            and capacity.FLAG not in selected['configuration']['args'],
+            'the selected model, runtime, ordinary cache or storage geometry changed')
+    controls = ('ple_check_sha256', 'clean_timing_sha256', 'clean_controls', 'storage_geometry',
+                'attribution_sha256', 'early_extra_wait_ms')
+    return dict(selected, **{key: measured[key] for key in controls}, native_context_qualified=False,
+                base_physical_context_sha256=physical, phase_timing_sha256=bank.signature(sealed))
+
+
 def baseline():
     native = bank.previous.read(BUILD_ROOT / 'record.json')
     require(wait.retained.closed(native, 'built'), 'finish the record window build')
@@ -210,7 +238,8 @@ def baseline():
             and all(p['passed'] and p['ownership_closed'] and not p['fresh_faults'] for p in smoke['outcomes'].values()),
             'finish native STOP, first-chunk use and direct-writer parity on this exact binary')
     capacity_proof = validate.committed(bank.RESULT, (capacity.KEY,))
-    require(wait.retained.closed(capacity_proof, 'closed') and len(capacity_proof['processes']) == 4,
+    require(wait.retained.closed(capacity_proof, 'closed') and len(capacity_proof['processes']) == 4
+            and bank.signature(capacity_proof) == native['capacity_proof_sha256'],
             'finish the same-binary capacity comparison first')
     source = validate.committed(bank.RESULT, (corpus.campaign_key(capacity.WORKLOAD),))
     require(wait.retained.closed(source, 'closed') and len(source['processes']) == 2
@@ -222,9 +251,7 @@ def baseline():
             for run in source['processes']]
     require(hashes[0] == hashes[1] and work[0] == work[1] and len(hashes[0]) == wait.speed.RUNS,
             'the independent reference requests differ')
-    selected = attribution.worker_baseline(early.context())
-    require(capacity.FLAG not in selected['configuration']['args'], 'keep the original row-cache capacity')
-    selected.pop('frozen_prefill_work')
+    selected = timed_phase_reference(native)
     return dict(selected, binary=native['binaries']['strata'], native_source_commit=native['native_source_commit'],
                 native_build_sha256=bank.signature(early.builder.compact(native)),
                 capacity_proof_sha256=bank.signature(capacity_proof), host_fixture_sha256=host_proof,
