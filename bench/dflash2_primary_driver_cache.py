@@ -22,7 +22,7 @@ THIS = str(Path(__file__).resolve().relative_to(bank.P))
 READ, RUNS, DONOR_INDEX = 102401, 2, 3
 DONOR = '0577a8bbca081ba5ec5d03d32d3ed4376d7d553f'
 DONOR_CACHE = (54, 12434952, 'c93c2b41a2fc8642b3abc00424449f3466c584634b971c36b28258f5206b3ddb')
-EARLY_KEY = 'dflash2_prefill_ple_early_cache_seed_v1'
+EARLY_KEY = 'dflash2_prefill_ple_early_cache_seed_v2'
 EARLY_DONOR = 'a68dbc97dcd6efd45b61b0360028723877a4b539'
 EARLY_DONOR_INDEX = 5
 TIMED = ('empty', 'seed', 'seed', 'empty', 'empty', 'seed')
@@ -99,9 +99,10 @@ def early_baseline(timing, native):
     # The retained early-PLE directory matches the committed 102401-token
     # donor's complete device-image inventory, including its image hashes.
     require(driver_cache.inventory(source) == DONOR_CACHE, 'the closed early PLE donor inventory changed')
+    request_hashes = [s['request_sha256'] for s in donor['samples'][:RUNS]]
     return dict(row, seed=dict(path=str(source), record_commit=EARLY_DONOR, inventory=list(DONOR_CACHE)),
-                donor_work=work(donor['routes'][:RUNS]),
-                donor_request_sha256s=[s['request_sha256'] for s in donor['samples'][:RUNS]])
+                donor_work=work(donor['routes'][:RUNS]), donor_request_sha256s=request_hashes,
+                request_hashes={str(read): request_hashes})
 
 
 def command(plan, read=READ):

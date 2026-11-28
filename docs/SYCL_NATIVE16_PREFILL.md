@@ -11516,6 +11516,12 @@ the first-long cache hit contrast before three clean pairs. Both clean arms
 use the same driver settings, and reuse the prefill timing controller's
 subsequent preservation limit.
 
+The first preparation at `ed511d3c9` stops at host admission. Preparation
+stores the donor's first two requests while the inherited baseline supplies
+all three. Source, build, template and plan identity checks pass. The
+second attempt pins the same two donor hashes in both the baseline and the
+saved plan. It keeps the native executable and the comparison gates.
+
 The [primary continuation plan](../bench/dflash2_primary_continuation.py)
 uses the same retained binary and KV selection for three independent
 `bench.sh --long-generation-only --long-generation-input-case split-v1-96k`
@@ -12115,13 +12121,14 @@ the final context slot. Both use the copy-writer fallback with zero early
 reads. The full case exits normally with zero output, no fresh Xe fault
 and all final model hashes matching.
 
-The [rebuilt RESTORE controller](../bench/dflash2_prefill_ple_early_restore.py)
-checks the absolute suffix positions with the existing per-layer KV trace
-reader. The restored prefix starts the suffix one token into a four-token
-page. Verify every chunk's head, whole pages, tail and published byte count
-against its position. Compare compact KV totals, output and active state
-across the two arms. Live RESTORE, sustained DFlash2 and agent-session
-qualification remain open.
+The [rebuilt RESTORE comparison](https://github.com/yqYo1/Strata/commit/ddf8ce26f)
+passes both arms. Each restores 16,385 tokens from RAM and reads 118,785
+fresh tokens in mode 16. The per-layer KV reader verifies every chunk's
+absolute position, unaligned head, whole pages, tail and published bytes.
+The output IDs, active state, snapshot and KV totals match. The enabled arm
+consumes one early gather of 8,192 rows. Both owners close normally with
+no new Xe fault and matching final model hashes. Sustained DFlash2 and
+agent-session qualification remain open.
 
 The first wait participant closes at `8769880c0` with the stock schedule.
 Across the same three 118,785-token requests, exposed PLE wait is 5.448,
