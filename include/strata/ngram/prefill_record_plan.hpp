@@ -12,6 +12,25 @@ namespace strata::ngram {
 
 inline constexpr uint32_t prefill_ple_page_bytes = 4096;
 inline constexpr uint32_t prefill_ple_record_bytes = 128 * 1024;
+inline constexpr uint32_t prefill_ple_record_max_inflight = 256;
+
+inline constexpr uint64_t prefill_ple_record_plan_budget(uint32_t rows, uint32_t chunk_rows) {
+    return (rows > 2 * uint64_t{chunk_rows} ? 160ull : 32ull) << 20;
+}
+
+// Reserve the packed rows, row IDs and miss mask, bounded planner storage,
+// direct-read slab and its indices. Only one window owns this storage at a time.
+inline constexpr std::optional<uint64_t> prefill_ple_record_window_host_bytes(
+        uint32_t rows, uint32_t chunk_rows, uint32_t row_bytes) {
+    if (rows == 0 || chunk_rows == 0 || row_bytes == 0 || row_bytes > prefill_ple_page_bytes)
+        return std::nullopt;
+    const uint64_t chunks = 1 + (rows - 1) / chunk_rows;
+    return uint64_t{rows} * (row_bytes + sizeof(uint32_t) + sizeof(uint8_t)) +
+           prefill_ple_record_plan_budget(rows, chunk_rows) +
+           uint64_t{prefill_ple_record_max_inflight} *
+               (prefill_ple_record_bytes + sizeof(size_t) + sizeof(uint32_t)) +
+           chunks * (sizeof(double) + sizeof(uint32_t));
+}
 
 struct PrefillPleCopy {
     uint32_t destination;

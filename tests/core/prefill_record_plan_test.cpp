@@ -76,5 +76,16 @@ int main() {
     require(plan.has_value() && plan->copies.size() == full.size() && plan->reads.size() == 1);
     require(plan->chunk_fragments.size() == 32 && plan->chunk_fragments.back() == 8192 * 16);
     require(plan->copies.back().destination == (full.size() - 1) * 90);
+
+    constexpr uint32_t chunk = 8192 * 16;
+    constexpr uint64_t slots = uint64_t{prefill_ple_record_max_inflight} *
+        (prefill_ple_record_bytes + sizeof(size_t) + sizeof(uint32_t));
+    require(prefill_ple_record_plan_budget(2 * chunk, chunk) == (32ull << 20));
+    require(prefill_ple_record_plan_budget(2 * chunk + 1, chunk) == (160ull << 20));
+    require(prefill_ple_record_window_host_bytes(2 * chunk, chunk, 90) ==
+           2ull * chunk * 95 + (32ull << 20) + slots + 2 * (sizeof(double) + sizeof(uint32_t)));
+    require(prefill_ple_record_window_host_bytes(262144 * 16, chunk, 90) ==
+           262144ull * 16 * 95 + (160ull << 20) + slots + 32 * (sizeof(double) + sizeof(uint32_t)));
+    require(!prefill_ple_record_window_host_bytes(1, 0, 90));
     std::cout << "prefill PLE record planner checks passed\n";
 }
