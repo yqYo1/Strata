@@ -11978,11 +11978,16 @@ SHA-256 values from this single Git tree. The
 [rebuild controller](../bench/dflash2_prefill_ple_early_build.py) checks the
 archived build, timing, final-slot and RESTORE receipts. It stages the pinned
 source in a fresh owned directory with the original compiler and dependency
-recipe, and checks the complete object and executable sets. After the 96K
-decode KV comparison closes, rebuild and record the resulting executable
-identities. The new generation has its own short route and STOP, paired
-first-request timing, physical last-slot and live RESTORE receipts before it
-can enter sustained generation. The rebuild and sustained run are pending.
+recipe, and checks the complete object and executable sets. The rebuild closes
+with 1,479 compiler inputs, 139 fresh objects, 11 executable hashes identical to
+the original build and zero uncovered inputs. The new generation's STOP
+check issues the read in layer 0, cancels before committing any prompt tokens
+and repeats the 82-input control on the same server. The separate completion
+check consumes 8,192 rows in layer 1, restores the dense weights and matches
+the original outputs, state, taps and work for the 82 / 122,881 / 82 sequence.
+Both diagnostic processes close normally without a fresh Xe fault. Paired
+first-request timing, the physical last slot, live RESTORE and sustained
+generation on this generation remain separate qualification steps.
 
 The retirement under the measurement lock removed `build`, `cache`, `owned`,
 `ownership.json`, `source` and `tmp` from `dflash2-prefill-ple-early-native-v2`.
