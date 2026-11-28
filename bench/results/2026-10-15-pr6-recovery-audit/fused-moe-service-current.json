@@ -629938,7 +629938,7 @@
     },
     "outcomes": {
       "build": {
-        "error": "RuntimeError('compile-libstrata_ur_status.so failed: /home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp: In function ‘bool {anonymous}::capture_status_call(const xpti::function_with_args_t*, bool, uint64_t)’:\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:221:8: error: ‘UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH’ was not declared in this scope; did you mean ‘UR_FUNCTION_ENQUEUE_MEM_UNMAP’?\\n  221 |   case UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH: {\\n      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n      |        UR_FUNCTION_ENQUEUE_MEM_UNMAP\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:31: error: ‘ur_enqueue_kernel_launch_params_t’ was not declared in this scope; did you mean ‘ur_enqueue_mem_unmap_params_t’?\\n  222 |     const auto* p = arguments<ur_enqueue_kernel_launch_params_t>(data, \"urEnqueueKernelLaunch\");\\n      |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n      |                               ur_enqueue_mem_unmap_params_t\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:65: error: no matching function for call to ‘arguments<<expression error> >(const xpti::function_with_args_t*&, const char [22])’\\n  222 |     const auto* p = arguments<ur_enqueue_kernel_launch_params_t>(data, \"urEnqueueKernelLaunch\");\\n      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:175:28: note: candidate: ‘template<class T> const T* {anonymous}::arguments(const xpti::function_with_args_t*, const char*)’\\n  175 | template<class T> const T* arguments(const xpti::function_with_args_t* data, const char* name) noexcept {\\n      |                            ^~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:175:28: note:   template argument deduction/substitution failed:\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:65: error: template argument 1 is invalid\\n  222 |     const auto* p = arguments<u')",
+        "error": "RuntimeError('compile-libstrata_ur_status.so failed: /home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp: In function \u2018bool {anonymous}::capture_status_call(const xpti::function_with_args_t*, bool, uint64_t)\u2019:\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:221:8: error: \u2018UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH\u2019 was not declared in this scope; did you mean \u2018UR_FUNCTION_ENQUEUE_MEM_UNMAP\u2019?\\n  221 |   case UR_FUNCTION_ENQUEUE_KERNEL_LAUNCH: {\\n      |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n      |        UR_FUNCTION_ENQUEUE_MEM_UNMAP\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:31: error: \u2018ur_enqueue_kernel_launch_params_t\u2019 was not declared in this scope; did you mean \u2018ur_enqueue_mem_unmap_params_t\u2019?\\n  222 |     const auto* p = arguments<ur_enqueue_kernel_launch_params_t>(data, \"urEnqueueKernelLaunch\");\\n      |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n      |                               ur_enqueue_mem_unmap_params_t\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:65: error: no matching function for call to \u2018arguments<<expression error> >(const xpti::function_with_args_t*&, const char [22])\u2019\\n  222 |     const auto* p = arguments<ur_enqueue_kernel_launch_params_t>(data, \"urEnqueueKernelLaunch\");\\n      |                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:175:28: note: candidate: \u2018template<class T> const T* {anonymous}::arguments(const xpti::function_with_args_t*, const char*)\u2019\\n  175 | template<class T> const T* arguments(const xpti::function_with_args_t* data, const char* name) noexcept {\\n      |                            ^~~~~~~~~\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:175:28: note:   template argument deduction/substitution failed:\\n/home/yayoi/orca/workspaces/Strata/sycl/bench/sycl/ur_call_subscriber.cpp:222:65: error: template argument 1 is invalid\\n  222 |     const auto* p = arguments<u')",
         "complete": false,
         "ownership_closed": true,
         "fresh_faults": [],
@@ -653567,7 +653567,7 @@
         "--time-c5 2"
       ],
       "timing": "Same five-column Q6 reference and DPAS fixture. Compare each head or dense shape independently. Require at least 10 ms and 300 timer stamps per batch. Record all eligible samples. Require a lower candidate median in each of three fresh processes before a model trial.",
-      "scope": "Reuse the same fixture’s traced small and production-sized validation. Check four small shapes with the observed clean provider, then time separate clean processes including graph submission and completion. Preserve input and output guards."
+      "scope": "Reuse the same fixture\u2019s traced small and production-sized validation. Check four small shapes with the observed clean provider, then time separate clean processes including graph submission and completion. Preserve input and output guards."
     },
     "budgets": {
       "wall": 900,
@@ -695954,7 +695954,7 @@
         "clock": "Outer SYCL graph end minus start. Report device ticks and wall completion in the profiled process. Preserve unsupported clocks without changing clean timing."
       },
       "scope": "Same retained scorer and FP32 arithmetic. Change only its decode grid. Use the production SYCL compatibility graph and the unchanged top-k. Compare scorer-only and scorer-plus-top-k replay.",
-      "gates": "Trace the short smoke first, then check exact score bits, selection IDs and guards at every tail remainder, invalid steps, ties and small→large→small replay on the same graph. Each timing batch is at least 10 ms and the empty clock is at most 1% of its completion interval.",
+      "gates": "Trace the short smoke first, then check exact score bits, selection IDs and guards at every tail remainder, invalid steps, ties and small\u2192large\u2192small replay on the same graph. Each timing batch is at least 10 ms and the empty clock is at most 1% of its completion interval.",
       "decision": "Require an improvement in the median scorer and combined graph in all three independent processes for a shape. Report graph setup separately and the number of replays required to recover an observed extra setup cost. Model throughput and adoption require separate checks.",
       "stop": "Stop on the first invalid input, validation, timing, owner or Xe fault. Preserve every captured result."
     },
@@ -782934,7 +782934,7 @@
     "live_restore_sha256": "b66b9e19352f7d281b1ddc372ed20de4e190eb3d396a1f133e48c1873184ef56",
     "horizon_cache_speed_sha256": "81bd67ad7bd9574b4939e304d0b909ee17a77e96e354e7de1c939b817d29d2cb",
     "expert_manifest_sha256": "d9ac2dfa3ee63c55c9c6a6db26f72da0cec0ee41733f007e5cbbbba71617aa5d",
-    "stage": "prepared",
+    "stage": "failed-before-host",
     "source_commit": "a6931723b64b68bd0778525b88dcb8efe40dfd18",
     "host_passed": false,
     "ownership_closed": true,
@@ -783248,6 +783248,9 @@
       "sha256": "0fc234b7039d3070cfa465addab488dc5dddb8e40ca37f8b614d299d8fc3c7e8"
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff",
+    "failed_action": "host",
+    "model_execution_attempted": false,
+    "error": "TypeError: the continuation current() adapter dropped the provider/manifest return value."
   }
 }
