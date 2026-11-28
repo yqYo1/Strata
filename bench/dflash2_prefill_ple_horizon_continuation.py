@@ -12,7 +12,7 @@ import dflash2_primary_decode_clocks as clocks
 primary, bank, basis, require = earlier.primary, earlier.bank, earlier.basis, earlier.require
 context, phase, cache, grouped = restore.context, restore.phase, restore.cache, restore.grouped
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'dflash2_prefill_ple_horizon_continuation_v1'
+KEY = 'dflash2_prefill_ple_horizon_continuation_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 CLEAN_ORDER = ('stock', 'dedicated', 'dedicated', 'stock', 'stock', 'dedicated')
 OBSERVED = 'dedicated-clocks'
@@ -160,7 +160,7 @@ def experiment():
                     if key not in (phase.SELECTOR, *clocks.adaptive.OBSERVERS)}
                    for plan in row['plans']]
         require(all(env == layouts[0] for env in layouts), 'another setting changed between the two cache arms')
-        check(row)
+        return check(row)
 
     ctx.pins, ctx.current = pins, current
     return ctx
