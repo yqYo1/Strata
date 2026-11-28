@@ -59,10 +59,45 @@
     "first_review": {
       "release_notes": "https://github.com/Niko1221/Strata/releases/tag/v0.2.23",
       "required_function_candidates": [
-        "Custom local GGUF selection and labels for the supported Qwen model across Control, Terminal and app",
-        "Persist the actual port when the preferred port is occupied",
-        "Tool retry row and failed-step setting behavior",
-        "Engine startup fault classification for the shared client"
+        {
+          "feature": "Engine termination diagnostics",
+          "commits": ["c282ce6c40a2b578d3cf11d0570e9d24cf416c10"],
+          "fork_entry": "serve/server.py:StrataEngine.death_note",
+          "state": "required_port_pending",
+          "scope": "Reuse the fork's engine_crashed and engine_exit_words helpers. Keep watchdog, fatal GPU and real-time limit precedence. Distinguish system crashes and Windows status-unavailable from evidenced allocation failure. Import the death-note behavior independently of the same commit's unrelated prompt-render hunk.",
+          "validation": "Extend SilentEngine host cases for signal and Windows error codes, missing status, explicit allocation errors, normal exit detail and watchdog/fatal-GPU/RTTIME precedence. Recheck the current server suite after the frozen prefill comparison."
+        },
+        {
+          "feature": "Refresh launch hardware without blocking the interactive catalog",
+          "commits": ["82623cd60c04087e72a4c9020c8d69f9bd27933d"],
+          "fork_entry": "strata_cli/launch/catalog.py and tools/strata_mcp.py",
+          "state": "required_port_pending",
+          "scope": "The fork refreshes expired MCP hardware data synchronously. Adapt stale display reads with one background refresh while preserving blocking fresh probes for decisions that require current inventory and the fork's Intel Arc adapter.",
+          "validation": "Use a controlled slow probe. Check one refresh under repeated display reads, fresh-request behavior, warmed updates and live disk-space reporting."
+        },
+        {
+          "feature": "Custom local model files and labels",
+          "commits": ["e28d9222fa326cdd09322cfcb3d2e0e5d04331c1", "e9632d068ac7755426006197dcc560c63683ba37", "63efcd48bf4fcacdf607dec18dae36c357db1636", "25b4677591bccf023620bbb4ab84941df9ca3fc7"],
+          "fork_entry": "setup.py, strata_control, strata_cli/launch and desktop app port",
+          "state": "required_port_pending",
+          "scope": "Port the supported Qwen GGUF registry, launch selection, naming, listing and removal while retaining the original model files. Keep the engine-family and context checks. Apply the existing DeepSeek/35B exclusion. The desktop UI has its own earlier source-import dependency.",
+          "validation": "Check a supported custom GGUF with the fork's Intel resolver, persistence and removal without model deletion, collision/error handling and catalog scope."
+        },
+        {
+          "feature": "Desktop listener fallback and failed tool rows",
+          "commits": ["a7ab14947a92a42d2ceb02ebc4abd44df8febc05", "51abfdc329cd4ff624cbe1c04eb4dbb4d3c020dd", "fdf990b8c4ec2687c1f697d350910c04e11025e1"],
+          "fork_entry": "upstream app/desktop and app/host",
+          "state": "waiting_for_desktop_source_import",
+          "scope": "The active fork lacks both desktop app trees. Preserve selected-port persistence, the port-reserved message, retry row replacement and the failed-step display setting when integrating the desktop shell and host UI.",
+          "validation": "Use the upstream desktop port-reservation and failed-tool-row tests adapted to the imported UI."
+        },
+        {
+          "feature": "DFlash2 veto feedback and explicit drafter choice",
+          "commits": ["7cebe7a6cf2019fb24d6e02947a5893a69bbfa56"],
+          "fork_entry": "serve/server.py and strata_cli/launch",
+          "state": "shared_interface_review_pending",
+          "scope": "The native `--draft on|off` switch belongs to the upstream Inkling engine and is filtered from Qwen launch arguments upstream. Review the shared feedback against the fork's actual DFlash2 selection and veto messages. Preserve working Qwen options and avoid introducing an unsupported native argument."
+        }
       ],
       "component_candidates": [
         {
