@@ -220,6 +220,30 @@ def timed_phase_reference(native):
                 base_physical_context_sha256=physical, phase_timing_sha256=bank.signature(sealed))
 
 
+def retained_phase_baseline():
+    """Check the live phase build against its timings and the retained primary runtime."""
+    native = bank.previous.read(phase.BUILD_ROOT / 'record.json')
+    require(wait.retained.closed(native, 'built'), 'require the retained dedicated-cache executable')
+    phase.build_context().check(native)
+    identity = bank.signature(early.builder.compact(native))
+    measured = bank.previous.read(phase.ROOT / 'record.json')
+    selected = timed_phase_reference(dict(phase_build_sha256=identity,
+                                          capacity_proof_sha256=native['capacity_proof_sha256']))
+    host = bank.previous.read(phase.HOST_ROOT / 'record.json')
+    require(wait.retained.closed(host, 'closed')
+            and host == validate.committed(bank.RESULT, (phase.HOST_KEY,))
+            and host['native_build_sha256'] == identity
+            and host['recipe'] == native['host_fixture_recipe']
+            and bank.signature(host) == measured['host_fixture_sha256']
+            and bank.sha(host['executable']['path']) == host['executable']['sha256']
+            and measured['binary'] == native['binaries']['strata']
+            and measured['decision']['warm_cache_mechanism_advances'],
+            'require the original host isolation and same-binary warm gain')
+    return dict(selected, **{key: measured[key] for key in (
+        'binary', 'native_source_commit', 'native_build_sha256', 'host_fixture_sha256',
+        'capacity_proof_sha256', 'request_hashes', 'frozen_work')})
+
+
 def baseline():
     native = bank.previous.read(BUILD_ROOT / 'record.json')
     require(wait.retained.closed(native, 'built'), 'finish the record window build')

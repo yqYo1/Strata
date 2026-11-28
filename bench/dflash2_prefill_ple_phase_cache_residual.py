@@ -6,6 +6,7 @@ import sys
 
 sys.dont_write_bytecode = True
 import dflash2_prefill_ple_phase_cache as phase
+import dflash2_prefill_ple_record_window as grouped
 import dflash2_cold_window_measure as windows
 
 bank, wait, require = phase.bank, phase.wait, phase.require
@@ -20,7 +21,7 @@ SELECTORS = (cpu.SELECTOR, coarse.SELECTOR, layer.SELECTOR, windows.SELECTOR)
 
 
 def baseline():
-    selected = phase.baseline()
+    selected = grouped.retained_phase_baseline()
     timing = phase.validate.committed(bank.RESULT, (phase.KEY,))
     require(wait.retained.closed(timing, 'closed')
             and timing['decision'] == phase.capacity.decision(timing['processes'])
@@ -133,7 +134,7 @@ def experiment():
     ctx.baseline, ctx.save, ctx.current, ctx.environment = baseline, save, current, environment
     ctx.command = lambda plan: [*base_command(plan), '--prefill-corpus', str(payload)]
     ctx.request_route, ctx.after_execution, ctx.decision = route, after_execution, decision
-    ctx.extra_sources = (*ctx.extra_sources, THIS, phase.THIS, phase.capacity.THIS, phase.corpus.THIS,
+    ctx.extra_sources = (*ctx.extra_sources, THIS, phase.THIS, phase.capacity.THIS, phase.corpus.THIS, grouped.THIS,
                          windows.THIS, layer.THIS, coarse.THIS, cpu.THIS, cpu.OBSERVER)
     ctx.selector = cpu.SELECTOR
     ctx.protocol = dict(order=list(ORDER), read=wait.READ, requests_per_process=wait.speed.RUNS,

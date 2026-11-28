@@ -12271,10 +12271,15 @@ four output IDs, and all 262,144 input slots. The mode-2 full fill processes
 consumes the last position with zero emitted tokens. The final commit wait,
 refill drain and model asset verification pass. Both model processes use
 the dedicated prefill cache and the original ordinary cache, exit normally
-and record no fresh Xe fault. The [live RESTORE plan](../bench/dflash2_prefill_ple_phase_cache_restore.py)
-pins that final-slot result, parks 16,385 tokens, switches to a 33-token
-conversation and appends 118,785 fresh tokens after restoration. Live
-RESTORE and sustained decode handoff remain open for model adoption.
+and record no fresh Xe fault. The [live RESTORE comparison](https://github.com/yqYo1/Strata/commit/d09989211)
+pins that final-slot result and verifies both cache settings. Each process
+parks 16,385 tokens, switches to a 33-token conversation and appends
+118,785 fresh tokens after restoration from RAM. The request extents,
+snapshot, output, active state and per-layer KV work match. Both processes
+close normally with no fresh Xe fault. The dedicated cache is selected
+on the first and restored long requests. The [sustained handoff controller](../bench/dflash2_prefill_ple_phase_cache_handoff.py)
+uses these exact correctness receipts and the retained phase-cache binary.
+Sustained handoff and agent-session measurements remain open.
 
 On the timed IQ4_NL source, the dedicated cache adds 376.5 MiB of host
 arrays, including 360 MiB of packed rows, 16 MiB of row keys and 0.5 MiB
