@@ -12057,6 +12057,18 @@ wait and storage counters are next. The rebuilt final-slot, RESTORE,
 sustained DFlash2 and agent-session checks remain open.
 [Rebuilt timing evidence](https://github.com/yqYo1/Strata/commit/a68dbc97dcd6efd45b61b0360028723877a4b539).
 
+The first wait participant closes at `8769880c0` with the stock schedule.
+Across the same three 118,785-token requests, exposed PLE wait is 5.448,
+0.048 and 0.067 seconds, and pool-wide direct reads are 8.024, 0.084 and
+0.086 GiB. The first window counts 65,730 records and 8,615,362,560 bytes,
+or 128 KiB per counted record. Partition read totals are 9.469, 3.973 and
+1.498 GiB. Treat both counter series as shared-device activity. Within
+this process the first prompt takes 11.817 seconds longer than the
+subsequent median, of which 5.391 seconds are additional exposed PLE wait.
+The other 6.425 seconds remain outside that wait interval. The subsequent
+prompt median is 0.999945 times the same-arm clean reference. The paired
+attribution and first-use observer-cost question remain open.
+
 The retirement under the measurement lock removed `build`, `cache`, `owned`,
 `ownership.json`, `source` and `tmp` from `dflash2-prefill-ple-early-native-v2`.
 It removed 1,524 files totaling 223,826,316 bytes. The SHA-256 of the inventory sorted
