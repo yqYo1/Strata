@@ -12247,6 +12247,25 @@ The same-corpus gate permits the alternating-corpus comparison.
 Physical fill, RESTORE and the sustained DFlash2 handoff remain open.
 See the [performance CSV](../bench/performance-records.csv).
 
+The [closed alternating comparison](https://github.com/yqYo1/Strata/commit/a6d2f3efee89ada0ae3a5a5326b6deb76e5ce6bf)
+matches all 16 fresh 118,785-token requests across two opposite-order pairs.
+Each process reads C++, technical prose, C++, then technical prose. It
+keeps the ordinary cache, request bodies and native work fixed. All four
+owners close normally with verified assets and no fresh Xe fault.
+
+| Revisited input | Stock PP (tok/s) | Dedicated PP (tok/s) | Stock TTFT (s) | Dedicated TTFT (s) |
+| --- | ---: | ---: | ---: | ---: |
+| C++ | 683.8–698.1 | 1,030.0–1,030.2 | 170.378–173.939 | 115.504–115.532 |
+| Technical prose | 575.3–584.2 | 1,030.9–1,031.2 | 203.592–206.749 | 115.421–115.451 |
+
+Paired geometric-mean prefill time falls 32.93% for C++ and 43.78% for
+prose. Record touches on revisits fall from 522,827 to 5,703 for C++ and
+from 824,497–824,498 to 6,574 for prose. The first C++ comparison changes
+direction between pairs. The first prose request takes 1.45% and 2.57%
+longer with the dedicated cache. The repeated revisit gain passes the
+mechanism gate. Check physical fill, live RESTORE and sustained decode
+handoff with the ordinary cache held fixed before model adoption.
+
 Intersecting each PLE worker interval with its matching consume wait
 covers 15 chunks per request, including the 4,096-token tail. The first
 request has 108.162–110.849 s in collection and 0.213–0.230 s
