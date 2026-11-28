@@ -12180,6 +12180,40 @@ The replacement plans each large arm using the server's effective argv,
 verifies that removing the capacity option recovers the stock arguments,
 and rechecks the actual launch using the existing identity gate.
 
+The [corrected comparison](https://github.com/yqYo1/Strata/commit/3f380764a4aa2e43e2a17e2aa887718cd9ac131c)
+closes four independent processes with 12 full reads of the 118,785-token
+technical-prose prompt, zero reused input tokens, verified model assets and
+no fresh Xe fault. In reverse order the large cache again gives 1,032.1
+and 1,031.0 tok/s. The stock process gives 729.7 and 778.5 tok/s.
+Subsequent prefill time falls 28.1% and 27.0% in the two pairs and
+TTFT falls 28.1% and 26.9%. The two-request record-touch totals fall
+from 725,755 and 725,756 to 866 in each pair. The exposed PLE waits
+fall from 37.2–49.2 s to 0.042–0.048 ms across the later requests.
+
+The first-request effects change sign between pairs. The large-cache
+samples are 484.6 and 522.3 tok/s with 124.499 and 106.833 s of exposed
+PLE wait. The respective stock samples are 474.7 and 524.9 tok/s.
+The larger shared cache passes the repeated subsequent-request mechanism
+gate. Adopt a phase-local capacity only after standalone cache isolation,
+mixed-corpus, sustained DFlash2 handoff, physical context and RESTORE checks.
+Retain the normal production capacity while those checks remain open.
+The compact [performance index](../bench/performance-records.csv) records
+first and subsequent samples separately.
+
+The geometry build at `1dba95fb1` has been retired after checking its 1,328
+source files, 533 build controls, original recipe, 139 objects and 11
+executable identities against the committed evidence. The measurement lock
+covered removal of `build`, `cache`, `owned`, `ownership.json`, `source`
+and `tmp` under `dflash2-prefill-ple-record-native-v1`. That removed 1,524
+files totaling 223,847,837 bytes. The inventory SHA-256 is
+`5e350a50796bdb06f7116e6ea6ef54df40c7b21654b647e70ab62823aa94c959`.
+The sealed `record.json` is byte-identical and remains the provenance input
+for the dedicated cache and grouped-read builds. The validated primary
+engine and the early-PLE reference remain available. The dedicated cache
+comparison temporarily needs both, for the sustained decode reference and
+its original prefill attribution proof. Review the extra generation after
+the comparison and before building the grouped reader.
+
 With the observed miss sets held fixed, coalescing by record within each
 ticket removes 14.3% of the first prose request's logical record touches.
 For adjacent pairs the lower and upper bounds are 14.3% and 51.4%.
