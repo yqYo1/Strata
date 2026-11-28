@@ -1,0 +1,124 @@
+"""Attribute sustained DFlash2 decode after the selected long-prefill route."""
+
+from pathlib import Path
+import re
+import sys
+
+sys.dont_write_bytecode = True
+import dflash2_primary_continuation as primary
+import dflash2_v2_decode_clocks as adaptive
+
+bank, basis, require, footer = primary.bank, primary.basis, primary.require, primary.footer
+caller, clock = adaptive.caller, primary.clock
+THIS = str(Path(__file__).resolve().relative_to(bank.P))
+KEY = 'dflash2_primary_decode_clocks_v1'
+ROOT = bank.B / KEY.replace('_', '-')
+ORDER = ('clean-before', 'clocks', 'clean-after')
+TIMING = re.compile(footer.TIMING, re.M)
+LIMIT, TARGET = adaptive.LIMIT, 70
+WORK = (*primary.continuation.WORK_FIELDS, 'request_sha256', 'output_sha256', 'reasoning_sha256')
+
+
+def routes(text, samples, arm):
+    observing = arm == 'clocks'
+    headers = list(re.finditer(footer.HEADER, text, re.M))
+    timings = list(TIMING.finditer(text))
+    require(arm in ORDER and len(headers) == len(samples)
+            and len(timings) == text.count('strata decode timing:') == (len(samples) if observing else 0),
+            'unexpected native request or decode timing coverage')
+    captured = caller.extract(text, list(range(1, len(samples) + 1)) if observing else ())
+    checked = primary.routes(TIMING.sub('', text), samples, 'dflash2')
+    if not observing:
+        return checked
+
+    for i, (header, timing, sample, service) in enumerate(zip(headers, timings, samples, captured, strict=True)):
+        require((headers[i - 1].end() if i else 0) <= timing.start() < header.start(),
+                'decode timing belongs to a different request')
+        name = sample.get('workload')
+        if name is None:
+            continue
+        row = checked[name]
+        phases = adaptive.decode_clocks(timing.groups(), sample, row['expert_work'])
+        ms = phases['wall_ms_per_window']
+        require(ms['verify'] + .021 >= sum(ms[k] for k in ('GPU_reach_wait', 'per_layer_host', 'stage'))
+                and ms['per_layer_host'] + .026 >= sum(ms[k] for k in (
+                    'plan', 'activation_quant', 'jobs', 'CPU_pool_run')),
+                'nested verifier timings exceed the enclosing wall interval')
+        budget = 1000 * sample['generated_tokens'] / (TARGET * phases['windows'])
+        row['decode_clocks'] = dict(phases, target_ms_per_window=budget,
+                                   remaining_after_draft_ms_per_window=budget - ms['draft'])
+        row['caller_decode_service'] = caller.compact(service)
+    return checked
+
+
+def decision(processes):
+    require(tuple(p['arm'] for p in processes) == ORDER
+            and len({(p['native_identity']['pid'], p['native_identity']['start_ticks'])
+                     for p in processes}) == len(ORDER)
+            and all(p['passed'] and p['complete'] and p['ownership_closed'] and p['native_exit_code'] == 0
+                    and not p['fresh_faults'] for p in processes),
+            'require three independently closed decode-clock processes')
+    result = {}
+    for name in primary.WORKLOADS:
+        samples = [next(s for s in p['evidence']['samples'] if s.get('workload') == name) for p in processes]
+        paths = [p['routes'][name] for p in processes]
+        work = [[s[k] for k in WORK] for s in samples]
+        copy = [r['expert_work'] for r in paths]
+        matched = work[0] == work[1] == work[2] and copy[0] == copy[1] == copy[2]
+        clocks = [s['decode_ms'] for s in samples]
+        ratios = [clocks[1] / clocks[i] for i in (0, 2)]
+        result[name] = dict(matched_work=matched, observed_over_clean=ratios,
+                            eligible=matched and all(1 / LIMIT <= v <= LIMIT for v in ratios),
+                            clean_tg=[processes[i]['evidence']['decode_rates'][name] for i in (0, 2)],
+                            target_ms_per_window=paths[1]['decode_clocks']['target_ms_per_window'],
+                            remaining_after_draft_ms_per_window=paths[1]['decode_clocks'][
+                                'remaining_after_draft_ms_per_window'])
+    return dict(workloads=result, adopted=False)
+
+
+def experiment():
+    ctx = primary.experiment()
+    ctx.ROOT, ctx.KEY, ctx.THIS, ctx.ORDER = ROOT, KEY, THIS, ORDER
+    old_environment, old_pins, old_current = ctx.environment, ctx.pins, ctx.current
+
+    def environment(row, plan):
+        env = old_environment(row, plan)
+        require(not any(key in env for key in (*adaptive.OBSERVERS, 'STRATA_TRACE', 'STRATA_DRAFT_TIMING'))
+                and all(env.get(key, '0') == '0' for key in ('STRATA_CPU_SERVICE', 'STRATA_CPU_WORK_CENSUS')),
+                'unexpected inherited decode observer')
+        if plan['arm'] == 'clocks':
+            env.update(dict.fromkeys(adaptive.OBSERVERS, '1'))
+        return env
+
+    def pins(revision):
+        sources = old_pins(revision)
+        for module in (sys.modules[__name__], adaptive, caller, footer):
+            path = Path(module.__file__).resolve()
+            name = path.relative_to(bank.P).as_posix()
+            require(path.read_bytes() == basis.validation.git('show', revision + ':' + name),
+                    'commit the exact decode clock input: ' + name)
+            sources[name] = bank.sha(path)
+        return sources
+
+    def current(row):
+        environments = [{k: v.replace(plan['root'], '<process>')
+                         for k, v in environment(row, plan).items() if k not in adaptive.OBSERVERS}
+                        for plan in row['plans']]
+        require(len(environments) == len(ORDER) and all(v == environments[0] for v in environments),
+                'a setting outside the decode observers changed')
+        return old_current(row)
+
+    ctx.environment, ctx.pins, ctx.current, ctx.routes = environment, pins, current, routes
+    ctx.evidence_reader.decide = decision
+    ctx.protocol = dict(primary.PLAN, order=list(ORDER),
+        scope='Use the same thinking-on code and prose workloads after the selected mode16 long prefill. '
+              'Bracket the two decode observers with independent clean processes on the same build.',
+        decision='Check exact native work and both paired latency ratios within a factor of 1.10 per workload. '
+                 'Report observed draft, verification, commit and caller clocks against the 70 tok/s budget.',
+        limits='Use rounded request clocks and conserved caller regions. GPU waits and CPU service are nested '
+               'inside verification. Worker utilization, DRAM traffic and arithmetic ceilings need separate evidence.')
+    return ctx
+
+
+if __name__ == '__main__':
+    clock.main(experiment())
