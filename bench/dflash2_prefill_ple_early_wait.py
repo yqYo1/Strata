@@ -22,7 +22,8 @@ PLAN = dict(order=list(ORDER), read=wait.READ, requests_per_process=wait.speed.R
                'matching native work and the inclusive PLE time bounded by the completed prompt.',
     decision='Report first and subsequent intervals separately. Compare each subsequent median with its '
              'same-arm clean reference. Attribute the wait only if every ratio is in [0.95, 1.05]. '
-             'Compare the aggregate exposed wait with the clean first-prefill gap to 1000 tok/s.',
+             'For each arm, compare median observed first wait with the median clean first-prefill gap to '
+             '1000 tok/s. Report the gap after hypothetically removing the measured wait in full.',
     limits='Relevant to the repeated-text workload. The sum includes every layer-1 future wait and does not '
            'isolate the first chunk or measure physical SSD traffic. First-use observer overhead is unknown. '
            'Collect throughput and qualification evidence separately.',
@@ -97,8 +98,16 @@ def decision(processes):
                               clean_first_gap_ms=members[0]['clean_first_gap_ms'])
     ratios = [p['warm_relative_to_clean'] for p in processes]
     low, high = WARM_OBSERVER_RANGE
-    return dict(remaining=remaining, warm_relative_to_clean=ratios,
-                attribution_eligible=all(low <= ratio <= high for ratio in ratios), adopted=False)
+    eligible = all(low <= ratio <= high for ratio in ratios)
+    gap_estimate = {}
+    if eligible:
+        for arm, intervals in remaining.items():
+            first_wait = statistics.median(intervals['first_wait_ms'])
+            clean_gap = statistics.median(intervals['clean_first_gap_ms'])
+            gap_estimate[arm] = dict(observed_first_wait_ms=first_wait, clean_first_gap_ms=clean_gap,
+                                     gap_after_removing_observed_wait_ms=clean_gap - first_wait)
+    return dict(remaining=remaining, first_gap_estimate=gap_estimate, warm_relative_to_clean=ratios,
+                attribution_eligible=eligible, adopted=False)
 
 
 def experiment():

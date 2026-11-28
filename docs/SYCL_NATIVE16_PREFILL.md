@@ -11929,6 +11929,12 @@ needed at 1,000 tok/s. The wait clock sums all layer-1 future waits. Keep the
 first and subsequent intervals, the same-arm warm observer ratios and the
 clean first-prefill gap in the compact result. Review the raw logs after the
 last pair and the controller when selecting the next scheduling change.
+For each arm, subtract the median observed first-request wait from the median
+clean gap to 1,000 tok/s. This estimates the gap that would remain if the
+whole observed wait disappeared at unchanged work. The profiled and clean
+medians come from separate processes, and first-use observer cost is unknown.
+Use the estimate to prioritize work and measure any actual gain with the
+observer off.
 
 On this Linux build `--ple-inflight` limits outstanding reader jobs and
 buffer slots. The current request uses its default of 256. The Linux DirectFile
