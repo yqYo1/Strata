@@ -12301,10 +12301,18 @@ files totaling 223,847,837 bytes. The inventory SHA-256 is
 `5e350a50796bdb06f7116e6ea6ef54df40c7b21654b647e70ab62823aa94c959`.
 The sealed `record.json` is byte-identical and remains the provenance input
 for the dedicated cache and grouped-read builds. The validated primary
-engine and the early-PLE reference remain available. The dedicated cache
-comparison temporarily needs both, for the sustained decode reference and
-its original prefill attribution proof. Review the extra generation after
-the comparison and before building the grouped reader.
+engine and the early-PLE reference remain available. The rebuilt early
+generation's 1,328 source files and 530 controller inputs match the bytes
+recovered from `8f539f82e` and `ad3e4acf8`, both reachable from the
+published primary branch. Its recipe matches the committed build receipt,
+which records 139 fresh objects. All 11 retained executable sizes and
+hashes match.
+
+The grouped reader's build and timing controllers recover the earlier
+generation through its sealed receipt. The running dedicated-cache
+RESTORE and the pending residual and handoff controllers still check its
+live executable. Finish the active RESTORE and resolve the remaining live
+consumers before retiring that generation or preparing another build.
 
 With the observed miss sets held fixed, coalescing by record within each
 ticket removes 14.3% of the first prose request's logical record touches.
