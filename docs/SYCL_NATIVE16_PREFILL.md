@@ -12313,11 +12313,22 @@ published primary branch. Its recipe matches the committed build receipt,
 which records 139 fresh objects. All 11 retained executable sizes and
 hashes match.
 
-The grouped reader's build and timing controllers recover the earlier
-generation through its sealed receipt. The running dedicated-cache
-RESTORE and the pending residual and handoff controllers still check its
-live executable. Finish the active RESTORE and resolve the remaining live
-consumers before retiring that generation or preparing another build.
+The dedicated-cache RESTORE has closed. An admission check that rejects
+reads of the early generation's files except `record.json` recovered all
+fields of the original phase baseline. Both the residual and sustained
+handoff controllers verified the retained phase-cache executable through
+that path. Earlier standalone early-PLE trials can recover their original
+inputs from Git if reopened. The grouped reader uses the sealed old build
+receipt and the retained primary and phase-cache results.
+
+Retire `build`, `cache`, `owned`, `ownership.json`, `source` and `tmp`
+under `dflash2-prefill-ple-early-native-v3` while holding the measurement
+lock. The inventory has 1,524 files totaling 223,825,805 bytes. Its SHA-256
+is `cedf7f90de33103fc25e497ee82a33bcf62dd8ce56e74cb062a29e641ec9aa32`
+over sorted relative paths, byte counts and hashes in compact JSON.
+Preserve `record.json` byte-for-byte with SHA-256
+`0cc9539f3d02fd08e5e284400bf30be6db7422a2672eaae49f20ee7e7e6cb70f`
+and check both retained executable generations before the next build.
 
 With the observed miss sets held fixed, coalescing by record within each
 ticket removes 14.3% of the first prose request's logical record touches.
