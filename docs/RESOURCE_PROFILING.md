@@ -892,6 +892,21 @@ does not change. The next candidate uses the recovered primary prefill build
 and its early PLE schedule.
 [Original model comparison](https://github.com/yqYo1/Strata/commit/5b59c28d9eab0602adbdc1fea661649b2c76b4cd).
 
+The retirement audit before removing the finished model candidate checks
+its original 1,327 project files and recipe, 1,476 compiler inputs, 30 link
+inputs, 140 objects and all 12 executables. The six terminal model results
+match their committed values and recomputed decision. Both retained phase
+engines have independent paths. Preserve each `record.json` and retire the
+listed closed comparison files. The inventory hashes sorted tuples of
+paths relative to each root, sizes and SHA-256 values.
+
+| State root and retirement paths | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-decode-kv-clock-wrap-native-v1/{build,cache,owned,ownership.json,policy,source,tmp}` | 1,528 | 224,041,343 | `b68a8be0043e07b0686788e6db4957e7483821992745f9783b3c3bd6f40b38ed` |
+| `dflash2-decode-kv-clock-wrap-admission-v1/{clock-wrap,scalar}` | 46 | 11,590,154 | `40c03a8b75bc7724faa1c48a6a7f764b3e6da6f9847f586fbff01c6f2c358406` |
+| `dflash2-decode-kv-clock-wrap-admission-v2/{clock-wrap,scalar}` | 92 | 23,180,347 | `2b6aab0c5cab8e894423f60b636a310455942f2084f7786c17f7ed4ba51da910` |
+| `dflash2-decode-kv-clock-wrap-speed-v1/{0,1,2,3,4,5,host}` | 436 | 91,115,419 | `dc48e111fcea374be01a06a5918cf2b50824acce356f8c608a130a808d68fc82` |
+
 #### Width-four KV cache working set
 
 The retained K8V8 verifier at `968e71988` scores four-cell blocks and
