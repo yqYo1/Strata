@@ -11990,10 +11990,13 @@ enables that count for gathers of at least 65,536 PLE rows. On the selected
 tail. The observer counts total and unique 4 KiB page and 128 KiB record
 touches per sorted ticket, with file-range clipping for a last short read.
 Keep requested bytes and in-file extent separate from returned bytes and
-storage counters. Validate disjoint, repeated, straddling and EOF spans
-in a scalar fixture before collecting on the actual route. Include varied
-prompts before selecting a grouped reader; cross-ticket reuse needs its
-own measurement. The current wait comparison uses the original executable.
+storage counters. The production accumulator has a compile-time fixture
+with a record straddle, a repeated page, gaps, a partial final page and
+a span wholly past EOF. The fixture requires six page touches over five
+pages and six record touches over three records. It will run with the next
+build. Include varied prompts before selecting a grouped reader and measure
+cross-ticket reuse separately. The current wait comparison uses the original
+executable.
 [Reader observer](../src/ngram/ple_reader.cpp).
 
 The next check enabled the early selector and exercised the 16,385-input
