@@ -593,10 +593,52 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     if (window_on) host_need = detail::layer_major_add(host_need,
         split_accumulator_on ? 32ull << 20 : accumulation_rows ? 16ull << 20 : 2ull << 20);
     if (command_profile_on) host_need = detail::layer_major_add(host_need, 128ull << 10);
-    if (!core::conversation_memory_admit(core::conversation_available_memory(), host_need, host_headroom)) {
+    const auto available_host_memory = core::conversation_available_memory();
+    if (!core::conversation_memory_admit(available_host_memory, host_need, host_headroom)) {
         err = "prefill layer-major: residual/upload storage exceeds known available RAM minus 8 GiB headroom";
         return false;
     }
+#if defined(__linux__) && defined(STRATA_ENABLE_SYCL)
+    int prefill_ple_window_chunks = 0;
+    const auto* preflight_table = ss.ple.table;
+    if (early_ple_read && effective_window_mode == 16 && relocated_job_buffers_on &&
+        preflight_table && preflight_table->is_open() && preflight_table->mode() == strata::kernels::PleIo::Direct &&
+        (activate_native_dense_layer || ss.ple.ready())) {
+        static const int whole_request = -1;
+        static const int record_window = [] {
+            const char* value = std::getenv("STRATA_SYCL_PREFILL_PLE_RECORD_WINDOW");
+            if (!value || std::strcmp(value, "0") == 0) return 0;
+            if (std::strcmp(value, "1") == 0) return 1;
+            if (std::strcmp(value, "2") == 0) return 2;
+            if (std::strcmp(value, "all") == 0) return whole_request;
+            return -2;
+        }();
+        if (record_window < whole_request) {
+            err = "prefill PLE: STRATA_SYCL_PREFILL_PLE_RECORD_WINDOW must be 0, 1, 2 or all";
+            return false;
+        }
+        if (record_window != 0 && m.T > 0 && m.T <= 8192 && n > m.T && n <= 262144 &&
+            preflight_table->supports_prefill_record_window()) {
+            const int record_window_chunks = record_window == whole_request
+                ? static_cast<int>(1 + (n - 1) / m.T) : record_window;
+            const auto window_tokens = std::min(record_window_chunks * m.T, n);
+            const auto row_count = static_cast<uint32_t>(window_tokens * strata::kernels::PLE_N_HEADS);
+            const auto chunk_rows = static_cast<uint32_t>(m.T * strata::kernels::PLE_N_HEADS);
+            const auto reserve = ngram::prefill_ple_record_window_host_bytes(
+                row_count, chunk_rows, strata::kernels::PLE_ROW_BYTES);
+            if (reserve) {
+                const auto total = detail::layer_major_add(host_need, *reserve);
+                if (core::conversation_memory_admit(available_host_memory, total, host_headroom)) {
+                    host_need = total;
+                    prefill_ple_window_chunks = record_window_chunks;
+                } else {
+                    std::fprintf(stderr, "strata prefill PLE record window fallback: reason=host_headroom requested_bytes=%llu\n",
+                                 static_cast<unsigned long long>(*reserve));
+                }
+            }
+        }
+    }
+#endif
     if (should_stop && should_stop()) { err = "cancelled"; return false; }
     core::ExpertCache layer_cache;
     std::unique_ptr<uint8_t[]> upload(owned_host_slab_bytes ? new uint8_t[size_t(owned_host_slab_bytes)] : nullptr);
@@ -1094,10 +1136,24 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             // The table and row IDs are host inputs owned for this request.
             // Native dense activation may replace the layer-1 device key.
             // run_impl still checks that key before consuming these rows.
-            first_ple.result = std::async(std::launch::async,
-                [&m, tokens, n, initial_prev, ple_table, consts = ss.ple.consts, &first_ple] {
-                    return m.gather_ple_chunk(*ple_table, consts, tokens, n, 0, 0, initial_prev, first_ple.error);
-                });
+#if defined(__linux__) && defined(STRATA_ENABLE_SYCL)
+            if (prefill_ple_window_chunks != 0) {
+                first_ple.record_window_chunks = prefill_ple_window_chunks;
+                if (cudaEventSynchronize(m.ple_copied[0]) != cudaSuccess) {
+                    err = "prefill PLE: first host buffer upload did not retire";
+                    return false;
+                }
+                first_ple.start_prefill_record_window(m, *ple_table, ss.ple.consts, tokens, n, 0, 0, initial_prev);
+                std::fprintf(stderr, "strata prefill PLE record window: tokens_per_chunk=%lld window_chunks=%d\n",
+                             static_cast<long long>(m.T), prefill_ple_window_chunks);
+            } else
+#endif
+            {
+                first_ple.result = std::async(std::launch::async,
+                    [&m, tokens, n, initial_prev, ple_table, consts = ss.ple.consts, &first_ple] {
+                        return m.gather_ple_chunk(*ple_table, consts, tokens, n, 0, 0, initial_prev, first_ple.error);
+                    });
+            }
             if (std::getenv("STRATA_TRACE")) {
                 std::fprintf(stderr, "strata trace: prefill PLE early read issued layer=0\n");
                 std::fflush(stderr);
@@ -1318,7 +1374,7 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             return true;
         };
         detail::ColdHostPhases::mark_layer(layer, ColdLayer::run);
-        auto* pending_ple = layer == 1 && first_ple.result.valid() ? &first_ple : nullptr;
+        auto* pending_ple = layer == 1 && first_ple.prefill_read_pending() ? &first_ple : nullptr;
         if (!run_impl(tokens, n, pos0, err, pending_ple)) return false;
         detail::ColdHostPhases::mark_layer(layer, ColdLayer::drain);
         if (!drain()) { err = "prefill layer-major: pass drain failed"; return false; }

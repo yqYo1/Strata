@@ -1,5 +1,8 @@
 // src/ngram/ple_reader.cpp - see include/strata/ngram/ple_reader.hpp.
 #include "strata/ngram/ple_reader.hpp"
+#if defined(__linux__)
+#include "strata/ngram/prefill_record_reader.hpp"
+#endif
 
 #include <algorithm>
 #include <chrono>
@@ -9,6 +12,7 @@
 #include <cstring>
 #include <deque>
 #include <exception>
+#include <limits>
 #include <mutex>
 #include <thread>
 #include <unordered_map>
@@ -161,6 +165,7 @@ void report_prefill_read_geometry(const std::vector<Job>& jobs, uint64_t file_by
 
 struct TicketState {
     uint32_t pending = 0;  // jobs not yet completed
+    bool isolated_prefill = false;
 };
 
 }  // namespace
@@ -183,6 +188,7 @@ struct PleReader::Impl {
     std::unordered_map<uint32_t, TicketState> tickets;
     uint32_t next_ticket = 1;
     RowCache cache;
+    RowCache prefill_cache;
     ReaderStats stats;
     size_t ring_pos = 0;
     double delay_us = 0;
@@ -196,6 +202,15 @@ struct PleReader::Impl {
 
     bool threaded = false;
     bool stop = false;
+
+#if defined(__linux__)
+    // Called under mu. Preserve the legacy route for synchronous I/O and
+    // injected-latency tests, which have their own completion semantics.
+    bool record_window_available() const {
+        return file.is_open() && error.empty() && threaded && delay_us == 0 &&
+               max_inflight > 0 && max_inflight <= prefill_ple_record_max_inflight;
+    }
+#endif
     std::mutex mu;
     std::condition_variable cv_work;      // worker: there is something to submit
     std::condition_variable cv_done;      // collectors: a ticket may have completed
@@ -312,11 +327,12 @@ struct PleReader::Impl {
                 return false;
             }
         }
+        auto it = tickets.find(j.ticket);
+        auto& row_cache = it != tickets.end() && it->second.isolated_prefill ? prefill_cache : cache;
         for (const Use& u : j.uses) {
             std::memcpy(u.dst, buf + u.in_page, row_bytes);
-            cache.insert(u.row, buf + u.in_page);
+            row_cache.insert(u.row, buf + u.in_page);
         }
-        auto it = tickets.find(j.ticket);
         if (it != tickets.end() && it->second.pending > 0) --it->second.pending;
         j.uses.clear();
         free_slots.push_back(s);
@@ -407,10 +423,15 @@ PleReader::~PleReader() {
 }
 
 bool PleReader::open(const std::string& path, uint64_t table_offset, uint64_t n_rows, uint32_t max_inflight,
-                     uint64_t cache_rows, std::string& err, bool io_thread, uint32_t row_bytes) {
+                     uint64_t cache_rows, std::string& err, bool io_thread, uint32_t row_bytes,
+                     uint64_t prefill_cache_rows) {
     close();
     if (max_inflight == 0 || max_inflight > 1024) { err = "PleReader: max_inflight must be 1..1024"; return false; }
     if (row_bytes == 0 || row_bytes > PAGE) { err = "PleReader: row_bytes must be 1..4096"; return false; }
+    if (prefill_cache_rows > std::numeric_limits<size_t>::max() / std::max(row_bytes, 4u)) {
+        err = "PleReader: prefill row cache capacity overflows its allocation";
+        return false;
+    }
     if (!impl_->file.open(path, err)) return false;
     impl_->row_bytes = row_bytes;
     if (table_offset + n_rows * (uint64_t) row_bytes > impl_->file.size()) {
@@ -427,6 +448,15 @@ bool PleReader::open(const std::string& path, uint64_t table_offset, uint64_t n_
     impl_->free_slots.clear();
     for (uint32_t s = max_inflight; s-- > 0;) impl_->free_slots.push_back(s);
     impl_->cache.init(cache_rows, row_bytes);
+    if (prefill_cache_rows != 0) {
+        try {
+            impl_->prefill_cache.init(prefill_cache_rows, row_bytes);
+        } catch (const std::exception&) {
+            err = "PleReader: cannot allocate the long-prefill row cache";
+            close();
+            return false;
+        }
+    }
     impl_->error.clear();
     impl_->keep_us = 0;
     impl_->last_issue_us = impl_->last_read_us = 0;
@@ -483,6 +513,7 @@ void PleReader::close() {
     m.inflight.clear();
     m.free_slots.clear();
     m.cache.init(0);
+    m.prefill_cache = {};
     m.threaded = false;
     m.stop = false;
     m.keep_us = 0;
@@ -493,6 +524,14 @@ bool PleReader::is_open() const { return impl_->file.is_open(); }
 uint32_t PleReader::row_bytes() const { return impl_->row_bytes; }
 
 PleReader::Ticket PleReader::issue(const uint32_t* rows, size_t n, uint8_t* out_raw) {
+    return issue_rows(rows, n, out_raw, false);
+}
+
+PleReader::Ticket PleReader::issue_long_prefill(const uint32_t* rows, size_t n, uint8_t* out_raw) {
+    return issue_rows(rows, n, out_raw, true);
+}
+
+PleReader::Ticket PleReader::issue_rows(const uint32_t* rows, size_t n, uint8_t* out_raw, bool long_prefill) {
     Impl& m = *impl_;
     std::unique_lock<std::mutex> lk(m.mu, std::defer_lock);
     if (m.threaded) lk.lock();
@@ -502,6 +541,8 @@ PleReader::Ticket PleReader::issue(const uint32_t* rows, size_t n, uint8_t* out_
     const bool rearm = m.keep_us > 0 && (m.last_issue_us <= 0 || now - m.last_issue_us > m.keep_window_us);
     m.last_issue_us = now;
     TicketState& ts = m.tickets[id];
+    ts.isolated_prefill = long_prefill && m.prefill_cache.sets != 0;
+    const auto& row_cache = ts.isolated_prefill ? m.prefill_cache : m.cache;
     std::unordered_map<uint64_t, size_t> by_page;     // aligned offset -> index in `jobs`
     std::vector<Job> jobs;
     for (size_t i = 0; i < n; ++i) {
@@ -512,7 +553,7 @@ PleReader::Ticket PleReader::issue(const uint32_t* rows, size_t n, uint8_t* out_
             std::memset(dst, 0, rb);
             continue;
         }
-        if (const uint8_t* hit = m.cache.find(rows[i])) {
+        if (const uint8_t* hit = row_cache.find(rows[i])) {
             std::memcpy(dst, hit, rb);
             ++m.stats.cache_hits;
             continue;
@@ -540,7 +581,12 @@ PleReader::Ticket PleReader::issue(const uint32_t* rows, size_t n, uint8_t* out_
     std::sort(jobs.begin(), jobs.end(), [](const Job& a, const Job& b) { return a.offset < b.offset; });
     // The measured long prefill has at least 4,096 tokens × 16 PLE rows per
     // gather. Keep this diagnostic outside the small decode gathers.
-    if (n >= 65536 && prefill_record_audit_enabled()) report_prefill_read_geometry(jobs, m.file.size(), n);
+    if (n >= 65536 && prefill_record_audit_enabled()) {
+        report_prefill_read_geometry(jobs, m.file.size(), n);
+        if (ts.isolated_prefill)
+            std::fprintf(stderr, "strata prefill PLE cache ticket: rows=%zu capacity=%llu\n", n,
+                         (unsigned long long) (row_cache.sets * WAYS));
+    }
     ts.pending = (uint32_t) jobs.size();
     const bool has_jobs = ts.pending > 0;
     for (Job& j : jobs) m.queue.push_back(std::move(j));
@@ -557,6 +603,132 @@ PleReader::Ticket PleReader::issue(const uint32_t* rows, size_t n, uint8_t* out_
     }
     return Ticket{id};
 }
+
+#if defined(__linux__)
+bool PleReader::supports_prefill_record_window() const {
+    std::lock_guard<std::mutex> lock(impl_->mu);
+    return impl_->record_window_available();
+}
+
+bool PleReader::read_prefill_record_window(std::span<const uint32_t> rows, uint32_t chunk_rows,
+                                         std::span<uint8_t> packed,
+                                         const std::function<bool(size_t)>& ready,
+                                         const std::function<bool()>& stop, std::string& err,
+                                         bool trace_first_submit) {
+    Impl& m = *impl_;
+    constexpr uint32_t max_chunk_rows = 8192 * 16;
+    constexpr uint32_t max_request_rows = 262144 * 16;
+    if (!ready || !stop || rows.empty() || chunk_rows == 0 || chunk_rows > max_chunk_rows ||
+        m.row_bytes != ROW_BYTES || rows.size() > max_request_rows ||
+        packed.size() != rows.size() * ROW_BYTES) {
+        err = "PleReader: invalid prefill window extent";
+        return false;
+    }
+
+    using Clock = std::chrono::steady_clock;
+    static const bool profile = [] {
+        const char* value = std::getenv("STRATA_SYCL_PREFILL_PLE_WAIT_PROFILE");
+        return value && std::strcmp(value, "1") == 0;
+    }();
+    const auto begin_time = profile ? Clock::now() : Clock::time_point{};
+    auto scan_end = begin_time;
+    auto plan_end = begin_time;
+    auto file_end = begin_time;
+    auto first_ready_time = Clock::time_point{};
+    const auto notify = [&](size_t chunk) {
+        if (profile && chunk == 0) first_ready_time = Clock::now();
+        return ready(chunk);
+    };
+    const auto report = [&](size_t chunks, const PrefillPleReadStats& stats) {
+        if (!profile) return;
+        const auto done = Clock::now();
+        const auto ms = [](Clock::duration interval) {
+            return std::chrono::duration<double, std::milli>(interval).count();
+        };
+        std::fprintf(stderr, "strata prefill PLE record producer: rows=%zu chunks=%zu reads=%llu "
+                             "requested_bytes=%llu returned_bytes=%llu first_ready_ms=%.3f complete_ms=%.3f "
+                             "cache_scan_ms=%.3f plan_ms=%.3f file_setup_ms=%.3f\n",
+                     rows.size(), chunks, (unsigned long long) stats.issued,
+                     (unsigned long long) stats.requested_bytes, (unsigned long long) stats.returned_bytes,
+                     ms(first_ready_time - begin_time), ms(done - begin_time), ms(scan_end - begin_time),
+                     ms(plan_end - scan_end), ms(file_end - plan_end));
+    };
+    std::vector<uint8_t> needs_read(rows.size());
+    RowCache* cache = nullptr;
+    {
+        std::lock_guard<std::mutex> lock(m.mu);
+        if (!m.record_window_available() || !m.tickets.empty()) {
+            err = "PleReader: prefill record window is unavailable";
+            return false;
+        }
+        cache = m.prefill_cache.sets != 0 ? &m.prefill_cache : &m.cache;
+        m.stats.requests += rows.size();
+        for (size_t i = 0; i < rows.size(); ++i) {
+            auto* dst = packed.data() + i * m.row_bytes;
+            if (rows[i] >= m.n_rows) {
+                std::memset(dst, 0, m.row_bytes);
+            } else if (const auto* hit = cache->find(rows[i])) {
+                std::memcpy(dst, hit, m.row_bytes);
+                ++m.stats.cache_hits;
+            } else {
+                needs_read[i] = 1;
+            }
+        }
+    }
+
+    const auto chunks = 1 + (rows.size() - 1) / chunk_rows;
+    const bool all_cached = std::none_of(needs_read.begin(), needs_read.end(), [](uint8_t needed) { return needed != 0; });
+    if (profile) scan_end = plan_end = file_end = Clock::now();
+    if (all_cached) {
+        for (size_t chunk = 0; chunk < chunks; ++chunk) {
+            if (stop() || !notify(chunk)) {
+                err = "PleReader: prefill record window cancelled";
+                return false;
+            }
+        }
+        report(chunks, {});
+        return true;
+    }
+
+    const auto plan = prefill_ple_record_plan(rows, needs_read, m.table_offset, m.n_rows, m.file.size(),
+                                              m.row_bytes, chunk_rows,
+                                              prefill_ple_record_plan_budget(static_cast<uint32_t>(rows.size()), chunk_rows));
+    if (!plan) {
+        err = "PleReader: prefill record plan exceeds its bounds";
+        return false;
+    }
+    if (stop()) {
+        err = "PleReader: prefill record window cancelled before reads";
+        return false;
+    }
+    if (profile) plan_end = Clock::now();
+
+    DirectFile file;
+    if (!file.open_prefill_copy(m.file, err)) return false;
+    if (profile) file_end = Clock::now();
+    PrefillPleReadStats stats;
+    const auto publish = [&](size_t chunk) {
+        {
+            std::lock_guard<std::mutex> lock(m.mu);
+            const size_t begin = chunk * chunk_rows;
+            const size_t end = std::min(rows.size(), begin + chunk_rows);
+            for (size_t i = begin; i < end; ++i) {
+                if (needs_read[i]) cache->insert(rows[i], packed.data() + i * m.row_bytes);
+            }
+        }
+        return notify(chunk);
+    };
+    const bool ok = prefill_ple_execute_record_plan(file, *plan, packed, m.row_bytes, chunk_rows,
+                                                    m.max_inflight, publish, stop, stats, err, trace_first_submit);
+    {
+        std::lock_guard<std::mutex> lock(m.mu);
+        m.stats.reads += stats.issued;
+        m.stats.bytes += stats.returned_bytes;
+    }
+    if (ok) report(chunks, stats);
+    return ok;
+}
+#endif
 
 bool PleReader::collect(Ticket t, std::string& err) {
     Impl& m = *impl_;
@@ -619,6 +791,7 @@ void PleReader::reset_stats() {
     m.ring_pos = 0;
 }
 uint64_t PleReader::cache_capacity() const { return impl_->cache.sets * WAYS; }
+uint64_t PleReader::prefill_cache_capacity() const { return impl_->prefill_cache.sets * WAYS; }
 uint64_t PleReader::cache_size() const { return impl_->cache.used; }
 
 }  // namespace strata::ngram

@@ -63,8 +63,9 @@ def compact_request(frame):
 
 
 def after_execution(outcome, row, plan):
-    require('storage_begin' not in outcome and outcome['request_routes_checked_before_continue'] == wait.speed.RUNS
-            and len(outcome['storage_counters']) == wait.speed.RUNS, 'incomplete request gates')
+    runs = row['plan']['requests_per_process']
+    require('storage_begin' not in outcome and outcome['request_routes_checked_before_continue'] == runs
+            and len(outcome['storage_counters']) == runs, 'incomplete request gates')
     for frame, sample, storage in zip(outcome['routes'], outcome['samples'], outcome['storage_counters'], strict=True):
         require(frame['ple_early_reads'] == 1 and frame['ple_read_geometry'] and frame['ple_host_timeline']
                 and frame['ple_wait']['host_ple_ms'] <= sample['prompt_ms'] + 0.001
@@ -92,6 +93,13 @@ def campaign_key(name):
     return 'dflash2_prefill_ple_corpus_' + name.replace('-', '_') + '_v1'
 
 
+def corpus_payload(name):
+    digest, paths = CORPORA[name]
+    data = b'\n\n'.join(validate.git('show', CORPUS_REVISION + ':' + path) for path in paths)
+    require(sha256(data).hexdigest() == digest, 'committed corpus inputs differ')
+    return data
+
+
 def experiment(name):
     digest, paths = CORPORA[name]
     ctx = geometry.experiment()
@@ -103,10 +111,8 @@ def experiment(name):
     def save(row):
         if row['stage'] == 'prepared':
             row['request_hashes'] = {}
-            data = b'\n\n'.join(validate.git('show', CORPUS_REVISION + ':' + p) for p in paths)
-            require(sha256(data).hexdigest() == digest, 'committed corpus inputs differ')
             with corpus.open('xb') as output:
-                output.write(data)
+                output.write(corpus_payload(name))
             corpus.chmod(0o400)
         base_save(row)
 

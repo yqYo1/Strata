@@ -184,6 +184,29 @@ class BenchmarkTest(unittest.TestCase):
         self.assertEqual(len(set(suite.frozen_prefill_hashes.values())), 2)
         self.assertTrue(suite.out["prefill_only"]["complete"])
 
+    def test_exact_prefill_cycles_multiple_corpora_and_records_the_actual_sequence(self):
+        corpora = ["Distinct C++ benchmark material.\n" * 1500, "Distinct technical prose material.\n" * 1500]
+        suite = bench.Suite("http://localhost", "", 65536, 4, True, log=lambda _: None,
+            prefill_only=True, prefill_exact_tokens=32768, workload_id="corpus-cycle", prefill_corpus=corpora)
+        digests = [hashlib.sha256(value.encode("utf-8")).hexdigest() for value in corpora]
+        self.assertEqual(suite.prefill_plan()["corpus_sha256_cycle"], digests)
+        self.assertNotIn("corpus_sha256", suite.prefill_plan())
+        with patch.object(bench, "count_chat_tokens", side_effect=self.count_endpoint), \
+             patch.object(bench, "chat", side_effect=self.exact_reply(suite)) as chat:
+            suite.run_prefill_only()
+        result = suite.out["prefill_only"]
+        self.assertTrue(result["complete"])
+        timed = [call.args[2][0]["content"] for call in chat.call_args_list[1:]]
+        self.assertEqual(len(timed), 4)
+        for content, expected in zip(timed, corpora * 2, strict=True):
+            self.assertIn(expected[:100], content)
+        self.assertEqual([s["corpus_sha256"] for s in result["requests"]], digests * 2)
+        self.assertEqual([p["corpus_sha256"] for p in result["count_preflight"]], digests * 2)
+        self.assertEqual(len(set(suite.frozen_prefill_hashes.values())), 4)
+        parsed = bench.parse_arguments(["--prefill-exact-tokens", "32768", "--prefill-corpus", "a.txt",
+                                        "--prefill-corpus", "b.txt", "--runs", "4"])
+        self.assertEqual([path.name for path in parsed.prefill_corpus], ["a.txt", "b.txt"])
+
     def test_exact_prefill_freezes_all_bodies_before_any_timed_request(self):
         suite=self.exact_suite()
         with patch.object(bench,'count_chat_tokens',side_effect=self.count_endpoint) as counter, \

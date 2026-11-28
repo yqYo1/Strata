@@ -24,6 +24,10 @@
 
 #include <cstdint>
 #include <string>
+#if defined(__linux__)
+#include <functional>
+#include <span>
+#endif
 
 namespace strata::kernels {
 
@@ -147,6 +151,17 @@ public:
     /// as ONE reader request - page dedupe and sort across the whole batch, the reader's full queue depth.  Not
     /// while a single-token `issue` is pending.  The mapped mode gathers row by row.
     bool gather_batch(const uint32_t* rows, size_t n_tokens, float* out, std::string& err);
+    /// PLE rows for the dedicated layer-major prefill path.
+    bool gather_long_prefill_batch(const uint32_t* rows, size_t n_tokens, float* out,
+                                   bool first_chunk, std::string& err);
+
+#if defined(__linux__)
+    bool supports_prefill_record_window() const;
+    bool read_prefill_record_window(std::span<const uint32_t> rows, uint32_t chunk_rows, bool first_window,
+                                  std::span<uint8_t> packed,
+                                  const std::function<bool(size_t)>& ready,
+                                  const std::function<bool()>& stop, std::string& err);
+#endif
 
     /// Fault injection (Direct mode): every row read completes no earlier than `us` after issue.
     void set_injected_delay_us(double us);
@@ -181,6 +196,8 @@ public:
     PleIo mode() const;
 
 private:
+    void report_long_prefill_cache_route() const;
+    bool gather_rows(const uint32_t* rows, size_t n_tokens, float* out, std::string& err, bool long_prefill);
     struct Impl;
     Impl* impl_ = nullptr;
 };

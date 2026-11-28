@@ -98,15 +98,20 @@ def inspect(peer, log, pid, name, requests, row):
                 suffix_kv=suffix_kv, early_reads=int(name == 'early'))
 
 
-def experiment():
+def experiment(*, key=KEY, root=ROOT, order=ORDER, plan=PLAN, physical_key=capacity.KEY,
+               selector=capacity.SELECTOR, prerequisites=None, launch_environment=environment,
+               inspect_result=inspect, extra_sources=()):
+    require(len(order) == 3 and order[0] == 'host', 'require one host check and two restore arms')
     peer = basis.core.source.device.load_module('early_ple_live_peer', original.restore.__file__)
     peer.workloads = workloads
-    native_context = build.context()
     timing_pins = timing.experiment().pins
+    if prerequisites is None:
+        native_context = build.context()
+        prerequisites = lambda: capacity.prerequisites(native_context)
 
     def inputs(revision):
-        native, baseline, measured_sha = capacity.prerequisites(native_context)
-        physical = basis.validation.committed(bank.RESULT, (capacity.KEY,))
+        native, baseline, measured_sha = prerequisites()
+        physical = basis.validation.committed(bank.RESULT, (physical_key,))
         require(timing.wait.retained.closed(physical, 'closed')
                 and physical['outcomes']['full-copy']['final_slot_consumed']
                 and physical['native_build_sha256'] == baseline['native_build_sha256']
@@ -114,7 +119,7 @@ def experiment():
                 'require the final-slot proof from the same build')
         pins = peer.sources(revision) | timing_pins(revision)
         kv_reader = Path(original.physical.kv.__file__).resolve().relative_to(bank.P).as_posix()
-        for name in (THIS, capacity.THIS, original.THIS, original.physical.THIS, kv_reader):
+        for name in (THIS, capacity.THIS, original.THIS, original.physical.THIS, kv_reader, *extra_sources):
             require((bank.P / name).read_bytes() == basis.validation.git('show', revision + ':' + name),
                     'commit the exact restore input: ' + name)
             pins[name] = bank.sha(bank.P / name)
@@ -125,48 +130,48 @@ def experiment():
         command = peer.argv(dict(row, configuration=dict(row['configuration'], args=baseline['validated_dflash2_args'])))
         request_plan = peer.input_plan(False)
         require(all(p['prompt'] + p['max_new'] + 8 <= 262144 for p in request_plan), 'restore input exceeds context')
-        cases = [dict(name=name, root=str(ROOT / name), near=False, requests=request_plan, command=command)
-                 for name in ORDER[1:]]
-        launch = [environment(row, case) for case in cases]
-        normalized = [{k: v.replace(case['root'], '<case>') for k, v in env.items() if k != capacity.SELECTOR}
+        cases = [dict(name=name, root=str(root / name), near=False, requests=request_plan, command=command)
+                 for name in order[1:]]
+        launch = [launch_environment(row, case) for case in cases]
+        normalized = [{k: v.replace(case['root'], '<case>') for k, v in env.items() if k != selector}
                       for case, env in zip(cases, launch, strict=True)]
         require(normalized[0] == normalized[1], 'another runtime setting changed between restore arms')
         for case, env in zip(cases, launch, strict=True):
             case['environment_sha256'] = bank.signature(env)
-        return dict(row, source_commit=revision, sources=pins, plans=cases, plan=PLAN,
+        return dict(row, source_commit=revision, sources=pins, plans=cases, plan=plan,
                     vocab_size=physical['vocab_size'], physical_sha256=bank.signature(physical), timing_sha256=measured_sha)
 
     def save(row):
-        bank.stage.write(ROOT / 'record.json', row)
+        bank.stage.write(root / 'record.json', row)
         output = bank.previous.read(bank.RESULT)
-        output[KEY] = basis.compact(row)
+        output[key] = basis.compact(row)
         bank.stage.write(bank.RESULT, output)
 
     def prepare():
-        require(not ROOT.exists() and KEY not in basis.validation.committed(bank.RESULT), 'fresh restore attempt required')
+        require(not root.exists() and key not in basis.validation.committed(bank.RESULT), 'fresh restore attempt required')
         row = inputs(basis.validation.git('rev-parse', 'HEAD').decode().strip())
-        ROOT.mkdir(mode=0o700)
-        for name in ORDER:
-            parent = ROOT / name
+        root.mkdir(mode=0o700)
+        for name in order:
+            parent = root / name
             parent.mkdir(mode=0o700)
             for folder in ('tmp', 'cache'):
                 (parent / folder).mkdir(mode=0o700)
         save(dict(row, stage='prepared', outcomes={}, complete=False, passed=False, active=False, ownership_closed=True))
 
     def run(name):
-        row = bank.previous.read(ROOT / 'record.json')
-        require(basis.compact(row) == basis.validation.committed(bank.RESULT, (KEY,))
+        row = bank.previous.read(root / 'record.json')
+        require(basis.compact(row) == basis.validation.committed(bank.RESULT, (key,))
                 and row['ownership_closed'] and not row['active']
-                and tuple(row['outcomes']) == ORDER[:ORDER.index(name)]
+                and tuple(row['outcomes']) == order[:order.index(name)]
                 and all(v['passed'] for v in row['outcomes'].values()), 'commit the preceding restore outcome')
         require(all(row[k] == v for k, v in inputs(row['source_commit']).items()), 'restore inputs changed')
-        root = ROOT / name
-        receipt = root / 'execution.json'
+        case_root = root / name
+        receipt = case_root / 'execution.json'
         require(not receipt.exists(), 'inspect the existing owner receipt')
         cursor = next(s.removeprefix('-- cursor: ') for s in subprocess.check_output(
             ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True, timeout=15).splitlines()
              if s.startswith('-- cursor: '))
-        owner = peer.owner_module.Owner(root / 'owned', lambda: bank.stage.write(
+        owner = peer.owner_module.Owner(case_root / 'owned', lambda: bank.stage.write(
             receipt, dict(active=bool(owner.active), commands=owner.commands)))
         outcome = dict(complete=False, host_probe_accepted=False)
         try:
@@ -178,7 +183,7 @@ def experiment():
                 limits = dict(wall=50, cpu=40, rss_cap=512 << 20, text_cap=128 << 10, file_cap=1 << 20, total_cap=4 << 20)
             else:
                 case = next(c for c in row['plans'] if c['name'] == name)
-                cmd, env = case['command'], environment(row, case)
+                cmd, env = case['command'], launch_environment(row, case)
                 require(bank.signature(env) == case['environment_sha256'], 'the pre-exec runtime changed')
                 limits = dict(wall=1800, cpu=18000, rss_cap=104 << 30, text_cap=16 << 20,
                               file_cap=32 << 20, total_cap=256 << 20)
@@ -190,12 +195,12 @@ def experiment():
             require(peer.owner_module.closed(entry) and entry['exit_code'] == 0, 'restore process failed or did not close')
             outcome['native_exit_code'] = entry['exit_code']
             if name != 'host':
-                require((root / 'validation.log').stat().st_size == 0, 'runtime parameter validation output is not quiet')
-                outcome.update(inspect(peer, err.read_text(), entry['pid'], name, requests, row))
-            if name == 'early':
-                reference = row['outcomes']['stock']
+                require((case_root / 'validation.log').stat().st_size == 0, 'runtime parameter validation output is not quiet')
+                outcome.update(inspect_result(peer, err.read_text(), entry['pid'], name, requests, row))
+            if name == order[-1]:
+                reference = row['outcomes'][order[1]]
                 fields = ('restored_tokens', 'snapshot', 'requests', 'suffix_kv')
-                require(all(outcome[k] == reference[k] for k in fields), 'the early read altered live restore or continuation')
+                require(all(outcome[k] == reference[k] for k in fields), 'live restore or continuation differs between arms')
                 basis.comparison.shared.models.model_pins(row['configuration'], row['model_assets'], full=True)
             outcome.update(complete=True, host_probe_accepted=True)
         except Exception as error:
@@ -205,7 +210,7 @@ def experiment():
             passed = bool(outcome['passed'] and outcome['complete'] and outcome['driver_after'] == row['driver'])
             outcome['passed'] = passed
             row['outcomes'][name] = outcome
-            done = passed and name == ORDER[-1]
+            done = passed and name == order[-1]
             row.update(stage='closed' if done else 'running' if passed else 'failed', complete=done, passed=done,
                        active=bool(owner.active), ownership_closed=outcome['ownership_closed'])
             save(row)

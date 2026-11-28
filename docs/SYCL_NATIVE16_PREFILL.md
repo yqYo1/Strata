@@ -11647,6 +11647,34 @@ component, measure actual window counts, verifier critical path, CPU expert
 service and draft clocks on the same route.
 [Exact sustained result](https://github.com/yqYo1/Strata/commit/9261c4b44).
 
+The separate stock routing capture on this build records 1,024 code and
+5,177 prose windows with the same request, output and reasoning hashes.
+At that yield the 70 tok/s budgets are 44.573 and 23.781 ms per window.
+The same-route clock decision reports how much of the gap remains after
+subtracting each eligible observed region individually. These estimates
+hold yield and all other work fixed. A verifier interval and its nested
+regions have overlapping savings estimates.
+[Native routing capture](https://github.com/yqYo1/Strata/commit/a7c068890dec4f57c71dc7cd7ccb58039463b9bb).
+
+The same three-process DFlash2 result records 1,133,707 CPU expert jobs
+for 3,195 code tokens and 3,430,897 jobs for 8,618 prose tokens. The
+validated pack's 48-layer manifest matches the committed expert sizes.
+Allocate the jobs to the smallest or largest blobs first, allowing at most
+ten unique jobs per verifier row per layer. Use the upper verifier-row
+bound for both allocations. Charging one full packed-weight visit per job
+gives 0.689–0.769 GB per code token and 0.772–0.864 GB per prose token.
+At 70 tok/s these are 48.2–53.8 and 54.0–60.5 logical GB/s.
+
+The three-core continuous-read median is 42.27 GB/s. If every job fetched
+its full blob from RAM at that application read rate, even the lower
+bounds would need 12.4% fewer RAM-served bytes for code and 21.8% fewer
+for prose. Physical traffic and effective bandwidth depend on the model's
+cache reuse and access pattern. The decode-clock comparison measures
+actual verifier windows and carries these weight bounds alongside the
+draft, verification and CPU-pool clocks.
+[RAM measurement](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
+· [Decode clock comparison](../bench/dflash2_primary_decode_clocks.py).
+
 The three matched code requests at `9261c4b44` request the same
 41,499,571,200 bytes of expert-bank H2D copies. The difference between
 client TTFT and the native prompt interval is 1.337–1.377 seconds, a spread
@@ -12148,6 +12176,328 @@ pinned Strata files, checks their bytes before launch and repeats each
 corpus in independent processes. Analyse each corpus separately. The
 active result keeps request samples and compact totals. The closed
 revision above preserves each ticket and the full qualification record.
+
+The four corpus processes finish with matched 118,785-token requests,
+verified assets and no new Xe fault. C++ runs at 615.4–630.7 tok/s first
+and 1,009.2–1,012.5 tok/s on later requests. Technical prose runs at
+515.6–526.4 and 767.3–783.4 tok/s, respectively. First client TTFT is
+188.573–193.289 s for C++ and 226.044–230.647 s for prose. These rates
+include the reader and host timeline observers.
+[C++ samples](https://github.com/yqYo1/Strata/commit/d815fbd07) ·
+[prose samples](https://github.com/yqYo1/Strata/commit/473d69d88).
+
+First requests plan 600,646 record touches for C++ and 981,425 for prose.
+Subsequent requests fall to 36,139–36,549 touches for C++ and remain at
+360,959–364,797 for prose. Prose still spends 36.4–39.6 s waiting for
+PLE on those requests. At fixed non-wait time, reaching 1,000 tok/s
+would require removing 90.2–93.0% of that exposed wait. Retain the
+[capacity comparison](../bench/dflash2_prefill_ple_cache_capacity.py)
+as the immediate consumer of the observer build. It changes the row cache
+from 1,048,576 to 4,194,304 entries in two opposite-order pairs on the
+same prose body. Record how much storage work and wall time the larger
+cache removes before evaluating record grouping. This diagnostic keeps
+prefill and decode adoption decisions open.
+
+The first capacity comparison stops at the first large-cache process.
+Its three requests finish, and the native start and exit agree. The server
+moves the capacity flag when it applies the existing argument overrides,
+so the effective argv differs in order from the pinned launch config.
+The strict identity gate rejects that process. Keep the failure in
+[its original result](https://github.com/yqYo1/Strata/commit/9392f9dee).
+The replacement plans each large arm using the server's effective argv,
+verifies that removing the capacity option recovers the stock arguments,
+and rechecks the actual launch using the existing identity gate.
+
+The [corrected comparison](https://github.com/yqYo1/Strata/commit/3f380764a4aa2e43e2a17e2aa887718cd9ac131c)
+closes four independent processes with 12 full reads of the 118,785-token
+technical-prose prompt, zero reused input tokens, verified model assets and
+no fresh Xe fault. In reverse order the large cache again gives 1,032.1
+and 1,031.0 tok/s. The stock process gives 729.7 and 778.5 tok/s.
+Subsequent prefill time falls 28.1% and 27.0% in the two pairs and
+TTFT falls 28.1% and 26.9%. The two-request record-touch totals fall
+from 725,755 and 725,756 to 866 in each pair. The exposed PLE waits
+fall from 37.2–49.2 s to 0.042–0.048 ms across the later requests.
+
+The first-request effects change sign between pairs. The large-cache
+samples are 484.6 and 522.3 tok/s with 124.499 and 106.833 s of exposed
+PLE wait. The respective stock samples are 474.7 and 524.9 tok/s.
+The larger shared cache passes the repeated subsequent-request mechanism
+gate. Adopt a phase-local capacity only after standalone cache isolation,
+mixed-corpus, sustained DFlash2 handoff, physical context and RESTORE checks.
+Retain the normal production capacity while those checks remain open.
+The compact [performance index](../bench/performance-records.csv) records
+first and subsequent samples separately.
+
+The phase-local comparison at `7263529d0` closes four independent
+processes in reverse-order pairs. All 12 requests process 118,785 input
+tokens with zero KV reuse and matched native work. The ordinary
+1,048,576-row cache stays fixed. The candidate adds a 4,194,304-row host
+cache dedicated to long prefill. All processes exit normally with
+verified model assets and no fresh Xe fault.
+
+| Request | Stock prefill (tok/s) | Dedicated prefill (tok/s) | Stock TTFT (s) | Dedicated TTFT (s) |
+| --- | ---: | ---: | ---: | ---: |
+| First technical-prose request | 511.8–514.4 | 516.2–518.7 | 231.165–232.373 | 229.246–230.347 |
+| Subsequent technical-prose requests | 772.0–779.6 | 1,029.4–1,031.1 | 152.644–154.138 | 115.430–115.624 |
+
+Subsequent prefill time falls 24.6% and 24.8%.
+Logical record touches over the two later requests fall from 725,756
+to 866 and 865. The four later candidate samples exceed 1,000 tok/s.
+The same-corpus gate permits the alternating-corpus comparison.
+See the [performance CSV](../bench/performance-records.csv).
+
+The [closed alternating comparison](https://github.com/yqYo1/Strata/commit/a6d2f3efee89ada0ae3a5a5326b6deb76e5ce6bf)
+matches all 16 fresh 118,785-token requests across two opposite-order pairs.
+Each process reads C++, technical prose, C++, then technical prose. It
+keeps the ordinary cache, request bodies and native work fixed. All four
+owners close normally with verified assets and no fresh Xe fault.
+
+| Revisited input | Stock PP (tok/s) | Dedicated PP (tok/s) | Stock TTFT (s) | Dedicated TTFT (s) |
+| --- | ---: | ---: | ---: | ---: |
+| C++ | 683.8–698.1 | 1,030.0–1,030.2 | 170.378–173.939 | 115.504–115.532 |
+| Technical prose | 575.3–584.2 | 1,030.9–1,031.2 | 203.592–206.749 | 115.421–115.451 |
+
+Paired geometric-mean prefill time falls 32.93% for C++ and 43.78% for
+prose. Record touches on revisits fall from 522,827 to 5,703 for C++ and
+from 824,497–824,498 to 6,574 for prose. The first C++ comparison changes
+direction between pairs. The first prose request takes 1.45% and 2.57%
+longer with the dedicated cache. The repeated revisit gain passes the
+mechanism gate.
+
+The same-build [physical-context result](https://github.com/yqYo1/Strata/commit/54d5ad44c)
+verifies the host bounds, the 16,385-token mode-10 handoff with matching
+four output IDs, and all 262,144 input slots. The mode-2 full fill processes
+262,143 batch rows, with 122,880 GPU-backed and 139,263 host-backed, then
+consumes the last position with zero emitted tokens. The final commit wait,
+refill drain and model asset verification pass. Both model processes use
+the dedicated prefill cache and the original ordinary cache, exit normally
+and record no fresh Xe fault. The [live RESTORE comparison](https://github.com/yqYo1/Strata/commit/d09989211)
+pins that final-slot result and verifies both cache settings. Each process
+parks 16,385 tokens, switches to a 33-token conversation and appends
+118,785 fresh tokens after restoration from RAM. The request extents,
+snapshot, output, active state and per-layer KV work match. Both processes
+close normally with no fresh Xe fault. The dedicated cache is selected
+on the first and restored long requests. The [sustained handoff controller](../bench/dflash2_prefill_ple_phase_cache_handoff.py)
+uses these exact correctness receipts and the retained phase-cache binary.
+Sustained handoff and agent-session measurements remain open.
+
+On the timed IQ4_NL source, the dedicated cache adds 376.5 MiB of host
+arrays, including 360 MiB of packed rows, 16 MiB of row keys and 0.5 MiB
+of replacement indices. The ordinary cache accounts for another 94.125 MiB,
+for 470.625 MiB total before allocator overhead. Keep this
+configuration in the DFlash2 handoff comparison. Measure decode PLE misses
+and output throughput before considering reuse across the two caches.
+
+Intersecting each PLE worker interval with its matching consume wait
+covers 15 chunks per request, including the 4,096-token tail. The first
+request has 108.162–110.849 s in collection and 0.213–0.230 s
+in exposed IQ4_NL expansion. Warm candidate expansion takes
+0.298–0.324 s on the worker, entirely outside the matching
+waits. Collection includes host and device work. Prioritize coalescing
+storage reads while keeping expansion on the host worker and verifying
+buffer ownership.
+
+The geometry build at `1dba95fb1` has been retired after checking its 1,328
+source files, 533 build controls, original recipe, 139 objects and 11
+executable identities against the committed evidence. The measurement lock
+covered removal of `build`, `cache`, `owned`, `ownership.json`, `source`
+and `tmp` under `dflash2-prefill-ple-record-native-v1`. That removed 1,524
+files totaling 223,847,837 bytes. The inventory SHA-256 is
+`5e350a50796bdb06f7116e6ea6ef54df40c7b21654b647e70ab62823aa94c959`.
+The sealed `record.json` is byte-identical and remains the provenance input
+for the dedicated cache and grouped-read builds. The validated primary
+engine and the early-PLE reference remain available. The rebuilt early
+generation's 1,328 source files and 530 controller inputs match the bytes
+recovered from `8f539f82e` and `ad3e4acf8`, both reachable from the
+published primary branch. Its recipe matches the committed build receipt,
+which records 139 fresh objects. All 11 retained executable sizes and
+hashes match.
+
+The dedicated-cache RESTORE has closed. An admission check that rejects
+reads of the early generation's files except `record.json` recovered all
+fields of the original phase baseline. Both the residual and sustained
+handoff controllers verified the retained phase-cache executable through
+that path. Earlier standalone early-PLE trials can recover their original
+inputs from Git if reopened. The grouped reader uses the sealed old build
+receipt and the retained primary and phase-cache results.
+
+Retired `build`, `cache`, `owned`, `ownership.json`, `source` and `tmp`
+under `dflash2-prefill-ple-early-native-v3` while holding the measurement
+lock. The inventory had 1,524 files totaling 223,825,805 bytes. Its SHA-256
+is `cedf7f90de33103fc25e497ee82a33bcf62dd8ce56e74cb062a29e641ec9aa32`
+over sorted relative paths, byte counts and hashes in compact JSON.
+The preserved `record.json` still has SHA-256
+`0cc9539f3d02fd08e5e284400bf30be6db7422a2672eaae49f20ee7e7e6cb70f`
+and both retained executable hashes and sizes match. The primary build
+serves as the fallback and decode reference. The phase-cache build remains
+for residual attribution and DFlash2 handoff. The grouped reader remains
+for the clean whole-request comparison with and without the dedicated
+prefill cache. Review this third generation when that comparison closes
+or fails a gate, before commissioning any new build.
+
+With the observed miss sets held fixed, coalescing by record within each
+ticket removes 14.3% of the first prose request's logical record touches.
+For adjacent pairs the lower and upper bounds are 14.3% and 51.4%.
+Each pair's unknown union lies between the larger ticket's unique-record
+count and their sum. Across the 15 tickets, both first prose requests sum
+to 840,933 unique touches within tickets and 477,329 when taking the larger
+count in each pair. Subsequent prose requests give 340,726–343,934 and
+193,548–193,854 respectively, yielding bounds of 5.6–46.9%.
+Both first prose requests ask the reader for 4.103 GB, with 128.77 GB of
+direct reads counted by the ZFS pool and 132 GB read on the shared NVMe
+partition during the request. These device counters also include other
+users of the pool or partition. Coalesced requests can ask the host to
+copy more bytes. Record actual reads, requested and returned bytes, and
+time to publish the first chunk in the
+one- and two-chunk readers. Compare each to the legacy route with the
+same cache capacity, then compare the one- and two-chunk readers directly.
+Even removing the full first-request PLE wait at fixed remaining time
+leaves about 1.8 s to recover for 1,000 tok/s on these prose requests.
+
+The [closed record-window comparison](https://github.com/yqYo1/Strata/commit/ef10e99746944c8b6f36dba5522f487ccc67fc3a)
+used one executable, the ordinary 1,048,576-row cache, and 18 fresh
+118,785-token technical-prose requests. The six independent processes
+used opposite orders. All exited normally with matching model work and
+asset hashes and no fresh Xe fault.
+
+| PLE window | First prefill (tok/s) | First TTFT (s) | Exposed first PLE wait (s) | Revisit prefill (tok/s) |
+| --- | ---: | ---: | ---: | ---: |
+| Legacy | 522.1–522.8 | 227.535–227.810 | 106.58–106.96 | 752.1–776.7 |
+| One chunk | 559.7–574.4 | 207.052–212.500 | 85.42–91.30 | 769.5–795.0 |
+| Two chunks | 599.4–608.1 | 195.633–198.464 | 74.29–77.06 | 786.4–834.5 |
+
+Two chunks cut first-prefill time by 12.9% and 14.0% compared with legacy
+and by 6.6% and 5.5% compared with one chunk. The number of first-request
+read jobs falls from 980,772 to 840,761 and 730,279 as the window grows.
+Legacy asks for 4.103 GB from the reader and two chunks ask for 12.982 GB.
+The shared ZFS direct counters fall from about 128.77 GB to 95.85 GB.
+These counters cover the request window and may include other pool users.
+The observations support lower storage waiting on this input. The results
+keep the observers on and leave clean timing and adoption open.
+
+The [same-build whole-request check](https://github.com/yqYo1/Strata/commit/91182681cf658bba4cda8f605aa93e05ef298ec7)
+processes 122,881 input tokens in the long request and consumes all 15
+8,192-token chunks, with both host slots exercised. Outputs, state, taps
+and work match the pinned reference, including the short requests before
+and after the long request. It exits normally with no fresh Xe fault.
+This permits the two-chunk versus whole-request comparison. Physical
+context fill, RESTORE and sustained decode remain separate checks.
+
+The [closed horizon comparison](https://github.com/yqYo1/Strata/commit/911fef23f433b8d05a408382a09abf35080d3172)
+used two independent process pairs in opposite orders. All 12 requests
+read 118,785 technical-prose tokens with zero KV reuse and the same
+1,048,576-row ordinary cache. All processes closed with the same model
+work, verified assets and no fresh Xe fault.
+
+| PLE horizon | First prefill (tok/s) | First TTFT (s) | Exposed first PLE wait (s) | Revisit prefill (tok/s) |
+| --- | ---: | ---: | ---: | ---: |
+| Two chunks | 596.1–607.8 | 195.671–199.514 | 74.101–78.143 | 814.2–833.5 |
+| Whole request | 850.5–855.4 | 139.123–139.946 | 17.592–18.445 | 948.7–979.1 |
+
+Whole-request grouping cuts first-prefill time by 30.3% and 28.5%,
+and the subsequent medians by 15.0% and 15.2%. First-request read jobs
+drop from 730,279 to 215,616. Reader-requested bytes rise from 12.98 to 16.84 GB while the
+shared ZFS direct counter drops from about 95.85 to 28.39 GB. Exposed PLE
+wait accounts for almost all the observed first-use improvement.
+The first chunk's exposed wait differs by less than half a second within
+each pair. These counters cover the shared pool. Estimating drive
+bandwidth and isolating concurrent traffic require separate measurements.
+
+For the two whole-request first samples, subtracting exposed PLE wait
+leaves 121.216–121.280 seconds, above the 118.785-second target by
+2.431–2.495 seconds at fixed remaining work. The first-revisit job count
+is 86,721 in both whole-request runs, with 6.024 and 9.880 seconds of
+exposed wait. Retain this variation when selecting a storage scheduler.
+
+The [clean horizon comparison](https://github.com/yqYo1/Strata/commit/91f8527b9f01bb8716a93911e3dc5c135f61dd4f)
+replays the same 12 requests with the PLE timing and shared-storage
+observers disabled. Both orders preserve the route and native work.
+All four owners exit normally with verified model assets and no fresh Xe
+fault.
+
+| PLE horizon | First prefill (tok/s) | First TTFT (s) | Revisit prefill (tok/s) |
+| --- | ---: | ---: | ---: |
+| Two chunks | 588.5–604.1 | 196.878–202.173 | 795.9–836.0 |
+| Whole request | 846.6–852.6 | 139.585–140.555 | 967.0–985.0 |
+
+Whole-request grouping cuts first-prefill time by 28.6% and 31.0%
+in forward and reverse order. The revisit medians fall by 16.3% and
+18.1%. The fastest revisit needs 1.807 s less to reach 1,000 tok/s.
+Hold the full horizon and the ordinary 1,048,576-row cache fixed in the
+next comparison. Vary only the dedicated 4,194,304-row prefill cache.
+Keep first-use and revisit gates separate. The 262,144-token check,
+RESTORE and matched sustained decode must use the selected native build.
+
+The dedicated-cache comparison closes at `4519135a6` with four independent
+processes, all 12 matched fresh requests, verified model assets and no
+fresh Xe fault. Both arms use the whole-request record horizon. Their
+ordinary cache stays at 1,048,576 rows. The candidate arm adds a separate
+4,194,304-row prefill cache and reserves 394,788,864 bytes of cache arrays.
+
+| PLE cache | First prefill (tok/s) | Revisit prefill (tok/s) | Revisit TTFT (s) |
+| --- | ---: | ---: | ---: |
+| Ordinary | 761.7–844.5 | 962.3–970.5 | 122.679–123.726 |
+| Dedicated | 836.3–845.6 | 1017.0–1018.5 | 116.855–117.028 |
+
+Revisit prefill time falls by 5.01% and 4.74% in the two orders. TTFT falls
+by 6.187 and 5.834 seconds. All four dedicated-cache revisits exceed 1,000 tok/s.
+First-use times have a larger spread and all first samples remain below
+the target. Advance the candidate to physical-context and live RESTORE
+checks. Keep implementation adoption and DFlash2 decode preservation open.
+
+The same-build context check closes at `38026f23b`. The standalone
+16,385-token request follows mode 10 and reproduces its four output IDs.
+The 262,144-token request follows mode 2 with 122,880 GPU-backed
+and 139,263 host-backed batched rows, consumes the final slot, and emits no
+tokens. Both requests admit the dedicated cache and finish with quiet
+validation and no fresh Xe fault. The mode-16 whole-request direct writer
+has separate coverage.
+
+The paired live RESTORE check closes at `b0a6527ea`. Both arms restore
+16,385 parked tokens from RAM after a separate 33-token conversation, then
+read 118,785 fresh tokens at the restored position. Exactly 15 PLE chunks
+execute on the suffix. Snapshot bytes and digests, actual outputs, active
+state and the per-layer KV ledger match across cache arms. Both native
+owners exit normally with quiet validation, verified assets and no new
+Xe fault.
+
+The 96K DFlash2 cache comparison closes at `0ccac0010`. All seven processes
+exit normally with no fresh Xe fault. Dedicated-cache prefill is 0.54–0.88%
+slower in the three first-long code pairs. The following prose pairs range
+from 0.29% faster to 1.84% slower. The dedicated/ordinary decode-rate
+geometric means are 1.00453 for code and 0.99540 for prose. One prose pair
+has different generated and draft work and the decode preservation screen
+fails. Keep the 118785-token single-corpus warm gains as separate evidence.
+Use the ordinary cache with the whole-request record window for both arms of
+the next per-layer decode placement comparison.
+
+The caller-clock bracket passes for both 96K workloads at matched work.
+All four observer/clean latency ratios are between 0.999 and 1.009. At the
+observed output yields, 70 tok/s allows 44.57 ms per window for code and
+23.78 ms for prose, against 203.96 and 151.39 ms observed. The GPU-reach and
+CPU-pool intervals motivate separate resource measurements. The prose draft
+acceptance remains above the weak-case cutoff and agent-session coverage is
+pending.
+
+The dedicated-cache arms of the alternating-corpus comparison give two
+distinct first-use budgets. Both use the same executable and 118,785 fresh
+tokens. On the process's first long request, C++ has 120.857–121.064 s
+remaining after subtracting the exposed PLE wait, or 2.072–2.279 s over
+the target. On the second long request, the first encounter with technical
+prose leaves 115.263–115.341 s and permits just 3.444–3.522 s of exposed
+PLE wait at the same target. The measured wait of 107.784–108.519 s would
+need to fall by 96.7–96.8% if that remainder stayed fixed.
+
+That second request has the same body hash and native work as the second
+request in the single-corpus comparison, where prose has already run once.
+The two cohorts' intervals outside the PLE wait differ by at most 0.127 s
+for that request. The comparable first-long remainders are over target for
+both C++ and prose. Keep the first-long residual investigation separate
+from storage coalescing, and measure both first encounters and previously
+seen bodies. The subtraction covers exposed waits and leaves overlapped
+PLE work in the remainder.
+[Single-corpus comparison](https://github.com/yqYo1/Strata/commit/7263529d0)
+· [Alternating candidate samples](https://github.com/yqYo1/Strata/commit/ad1bcf035).
 
 The observed future wait ends after `PleTable::gather_batch` has collected
 the direct reads and expanded their packed rows on the CPU. That scope
