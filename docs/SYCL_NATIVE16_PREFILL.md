@@ -11247,6 +11247,23 @@ when replayed from their original campaign. Their historical readers
 remain in Git. Neither selected engine's actual compiler/link census reads
 compiled outputs from these two older roots.
 
+The decode census now recovers its independent reference from the committed
+build and decode result. All four host tests at `ec8e42013` pass, including
+the census admission with access to the old executable denied. No retained
+primary or early-PLE compiler input points into that build. The exact
+1,171-file source projection, including its generated input, is preserved at
+`da86136e6445eb4c373525118af9b8bc6987daa0`. Its source manifest SHA-256 is
+`eb40e6500d0b5c3220857e00fe910d756dc8bba0933c7711b0d013add579cb70`.
+The original source identity remains `96832af6f`. The recipe at `d6f2b829`
+has SHA-256 `bcb24fac83c007bff68ffaa6f12c521d9acea5bfe911f4f3d3ded910b183eabe`.
+Before retirement, all 1,474 compiler inputs and all 12 final executables
+match their records. Retirement removes 1,370 files and 196,434,202 bytes
+under `dflash2-prefill-kv-stage-native-v1`, retaining its original record.
+The inventory SHA-256 is `f9495c225962c4347635a65d332a79b1bad52dcca6fce64a7c72c28a988fda77`.
+The two retained builds' 22 executables remain hash-identical. The next
+temporary build is the PLE read-geometry diagnostic, eligible for retirement
+at the end or first failed gate of its paired measurement.
+
 After the reconciliation process closes at `c5ffe8f77`, the original
 coherent and target-snapshot source and recipe checks pass. Each old root's
 12 final executable hashes match. The coherent intermediate paths come from
