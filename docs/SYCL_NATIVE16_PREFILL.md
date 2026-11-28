@@ -12104,16 +12104,24 @@ are 0.999322 and 0.999282. The comparison advances to same-build checks.
 Early issue yields 964.0–973.4 tok/s on first use and 1,054.9–1,055.9 tok/s
 on subsequent requests. First-use prefill still needs 3.242–4.433 seconds
 less to reach 1,000 tok/s, with a median gap of 3.978 seconds. The paired
-wait and storage counters are next. The rebuilt final-slot, RESTORE,
-sustained DFlash2 and agent-session checks remain open.
+wait and storage counters are below.
 [Rebuilt timing evidence](https://github.com/yqYo1/Strata/commit/a68dbc97dcd6efd45b61b0360028723877a4b539).
+
+The [rebuilt physical check](https://github.com/yqYo1/Strata/commit/9c024df11)
+passes the same-build host bounds and both standalone cases. The short
+case reproduces all four output IDs. The full case processes 262,143
+batch rows, with 122,880 on the GPU and 139,263 in host RAM, then consumes
+the final context slot. Both use the copy-writer fallback with zero early
+reads. The full case exits normally with zero output, no fresh Xe fault
+and all final model hashes matching.
 
 The [rebuilt RESTORE controller](../bench/dflash2_prefill_ple_early_restore.py)
 checks the absolute suffix positions with the existing per-layer KV trace
 reader. The restored prefix starts the suffix one token into a four-token
 page. Verify every chunk's head, whole pages, tail and published byte count
 against its position. Compare compact KV totals, output and active state
-across the two arms.
+across the two arms. Live RESTORE, sustained DFlash2 and agent-session
+qualification remain open.
 
 The first wait participant closes at `8769880c0` with the stock schedule.
 Across the same three 118,785-token requests, exposed PLE wait is 5.448,
