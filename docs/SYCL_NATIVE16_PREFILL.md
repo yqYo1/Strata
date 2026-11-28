@@ -12200,6 +12200,34 @@ Retain the normal production capacity while those checks remain open.
 The compact [performance index](../bench/performance-records.csv) records
 first and subsequent samples separately.
 
+The phase-local comparison at `7263529d0` closes four independent
+processes in reverse-order pairs. All 12 requests process 118,785 input
+tokens with zero KV reuse and matched native work. The ordinary
+1,048,576-row cache stays fixed. The candidate adds a 4,194,304-row host
+cache dedicated to long prefill. All processes exit normally with
+verified model assets and no fresh Xe fault.
+
+| Request | Stock prefill (tok/s) | Dedicated prefill (tok/s) | Stock TTFT (s) | Dedicated TTFT (s) |
+| --- | ---: | ---: | ---: | ---: |
+| First technical-prose request | 511.8–514.4 | 516.2–518.7 | 231.165–232.373 | 229.246–230.347 |
+| Subsequent technical-prose requests | 772.0–779.6 | 1,029.4–1,031.1 | 152.644–154.138 | 115.430–115.624 |
+
+Subsequent prefill time falls 24.6% and 24.8%.
+Logical record touches over the two later requests fall from 725,756
+to 866 and 865. The four later candidate samples exceed 1,000 tok/s.
+The same-corpus gate permits the alternating-corpus comparison.
+Physical fill, RESTORE and the sustained DFlash2 handoff remain open.
+See the [performance CSV](../bench/performance-records.csv).
+
+Intersecting each PLE worker interval with its matching consume wait
+covers 15 chunks per request, including the 4,096-token tail. The first
+request has 108.162–110.849 s in collection and 0.213–0.230 s
+in exposed IQ4_NL expansion. Warm candidate expansion takes
+0.298–0.324 s on the worker, entirely outside the matching
+waits. Collection includes host and device work. Prioritize coalescing
+storage reads while keeping expansion on the host worker and verifying
+buffer ownership.
+
 The geometry build at `1dba95fb1` has been retired after checking its 1,328
 source files, 533 build controls, original recipe, 139 objects and 11
 executable identities against the committed evidence. The measurement lock
