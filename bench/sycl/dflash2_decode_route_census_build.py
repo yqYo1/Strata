@@ -16,6 +16,7 @@ BASE_KEY = primary.KEY
 BASE_EVIDENCE = '0ab86d36b'
 PREFILL_EVIDENCE = 'bfc0c54aea58bc7f9e8a75103fa370606c54dd9d'
 PREFILL_KEY = 'dflash2_primary_prefill_speed_v1'
+DECODE_BUILD_KEY = 'dflash2_prefill_kv_stage_native_v1'
 BASE_SOURCE = '968e71988953dca3d98037d3b3fec9f903bdfd6f'
 CHECKED_SOURCE = '88215efa1b45b1f7383cda91ce05775f76da1dba'
 BASE_BINARY = '5153182852b607e781570b606d4b2a444b143027425da90c8d05f1a31e85522e'
@@ -45,6 +46,7 @@ def phase_references():
     build = reference()
     prefill = bank.previous.historic(PREFILL_EVIDENCE, PREFILL_KEY)
     decode = bank.previous.historic(primary.DECODE, 'dflash2_snapshot_regular_code_v1')
+    decode_build = bank.previous.historic(primary.DECODE, DECODE_BUILD_KEY)
     require(all(row['stage'] == 'closed' and row['passed'] and row['complete']
                 and row['ownership_closed'] and not row['active'] for row in (prefill, decode))
             and prefill['native_source_commit'] == BASE_SOURCE
@@ -52,11 +54,15 @@ def phase_references():
             and prefill['native_build_sha256'] == bank.signature(builder.compact(build))
             and prefill['decision']['all_pairs_faster'] and prefill['decision']['all_warm_requests_1000']['retain']
             and decode['decision']['matched_work'], 'require the closed primary prefill and separate decode references')
-    retained_decode = decode['binary']
-    require(Path(retained_decode['path']).stat().st_size == retained_decode['bytes']
-            and bank.sha(retained_decode['path']) == retained_decode['sha256'],
-            'preserve the selected independent decode executable')
-    return build, dict(prefill=prefill['binary'], decode=retained_decode)
+    # The census launches the new executable in both arms. The independent
+    # decode run establishes historical work and build identity.
+    require(decode_build['stage'] == 'built' and decode_build['passed'] and decode_build['complete']
+            and not decode_build['active'] and decode_build['ownership_closed']
+            and decode['native_source_commit'] == decode_build['native_source_commit']
+            and decode['native_build_sha256'] == bank.signature(decode_build)
+            and decode['binary'] == decode_build['binaries']['strata'],
+            'recover the measured independent decode source and executable identity')
+    return build, dict(prefill=prefill['binary'], decode=decode['binary'])
 
 
 def changed_sources():
@@ -103,7 +109,7 @@ def main(action):
         row['route_census_reference'] = evidence
         row['scope'] = ('Fresh coherent SYCL engine with only the request-local decode observer. '
                         'Use the retained primary engine for no-observer work parity.')
-        row['retention'] = ('Preserve the primary prefill and independent decode references. '
+        row['retention'] = ('Preserve the live primary executable and the committed independent decode evidence. '
                             'Retire this isolated build at the first failed gate or after the comparison.')
         original_save(row)
 

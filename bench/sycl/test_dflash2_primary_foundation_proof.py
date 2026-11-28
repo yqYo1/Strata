@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 import dflash2_primary_foundation_proof as foundation
 import dflash2_snapshot_source_recovery as snapshot
+import dflash2_decode_route_census_build as census
 
 
 class PrimaryFoundationProofTest(unittest.TestCase):
@@ -47,6 +48,17 @@ class PrimaryFoundationProofTest(unittest.TestCase):
         changed = dict(primary['foundation'], original_recipe_sha256='invalid')
         with self.assertRaisesRegex(RuntimeError, 'pinned primary foundation changed'):
             foundation.historical_foundation(expected=changed)
+
+    def test_decode_census_uses_the_archived_decode_identity(self):
+        before = census.bank.previous.historic(census.primary.DECODE, 'dflash2_snapshot_regular_code_v1')
+        path = Path(before['binary']['path'])
+        with (
+            patch.object(Path, 'open', self.deny_paths({path}, Path.open)),
+            patch.object(Path, 'stat', self.deny_paths({path}, Path.stat)),
+        ):
+            primary, controls = census.phase_references()
+        self.assertEqual(controls['decode'], before['binary'])
+        self.assertEqual(controls['prefill'], primary['binaries']['strata'])
 
 
 if __name__ == '__main__':
