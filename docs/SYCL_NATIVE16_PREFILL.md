@@ -12011,8 +12011,9 @@ Keep requested bytes and in-file extent separate from returned bytes and
 storage counters. The production accumulator has a compile-time fixture
 with a record straddle, a repeated page, gaps, a partial final page and
 a span wholly past EOF. The fixture requires six page touches over five
-pages and six record touches over three records. Check it first with GCC
-13.3.0 without producing an executable, after the wait run closes.
+pages and six record touches over three records. The serialized GCC
+13.3.0 syntax check passed on the `ef9dcaba5` reader source and evaluated
+the production accumulator's boundary assertion. It produced no executable.
 
 ```sh
 env -i PATH=/usr/bin:/bin LC_ALL=C /usr/bin/x86_64-linux-gnu-g++-13 \
