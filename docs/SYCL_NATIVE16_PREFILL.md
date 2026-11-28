@@ -12063,6 +12063,13 @@ The comparison retains first and subsequent prefill, client TTFT, decode
 rates, and observed draft acceptance. Agent-session coverage remains a
 separate validation step.
 
+The same controller's `--io-workers` mode is eligible only after the closed
+16/32 prefill comparison advances the 32-worker candidate on this build.
+It keeps early PLE enabled in both arms and changes only the startup worker
+count across three counterbalanced 96K pairs. Check sustained generation
+before selecting a server-wide setting. The worker-specific physical-context,
+live-RESTORE and agent-session gates remain separate.
+
 The early-PLE build recovery uses the historical checkout at `6819afd49`.
 Its original reader verifies 1,328 project files, 529 controller inputs,
 1,479 compiler inputs, 139 fresh objects and all 11 executable identities.
