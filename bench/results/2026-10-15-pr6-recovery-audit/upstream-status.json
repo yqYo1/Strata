@@ -63,9 +63,16 @@
           "feature": "Engine termination diagnostics",
           "commits": ["c282ce6c40a2b578d3cf11d0570e9d24cf416c10"],
           "fork_entry": "serve/server.py:StrataEngine.death_note",
-          "state": "required_port_pending",
+          "state": "isolated_source_committed_host_validation_pending",
           "scope": "Reuse the fork's engine_crashed and engine_exit_words helpers. Keep watchdog, fatal GPU and real-time limit precedence. Distinguish system crashes and Windows status-unavailable from evidenced allocation failure. Import the death-note behavior independently of the same commit's unrelated prompt-render hunk.",
-          "validation": "Extend SilentEngine host cases for signal and Windows error codes, missing status, explicit allocation errors, normal exit detail and watchdog/fatal-GPU/RTTIME precedence. Recheck the current server suite after the frozen prefill comparison."
+          "candidate": {
+            "branch": "port/engine-exit-diagnostics",
+            "commit": "57ea6066ae77d96e54d4bc8ea1a704bb2febda50",
+            "license": "Matching MIT license on both the fork and Niko upstream",
+            "readiness": "The production and test sources pass syntax parsing. The host suite and integration remain pending.",
+            "review_point": "After the frozen early PLE comparison releases serve/server.py and serve/test_server.py. Close the host validation, integrate the result into feature/sycl and retire the local child."
+          },
+          "validation": "Run SilentEngine for signal and Windows error codes, missing status, explicit allocation errors, normal exit detail and watchdog/fatal-GPU/RTTIME precedence. Then rerun the current server suite."
         },
         {
           "feature": "Refresh launch hardware without blocking the interactive catalog",
