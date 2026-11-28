@@ -12174,10 +12174,16 @@ With the observed miss sets held fixed, coalescing by record within each
 ticket removes 14.3% of the first prose request's logical record touches.
 For adjacent pairs the lower and upper bounds are 14.3% and 51.4%.
 Each pair's unknown union lies between the larger ticket's unique-record
-count and their sum. The corresponding bounds on subsequent prose requests
-are 5.6–46.9%. These are bounds on logical touches, and larger deduplicated
-requests can still ask the host to copy more bytes. Record actual reads,
-requested and returned bytes, and time to publish the first chunk in the
+count and their sum. Across the 15 tickets, both first prose requests sum
+to 840,933 unique touches within tickets and 477,329 when taking the larger
+count in each pair. Subsequent prose requests give 340,726–343,934 and
+193,548–193,854 respectively, yielding bounds of 5.6–46.9%.
+Both first prose requests ask the reader for 4.103 GB, with 128.77 GB of
+direct reads counted by the ZFS pool and 132 GB read on the shared NVMe
+partition during the request. These device counters also include other
+users of the pool or partition. Coalesced requests can ask the host to
+copy more bytes. Record actual reads, requested and returned bytes, and
+time to publish the first chunk in the
 one- and two-chunk readers. Compare each to the legacy route with the
 same cache capacity, then compare the one- and two-chunk readers directly.
 Even removing the full first-request PLE wait at fixed remaining time
