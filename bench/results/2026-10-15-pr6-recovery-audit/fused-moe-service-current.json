@@ -768020,13 +768020,13 @@
       ]
     ],
     "capacity_proof_sha256": "7789837a5fa0478ffa8f717384762cda348937ce24b44e1a4c41cfe26d0aa157",
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "0aa67ea65bf35d454479e0aeaa434c6a601b2928",
     "host_passed": true,
     "ownership_closed": true,
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "plans": [
       {
         "index": 0,
@@ -768800,6 +768800,207 @@
         },
         "passed": true,
         "arm": "large"
+      },
+      {
+        "index": 3,
+        "read": 118785,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/build/strata",
+          "sha256": "f424a46caedc68e88f97ff7d7c06c1c962a58025f30d4561f497d64c1b70fe8a",
+          "bytes": 26729192
+        },
+        "native_source_commit": "9cba62818dcc4f0455891f67675742f3e618bc55",
+        "native_identity": {
+          "pid": 712197,
+          "start_ticks": 420829358,
+          "sid": 712147
+        },
+        "storage_counters": [
+          {
+            "zfs_direct_records": 982421,
+            "zfs_direct_bytes": 128767885312,
+            "partition_reads": 1017119,
+            "partition_read_bytes": 130374201344,
+            "partition_read_wait_ms": 1140968,
+            "partition_write_bytes": 584228864,
+            "request_window_ns": 233473544157
+          },
+          {
+            "zfs_direct_records": 365638,
+            "zfs_direct_bytes": 47924903936,
+            "partition_reads": 396435,
+            "partition_read_bytes": 49727025152,
+            "partition_read_wait_ms": 415631,
+            "partition_write_bytes": 296984576,
+            "request_window_ns": 154858142652
+          },
+          {
+            "zfs_direct_records": 361649,
+            "zfs_direct_bytes": 47402057728,
+            "partition_reads": 389970,
+            "partition_read_bytes": 49099022336,
+            "partition_read_wait_ms": 423615,
+            "partition_write_bytes": 506392576,
+            "request_window_ns": 155960474704
+          }
+        ],
+        "request_routes_checked_before_continue": 3,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 712197,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 109971.983,
+              "host_ple_ms": 109992.677
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              12,
+              17
+            ],
+            "bank_upload_bytes": 49896832000,
+            "read_jobs": 980772,
+            "record_touches": 981425,
+            "requested_read_bytes": 4102762496,
+            "within_ticket_duplicates": 140492,
+            "first_two_duplicates": 23826,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 109740.518923,
+              "expand": 230.250472
+            }
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 37427.663,
+              "host_ple_ms": 37441.064
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              16,
+              18
+            ],
+            "bank_upload_bytes": 49898444800,
+            "read_jobs": 364542,
+            "record_touches": 364797,
+            "requested_read_bytes": 1524531200,
+            "within_ticket_duplicates": 20863,
+            "first_two_duplicates": 4018,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 37224.047084,
+              "expand": 202.059723
+            }
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 38595.015,
+              "host_ple_ms": 38610.261
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              15,
+              17
+            ],
+            "bank_upload_bytes": 49871436800,
+            "read_jobs": 360731,
+            "record_touches": 360959,
+            "requested_read_bytes": 1508663296,
+            "within_ticket_duplicates": 20233,
+            "first_two_duplicates": 2579,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 38390.185165,
+              "expand": 203.040719
+            }
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 230918.2,
+            "prompt_tps": 514.4,
+            "ttft_s": 231.165,
+            "total_s": 233.441,
+            "generated_tokens": 24,
+            "request_sha256": "8aca834dae0db1f6731a2c817c463c61f9fbff320b39b253b900e91e2b03d249",
+            "drafts_offered": 17,
+            "drafts_accepted": 12,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 152661.2,
+            "prompt_tps": 778.1,
+            "ttft_s": 152.942,
+            "total_s": 154.817,
+            "generated_tokens": 24,
+            "request_sha256": "fe36c44e5fd159a084612f94685c54a2c1ffef31dbc1a613f62732a779fb4608",
+            "drafts_offered": 18,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 153858.1,
+            "prompt_tps": 772.0,
+            "ttft_s": 154.138,
+            "total_s": 155.958,
+            "generated_tokens": 24,
+            "request_sha256": "8cbe292463fd8403c38c605952d2f6f527e9a642cc70d625d6ebf64093a5749e",
+            "drafts_offered": 17,
+            "drafts_accepted": 15,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 153259.65000000002,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "arm": "stock"
       }
     ],
     "budgets": {
@@ -768851,6 +769052,53 @@
         "passed": true
       }
     ],
+    "decision": {
+      "pairs": [
+        {
+          "warm_read_record_totals": [
+            725756,
+            866
+          ],
+          "warm_wait_ms": [
+            [
+              38328.08,
+              37055.941
+            ],
+            [
+              0.046,
+              0.055
+            ]
+          ],
+          "warm_prompt_ratio": 0.7538271521817358,
+          "warm_ttft_ratio": 0.753910646418843,
+          "first_prefill_ratio": 0.9867952770290299,
+          "first_ttft_ratio": 0.9865431870311956
+        },
+        {
+          "warm_read_record_totals": [
+            725756,
+            865
+          ],
+          "warm_wait_ms": [
+            [
+              37427.663,
+              38595.015
+            ],
+            [
+              0.046,
+              0.045
+            ]
+          ],
+          "warm_prompt_ratio": 0.7518260677223261,
+          "warm_ttft_ratio": 0.7519278363944247,
+          "first_prefill_ratio": 0.9965035237586296,
+          "first_ttft_ratio": 0.9964614020288539
+        }
+      ],
+      "warm_cache_mechanism_advances": true,
+      "warm_large_reaches_1000": true,
+      "adopted": false
+    },
     "source_inputs": {
       "files": 832,
       "sha256": "6da07b9e74744187db117b1ba268c2f6e9c82e582ba31340bb205adcf04b7b60"
