@@ -771098,7 +771098,7 @@
         "environment_sha256": "d6aa7fb3546c97bd7939118d1b656f30e7d7b4ef1901d13fc8b768ea146b77da"
       }
     ],
-    "stage": "running",
+    "stage": "closed",
     "outcomes": {
       "host": {
         "complete": true,
@@ -771189,10 +771189,83 @@
           "devcoredump": false
         },
         "passed": true
+      },
+      "full-copy": {
+        "complete": true,
+        "GPU_executed": true,
+        "host_probe_accepted": true,
+        "native_execution_attempted": true,
+        "native_exit_code": 0,
+        "stdout_sha256": "ee31ad5c606ef1d8abf16256fb0c438aa10d238b60b27686dc8325d79fd318bb",
+        "stderr_sha256": "cb09c4036e75b5241e15651d162ce1c67363210bf6af516bce6f8ae3dc4bfe1f",
+        "validation": {
+          "pid": 936404,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "batched_rows": 262143,
+        "generated_ids": 0,
+        "output_ids_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "final_slot_consumed": true,
+        "gpu_rows": 122880,
+        "host_rows": 139263,
+        "gpu_bytes": 2516582400,
+        "host_bytes": 2852106240,
+        "bank_bytes": 1363148800,
+        "allocation_limit_bytes": 10132807680,
+        "qsa_bytes": 538968064,
+        "window": {
+          "mode": 2,
+          "maximum_rows": 16384,
+          "mixed_fp16_bytes": 0
+        },
+        "store": {
+          "requested": 0,
+          "pieces": 672,
+          "direct": 0,
+          "requested_D2D_bytes": 112742891520
+        },
+        "post_release_free_mib": 1701,
+        "observed_prefill_ms": 454047.6,
+        "speed_eligible": false,
+        "dflash2_tail_rows": 2046,
+        "dflash2_vram_bytes": 845776220,
+        "kv_stage": {
+          "reloaded_pages": 3047424,
+          "reused_pages": 9142272,
+          "mirror_D2H_calls": 1632,
+          "mirror_D2H_bytes": 3321876096
+        },
+        "same_fixture_output_ids": true,
+        "early_read_count": 0,
+        "phase_ple_cache": {
+          "prefill_rows": 4194304,
+          "ordinary_rows": 1048576,
+          "observed_request_routes": 1
+        },
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true
       }
     },
-    "complete": false,
-    "passed": false,
+    "complete": true,
+    "passed": true,
     "active": false,
     "ownership_closed": true,
     "source_inputs": {
