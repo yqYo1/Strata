@@ -12289,6 +12289,26 @@ same cache capacity, then compare the one- and two-chunk readers directly.
 Even removing the full first-request PLE wait at fixed remaining time
 leaves about 1.8 s to recover for 1,000 tok/s on these prose requests.
 
+The dedicated-cache arms of the alternating-corpus comparison give two
+distinct first-use budgets. Both use the same executable and 118,785 fresh
+tokens. On the process's first long request, C++ has 120.857–121.064 s
+remaining after subtracting the exposed PLE wait, or 2.072–2.279 s over
+the target. On the second long request, the first encounter with technical
+prose leaves 115.263–115.341 s and permits just 3.444–3.522 s of exposed
+PLE wait at the same target. The measured wait of 107.784–108.519 s would
+need to fall by 96.7–96.8% if that remainder stayed fixed.
+
+That second request has the same body hash and native work as the second
+request in the single-corpus comparison, where prose has already run once.
+The two cohorts' intervals outside the PLE wait differ by at most 0.127 s
+for that request. The comparable first-long remainders are over target for
+both C++ and prose. Keep the first-long residual investigation separate
+from storage coalescing, and measure both first encounters and previously
+seen bodies. The subtraction covers exposed waits and leaves overlapped
+PLE work in the remainder.
+[Single-corpus comparison](https://github.com/yqYo1/Strata/commit/7263529d0)
+· [Alternating candidate samples](https://github.com/yqYo1/Strata/commit/ad1bcf035).
+
 The observed future wait ends after `PleTable::gather_batch` has collected
 the direct reads and expanded their packed rows on the CPU. That scope
 combines submission, storage and expansion. For 118,784 batched tokens,
