@@ -11970,11 +11970,13 @@ key is the first 4 KiB page. The duplicate-record rate for this workload
 still needs measurement.
 [OpenZFS 2.4.1 direct read](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/dmu_direct.c#L233).
 
-For the follow-up, match first and subsequent request windows and record
-pool-wide direct records and bytes from `rpool/iostats`, plus completed
-read I/Os and 512-byte sectors from the backing partition. Check for other
-pool work and keep these counters separate from PleReader's requested
-bytes and the exposed wait. If record traffic matters, count the current
+The paired wait controller samples the whole-request windows at the
+existing benchmark gates. It records pool-wide direct records and bytes
+from `rpool/iostats`, plus read I/Os, bytes, cumulative read wait and
+write bytes from the backing NVMe partition. Both counters include work
+from other processes and the request includes short decode. Keep this
+evidence separate from the reader's requested bytes and the exposed PLE
+wait. If record traffic matters, count the current
 jobs and unique touched 128 KiB records on the actual row batch before
 changing the reader. A coalesced arm would retain the row cache, handle
 rows crossing records and the final short read, and limit its staging
