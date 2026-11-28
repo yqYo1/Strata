@@ -2468,8 +2468,14 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         return value && std::strcmp(value, "1") == 0;
     }();
     const bool observe_ple_wait = ple_on && m.layer_major_active && ple_wait_profile;
+    static const bool ple_record_audit = [] {
+        const char* value = std::getenv("STRATA_PREFILL_PLE_RECORD_AUDIT");
+        return value && std::strcmp(value, "1") == 0;
+    }();
+    const bool observe_ple_timeline = observe_ple_wait && ple_record_audit;
 #else
     constexpr bool observe_ple_wait = false;
+    constexpr bool observe_ple_timeline = false;
 #endif
     size_t ple_wait_calls = 0;
     double ple_wait_ms = 0.0;
@@ -2696,8 +2702,18 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 return false;
             }
             if (observe_ple_wait) {
-                ple_wait_ms += ms_since(tp);
+                const auto completed = Clock::now();
+                ple_wait_ms += std::chrono::duration<double, std::milli>(completed - tp).count();
                 ++ple_wait_calls;
+                if (observe_ple_timeline && T >= 4096) {
+                    auto ns = [](Clock::time_point time) {
+                        return static_cast<long long>(
+                            std::chrono::duration_cast<std::chrono::nanoseconds>(time.time_since_epoch()).count());
+                    };
+                    std::fprintf(stderr, "strata prefill PLE join timeline: offset=%lld tokens=%lld "
+                                         "begin_ns=%lld end_ns=%lld\n",
+                                 static_cast<long long>(c0), static_cast<long long>(T), ns(tp), ns(completed));
+                }
             }
             if (first_already_issued)
                 std::fprintf(stderr, "strata prefill PLE early read: rows=%lld issue_layer=0 consume_layer=1\n",

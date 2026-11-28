@@ -8,8 +8,10 @@
 #include "strata/ngram/ple_reader.hpp"
 
 #include <cerrno>
+#include <chrono>
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #if !defined(_WIN32)
 #include <sys/mman.h>
@@ -360,10 +362,32 @@ bool PleTable::gather_batch(const uint32_t* rows, size_t n_tokens, float* out, s
     if (impl_->pending) { err = "PleTable::gather_batch while a token is in flight"; return false; }
     const size_t n = n_tokens * (size_t) PLE_N_HEADS;
     if (impl_->mode == PleIo::Direct) {
+        using Clock = std::chrono::steady_clock;
+        static const bool profile = [] {
+            const char* value = std::getenv("STRATA_PREFILL_PLE_RECORD_AUDIT");
+            return value && std::strcmp(value, "1") == 0;
+        }();
+        const bool observe = profile && n_tokens >= 4096;
+        auto stamp = [observe] { return observe ? Clock::now() : Clock::time_point{}; };
+        const auto allocate_begin = stamp();
         std::vector<uint8_t> raw(n * impl_->rb);
+        const auto issue_begin = stamp();
         const auto ticket = impl_->reader.issue(rows, n, raw.data());
+        const auto collect_begin = stamp();
         if (!impl_->reader.collect(ticket, err)) return false;
+        const auto expand_begin = stamp();
         for (size_t i = 0; i < n; ++i) impl_->decode(raw.data() + i * impl_->rb, out + i * PLE_HEAD_DIM);
+        if (observe) {
+            const auto expand_end = Clock::now();
+            auto ns = [](Clock::time_point time) {
+                return static_cast<long long>(
+                    std::chrono::duration_cast<std::chrono::nanoseconds>(time.time_since_epoch()).count());
+            };
+            std::fprintf(stderr, "strata prefill PLE host timeline: tokens=%zu allocate_ns=%lld issue_ns=%lld "
+                                 "collect_ns=%lld expand_ns=%lld end_ns=%lld\n",
+                         n_tokens, ns(allocate_begin), ns(issue_begin), ns(collect_begin), ns(expand_begin),
+                         ns(expand_end));
+        }
         impl_->bytes_read += (uint64_t) n * impl_->rb;
         return true;
     }
