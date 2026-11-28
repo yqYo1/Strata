@@ -11929,6 +11929,23 @@ needed at 1,000 tok/s. The wait clock sums all layer-1 future waits. Keep the
 first and subsequent intervals, the same-arm warm observer ratios and the
 clean first-prefill gap in the compact result. Review the raw logs after the
 last pair and the controller when selecting the next scheduling change.
+
+On this Linux build `--ple-inflight` limits outstanding reader jobs and
+buffer slots. The current request uses its default of 256. The Linux DirectFile
+workers each wait in a blocking `pread`, with 16 workers when
+`STRATA_IO_THREADS` is unset. Thus 16 bounds simultaneous `pread` calls even
+with room for 256 queued jobs. The reader already deduplicates jobs with the
+same first page and sorts them by file offset. Its existing I/O report is a
+cumulative standalone CLI summary and cannot identify the request's exposed
+wait in server mode. If the paired wait measurements show repeatable room
+for improvement, compare 16 and 32 workers first on the same executable
+with early issue selected, unchanged reader capacity and identical bodies.
+Charge the host work and test whether shorter waits improve first PP and
+TTFT while preserving subsequent PP. Compare the affected DFlash2 decode
+work separately because the worker count applies to its PLE table too.
+[DirectFile workers](../src/platform/direct_file.cpp) ·
+[PLE job preparation](../src/ngram/ple_reader.cpp).
+
 The next check enabled the early selector and exercised the 16,385-input
 handoff and the 262,144-input fallback on the original token bodies.
 [Original physical-context controller](https://github.com/yqYo1/Strata/blob/c32ac6175f8f3b4fb40ae8eb8579a769dd398849/bench/dflash2_prefill_ple_early_capacity.py).
