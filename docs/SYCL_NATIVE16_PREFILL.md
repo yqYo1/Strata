@@ -12170,6 +12170,16 @@ same prose body. Record how much storage work and wall time the larger
 cache removes before evaluating record grouping. This diagnostic keeps
 prefill and decode adoption decisions open.
 
+The first capacity comparison stops at the first large-cache process.
+Its three requests finish, and the native start and exit agree. The server
+moves the capacity flag when it applies the existing argument overrides,
+so the effective argv differs in order from the pinned launch config.
+The strict identity gate rejects that process. Keep the failure in
+[its original result](https://github.com/yqYo1/Strata/commit/9392f9dee).
+The replacement plans each large arm using the server's effective argv,
+verifies that removing the capacity option recovers the stock arguments,
+and rechecks the actual launch using the existing identity gate.
+
 With the observed miss sets held fixed, coalescing by record within each
 ticket removes 14.3% of the first prose request's logical record touches.
 For adjacent pairs the lower and upper bounds are 14.3% and 51.4%.

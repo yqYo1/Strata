@@ -10,7 +10,7 @@ import dflash2_prefill_ple_corpus as corpus
 
 bank, wait, geometry, validate, require = corpus.bank, corpus.wait, corpus.geometry, corpus.validate, corpus.require
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
-KEY = 'dflash2_prefill_ple_cache_capacity_v1'
+KEY = 'dflash2_prefill_ple_cache_capacity_v2'
 ROOT = bank.B / KEY.replace('_', '-')
 WORKLOAD = 'technical-prose'
 FILE = ROOT / 'corpus.txt'
@@ -85,7 +85,18 @@ def experiment():
         cfg = base_configuration(row, plan)
         require(FLAG not in cfg['args'], 'stock PLE cache configuration differs')
         if plan['arm'] == 'large':
-            cfg = dict(cfg, args=[*cfg['args'], FLAG, str(LARGE_ROWS)])
+            stock = cfg['args']
+            cfg = dict(cfg, args=[*stock, FLAG, str(LARGE_ROWS)])
+            server = wait.speed.generation.model.server
+            effective = server.engine_args(cfg, exe=cfg['exe'], announce=False)
+            require(effective.count(FLAG) == 1, 'effective row-cache option is missing or duplicated')
+            pos = effective.index(FLAG)
+            require(effective[pos + 1:pos + 2] == [str(LARGE_ROWS)]
+                    and effective[:pos] + effective[pos + 2:] == stock,
+                    'the effective native arguments differ outside row-cache capacity')
+            cfg['args'] = effective
+            require(server.engine_args(cfg, exe=cfg['exe'], announce=False) == effective,
+                    'effective row-cache arguments are unstable on restart')
         return cfg
 
     def save(row):
@@ -111,7 +122,7 @@ def experiment():
         capacity_rows=dict(stock=DEFAULT_ROWS, large=LARGE_ROWS),
         memory_addition_bytes=(LARGE_ROWS-DEFAULT_ROWS)*94 + (LARGE_ROWS-DEFAULT_ROWS)//8,
         scope='Use the identical instrumented early PLE binary and frozen prose requests. Change only '
-              'the existing row-cache capacity option and verify it in the native launch receipt.',
+              'the row-cache option. Pin the server-normalized argv and check it in the native launch receipt.',
         decision='Fewer subsequent read records and faster subsequent prefill and TTFT in both pairs '
                  'advance the mechanism. Keep first-use clocks and independent samples. Verify clean and '
                  'sustained decode separately before selecting a phase cache policy.',
