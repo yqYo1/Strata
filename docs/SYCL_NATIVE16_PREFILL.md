@@ -12353,6 +12353,35 @@ same cache capacity, then compare the one- and two-chunk readers directly.
 Even removing the full first-request PLE wait at fixed remaining time
 leaves about 1.8 s to recover for 1,000 tok/s on these prose requests.
 
+The [closed record-window comparison](https://github.com/yqYo1/Strata/commit/ef10e99746944c8b6f36dba5522f487ccc67fc3a)
+used one executable, the ordinary 1,048,576-row cache, and 18 fresh
+118,785-token technical-prose requests. The six independent processes
+used opposite orders. All exited normally with matching model work and
+asset hashes and no fresh Xe fault.
+
+| PLE window | First prefill (tok/s) | First TTFT (s) | Exposed first PLE wait (s) | Revisit prefill (tok/s) |
+| --- | ---: | ---: | ---: | ---: |
+| Legacy | 522.1–522.8 | 227.535–227.810 | 106.58–106.96 | 752.1–776.7 |
+| One chunk | 559.7–574.4 | 207.052–212.500 | 85.42–91.30 | 769.5–795.0 |
+| Two chunks | 599.4–608.1 | 195.633–198.464 | 74.29–77.06 | 786.4–834.5 |
+
+Two chunks cut first-prefill time by 12.9% and 14.0% compared with legacy
+and by 6.6% and 5.5% compared with one chunk. The number of first-request
+read jobs falls from 980,772 to 840,761 and 730,279 as the window grows.
+Legacy asks for 4.103 GB from the reader and two chunks ask for 12.982 GB.
+The shared ZFS direct counters fall from about 128.77 GB to 95.85 GB.
+These counters cover the request window and may include other pool users.
+The observations support lower storage waiting on this input. The results
+keep the observers on and leave clean timing and adoption open.
+
+The [same-build whole-request check](https://github.com/yqYo1/Strata/commit/91182681cf658bba4cda8f605aa93e05ef298ec7)
+processes 122,881 input tokens in the long request and consumes all 15
+8,192-token chunks, with both host slots exercised. Outputs, state, taps
+and work match the pinned reference, including the short requests before
+and after the long request. It exits normally with no fresh Xe fault.
+This permits the two-chunk versus whole-request comparison. Physical
+context fill, RESTORE and sustained decode remain separate checks.
+
 The dedicated-cache arms of the alternating-corpus comparison give two
 distinct first-use budgets. Both use the same executable and 118,785 fresh
 tokens. On the process's first long request, C++ has 120.857–121.064 s
