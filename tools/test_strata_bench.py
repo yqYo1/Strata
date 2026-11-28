@@ -168,6 +168,22 @@ class BenchmarkTest(unittest.TestCase):
             return raw
         return reply
 
+    def test_exact_prefill_corpus_preserves_count_and_comparison_identity(self):
+        corpus = "A sample from the exact prefill corpus.\n" * 1000
+        suite = bench.Suite("http://localhost", "", 65536, 2, True, log=lambda _: None,
+            prefill_only=True, prefill_exact_tokens=32768, workload_id="corpus", prefill_corpus=corpus)
+        digest = hashlib.sha256(corpus.encode("utf-8")).hexdigest()
+        self.assertEqual(suite.prefill_plan()["corpus_sha256"], digest)
+        self.assertNotIn("corpus_sha256", self.exact_suite().prefill_plan())
+        with patch.object(bench, "count_chat_tokens", side_effect=self.count_endpoint), \
+             patch.object(bench, "chat", side_effect=self.exact_reply(suite)) as chat:
+            suite.run_prefill_only()
+        first, second = (call.args[2][0]["content"] for call in chat.call_args_list[1:])
+        self.assertIn(corpus[:200], first)
+        self.assertNotEqual(first, second)
+        self.assertEqual(len(set(suite.frozen_prefill_hashes.values())), 2)
+        self.assertTrue(suite.out["prefill_only"]["complete"])
+
     def test_exact_prefill_freezes_all_bodies_before_any_timed_request(self):
         suite=self.exact_suite()
         with patch.object(bench,'count_chat_tokens',side_effect=self.count_endpoint) as counter, \

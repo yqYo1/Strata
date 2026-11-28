@@ -11247,6 +11247,23 @@ when replayed from their original campaign. Their historical readers
 remain in Git. Neither selected engine's actual compiler/link census reads
 compiled outputs from these two older roots.
 
+The decode census now recovers its independent reference from the committed
+build and decode result. All four host tests at `ec8e42013` pass, including
+the census admission with access to the old executable denied. No retained
+primary or early-PLE compiler input points into that build. The exact
+1,171-file source projection, including its generated input, is preserved at
+`da86136e6445eb4c373525118af9b8bc6987daa0`. Its source manifest SHA-256 is
+`eb40e6500d0b5c3220857e00fe910d756dc8bba0933c7711b0d013add579cb70`.
+The original source identity remains `96832af6f`. The recipe at `d6f2b829`
+has SHA-256 `bcb24fac83c007bff68ffaa6f12c521d9acea5bfe911f4f3d3ded910b183eabe`.
+Before retirement, all 1,474 compiler inputs and all 12 final executables
+match their records. Retirement removes 1,370 files and 196,434,202 bytes
+under `dflash2-prefill-kv-stage-native-v1`, retaining its original record.
+The inventory SHA-256 is `f9495c225962c4347635a65d332a79b1bad52dcca6fce64a7c72c28a988fda77`.
+The two retained builds' 22 executables remain hash-identical. The next
+temporary build is the PLE read-geometry diagnostic, eligible for retirement
+at the end or first failed gate of its paired measurement.
+
 After the reconciliation process closes at `c5ffe8f77`, the original
 coherent and target-snapshot source and recipe checks pass. Each old root's
 12 final executable hashes match. The coherent intermediate paths come from
@@ -11543,6 +11560,23 @@ pass. The seeded peak is 989.4 tok/s and the median first-request gap to
 with exact provider identity and bounded cache ownership. The sustained
 DFlash2 and agent comparisons remain separate. Keep one exact donor while
 that restart policy has a current consumer.
+
+The measured environment selects `libze_intel_gpu.so.1.17.39758` from
+`libze-intel-gpu1` package `26.35.39758.17-1~24.04~ppa1` via
+`ZE_ENABLE_ALT_DRIVERS`. Its provider manifest also pins the local IGC
+2.41.5 libraries and DPC++ 2026.2 UR Level Zero v2 adapter. Intel's source
+tag of the same NEO version refers to IGC 2.41.15. Verify the actual native
+child's loader, driver, IGC and UR paths before reusing the cache across
+launches. [Intel release](https://github.com/intel/compute-runtime/releases/tag/26.35.39758.17)
+
+The corresponding cache source uses the IGC revision, library size and
+mtime, registry keys, input, options and hardware data in its key. The
+explicit directory must already exist. `NEO_CACHE_MAX_SIZE=0` makes the
+size limit unlimited. Use an explicit finite cache budget when comparing
+restart lifecycle. The previous readiness clock brackets a server log
+marker. Recheck readiness at the client API as a separate clock, with
+cache preparation charged to startup. [Cache key](https://github.com/intel/compute-runtime/blob/26.35.39758.17/shared/source/compiler_interface/compiler_cache.cpp#L27)
+and [cache configuration](https://github.com/intel/compute-runtime/blob/26.35.39758.17/shared/source/compiler_interface/default_cache_config.cpp#L27).
 
 After checking the committed samples and native exit receipts, retired the
 V1 preparation tree and the per-process raw outputs of the closed cache seed
@@ -12091,7 +12125,29 @@ two changed translation units at `5b82c9f60` pass syntax-only checks using
 the recorded early-PLE `icpx` 2026.2 flags and source preimages. The original
 compile database SHA-256 is
 `904497dff2fed8b487c381eda067fcd8f2cce438a2582fe8bf54359341e2f224`.
-The instrumented engine build and Arc measurements remain pending.
+The [instrumented build](https://github.com/yqYo1/Strata/commit/1dba95fb1)
+matches 1,479 compiler inputs and 11 final executables. The comparison
+pins that engine in [preparation](https://github.com/yqYo1/Strata/commit/5b9fcd13a)
+and passes both [frontend probes](https://github.com/yqYo1/Strata/commit/ce15678ef).
+The four-process [closed comparison](https://github.com/yqYo1/Strata/commit/5476afa882c536c5fd61cc9ef0c3c93b102c262b)
+has 12 complete requests, verified assets and no new Xe faults. The two
+subsequent observer/control time ratios are 0.999044 and 1.000216. First
+PLE waits are 4.460 and 8.903 seconds in the controls and 4.204 and 3.975
+seconds in the observed arms. The observed first joins overlap reader
+collection for 4.118 and 3.902 seconds and CPU expansion for 86 and 73 ms.
+Both observed first requests plan 64,967 record touches, with 58,159
+unique within tickets. The 6,808 duplicate touches vanish on subsequent
+requests in both processes. All four first-request ZFS pool deltas record
+65,707 direct record reads. Shared partition read-wait sums differ across
+processes. They include other users of the partition.
+
+The varied-prompt gate passes. The [corpus comparison](../bench/dflash2_prefill_ple_corpus.py)
+uses `bench.sh --prefill-exact-tokens 118785 --prefill-corpus FILE` on the
+retained diagnostic engine. It reconstructs two different corpora from
+pinned Strata files, checks their bytes before launch and repeats each
+corpus in independent processes. Analyse each corpus separately. The
+active result keeps request samples and compact totals. The closed
+revision above preserves each ticket and the full qualification record.
 
 The observed future wait ends after `PleTable::gather_batch` has collected
 the direct reads and expanded their packed rows on the CPU. That scope
