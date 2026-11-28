@@ -504,11 +504,17 @@ class Suite:
         self.base, self.key, self.ctx, self.runs, self.think, self.log = base, key, ctx, runs, think, log
         self.prefill_only, self.prefill_tokens = prefill_only, prefill_tokens
         self.prefill_exact_tokens = prefill_exact_tokens
-        if prefill_corpus is not None and (prefill_exact_tokens is None or not prefill_corpus.strip()):
-            raise ValueError("a nonempty corpus requires exact prefill")
-        self.prefill_corpus = prefill_corpus
-        self.prefill_corpus_sha256 = (hashlib.sha256(prefill_corpus.encode("utf-8")).hexdigest()
-                                      if prefill_corpus is not None else None)
+        if prefill_corpus is None:
+            self.prefill_corpora = ()
+        elif isinstance(prefill_corpus, str):
+            self.prefill_corpora = (prefill_corpus,)
+        else:
+            self.prefill_corpora = tuple(prefill_corpus)
+        if self.prefill_corpora and (prefill_exact_tokens is None or
+                                    any(not isinstance(text, str) or not text.strip() for text in self.prefill_corpora)):
+            raise ValueError("nonempty corpora require exact prefill")
+        self.prefill_corpus_hashes = tuple(hashlib.sha256(text.encode("utf-8")).hexdigest()
+                                          for text in self.prefill_corpora)
         self.short_prefill_diagnostic = short_prefill_diagnostic
         if short_prefill_diagnostic and (not prefill_only or prefill_exact_tokens is None or
                                         prefill_exact_tokens >= PREFILL_TOKEN_BOUNDS[0]):
@@ -614,6 +620,8 @@ class Suite:
                         errors.append('timed body differs from count-verified frozen body')
                     row.update(eligible=not errors, timing_frontend_state='post-count-preflight',
                                exact_input_tokens=self.prefill_exact_tokens)
+                    if len(self.prefill_corpus_hashes) > 1:
+                        row['corpus_sha256'] = self.prefill_corpus_hashes[run % len(self.prefill_corpora)]
                 if not row["eligible"]:
                     row.update(ok=False, err="; ".join(row["eligibility_errors"]))
             if phase.startswith("long-generation/"):
@@ -666,9 +674,12 @@ class Suite:
                 calibration='Count-only preflight,at most32calls/120seconds perbody;all bodies frozen before timed inference,no inference calibration or post-timing repair.',
                 timing_frontend_state='post-count-preflight',
                 limits='Exact rendered/read prompt counts do not prove physical engine rows,route or context capacity.')
-            if self.prefill_corpus_sha256 is not None:
+            if self.prefill_corpus_hashes:
                 plan.pop('initial_word_factory_target_tokens')
-                plan['corpus_sha256'] = self.prefill_corpus_sha256
+                if len(self.prefill_corpus_hashes) == 1:
+                    plan['corpus_sha256'] = self.prefill_corpus_hashes[0]
+                else:
+                    plan['corpus_sha256_cycle'] = list(self.prefill_corpus_hashes)
             return plan
         return {"mode":"prefill-only", "requested_min_tokens":self.prefill_tokens,
                 "construction_target_tokens":self.prefill_tokens * 5 // 4,
@@ -679,9 +690,10 @@ class Suite:
                 "calibration":"none; body never repaired from server responses"}
 
     def prefill_prompt(self, run):
-        if self.prefill_corpus is not None:
+        if self.prefill_corpora:
             tag = self.tag(run, self.prefill_exact_tokens, 'p')
-            return [{"role": "user", "content": f"[bench {tag}]\n{self.prefill_corpus}"
+            corpus = self.prefill_corpora[run % len(self.prefill_corpora)]
+            return [{"role": "user", "content": f"[bench {tag}]\n{corpus}"
                      "\n\nSummarize the preceding material in five sentences."}]
         # Reuse the official prompt generator, with fixed construction constants.
         # Independent of all server responses and mutable legacy calibration state.
@@ -710,6 +722,8 @@ class Suite:
                         lambda messages, timeout: count_chat_tokens(self.base, self.key, messages, timeout))
                     body_sha = hashlib.sha256(json.dumps(chat_body(messages,LONG_MAX_TOKENS,True)).encode()).hexdigest()
                     proof['body_sha256'] = body_sha
+                    if len(self.prefill_corpus_hashes) > 1:
+                        proof['corpus_sha256'] = self.prefill_corpus_hashes[run % len(self.prefill_corpora)]
                     self.frozen_prefill_hashes[run] = body_sha
                     frozen.append(messages)
                     cohort['count_preflight'].append(proof)
@@ -1679,8 +1693,8 @@ def parse_arguments(argv=None):
     ap.add_argument("--prefill-tokens", type=prefill_token_argument, default=None, help="minimum ACTUAL prompt/read tokens for --prefill-only, 32768..131072 (default 65536)")
     ap.add_argument('--prefill-exact-tokens',type=int,
                     help='opt-in exact prompt/read count,32768..131072;count-only preflight requires this fork server extension;implies --prefill-only')
-    ap.add_argument('--prefill-corpus', type=Path, metavar='FILE',
-                    help='UTF-8 text for the exact prefill workload (requires --prefill-exact-tokens)')
+    ap.add_argument('--prefill-corpus', type=Path, action='append', metavar='FILE',
+                    help='UTF-8 text for exact prefill. Repeat to cycle through files in order across runs.')
     ap.add_argument('--prefill-short-diagnostic',action='store_true',
                     help='allow exact1024..32767 inputs for length diagnostics;does not qualify long-input speed')
     ap.add_argument('--profile-request-gates',action='store_true',
@@ -1762,9 +1776,9 @@ def main(argv=None) -> int:
     corpus = None
     if a.prefill_corpus is not None:
         try:
-            corpus = a.prefill_corpus.read_bytes().decode("utf-8")
-            if not corpus.strip():
-                raise ValueError("prefill corpus is empty")
+            corpus = [path.read_bytes().decode("utf-8") for path in a.prefill_corpus]
+            if any(not text.strip() for text in corpus):
+                raise ValueError("a prefill corpus is empty")
         except (OSError, ValueError) as error:
             print(f"Cannot read prefill corpus: {error}", file=sys.stderr)
             return 2

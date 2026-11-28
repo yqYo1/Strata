@@ -63,8 +63,9 @@ def compact_request(frame):
 
 
 def after_execution(outcome, row, plan):
-    require('storage_begin' not in outcome and outcome['request_routes_checked_before_continue'] == wait.speed.RUNS
-            and len(outcome['storage_counters']) == wait.speed.RUNS, 'incomplete request gates')
+    runs = row['plan']['requests_per_process']
+    require('storage_begin' not in outcome and outcome['request_routes_checked_before_continue'] == runs
+            and len(outcome['storage_counters']) == runs, 'incomplete request gates')
     for frame, sample, storage in zip(outcome['routes'], outcome['samples'], outcome['storage_counters'], strict=True):
         require(frame['ple_early_reads'] == 1 and frame['ple_read_geometry'] and frame['ple_host_timeline']
                 and frame['ple_wait']['host_ple_ms'] <= sample['prompt_ms'] + 0.001
