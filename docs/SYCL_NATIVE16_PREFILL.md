@@ -11958,6 +11958,29 @@ first-use than subsequent wait. It varies only `STRATA_IO_THREADS` before
 process startup and compares clean wall time with observers off. The
 attribution and speed comparison retain separate decisions.
 
+The measured PLE shard is a 28,800,138,432-byte file on ZFS, backed by
+the `rpool` NVMe partition. Its preferred I/O size and the dataset's
+recordsize are both 128 KiB. The live file descriptor requests `O_DIRECT`
+and the loaded OpenZFS 2.4.1 module enables direct I/O. The host's ZFS 2.2.2
+userspace cannot query the dataset's `direct` property. The 2.4.1 direct
+read implementation submits a full record for a cache miss even when the
+caller requests only part. A 4 KiB request can therefore incur 128 KiB of
+record work. Distinct PleReader jobs may touch the same record because its
+key is the first 4 KiB page. The duplicate-record rate for this workload
+still needs measurement.
+[OpenZFS 2.4.1 direct read](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/dmu_direct.c#L233).
+
+For the follow-up, match first and subsequent request windows and record
+pool-wide direct records and bytes from `rpool/iostats`, plus completed
+read I/Os and 512-byte sectors from the backing partition. Check for other
+pool work and keep these counters separate from PleReader's requested
+bytes and the exposed wait. If record traffic matters, count the current
+jobs and unique touched 128 KiB records on the actual row batch before
+changing the reader. A coalesced arm would retain the row cache, handle
+rows crossing records and the final short read, and limit its staging
+allocation. Hold the decode reader geometry fixed during a prefill test.
+[Linux block counters](https://www.kernel.org/doc/html/latest/block/stat.html).
+
 The next check enabled the early selector and exercised the 16,385-input
 handoff and the 262,144-input fallback on the original token bodies.
 [Original physical-context controller](https://github.com/yqYo1/Strata/blob/c32ac6175f8f3b4fb40ae8eb8579a769dd398849/bench/dflash2_prefill_ple_early_capacity.py).
