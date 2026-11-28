@@ -763969,7 +763969,7 @@
     "reader_overlay_commit": "ef9dcaba575945ba4acd0e32e4be440e635d6218",
     "host_timeline_commit": "5b82c9f60b26d1c4795c023dad5bcd2e300ca577",
     "prior_ple_decision_sha256": "f4caa1cf6523e3c27b3078ff64f3366618c0b808b7dc578b8da64184d9aaf82c",
-    "stage": "ready",
+    "stage": "running",
     "source_commit": "acf7a1272898bf1efc2de79cc79b03a503d62316",
     "host_passed": true,
     "ownership_closed": true,
@@ -764062,7 +764062,209 @@
         "kv_arm": "retain"
       }
     ],
-    "processes": [],
+    "processes": [
+      {
+        "index": 0,
+        "read": 118785,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-native-v1/build/strata",
+          "sha256": "99d27185d4fc5525d5cbcd2cbecf16ce2892c7c0892b3948b71eadefe075df2f",
+          "bytes": 26724000
+        },
+        "native_source_commit": "8f539f82e38e1ec2c3e4285a29928aa1a32f4ea3",
+        "native_identity": {
+          "pid": 272893,
+          "start_ticks": 419672879,
+          "sid": 272651
+        },
+        "storage_counters": [
+          {
+            "zfs_direct_records": 601457,
+            "zfs_direct_bytes": 78834171904,
+            "partition_reads": 647826,
+            "partition_read_bytes": 82267832320,
+            "partition_read_wait_ms": 721703,
+            "partition_write_bytes": 580116480,
+            "request_window_ns": 190601602899
+          },
+          {
+            "zfs_direct_records": 37204,
+            "zfs_direct_bytes": 4876402688,
+            "partition_reads": 91665,
+            "partition_read_bytes": 8910635008,
+            "partition_read_wait_ms": 58693,
+            "partition_write_bytes": 376774656,
+            "request_window_ns": 119775003394
+          },
+          {
+            "zfs_direct_records": 36800,
+            "zfs_direct_bytes": 4823449600,
+            "partition_reads": 81631,
+            "partition_read_bytes": 7984328704,
+            "partition_read_wait_ms": 53041,
+            "partition_write_bytes": 463695872,
+            "request_window_ns": 119735770561
+          }
+        ],
+        "request_routes_checked_before_continue": 3,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 272893,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 67524.237,
+              "host_ple_ms": 67539.386
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              15,
+              18
+            ],
+            "bank_upload_bytes": 49937510400,
+            "read_jobs": 600288,
+            "record_touches": 600646,
+            "requested_read_bytes": 2510733312,
+            "within_ticket_duplicates": 55537,
+            "first_two_duplicates": 11198,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 67308.165864,
+              "expand": 213.922093
+            }
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 2386.876,
+              "host_ple_ms": 2401.209
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              15,
+              18
+            ],
+            "bank_upload_bytes": 49939481600,
+            "read_jobs": 36529,
+            "record_touches": 36549,
+            "requested_read_bytes": 152735744,
+            "within_ticket_duplicates": 227,
+            "first_two_duplicates": 58,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 2205.010049,
+              "expand": 180.471842
+            }
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 2306.288,
+              "host_ple_ms": 2329.5
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              15,
+              18
+            ],
+            "bank_upload_bytes": 49930982400,
+            "read_jobs": 36119,
+            "record_touches": 36139,
+            "requested_read_bytes": 150847488,
+            "within_ticket_duplicates": 222,
+            "first_two_duplicates": 23,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 2115.853205,
+              "expand": 187.901095
+            }
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 188331.7,
+            "prompt_tps": 630.7,
+            "ttft_s": 188.573,
+            "total_s": 190.551,
+            "generated_tokens": 24,
+            "request_sha256": "6e69d8914e794d4dc36cb21f3464793192a35667402efdc8ca4293664f5fa62e",
+            "drafts_offered": 18,
+            "drafts_accepted": 15,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 117697.8,
+            "prompt_tps": 1009.2,
+            "ttft_s": 117.935,
+            "total_s": 119.675,
+            "generated_tokens": 24,
+            "request_sha256": "df4397ea01f9f187f99436d42a6abe23e611ddb8869b7f2845527de30db4b0f4",
+            "drafts_offered": 18,
+            "drafts_accepted": 15,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 117668.2,
+            "prompt_tps": 1009.5,
+            "ttft_s": 117.925,
+            "total_s": 119.699,
+            "generated_tokens": 24,
+            "request_sha256": "cd667cb05d5e260a3e69f0fa95967d1a7e2e1465e4961466c653d0dce858d70c",
+            "drafts_offered": 18,
+            "drafts_accepted": 15,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 117683.0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "arm": "geometry"
+      }
+    ],
     "budgets": {
       "wall": 5400,
       "cpu": 21600,
@@ -764098,7 +764300,13 @@
       "decision": "Use within-ticket duplicate count and exposed Direct File collection time per corpus. Keep fresh first-use and subsequent samples. This is a diagnostic input-variation screen.",
       "stop": "Stop on changed inputs, routing or work, unclosed ownership, runtime validation or a fresh Xe fault."
     },
-    "request_hashes": {},
+    "request_hashes": {
+      "118785": [
+        "6e69d8914e794d4dc36cb21f3464793192a35667402efdc8ca4293664f5fa62e",
+        "df4397ea01f9f187f99436d42a6abe23e611ddb8869b7f2845527de30db4b0f4",
+        "cd667cb05d5e260a3e69f0fa95967d1a7e2e1465e4961466c653d0dce858d70c"
+      ]
+    },
     "host_results": [
       {
         "role": "benchmark",
