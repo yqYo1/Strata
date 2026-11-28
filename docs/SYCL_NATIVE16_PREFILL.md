@@ -12040,6 +12040,17 @@ cross-ticket reuse separately. The current wait comparison uses the original
 executable.
 [Reader observer](../src/ngram/ple_reader.cpp).
 
+The [record-geometry controller](../bench/dflash2_prefill_ple_record_geometry.py)
+projects that reader onto the measured early-PLE build using the exact original
+reader preimage and recipe. Keep early issue, 16 I/O workers, the request-gated
+ZFS/NVMe counters and the PLE wait clock fixed. Two counterbalanced process pairs
+switch the per-ticket observer on and off. Bind each record to its gather extent,
+including the 4,096-token tail. Preserve requested spans, unique pages and
+records, and exposed wait separately. Proceed to varied prompts when both first
+requests show within-ticket duplication and the subsequent observer ratios meet
+the existing 5% attribution band. Review the remaining build consumers and
+finish the active NEO comparison before this build and its host controls.
+
 The next check enabled the early selector and exercised the 16,385-input
 handoff and the 262,144-input fallback on the original token bodies.
 [Original physical-context controller](https://github.com/yqYo1/Strata/blob/c32ac6175f8f3b4fb40ae8eb8579a769dd398849/bench/dflash2_prefill_ple_early_capacity.py).

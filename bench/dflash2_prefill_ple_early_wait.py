@@ -167,7 +167,7 @@ def decision(processes):
 
 
 def run_observed(ctx, index):
-    row = bank.previous.read(ROOT / 'record.json')
+    row = bank.previous.read(ctx.ROOT / 'record.json')
     basis = wait.basis
     runner = basis.core.source.device.load_module('ple_wait_storage', basis.comparison.__file__)
     original_models = runner.shared.models
@@ -186,10 +186,10 @@ def run_observed(ctx, index):
 
     runner.shared.models = SimpleNamespace(model_pins=model_pins)
     runner.fingerprint = bank.signature
-    policy = SimpleNamespace(ROOT=ROOT, ORDER=[(wait.READ, wait.speed.HEADS)] * len(ORDER),
+    policy = SimpleNamespace(ROOT=ctx.ROOT, ORDER=[(wait.READ, wait.speed.HEADS)] * len(ctx.ORDER),
         RUNS=wait.speed.RUNS, current=ctx.current, native_context=lambda data, _: data,
-        environment=ctx.environment, save=ctx.save, request_route=route, observe_gate=observe_storage,
-        after_execution=after_execution, decision=decision, validate_model_text=validate_model)
+        environment=ctx.environment, save=ctx.save, request_route=ctx.request_route, observe_gate=observe_storage,
+        after_execution=ctx.after_execution, decision=ctx.decision, validate_model_text=validate_model)
     runner.run(index, policy)
 
 
