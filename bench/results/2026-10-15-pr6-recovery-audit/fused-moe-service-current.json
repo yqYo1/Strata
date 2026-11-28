@@ -767696,5 +767696,62 @@
       "partial_archive_reuse": false,
       "uncovered": 0
     }
+  },
+  "dflash2_prefill_ple_phase_cache_host_v1": {
+    "stage": "closed",
+    "passed": true,
+    "complete": true,
+    "active": false,
+    "ownership_closed": true,
+    "native_build_sha256": "adc1a5206a93b658b3919412884e2cfa6c5b830cc7d07379edb2e24d06b181e9",
+    "recipe": {
+      "compiler": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "compiler_sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
+      "compile": [
+        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pthread",
+        "-I",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/source/include",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/source/tests/core/ple_phase_cache_test.cpp",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/source/src/ngram/ple_reader.cpp",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/source/src/platform/direct_file.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/host-fixture/ple_phase_cache_test"
+      ],
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/host-fixture/ple_phase_cache_test",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/host-fixture/cases"
+      ],
+      "source_sha256": {
+        "tests/core/ple_phase_cache_test.cpp": "8bae0757a967486342bf34c4f001d501a07fa9f831cc596f6c6bb6d7198b9835",
+        "src/ngram/ple_reader.cpp": "e51862e65875fa654e4c2a62cc0cc310ccfc4ea13a32de651152e6bed902b8e5",
+        "src/platform/direct_file.cpp": "be3fa0296a934b797744e365b9848fcfa6d3a48f8304defbcb30298c7140465b",
+        "include/strata/ngram/ple_reader.hpp": "1a6cfdac72e44c90bd9c3778ea1e5684b79d16c07f4c26bcfedf12df0f3a83af",
+        "include/strata/platform/direct_file.hpp": "ae9a8999aef1769d729e5d6e4058888a14b758cbce3804b291809b1a521a4253"
+      }
+    },
+    "environment_sha256": "d57f8483ff6020cf6f8b240494edb413fde0c85ef205930f523ccd1a95e1d996",
+    "executable": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/host-fixture/ple_phase_cache_test",
+      "sha256": "37a4b8daac6fe142333406548796aedbb14eea9d8d9d6fe2d8a31ab941688245",
+      "bytes": 153624
+    },
+    "commands": [
+      {
+        "label": "compile",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "test",
+        "exit_code": 0,
+        "ownership_closed": true
+      }
+    ]
   }
 }
