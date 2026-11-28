@@ -12041,15 +12041,19 @@ executable.
 [Reader observer](../src/ngram/ple_reader.cpp).
 
 The [record-geometry controller](../bench/dflash2_prefill_ple_record_geometry.py)
-projects that reader onto the measured early-PLE build using the exact original
-reader preimage and recipe. Keep early issue, 16 I/O workers, the request-gated
-ZFS/NVMe counters and the PLE wait clock fixed. Two counterbalanced process pairs
-switch the per-ticket observer on and off. Bind each record to its gather extent,
-including the 4,096-token tail. Preserve requested spans, unique pages and
-records, and exposed wait separately. Proceed to varied prompts when both first
-requests show within-ticket duplication and the subsequent observer ratios meet
-the existing 5% attribution band. Review the remaining build consumers and
-finish the active NEO comparison before this build and its host controls.
+projects the reader and host timelines onto the measured early-PLE build
+using their exact source preimages and the original recipe. Keep early issue,
+16 I/O workers, the request-gated ZFS/NVMe counters and the PLE wait clock
+fixed. Two counterbalanced process pairs switch the per-ticket diagnostics on
+and off. Check each gather extent, including the 4,096-token tail. Intersect
+allocation, reader issue, reader collection and CPU expansion with that
+ticket's future join. Preserve elapsed and exposed durations separately and
+reconcile all joins with the enclosing wait. The elapsed clocks can include
+preemption and the reader issue now includes its geometry observer. Proceed
+to varied prompts when both first requests show within-ticket duplication
+and the subsequent observer ratios meet the existing 5% attribution band.
+Review the remaining build consumers and finish the active NEO comparison
+before this build and its host controls.
 
 The observed future wait ends after `PleTable::gather_batch` has collected
 the direct reads and expanded their packed rows on the CPU. That scope
