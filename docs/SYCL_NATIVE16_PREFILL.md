@@ -12331,9 +12331,9 @@ The preserved `record.json` still has SHA-256
 and both retained executable hashes and sizes match. The primary build
 serves as the fallback and decode reference. The phase-cache build remains
 for residual attribution and DFlash2 handoff. The grouped reader remains
-for the clean whole-request and two-chunk comparison on one executable.
-Review this third generation at the first failed gate or that comparison
-closure, before commissioning any new build.
+for the clean whole-request comparison with and without the dedicated
+prefill cache. Review this third generation when that comparison closes
+or fails a gate, before commissioning any new build.
 
 With the observed miss sets held fixed, coalescing by record within each
 ticket removes 14.3% of the first prose request's logical record touches.
@@ -12408,10 +12408,25 @@ leaves 121.216–121.280 seconds, above the 118.785-second target by
 2.431–2.495 seconds at fixed remaining work. The first-revisit job count
 is 86,721 in both whole-request runs, with 6.024 and 9.880 seconds of
 exposed wait. Retain this variation when selecting a storage scheduler.
-The two-order mechanism gate advances. Measure the same two horizons
-with observers off and the ordinary cache fixed before testing interaction
-with the phase-local cache. The 262,144-token check, RESTORE and
-matched sustained decode must use the selected native build.
+
+The [clean horizon comparison](https://github.com/yqYo1/Strata/commit/91f8527b9f01bb8716a93911e3dc5c135f61dd4f)
+replays the same 12 requests with the PLE timing and shared-storage
+observers disabled. Both orders preserve the route and native work.
+All four owners exit normally with verified model assets and no fresh Xe
+fault.
+
+| PLE horizon | First prefill (tok/s) | First TTFT (s) | Revisit prefill (tok/s) |
+| --- | ---: | ---: | ---: |
+| Two chunks | 588.5–604.1 | 196.878–202.173 | 795.9–836.0 |
+| Whole request | 846.6–852.6 | 139.585–140.555 | 967.0–985.0 |
+
+Whole-request grouping cuts first-prefill time by 28.6% and 31.0%
+in forward and reverse order. The revisit medians fall by 16.3% and
+18.1%. The fastest revisit needs 1.807 s less to reach 1,000 tok/s.
+Hold the full horizon and the ordinary 1,048,576-row cache fixed in the
+next comparison. Vary only the dedicated 4,194,304-row prefill cache.
+Keep first-use and revisit gates separate. The 262,144-token check,
+RESTORE and matched sustained decode must use the selected native build.
 
 The dedicated-cache arms of the alternating-corpus comparison give two
 distinct first-use budgets. Both use the same executable and 118,785 fresh
