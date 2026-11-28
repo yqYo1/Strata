@@ -770024,6 +770024,260 @@
         },
         "passed": true,
         "arm": "large"
+      },
+      {
+        "index": 2,
+        "read": 118785,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/build/strata",
+          "sha256": "f424a46caedc68e88f97ff7d7c06c1c962a58025f30d4561f497d64c1b70fe8a",
+          "bytes": 26729192
+        },
+        "native_source_commit": "9cba62818dcc4f0455891f67675742f3e618bc55",
+        "native_identity": {
+          "pid": 829711,
+          "start_ticks": 421142736,
+          "sid": 829647
+        },
+        "storage_counters": [
+          {
+            "zfs_direct_records": 601531,
+            "zfs_direct_bytes": 78843871232,
+            "partition_reads": 635412,
+            "partition_read_bytes": 80823427072,
+            "partition_read_wait_ms": 697459,
+            "partition_write_bytes": 561520640,
+            "request_window_ns": 188254828497
+          },
+          {
+            "zfs_direct_records": 939497,
+            "zfs_direct_bytes": 123141750784,
+            "partition_reads": 979833,
+            "partition_read_bytes": 125625692160,
+            "partition_read_wait_ms": 1115612,
+            "partition_write_bytes": 640118784,
+            "request_window_ns": 225732430878
+          },
+          {
+            "zfs_direct_records": 6343,
+            "zfs_direct_bytes": 831389696,
+            "partition_reads": 33759,
+            "partition_read_bytes": 2623328256,
+            "partition_read_wait_ms": 20696,
+            "partition_write_bytes": 258367488,
+            "request_window_ns": 117224150273
+          },
+          {
+            "zfs_direct_records": 7214,
+            "zfs_direct_bytes": 945553408,
+            "partition_reads": 38998,
+            "partition_read_bytes": 2879950848,
+            "partition_read_wait_ms": 21610,
+            "partition_write_bytes": 464924672,
+            "request_window_ns": 117080581499
+          }
+        ],
+        "request_routes_checked_before_continue": 4,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 829711,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 65250.271,
+              "host_ple_ms": 65266.156
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              15,
+              18
+            ],
+            "bank_upload_bytes": 49937510400,
+            "read_jobs": 600230,
+            "record_touches": 600589,
+            "requested_read_bytes": 2510508032,
+            "within_ticket_duplicates": 55583,
+            "first_two_duplicates": 11348,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 65024.228659,
+              "expand": 224.707341
+            }
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 108518.72,
+              "host_ple_ms": 108536.188
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              16,
+              18
+            ],
+            "bank_upload_bytes": 49898444800,
+            "read_jobs": 938291,
+            "record_touches": 938921,
+            "requested_read_bytes": 3925073920,
+            "within_ticket_duplicates": 130411,
+            "first_two_duplicates": 20032,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 108312.16102,
+              "expand": 205.494881
+            }
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 0.041,
+              "host_ple_ms": 8.86
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              15,
+              18
+            ],
+            "bank_upload_bytes": 49930982400,
+            "read_jobs": 5699,
+            "record_touches": 5703,
+            "requested_read_bytes": 23896064,
+            "within_ticket_duplicates": 4,
+            "first_two_duplicates": 3,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 0.0,
+              "expand": 0.0
+            }
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 19.365,
+              "host_ple_ms": 29.017
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              16,
+              18
+            ],
+            "bank_upload_bytes": 49876249600,
+            "read_jobs": 6570,
+            "record_touches": 6574,
+            "requested_read_bytes": 27496448,
+            "within_ticket_duplicates": 2,
+            "first_two_duplicates": 1,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 2.022296,
+              "expand": 17.141553
+            }
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 186107.5,
+            "prompt_tps": 638.3,
+            "ttft_s": 186.309,
+            "total_s": 188.215,
+            "generated_tokens": 24,
+            "request_sha256": "6e69d8914e794d4dc36cb21f3464793192a35667402efdc8ca4293664f5fa62e",
+            "drafts_offered": 18,
+            "drafts_accepted": 15,
+            "timing_frontend_state": "post-count-preflight",
+            "corpus_sha256": "0f722fc22123dc2d17007681de9ff05886f2c467a52d9cd70cf60314849eb618"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 223859.9,
+            "prompt_tps": 530.6,
+            "ttft_s": 224.087,
+            "total_s": 225.723,
+            "generated_tokens": 24,
+            "request_sha256": "fe36c44e5fd159a084612f94685c54a2c1ffef31dbc1a613f62732a779fb4608",
+            "drafts_offered": 18,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight",
+            "corpus_sha256": "f58e5b223152a6d566b35cbfdb8cf25568823ab85eb877517de245b756d995d0"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 115298.7,
+            "prompt_tps": 1030.2,
+            "ttft_s": 115.504,
+            "total_s": 117.191,
+            "generated_tokens": 24,
+            "request_sha256": "cd667cb05d5e260a3e69f0fa95967d1a7e2e1465e4961466c653d0dce858d70c",
+            "drafts_offered": 18,
+            "drafts_accepted": 15,
+            "timing_frontend_state": "post-count-preflight",
+            "corpus_sha256": "0f722fc22123dc2d17007681de9ff05886f2c467a52d9cd70cf60314849eb618"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 115195.0,
+            "prompt_tps": 1031.2,
+            "ttft_s": 115.421,
+            "total_s": 117.037,
+            "generated_tokens": 24,
+            "request_sha256": "8a6b942c79cf6ee115836321449843356744d07bd74a5f4488fbacd641846227",
+            "drafts_offered": 18,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight",
+            "corpus_sha256": "f58e5b223152a6d566b35cbfdb8cf25568823ab85eb877517de245b756d995d0"
+          }
+        ],
+        "subsequent_median_ms": 115298.7,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "arm": "large"
       }
     ],
     "budgets": {
