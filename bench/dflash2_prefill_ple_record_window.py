@@ -15,18 +15,19 @@ early, attribution = geometry.early, geometry.attribution
 validate, require = capacity.validate, capacity.require
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
 KEY = 'dflash2_prefill_ple_record_window_v1'
-ROOT = bank.B / KEY.replace('_', '-')
 BUILD_KEY = 'dflash2_prefill_ple_record_window_native_v1'
 BUILD_ROOT = bank.B / BUILD_KEY.replace('_', '-')
 TREE = BUILD_ROOT / 'source'
 HOST_KEY = 'dflash2_prefill_ple_record_window_host_v1'
 HOST_ROOT = BUILD_ROOT / 'host-fixture'
 SMOKE_KEY = 'dflash2_prefill_ple_record_window_check_v1'
-SMOKE_ROOT = bank.B / SMOKE_KEY.replace('_', '-')
+FULL_SMOKE_KEY = 'dflash2_prefill_ple_record_horizon_check_v1'
 SMOKE_CONTROLLER = 'bench/dflash2_prefill_ple_record_window_check.py'
 PREIMAGE = '9cba62818dcc4f0455891f67675742f3e618bc55'
 ORDER = ('legacy', 'one', 'two', 'two', 'one', 'legacy')
-WINDOW = dict(legacy=0, one=1, two=2)
+WINDOW = dict(legacy=0, one=1, two=2, full='all')
+FULL_KEY = 'dflash2_prefill_ple_record_horizon_v1'
+FULL_ORDER = ('two', 'full', 'full', 'two')
 SELECTOR = 'STRATA_SYCL_PREFILL_PLE_RECORD_WINDOW'
 MARKER = 'strata prefill PLE record window: '
 PRODUCER = 'strata prefill PLE record producer: '
@@ -259,11 +260,13 @@ def route(text, plan):
             'legacy gathers observed in the record window arm')
     frame = wait.route(clean, dict(plan, arm='clean'))
     rows, chunk = plan['read'] - 1, int(frame['work']['operator_max'])
+    chunks = [(i, min(chunk, rows - i)) for i in range(0, rows, chunk)]
+    if depth == 'all':
+        depth = len(chunks)
     require([line for line in text.splitlines() if line.startswith(MARKER)]
             == [f'{MARKER}tokens_per_chunk={chunk} window_chunks={depth}'],
             'actual record window dispatch differs')
     wait_data = attribution.ple.gather_accounting(text, rows, chunk)
-    chunks = [(i, min(chunk, rows - i)) for i in range(0, rows, chunk)]
     consumed = []
     for index, (expected, values) in enumerate(zip(chunks, fields(text, CONSUMER, CONSUMER_FIELDS), strict=True)):
         i, n, slot, *clocks = values
@@ -313,15 +316,16 @@ def request_time_ratios(a, b):
                 subsequent_ttft=ttft[1] / ttft[0])
 
 
-def decision(processes):
-    require(tuple(p['arm'] for p in processes) == ORDER
+def decision(processes, order=ORDER, contrasts=(('legacy', 'one'), ('legacy', 'two'), ('one', 'two'))):
+    require(tuple(p['arm'] for p in processes) == order
             and all(p['passed'] and p['complete'] and p['ownership_closed']
                     and p['native_exit_code'] == 0 and not p['fresh_faults'] for p in processes)
             and len({(p['native_identity']['pid'], p['native_identity']['start_ticks'])
-                     for p in processes}) == len(ORDER), 'require six independently closed model processes')
+                     for p in processes}) == len(order), 'require independently closed model processes')
     results = {}
-    blocks = (dict((p['arm'], p) for p in processes[:3]), dict((p['arm'], p) for p in processes[3:]))
-    for base, candidate in (('legacy', 'one'), ('legacy', 'two'), ('one', 'two')):
+    size = len(order) // 2
+    blocks = ({p['arm']: p for p in processes[:size]}, {p['arm']: p for p in processes[size:]})
+    for base, candidate in contrasts:
         pairs = []
         for block in blocks:
             a, b = block[base], block[candidate]
@@ -346,6 +350,27 @@ def decision(processes):
     return dict(contrasts=results, adopted=False)
 
 
+def full_baseline():
+    selected = baseline()
+    prior = validate.committed(bank.RESULT, (KEY,))
+    require(wait.retained.closed(prior, 'closed') and prior['decision'] == decision(prior['processes'])
+            and prior['decision']['contrasts']['two_over_legacy']['advance']
+            and all(prior[k] == selected[k] for k in ('binary', 'native_source_commit', 'native_build_sha256')),
+            'require the repeated two-chunk gain on this executable before the full horizon')
+    smoke = validate.committed(bank.RESULT, (FULL_SMOKE_KEY,))
+    require(wait.retained.closed(smoke, 'closed') and tuple(smoke['outcomes']) == ('direct',)
+            and smoke['plan']['record_window_chunks'] == {'direct': 'all'}
+            and all(smoke['plan'][k] == selected[k] for k in (
+                'binary', 'native_source_commit', 'native_build_sha256', 'host_fixture_sha256')),
+            'verify the whole-request direct writer on this exact build')
+    outcome = smoke['outcomes']['direct']
+    require(outcome['passed'] and outcome['ownership_closed'] and not outcome['fresh_faults']
+            and outcome['record_window_chunks'] == outcome['consumed_chunks'] == 15,
+            'the whole-request reader must expose all 15 validated chunks')
+    return dict(selected, two_chunk_proof_sha256=bank.signature(prior),
+                full_native_smoke_sha256=bank.signature(smoke))
+
+
 def run_clean(ctx, index):
     loader = wait.basis.core.source.device.load_module
     runner = loader('record_window_clean_benchmark', attribution.__file__)
@@ -356,11 +381,18 @@ def run_clean(ctx, index):
 
 
 def clean_baseline(candidate):
-    selected = baseline()
-    prior = validate.committed(bank.RESULT, (KEY,))
-    require(wait.retained.closed(prior, 'closed') and prior['decision'] == decision(prior['processes'])
-            and prior['decision']['contrasts'][candidate + '_over_legacy']['advance']
-            and all(prior[k] == selected[k] for k in ('binary', 'native_source_commit', 'native_build_sha256')),
+    full = candidate == 'full'
+    selected = full_baseline() if full else baseline()
+    prior = validate.committed(bank.RESULT, ((FULL_KEY if full else KEY),))
+    require(wait.retained.closed(prior, 'closed'), 'complete the observed reader comparison first')
+    processes = prior['processes']
+    observed = decision(processes, FULL_ORDER, (('two', 'full'),)) if full else decision(processes)
+    contrast = 'full_over_two' if full else candidate + '_over_legacy'
+    identities = ('binary', 'native_source_commit', 'native_build_sha256')
+    if full:
+        identities += ('full_native_smoke_sha256',)
+    require(prior['decision'] == observed and observed['contrasts'][contrast]['advance']
+            and all(prior[k] == selected[k] for k in identities),
             'require the same-executable observed PLE comparison before clean timing')
     return dict(selected, observed_window_proof_sha256=bank.signature(prior))
 
@@ -378,6 +410,8 @@ def clean_route(text, plan):
         bare = ''.join(line for line in text.splitlines(keepends=True) if not line.startswith(MARKER))
         frame = wait.route(bare, dict(plan, arm='clean'))
         chunk = int(frame['work']['operator_max'])
+        if depth == 'all':
+            depth = 1 + (plan['read'] - 2) // chunk
         require([line for line in text.splitlines() if line.startswith(MARKER)]
                 == [f'{MARKER}tokens_per_chunk={chunk} window_chunks={depth}']
                 and text.count(MARKER) == 1, 'the clean grouped reader dispatch differs')
@@ -408,9 +442,9 @@ def clean_decision(processes, candidate):
                 adopted=False)
 
 
-def experiment(clean=None):
+def experiment(full=False, clean=None):
     ctx = geometry.experiment()
-    key, order = KEY, ORDER
+    key, order = (FULL_KEY, FULL_ORDER) if full else (KEY, ORDER)
     if clean:
         key = KEY.removesuffix('_v1') + '_clean_' + clean + '_v1'
         order = ('legacy', clean, clean, 'legacy')
@@ -430,7 +464,7 @@ def experiment(clean=None):
         require(bank.sha(payload) == digest, 'corpus bytes differ')
         return base_current(row)
 
-    ctx.baseline, ctx.save, ctx.current = baseline, save, current
+    ctx.baseline, ctx.save, ctx.current = full_baseline if full else baseline, save, current
     ctx.command = lambda plan: [*base_command(plan), '--prefill-corpus', str(payload)]
     def environment(row, plan):
         arm = plan['arm']
@@ -459,13 +493,20 @@ def experiment(clean=None):
                'The one- to two-chunk contrast includes the change in number of worker starts. '
                'Capacity interaction and sustained decode remain separate comparisons.',
         stop=geometry.PLAN['stop'])
+    if full:
+        ctx.decision = lambda processes: decision(processes, FULL_ORDER, (('two', 'full'),))
+        ctx.protocol.update(
+            scope='Hold the coherent reader, stock capacity and first-chunk priority fixed. '
+                  'Compare two chunks with a whole-request horizon in both process orders.',
+            limits='The whole-request planner is bounded to 262144 tokens. '
+                   'Track the first exposed chunk, actual physical I/O counters and request TTFT.')
     if clean:
         ctx.baseline = lambda: clean_baseline(clean)
         ctx.run = lambda index: run_clean(ctx, index)
         ctx.request_route, ctx.after_execution = clean_route, clean_after_execution
         ctx.decision = lambda processes: clean_decision(processes, clean)
         ctx.protocol.update(
-            scope='Compare the selected finite record horizon with the legacy reader in both process orders. '
+            scope='Compare the selected record horizon with the legacy reader in both process orders. '
                   'Same binary, input, ordinary row cache and native work. Disable PLE and storage observers.',
             decision='Require faster first prefill and client TTFT in both pairs for the clean gain. '
                      'Report subsequent results and the 1000 tok/s target separately.',
@@ -481,9 +522,12 @@ if __name__ == '__main__':
     elif sys.argv[1:] == ['--host-fixture']:
         host_fixture()
     elif sys.argv[1:2] == ['--clean']:
-        require(len(sys.argv) == 4 and sys.argv[2] in ('one', 'two'), 'select one measured finite horizon')
+        require(len(sys.argv) == 4 and sys.argv[2] in ('one', 'two', 'full'), 'select a measured record horizon')
         name = sys.argv.pop(2)
         sys.argv.pop(1)
         wait.speed.clock.main(experiment(clean=name))
     else:
-        wait.speed.clock.main(experiment())
+        full = sys.argv[1:2] == ['--full-horizon']
+        if full:
+            sys.argv.pop(1)
+        wait.speed.clock.main(experiment(full))

@@ -604,19 +604,23 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     if (early_ple_read && effective_window_mode == 16 && relocated_job_buffers_on &&
         preflight_table && preflight_table->is_open() && preflight_table->mode() == strata::kernels::PleIo::Direct &&
         (activate_native_dense_layer || ss.ple.ready())) {
-        static const int record_window_chunks = [] {
+        static const int whole_request = -1;
+        static const int record_window = [] {
             const char* value = std::getenv("STRATA_SYCL_PREFILL_PLE_RECORD_WINDOW");
             if (!value || std::strcmp(value, "0") == 0) return 0;
             if (std::strcmp(value, "1") == 0) return 1;
             if (std::strcmp(value, "2") == 0) return 2;
-            return -1;
+            if (std::strcmp(value, "all") == 0) return whole_request;
+            return -2;
         }();
-        if (record_window_chunks < 0) {
-            err = "prefill PLE: STRATA_SYCL_PREFILL_PLE_RECORD_WINDOW must be 0, 1 or 2";
+        if (record_window < whole_request) {
+            err = "prefill PLE: STRATA_SYCL_PREFILL_PLE_RECORD_WINDOW must be 0, 1, 2 or all";
             return false;
         }
-        if (record_window_chunks > 0 && m.T > 0 && m.T <= 8192 && n > m.T &&
+        if (record_window != 0 && m.T > 0 && m.T <= 8192 && n > m.T && n <= 262144 &&
             preflight_table->supports_prefill_record_window()) {
+            const int record_window_chunks = record_window == whole_request
+                ? static_cast<int>(1 + (n - 1) / m.T) : record_window;
             const auto window_tokens = std::min(record_window_chunks * m.T, n);
             const auto row_count = static_cast<uint32_t>(window_tokens * strata::kernels::PLE_N_HEADS);
             const auto chunk_rows = static_cast<uint32_t>(m.T * strata::kernels::PLE_N_HEADS);

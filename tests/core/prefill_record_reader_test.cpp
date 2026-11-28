@@ -56,6 +56,22 @@ void check_ple_reader_window(const std::string& path, uint64_t table_offset, std
     require(published == 2 && actual == expected && after_hits.reads == all_warm.reads
             && after_hits.cache_hits - all_warm.cache_hits == table_rows);
 
+    // The producer can publish more than two chunks, including a ragged tail.
+    constexpr std::array<uint32_t, 7> wider_ids = {0, 2, 1, 999, 0, 1, 2};
+    std::array<uint8_t, wider_ids.size() * ROW_BYTES> wide_expected{}, wide_actual{};
+    const auto wide_ticket = legacy.issue(wider_ids.data(), wider_ids.size(), wide_expected.data());
+    require(legacy.collect(wide_ticket, error));
+    require(candidate.open(path, table_offset, table_rows, 2, cache_rows, error));
+    published = 0;
+    require(candidate.read_prefill_record_window(wider_ids, chunk_rows, wide_actual, [&](size_t chunk) {
+        require(chunk == published++);
+        const size_t start = chunk * chunk_rows * ROW_BYTES;
+        const size_t end = std::min(wide_actual.size(), start + chunk_rows * ROW_BYTES);
+        require(std::equal(wide_actual.begin() + start, wide_actual.begin() + end, wide_expected.begin() + start));
+        return true;
+    }, no_stop, error));
+    require(published == 4 && wide_actual == wide_expected);
+
     require(candidate.open(path, table_offset, table_rows, 2, cache_rows, error, true, ROW_BYTES, cache_rows));
     require(candidate.prefill_cache_capacity() == cache_rows);
     published = 0;

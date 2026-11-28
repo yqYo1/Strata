@@ -617,8 +617,10 @@ bool PleReader::read_prefill_record_window(std::span<const uint32_t> rows, uint3
                                          bool trace_first_submit) {
     Impl& m = *impl_;
     constexpr uint32_t max_chunk_rows = 8192 * 16;
+    constexpr uint32_t max_request_rows = 262144 * 16;
     if (!ready || !stop || rows.empty() || chunk_rows == 0 || chunk_rows > max_chunk_rows ||
-        rows.size() > 2u * chunk_rows || packed.size() != rows.size() * m.row_bytes) {
+        m.row_bytes != ROW_BYTES || rows.size() > max_request_rows ||
+        packed.size() != rows.size() * ROW_BYTES) {
         err = "PleReader: invalid prefill window extent";
         return false;
     }
