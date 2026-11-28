@@ -11522,6 +11522,36 @@ all three. Source, build, template and plan identity checks pass. The
 second attempt pins the same two donor hashes in both the baseline and the
 saved plan. It keeps the native executable and the comparison gates.
 
+The [closed comparison](https://github.com/yqYo1/Strata/commit/ac98a9d1d)
+contains two diagnostic and six clean processes. Every long request reads
+118,785 tokens with zero reuse. The first long request changes from 13 NEO
+misses to 13 hits in the separate diagnostics. All processes close normally
+with verified assets and no fresh Xe fault.
+
+| Clean median clock or rate | Empty | Seeded |
+| --- | ---: | ---: |
+| Readiness upper bound including cache preparation (s) | 55.22 | 43.47 |
+| Short warm-up (s) | 26.17 | 6.04 |
+| First long prefill (tok/s) | 976.5 | 978.0 |
+| First long client TTFT (s) | 121.840 | 121.654 |
+| Subsequent long prefill (tok/s) | 1056.1 | 1056.5 |
+
+First prefill saves 0.189 and 2.754 seconds in two pairs and takes 0.159 seconds
+longer in the last pair. The first PP/TTFT and subsequent preservation gates
+pass. The seeded peak is 989.4 tok/s and the median first-request gap to
+1,000 tok/s is 2.671 seconds. Use these results to qualify a restart policy
+with exact provider identity and bounded cache ownership. The sustained
+DFlash2 and agent comparisons remain separate. Keep one exact donor while
+that restart policy has a current consumer.
+
+After checking the committed samples and native exit receipts, retired the
+V1 preparation tree and the per-process raw outputs of the closed cache seed
+and rebuilt timing comparisons. The retirement covers 1,087 files and
+163,111,744 bytes with inventory SHA-256
+`16fa58cce344e85faf254a70708b68e99ee7ff9a4ceb12f44f3b61653fd3cf4a`.
+The sealed comparison records and the single 55-file donor with its native
+exit receipt match their original hashes.
+
 The [primary continuation plan](../bench/dflash2_primary_continuation.py)
 uses the same retained binary and KV selection for three independent
 `bench.sh --long-generation-only --long-generation-input-case split-v1-96k`
@@ -12056,6 +12086,12 @@ Review the remaining build consumers and finish the active NEO comparison
 before this build and its host controls. The [accounting fixture](../bench/test_dflash2_prefill_ple_record_geometry.py)
 checks partially exposed work, fully hidden work, a join that starts before
 allocation, incorrect offsets and incomplete totals without launching a model.
+All four host controls pass at `334e2d066` after the cache cohort closes. The
+two changed translation units at `5b82c9f60` pass syntax-only checks using
+the recorded early-PLE `icpx` 2026.2 flags and source preimages. The original
+compile database SHA-256 is
+`904497dff2fed8b487c381eda067fcd8f2cce438a2582fe8bf54359341e2f224`.
+The instrumented engine build and Arc measurements remain pending.
 
 The observed future wait ends after `PleTable::gather_batch` has collected
 the direct reads and expanded their packed rows on the CPU. That scope
