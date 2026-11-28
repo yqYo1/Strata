@@ -631,6 +631,9 @@ bool PleReader::read_prefill_record_window(std::span<const uint32_t> rows, uint3
         return value && std::strcmp(value, "1") == 0;
     }();
     const auto begin_time = profile ? Clock::now() : Clock::time_point{};
+    auto scan_end = begin_time;
+    auto plan_end = begin_time;
+    auto file_end = begin_time;
     auto first_ready_time = Clock::time_point{};
     const auto notify = [&](size_t chunk) {
         if (profile && chunk == 0) first_ready_time = Clock::now();
@@ -639,13 +642,16 @@ bool PleReader::read_prefill_record_window(std::span<const uint32_t> rows, uint3
     const auto report = [&](size_t chunks, const PrefillPleReadStats& stats) {
         if (!profile) return;
         const auto done = Clock::now();
-        const auto first_ms = std::chrono::duration<double, std::milli>(first_ready_time - begin_time).count();
-        const auto done_ms = std::chrono::duration<double, std::milli>(done - begin_time).count();
+        const auto ms = [](Clock::duration interval) {
+            return std::chrono::duration<double, std::milli>(interval).count();
+        };
         std::fprintf(stderr, "strata prefill PLE record producer: rows=%zu chunks=%zu reads=%llu "
-                             "requested_bytes=%llu returned_bytes=%llu first_ready_ms=%.3f complete_ms=%.3f\n",
+                             "requested_bytes=%llu returned_bytes=%llu first_ready_ms=%.3f complete_ms=%.3f "
+                             "cache_scan_ms=%.3f plan_ms=%.3f file_setup_ms=%.3f\n",
                      rows.size(), chunks, (unsigned long long) stats.issued,
                      (unsigned long long) stats.requested_bytes, (unsigned long long) stats.returned_bytes,
-                     first_ms, done_ms);
+                     ms(first_ready_time - begin_time), ms(done - begin_time), ms(scan_end - begin_time),
+                     ms(plan_end - scan_end), ms(file_end - plan_end));
     };
     std::vector<uint8_t> needs_read(rows.size());
     RowCache* cache = nullptr;
@@ -671,7 +677,9 @@ bool PleReader::read_prefill_record_window(std::span<const uint32_t> rows, uint3
     }
 
     const auto chunks = 1 + (rows.size() - 1) / chunk_rows;
-    if (std::none_of(needs_read.begin(), needs_read.end(), [](uint8_t needed) { return needed != 0; })) {
+    const bool all_cached = std::none_of(needs_read.begin(), needs_read.end(), [](uint8_t needed) { return needed != 0; });
+    if (profile) scan_end = plan_end = file_end = Clock::now();
+    if (all_cached) {
         for (size_t chunk = 0; chunk < chunks; ++chunk) {
             if (stop() || !notify(chunk)) {
                 err = "PleReader: prefill record window cancelled";
@@ -693,9 +701,11 @@ bool PleReader::read_prefill_record_window(std::span<const uint32_t> rows, uint3
         err = "PleReader: prefill record window cancelled before reads";
         return false;
     }
+    if (profile) plan_end = Clock::now();
 
     DirectFile file;
     if (!file.open_prefill_copy(m.file, err)) return false;
+    if (profile) file_end = Clock::now();
     PrefillPleReadStats stats;
     const auto publish = [&](size_t chunk) {
         {

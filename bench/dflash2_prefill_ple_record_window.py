@@ -267,7 +267,8 @@ def fields(text, prefix, pattern):
 
 PRODUCER_FIELDS = re.compile(
     r'rows=(\d+) chunks=(\d+) reads=(\d+) requested_bytes=(\d+) returned_bytes=(\d+) '
-    r'first_ready_ms=(\d+\.\d{3}) complete_ms=(\d+\.\d{3})')
+    r'first_ready_ms=(\d+\.\d{3}) complete_ms=(\d+\.\d{3}) '
+    r'cache_scan_ms=(\d+\.\d{3}) plan_ms=(\d+\.\d{3}) file_setup_ms=(\d+\.\d{3})')
 CONSUMER_FIELDS = re.compile(
     r'offset=(\d+) tokens=(\d+) host_slot=([01]) wait_ms=(\d+\.\d{3}) worker_expand_ms=(\d+\.\d{3})')
 
@@ -307,18 +308,20 @@ def route(text, plan):
     windows = [chunks[i:i+depth] for i in range(0, len(chunks), depth)]
     for expected, values in zip(windows, fields(text, PRODUCER, PRODUCER_FIELDS), strict=True):
         count, n, submitted, requested_bytes, returned_bytes = map(int, values[:5])
-        first_ms, complete_ms = map(float, values[5:])
+        first_ms, complete_ms, scan_ms, plan_ms, file_ms = map(float, values[5:])
         require(n == len(expected) and count == geometry.ROWS_PER_TOKEN * sum(tokens for _, tokens in expected)
                 and 0 <= submitted <= 2 * count and submitted * geometry.PAGE_BYTES <= requested_bytes <= submitted * geometry.RECORD_BYTES
                 and requested_bytes % geometry.PAGE_BYTES == 0 and 0 <= returned_bytes <= requested_bytes
-                and first_ms <= complete_ms, 'record producer measurements differ')
+                and scan_ms + plan_ms + file_ms <= first_ms + 0.0021 and first_ms <= complete_ms
+                and (submitted > 0 or plan_ms == file_ms == 0), 'record producer measurements differ')
         reads += submitted
         requested += requested_bytes
         returned += returned_bytes
-        produced.append([first_ms, complete_ms])
+        produced.append(dict(first_ready=first_ms, complete=complete_ms, cache_scan=scan_ms,
+                             plan=plan_ms, file_setup=file_ms))
     return dict(request_work=frame['native_request'], bank_upload_bytes=int(frame['uploads']['requested_H2D_bytes']),
                 read_jobs=reads, requested_read_bytes=requested, returned_read_bytes=returned,
-                first_producer_ms=produced[0], first_chunk_exposed_ms=consumed[0][0],
+                first_chunk_exposed_ms=consumed[0][0],
                 producer_ms=produced, consumer_ms=consumed, ple_wait=wait_data)
 
 
@@ -518,6 +521,7 @@ def experiment(full=False, clean=None):
                  'Retain subsequent effects individually and compare clean timing before model qualification.',
         limits='One exact technical-prose workload. ZFS and partition counts are shared request-level deltas. '
                'The one- to two-chunk contrast includes the change in number of worker starts. '
+               'Separate grouped cache scan, plan construction and file setup from first packed-chunk readiness. '
                'Capacity interaction and sustained decode remain separate comparisons.',
         stop=geometry.PLAN['stop'])
     if full:
