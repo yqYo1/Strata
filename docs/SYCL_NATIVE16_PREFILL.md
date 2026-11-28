@@ -12051,6 +12051,16 @@ requests show within-ticket duplication and the subsequent observer ratios meet
 the existing 5% attribution band. Review the remaining build consumers and
 finish the active NEO comparison before this build and its host controls.
 
+The observed future wait ends after `PleTable::gather_batch` has collected
+the direct reads and expanded their packed rows on the CPU. That scope
+combines submission, storage and expansion. For 118,784 batched tokens,
+the current FP32 upload requests 1,216,348,160 bytes. Uploading the exact
+IQ4_NL rows would request 171,048,960 bytes. At the measured large-copy
+reference of 6.29–6.49 GB/s, the difference represents 0.161–0.166 seconds
+of transfer service under sustained bulk bandwidth. Actual overlap,
+exposed transfer time and CPU expansion cost need separate attribution
+before selecting a packed upload or changing precision.
+
 The next check enabled the early selector and exercised the 16,385-input
 handoff and the 262,144-input fallback on the original token bodies.
 [Original physical-context controller](https://github.com/yqYo1/Strata/blob/c32ac6175f8f3b4fb40ae8eb8579a769dd398849/bench/dflash2_prefill_ple_early_capacity.py).
