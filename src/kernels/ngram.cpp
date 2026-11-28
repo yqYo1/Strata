@@ -8,6 +8,7 @@
 #include "strata/ngram/ple_reader.hpp"
 
 #include <cerrno>
+#include <charconv>
 #include <chrono>
 #include <cmath>
 #include <cstdio>
@@ -149,6 +150,7 @@ struct PleTable::Impl {
     strata::ngram::PleReader reader;
     strata::ngram::PleReader::Ticket ticket;
     bool pending = false;
+    bool report_prefill_cache = false;
     bool locked = false;
     uint32_t rows[PLE_N_HEADS] = {};
     uint8_t raw[PLE_N_HEADS * PLE_ROW_BYTES_MAX] = {};
@@ -248,10 +250,28 @@ bool PleTable::open(const std::string& gguf_path, std::string& err, const PleIoO
         delete impl_->file;
         impl_->file = nullptr;
         impl_->data = nullptr;
+        uint64_t prefill_rows = 0;
+#if defined(STRATA_ENABLE_SYCL)
+        if (const char* value = std::getenv("STRATA_SYCL_PREFILL_PLE_CACHE_ROWS")) {
+            const auto* end = value + std::strlen(value);
+            const auto parsed = std::from_chars(value, end, prefill_rows);
+            if (parsed.ec != std::errc{} || parsed.ptr != end || (prefill_rows != 0 && prefill_rows < 8)) {
+                err = "PLE table: STRATA_SYCL_PREFILL_PLE_CACHE_ROWS requires zero or at least eight rows";
+                close();
+                return false;
+            }
+            impl_->report_prefill_cache = true;
+        }
+#endif
         if (!impl_->reader.open(gguf_path, table_offset, n_rows, io.max_inflight, io.cache_rows, err, io.io_thread,
-                                impl_->rb)) {
+                                impl_->rb, prefill_rows)) {
             close();
             return false;
+        }
+        if (prefill_rows != 0) {
+            std::fprintf(stderr, "strata PLE row cache: long_prefill=%llu ordinary=%llu\n",
+                         (unsigned long long) impl_->reader.prefill_cache_capacity(),
+                         (unsigned long long) impl_->reader.cache_capacity());
         }
         impl_->reader.set_keepalive(io.keepalive_ms, io.keepalive_window_s);
         impl_->n_rows = n_rows;
@@ -280,6 +300,7 @@ bool PleTable::open(const std::string& gguf_path, std::string& err, const PleIoO
 void PleTable::close() {
     impl_->reader.close();
     impl_->pending = false;
+    impl_->report_prefill_cache = false;
     impl_->locked = false;   // the unmap below releases the lock
     impl_->mode = PleIo::Mmap;
     delete impl_->file;
@@ -359,6 +380,23 @@ bool PleTable::collect(float* out2560, std::string& err) {
 }
 
 bool PleTable::gather_batch(const uint32_t* rows, size_t n_tokens, float* out, std::string& err) {
+    return gather_rows(rows, n_tokens, out, err, false);
+}
+
+bool PleTable::gather_long_prefill_batch(const uint32_t* rows, size_t n_tokens, float* out,
+                                        bool first_chunk, std::string& err) {
+    const bool ok = gather_rows(rows, n_tokens, out, err, true);
+    if (ok && first_chunk && impl_->report_prefill_cache) {
+        const auto isolated = impl_->reader.prefill_cache_capacity();
+        const auto ordinary = impl_->reader.cache_capacity();
+        std::fprintf(stderr, "strata prefill PLE cache route: dedicated=%u active_rows=%llu ordinary_rows=%llu\n",
+                     unsigned(isolated != 0), (unsigned long long) (isolated != 0 ? isolated : ordinary),
+                     (unsigned long long) ordinary);
+    }
+    return ok;
+}
+
+bool PleTable::gather_rows(const uint32_t* rows, size_t n_tokens, float* out, std::string& err, bool long_prefill) {
     if (impl_->pending) { err = "PleTable::gather_batch while a token is in flight"; return false; }
     const size_t n = n_tokens * (size_t) PLE_N_HEADS;
     if (impl_->mode == PleIo::Direct) {
@@ -372,7 +410,8 @@ bool PleTable::gather_batch(const uint32_t* rows, size_t n_tokens, float* out, s
         const auto allocate_begin = stamp();
         std::vector<uint8_t> raw(n * impl_->rb);
         const auto issue_begin = stamp();
-        const auto ticket = impl_->reader.issue(rows, n, raw.data());
+        const auto ticket = long_prefill ? impl_->reader.issue_long_prefill(rows, n, raw.data())
+                                        : impl_->reader.issue(rows, n, raw.data());
         const auto collect_begin = stamp();
         if (!impl_->reader.collect(ticket, err)) return false;
         const auto expand_begin = stamp();

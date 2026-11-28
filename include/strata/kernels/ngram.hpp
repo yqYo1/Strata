@@ -147,6 +147,9 @@ public:
     /// as ONE reader request - page dedupe and sort across the whole batch, the reader's full queue depth.  Not
     /// while a single-token `issue` is pending.  The mapped mode gathers row by row.
     bool gather_batch(const uint32_t* rows, size_t n_tokens, float* out, std::string& err);
+    /// PLE rows for the dedicated layer-major prefill path.
+    bool gather_long_prefill_batch(const uint32_t* rows, size_t n_tokens, float* out,
+                                   bool first_chunk, std::string& err);
 
     /// Fault injection (Direct mode): every row read completes no earlier than `us` after issue.
     void set_injected_delay_us(double us);
@@ -181,6 +184,7 @@ public:
     PleIo mode() const;
 
 private:
+    bool gather_rows(const uint32_t* rows, size_t n_tokens, float* out, std::string& err, bool long_prefill);
     struct Impl;
     Impl* impl_ = nullptr;
 };

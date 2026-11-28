@@ -9,6 +9,7 @@
 #include <cstring>
 #include <deque>
 #include <exception>
+#include <limits>
 #include <mutex>
 #include <thread>
 #include <unordered_map>
@@ -161,6 +162,7 @@ void report_prefill_read_geometry(const std::vector<Job>& jobs, uint64_t file_by
 
 struct TicketState {
     uint32_t pending = 0;  // jobs not yet completed
+    bool isolated_prefill = false;
 };
 
 }  // namespace
@@ -183,6 +185,7 @@ struct PleReader::Impl {
     std::unordered_map<uint32_t, TicketState> tickets;
     uint32_t next_ticket = 1;
     RowCache cache;
+    RowCache prefill_cache;
     ReaderStats stats;
     size_t ring_pos = 0;
     double delay_us = 0;
@@ -312,11 +315,12 @@ struct PleReader::Impl {
                 return false;
             }
         }
+        auto it = tickets.find(j.ticket);
+        auto& row_cache = it != tickets.end() && it->second.isolated_prefill ? prefill_cache : cache;
         for (const Use& u : j.uses) {
             std::memcpy(u.dst, buf + u.in_page, row_bytes);
-            cache.insert(u.row, buf + u.in_page);
+            row_cache.insert(u.row, buf + u.in_page);
         }
-        auto it = tickets.find(j.ticket);
         if (it != tickets.end() && it->second.pending > 0) --it->second.pending;
         j.uses.clear();
         free_slots.push_back(s);
@@ -407,10 +411,15 @@ PleReader::~PleReader() {
 }
 
 bool PleReader::open(const std::string& path, uint64_t table_offset, uint64_t n_rows, uint32_t max_inflight,
-                     uint64_t cache_rows, std::string& err, bool io_thread, uint32_t row_bytes) {
+                     uint64_t cache_rows, std::string& err, bool io_thread, uint32_t row_bytes,
+                     uint64_t prefill_cache_rows) {
     close();
     if (max_inflight == 0 || max_inflight > 1024) { err = "PleReader: max_inflight must be 1..1024"; return false; }
     if (row_bytes == 0 || row_bytes > PAGE) { err = "PleReader: row_bytes must be 1..4096"; return false; }
+    if (prefill_cache_rows > std::numeric_limits<size_t>::max() / std::max(row_bytes, 4u)) {
+        err = "PleReader: prefill row cache capacity overflows its allocation";
+        return false;
+    }
     if (!impl_->file.open(path, err)) return false;
     impl_->row_bytes = row_bytes;
     if (table_offset + n_rows * (uint64_t) row_bytes > impl_->file.size()) {
@@ -427,6 +436,15 @@ bool PleReader::open(const std::string& path, uint64_t table_offset, uint64_t n_
     impl_->free_slots.clear();
     for (uint32_t s = max_inflight; s-- > 0;) impl_->free_slots.push_back(s);
     impl_->cache.init(cache_rows, row_bytes);
+    if (prefill_cache_rows != 0) {
+        try {
+            impl_->prefill_cache.init(prefill_cache_rows, row_bytes);
+        } catch (const std::exception&) {
+            err = "PleReader: cannot allocate the long-prefill row cache";
+            close();
+            return false;
+        }
+    }
     impl_->error.clear();
     impl_->keep_us = 0;
     impl_->last_issue_us = impl_->last_read_us = 0;
@@ -483,6 +501,7 @@ void PleReader::close() {
     m.inflight.clear();
     m.free_slots.clear();
     m.cache.init(0);
+    m.prefill_cache = {};
     m.threaded = false;
     m.stop = false;
     m.keep_us = 0;
@@ -493,6 +512,14 @@ bool PleReader::is_open() const { return impl_->file.is_open(); }
 uint32_t PleReader::row_bytes() const { return impl_->row_bytes; }
 
 PleReader::Ticket PleReader::issue(const uint32_t* rows, size_t n, uint8_t* out_raw) {
+    return issue_rows(rows, n, out_raw, false);
+}
+
+PleReader::Ticket PleReader::issue_long_prefill(const uint32_t* rows, size_t n, uint8_t* out_raw) {
+    return issue_rows(rows, n, out_raw, true);
+}
+
+PleReader::Ticket PleReader::issue_rows(const uint32_t* rows, size_t n, uint8_t* out_raw, bool long_prefill) {
     Impl& m = *impl_;
     std::unique_lock<std::mutex> lk(m.mu, std::defer_lock);
     if (m.threaded) lk.lock();
@@ -502,6 +529,8 @@ PleReader::Ticket PleReader::issue(const uint32_t* rows, size_t n, uint8_t* out_
     const bool rearm = m.keep_us > 0 && (m.last_issue_us <= 0 || now - m.last_issue_us > m.keep_window_us);
     m.last_issue_us = now;
     TicketState& ts = m.tickets[id];
+    ts.isolated_prefill = long_prefill && m.prefill_cache.sets != 0;
+    const auto& row_cache = ts.isolated_prefill ? m.prefill_cache : m.cache;
     std::unordered_map<uint64_t, size_t> by_page;     // aligned offset -> index in `jobs`
     std::vector<Job> jobs;
     for (size_t i = 0; i < n; ++i) {
@@ -512,7 +541,7 @@ PleReader::Ticket PleReader::issue(const uint32_t* rows, size_t n, uint8_t* out_
             std::memset(dst, 0, rb);
             continue;
         }
-        if (const uint8_t* hit = m.cache.find(rows[i])) {
+        if (const uint8_t* hit = row_cache.find(rows[i])) {
             std::memcpy(dst, hit, rb);
             ++m.stats.cache_hits;
             continue;
@@ -540,7 +569,12 @@ PleReader::Ticket PleReader::issue(const uint32_t* rows, size_t n, uint8_t* out_
     std::sort(jobs.begin(), jobs.end(), [](const Job& a, const Job& b) { return a.offset < b.offset; });
     // The measured long prefill has at least 4,096 tokens × 16 PLE rows per
     // gather. Keep this diagnostic outside the small decode gathers.
-    if (n >= 65536 && prefill_record_audit_enabled()) report_prefill_read_geometry(jobs, m.file.size(), n);
+    if (n >= 65536 && prefill_record_audit_enabled()) {
+        report_prefill_read_geometry(jobs, m.file.size(), n);
+        if (ts.isolated_prefill)
+            std::fprintf(stderr, "strata prefill PLE cache ticket: rows=%zu capacity=%llu\n", n,
+                         (unsigned long long) (row_cache.sets * WAYS));
+    }
     ts.pending = (uint32_t) jobs.size();
     const bool has_jobs = ts.pending > 0;
     for (Job& j : jobs) m.queue.push_back(std::move(j));
@@ -619,6 +653,7 @@ void PleReader::reset_stats() {
     m.ring_pos = 0;
 }
 uint64_t PleReader::cache_capacity() const { return impl_->cache.sets * WAYS; }
+uint64_t PleReader::prefill_cache_capacity() const { return impl_->prefill_cache.sets * WAYS; }
 uint64_t PleReader::cache_size() const { return impl_->cache.used; }
 
 }  // namespace strata::ngram

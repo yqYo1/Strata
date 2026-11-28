@@ -929,6 +929,9 @@ struct Prefill::Impl {
             prev[0] = prev[1];
             prev[1] = token;
         }
+        if (layer_major_active)
+            return table.gather_long_prefill_batch(output_rows, static_cast<size_t>(rows),
+                                                   ple_emb_host[buffer], first == 0, err);
         return table.gather_batch(output_rows, static_cast<size_t>(rows), ple_emb_host[buffer], err);
     }
     float* ple_norm = nullptr;
