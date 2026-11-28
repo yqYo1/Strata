@@ -768599,6 +768599,207 @@
         },
         "passed": true,
         "arm": "large"
+      },
+      {
+        "index": 2,
+        "read": 118785,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/build/strata",
+          "sha256": "f424a46caedc68e88f97ff7d7c06c1c962a58025f30d4561f497d64c1b70fe8a",
+          "bytes": 26729192
+        },
+        "native_source_commit": "9cba62818dcc4f0455891f67675742f3e618bc55",
+        "native_identity": {
+          "pid": 686690,
+          "start_ticks": 420758743,
+          "sid": 686633
+        },
+        "storage_counters": [
+          {
+            "zfs_direct_records": 976766,
+            "zfs_direct_bytes": 128026673152,
+            "partition_reads": 1012446,
+            "partition_read_bytes": 129773305856,
+            "partition_read_wait_ms": 1134421,
+            "partition_write_bytes": 380129280,
+            "request_window_ns": 232721414118
+          },
+          {
+            "zfs_direct_records": 1376,
+            "zfs_direct_bytes": 180355072,
+            "partition_reads": 26330,
+            "partition_read_bytes": 1822363648,
+            "partition_read_wait_ms": 14406,
+            "partition_write_bytes": 430178304,
+            "request_window_ns": 117352287037
+          },
+          {
+            "zfs_direct_records": 1098,
+            "zfs_direct_bytes": 143917056,
+            "partition_reads": 20141,
+            "partition_read_bytes": 1127399424,
+            "partition_read_wait_ms": 9442,
+            "partition_write_bytes": 159412224,
+            "request_window_ns": 117628519787
+          }
+        ],
+        "request_routes_checked_before_continue": 3,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 686690,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 109483.29,
+              "host_ple_ms": 109500.164
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              12,
+              17
+            ],
+            "bank_upload_bytes": 49896832000,
+            "read_jobs": 975062,
+            "record_touches": 975711,
+            "requested_read_bytes": 4078858240,
+            "within_ticket_duplicates": 139477,
+            "first_two_duplicates": 24031,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 109265.727808,
+              "expand": 216.06693
+            }
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 0.046,
+              "host_ple_ms": 8.945
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              16,
+              18
+            ],
+            "bank_upload_bytes": 49898444800,
+            "read_jobs": 414,
+            "record_touches": 414,
+            "requested_read_bytes": 1744896,
+            "within_ticket_duplicates": 0,
+            "first_two_duplicates": 0,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 0.0,
+              "expand": 0.0
+            }
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 0.045,
+              "host_ple_ms": 9.17
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              15,
+              17
+            ],
+            "bank_upload_bytes": 49871436800,
+            "read_jobs": 451,
+            "record_touches": 451,
+            "requested_read_bytes": 1888256,
+            "within_ticket_duplicates": 0,
+            "first_two_duplicates": 0,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 0.0,
+              "expand": 0.0
+            }
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 230110.8,
+            "prompt_tps": 516.2,
+            "ttft_s": 230.347,
+            "total_s": 232.658,
+            "generated_tokens": 24,
+            "request_sha256": "8aca834dae0db1f6731a2c817c463c61f9fbff320b39b253b900e91e2b03d249",
+            "drafts_offered": 17,
+            "drafts_accepted": 12,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 115248.9,
+            "prompt_tps": 1030.7,
+            "ttft_s": 115.472,
+            "total_s": 117.306,
+            "generated_tokens": 24,
+            "request_sha256": "fe36c44e5fd159a084612f94685c54a2c1ffef31dbc1a613f62732a779fb4608",
+            "drafts_offered": 18,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 115200.3,
+            "prompt_tps": 1031.1,
+            "ttft_s": 115.43,
+            "total_s": 117.594,
+            "generated_tokens": 24,
+            "request_sha256": "8cbe292463fd8403c38c605952d2f6f527e9a642cc70d625d6ebf64093a5749e",
+            "drafts_offered": 17,
+            "drafts_accepted": 15,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 115224.6,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "arm": "large"
       }
     ],
     "budgets": {
