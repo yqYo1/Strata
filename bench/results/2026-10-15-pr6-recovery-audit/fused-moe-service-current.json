@@ -753844,5 +753844,236 @@
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "dflash2_decode_kv_clock_wrap_speed_v1": {
+    "evidence_commit": "5b59c28d9eab0602adbdc1fea661649b2c76b4cd",
+    "source_commit": "e79ea2a543cd22be560e949eb72414a0a57d3373",
+    "native_source_commit": "5a87b380f02e58c0a8bf63607c965aede9f81aa9",
+    "native_build_sha256": "1a1fab5f0f11044f944feb83f868a7eafc4c5ffc842fa5ef492a5afc7bf25853",
+    "binary_sha256": "755ffcb669c62e0bcd5bdff0baaac3108834a546e3a9a2c93e1d66634a31cf93",
+    "stage": "closed",
+    "complete": true,
+    "passed": true,
+    "ownership_closed": true,
+    "active": false,
+    "plan": {
+      "order": [
+        "scalar",
+        "clock-wrap",
+        "clock-wrap",
+        "scalar",
+        "scalar",
+        "clock-wrap"
+      ],
+      "input_case": "split-v1-96k",
+      "scope": "Same coherent executable and per-layer stock placement. Switch only scalar clock wrap at exec in three counterbalanced process pairs with the two original 96K thinking work items.",
+      "route": "The production prefill route stays stock. Check phase-specific KV graph captures, the actual streamed KV totals and the existing long-prefill placement and handoff.",
+      "evidence": "Require both exact count-preflight bodies and their fresh native read extents. Require a visible answer, >=1024 actual native outputs, quiet validation and normal owner closure. Separate first and subsequent long-request scope, report observed draft classes and all TG samples. This checks the long-route handoff. The standard agent and independent performance comparisons have separate plans.",
+      "stop": "Stop on source, runtime, workload, route, ownership or fault failure. Preserve the outcome. No speed-based exclusion, alternate extent or automatic adoption.",
+      "decision": "In each workload require identical logical prefill work, at least two decode wins and geometric mean decode ratio above one. Require paired median prefill and TTFT ratios at most one. Retain work and draft acceptance even when they differ. A speed pass permits physical context, live RESTORE and agent and task qualification."
+    },
+    "matched_work": {
+      "regular-code": {
+        "request_sha256": "061e8dbcbdcbb6952b8b5adf3fadf8d44e10ec98bc14808d6d4de98e79ac1bcd",
+        "read_tokens": 96204,
+        "reused_tokens": 0,
+        "generated_tokens": 3195,
+        "drafts_accepted": 2173,
+        "drafts_offered": 2248,
+        "output_sha256": "35881aafc077b1fae90d814ba9039612b1bdf678f9b3d8aa4b032e1f6444cad0",
+        "reasoning_sha256": "2d1ee7821e447134c0b6f61b2557cfa9249889764cfecb3e3910e5d889f87685",
+        "expert_work": {
+          "submitted_blobs": 0,
+          "submitted_bytes": 0,
+          "completed_blobs": 0,
+          "completed_bytes": 0,
+          "host_view_groups": 0,
+          "gpu_miss_groups": 0,
+          "cpu_unique_misses": 1133707,
+          "cpu_entries": 1411108
+        },
+        "kv_stream_totals": {
+          "hit_percent": 98.33,
+          "block_reads": 20162064,
+          "requested_host_payload_mib_rounded": 1356.5
+        }
+      },
+      "varied-prose": {
+        "request_sha256": "4e5ddbc03361a482d7cc542bc704c343e7298b5b04191acaefc60f6a1c2833fd",
+        "read_tokens": 96274,
+        "reused_tokens": 0,
+        "generated_tokens": 8618,
+        "drafts_accepted": 3442,
+        "drafts_offered": 4864,
+        "output_sha256": "ad08e715b3089b4ed495f383228d85a9a002b6818a0e46b62a993566f18a56a5",
+        "reasoning_sha256": "e82f28b5878a3ca90a530b4d92db470adfe0d61d9b8ddaca1e22ba8cf7a9c09c",
+        "expert_work": {
+          "submitted_blobs": 0,
+          "submitted_bytes": 0,
+          "completed_blobs": 0,
+          "completed_bytes": 0,
+          "host_view_groups": 0,
+          "gpu_miss_groups": 0,
+          "cpu_unique_misses": 3430897,
+          "cpu_entries": 4484620
+        },
+        "kv_stream_totals": {
+          "hit_percent": 99.25,
+          "block_reads": 61872480,
+          "requested_host_payload_mib_rounded": 1878.2
+        }
+      }
+    },
+    "processes": [
+      {
+        "index": 0,
+        "arm": "scalar",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "workloads": {
+          "regular-code": {
+            "prompt_ms": 102262.9,
+            "ttft_s": 103.617,
+            "decode_ms": 195184.4,
+            "tg_tps": 16.369136058004635
+          },
+          "varied-prose": {
+            "prompt_ms": 92461.6,
+            "ttft_s": 92.643,
+            "decode_ms": 736627.7,
+            "tg_tps": 11.699261377219456
+          }
+        }
+      },
+      {
+        "index": 1,
+        "arm": "clock-wrap",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "workloads": {
+          "regular-code": {
+            "prompt_ms": 102152.0,
+            "ttft_s": 103.498,
+            "decode_ms": 196507.7,
+            "tg_tps": 16.258904867341077
+          },
+          "varied-prose": {
+            "prompt_ms": 92443.2,
+            "ttft_s": 92.627,
+            "decode_ms": 738408.7,
+            "tg_tps": 11.671043420804766
+          }
+        }
+      },
+      {
+        "index": 2,
+        "arm": "clock-wrap",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "workloads": {
+          "regular-code": {
+            "prompt_ms": 102508.7,
+            "ttft_s": 103.852,
+            "decode_ms": 195865.2,
+            "tg_tps": 16.312239233922103
+          },
+          "varied-prose": {
+            "prompt_ms": 92652.1,
+            "ttft_s": 92.838,
+            "decode_ms": 737674.5,
+            "tg_tps": 11.682659492770863
+          }
+        }
+      },
+      {
+        "index": 3,
+        "arm": "scalar",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "workloads": {
+          "regular-code": {
+            "prompt_ms": 102313.1,
+            "ttft_s": 103.667,
+            "decode_ms": 195696.1,
+            "tg_tps": 16.32633455648835
+          },
+          "varied-prose": {
+            "prompt_ms": 92836.3,
+            "ttft_s": 93.02,
+            "decode_ms": 737479.7,
+            "tg_tps": 11.68574538390684
+          }
+        }
+      },
+      {
+        "index": 4,
+        "arm": "scalar",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "workloads": {
+          "regular-code": {
+            "prompt_ms": 102019.8,
+            "ttft_s": 103.378,
+            "decode_ms": 199902.7,
+            "tg_tps": 15.982775620339295
+          },
+          "varied-prose": {
+            "prompt_ms": 92631.0,
+            "ttft_s": 92.819,
+            "decode_ms": 740716.3,
+            "tg_tps": 11.63468388639483
+          }
+        }
+      },
+      {
+        "index": 5,
+        "arm": "clock-wrap",
+        "native_exit_code": 0,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "workloads": {
+          "regular-code": {
+            "prompt_ms": 102086.1,
+            "ttft_s": 103.453,
+            "decode_ms": 195536.2,
+            "tg_tps": 16.339685439320185
+          },
+          "varied-prose": {
+            "prompt_ms": 92546.0,
+            "ttft_s": 92.732,
+            "decode_ms": 736972.0,
+            "tg_tps": 11.693795693730562
+          }
+        }
+      }
+    ],
+    "decision": {
+      "summary": {
+        "regular-code": {
+          "tg_geomean": 1.0048331871273,
+          "tg_wins": 1,
+          "matched_prefill": true,
+          "median_prefill_time_ratio": 1.0006498738480178,
+          "median_ttft_ratio": 1.000725492851477,
+          "matched_decode_counts": true
+        },
+        "varied-prose": {
+          "tg_geomean": 1.0007965926316473,
+          "tg_wins": 1,
+          "matched_prefill": true,
+          "median_prefill_time_ratio": 0.9990823806285153,
+          "median_ttft_ratio": 0.999062691905752,
+          "matched_decode_counts": true
+        }
+      },
+      "eligible_for_qualification": false,
+      "adopted": false,
+      "selected": "scalar"
+    }
   }
 }

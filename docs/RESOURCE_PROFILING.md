@@ -871,6 +871,43 @@ The 76 files total 2,895,019 bytes with sorted path, size and content-hash
 inventory SHA-256
 `e88302672c429678a4b1214aa1de75d3adf00ae4623c6a04864ec06949e6a62b`.
 
+The 96K model comparison closes at `5b59c28d9`. Both workloads match exact
+request, output and reasoning hashes, draft counts, expert work and KV miss
+totals across all six processes. Every process exits normally with no fresh
+Xe fault. The clean rates in tok/s are below.
+
+| Pair | Code scalar → wrap | Prose scalar → wrap |
+| ---: | ---: | ---: |
+| 1 | 16.3691 → 16.2589 | 11.6993 → 11.6710 |
+| 2 | 16.3263 → 16.3122 | 11.6857 → 11.6827 |
+| 3 | 15.9828 → 16.3397 | 11.6347 → 11.6938 |
+
+Wrap wins one pair for each workload. The geometric rate ratios are 1.00483
+and 1.00080, driven by the third pair. The median code PP-time and TTFT
+ratios are 1.00065 and 1.00073. The prespecified two-win and code prefill
+preservation criteria fail. Keep the scalar resolver. Retain the original
+build, controller and verification results in Git, with the compact model
+samples under `dflash2_decode_kv_clock_wrap_speed_v1`. The component result
+does not change. The next candidate uses the recovered primary prefill build
+and its early PLE schedule.
+[Original model comparison](https://github.com/yqYo1/Strata/commit/5b59c28d9eab0602adbdc1fea661649b2c76b4cd).
+
+The retirement audit for the finished model candidate checked
+its original 1,327 project files and recipe, 1,476 compiler inputs, 30 link
+inputs, 140 objects and all 12 executables. The six terminal model results
+match their committed values and recomputed decision. The listed closed
+comparison files were retired under the measurement lock. All four original
+receipts and the 23 executables in the two retained phase builds still match
+their hashes. The inventory hashes sorted tuples of
+paths relative to each root, sizes and SHA-256 values.
+
+| State root and retirement paths | Files | Bytes | Inventory SHA-256 |
+| --- | ---: | ---: | --- |
+| `dflash2-decode-kv-clock-wrap-native-v1/{build,cache,owned,ownership.json,policy,source,tmp}` | 1,528 | 224,041,343 | `b68a8be0043e07b0686788e6db4957e7483821992745f9783b3c3bd6f40b38ed` |
+| `dflash2-decode-kv-clock-wrap-admission-v1/{clock-wrap,scalar}` | 46 | 11,590,154 | `40c03a8b75bc7724faa1c48a6a7f764b3e6da6f9847f586fbff01c6f2c358406` |
+| `dflash2-decode-kv-clock-wrap-admission-v2/{clock-wrap,scalar}` | 92 | 23,180,347 | `2b6aab0c5cab8e894423f60b636a310455942f2084f7786c17f7ed4ba51da910` |
+| `dflash2-decode-kv-clock-wrap-speed-v1/{0,1,2,3,4,5,host}` | 436 | 91,115,419 | `dc48e111fcea374be01a06a5918cf2b50824acce356f8c608a130a808d68fc82` |
+
 #### Width-four KV cache working set
 
 The retained K8V8 verifier at `968e71988` scores four-cell blocks and
@@ -918,6 +955,18 @@ page payload using the verified K8V8 shape. The B570 bus traffic and overlap
 remain separate measurements. Test allocating the released VRAM to expert
 slots as its own comparison after the smaller-cache cost is known.
 
+For the fixed 96K routes, divide requested KV payload by the 3,195 code or
+8,618 prose outputs and multiply by the 70 tok/s target. At the measured
+miss counts this gives 31.2 and 16.0 MB/s. Losing one percentage point of
+hit rate at the same lookup and output counts adds 18.7 and 21.2 MB/s.
+Even charging one 4,224-byte transfer to every lookup gives 1.87 and
+2.12 GB/s of average requests, respectively. The large Host-USM calibration
+reaches 6.29–6.49 GB/s with different copy geometry. These calculations cover
+the KV resolver's requested page payload. Dependent per-layer transfers,
+competing traffic, CLOCK scan work and queue completion can still extend
+decode time. If the smaller-pool comparison slows down, measure the exposed
+miss service by layer or window before attributing it to link bandwidth.
+
 The initial implementation selects the smaller pool at session initialization
 with `STRATA_SYCL_DFLASH2_KV_12288=1` and `--kv-resident 12288`.
 Both arms request 12,288 cells. With the switch off, ordinary clamping gives
@@ -946,7 +995,13 @@ The fixture failed because `qsa_block_topk` had no visible declaration.
 The correction in `4fd969361` includes the declaring header. The retry at
 `56e6d5f53` passes all four units with no diagnostic: the two generator
 units verify 809 and 810 inputs, the layer unit 726 and the fixture 695.
-The full build and device check remain pending.
+The full build and device check remain pending. The same controller freezes
+the `sycl_kv_test --dflash2-kv-resident` invocation in its build record.
+Its `validate` stage runs the checked executable with the retained Level Zero
+providers and parameter validation. It requires the cold fill, all-hit replay,
+eviction, payload and map guards to pass, followed by normal process closure
+with no fresh Xe fault. Preserve the component result for a model comparison
+with unchanged expert placement. Retire routine traces after source recovery.
 
 ### DFlash2 expert service and placement
 
@@ -1171,6 +1226,28 @@ decode free-memory sample is 179,888,128 bytes (171.6 MiB), leaving an
 88,323,072-byte shortfall against the replay's first 268,211,200-byte slice.
 Keep the stock expert arena and test the head allocation reduction first.
 Keep diagnostic durations out of the speed comparison.
+
+The separately prepared 3,072-page KV pool would remove 103,809,024 bytes
+of K8V8 payload and 491,520 bytes of slot metadata before allocator effects.
+Apply the combined change only as a sensitivity calculation. Start with the
+lowest post-decode free-memory reading above and the 65,571,840-byte prefill
+margin beyond the existing reserve at 126,977 inputs. Assume the smaller
+pool and larger startup expert arena change both budgets by their requested
+bytes, with the original loan extent and all other allocations held fixed.
+
+| Additional startup expert bytes | Remaining decode free bytes | Remaining prefill margin bytes |
+| ---: | ---: | ---: |
+| 134,217,728 (128 MiB cap) | 149,970,944 | 35,654,656 |
+| 268,211,200 (first 256 MiB replay slice) | 15,977,472 | −98,338,816 |
+
+The 256 MiB slice would exhaust the measured long-prefill margin under this
+model. Add 128 MiB to the same held-out [capacity replay](../bench/dflash2_decode_extra_capacity_replay.py)
+to measure the saved CPU work within the smaller envelope. Run that replay
+separately from the active GPU comparison. First measure the smaller KV pool
+with unchanged expert placement, including KV misses, sustained TG, TTFT,
+and physical context. Consider extra startup residency only after the pool's
+actual headroom and long-prefill route pass. A larger decode-only allocation
+requires its own lifetime, transfer and memory-admission checks.
 
 Recovered all 1,327 build inputs and the relocated recipe at `212cc99cb`,
 including 1,475 compiler inputs, 139 objects and all 11 executable hashes.

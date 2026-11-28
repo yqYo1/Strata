@@ -15,7 +15,7 @@ import dflash2_decode_layer_quota_replay as quota
 replay = quota.replay
 require = replay.require
 THIS = str(Path(__file__).resolve().relative_to(replay.ROOT))
-CAPS = (0, 256 << 20, 512 << 20, 768 << 20)
+CAPS = (0, 128 << 20, 256 << 20, 512 << 20, 768 << 20)
 
 
 def additions(order, stock, sizes, train):

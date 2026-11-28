@@ -9,6 +9,7 @@ from tempfile import TemporaryDirectory
 
 sys.dont_write_bytecode = True
 import dflash2_decode_ranked_refill_build as retained_builder
+import dflash2_primary_checks as checks
 
 bank, primary, builder = retained_builder.bank, retained_builder.primary, retained_builder.builder
 validation, require = retained_builder.validation, retained_builder.require
@@ -24,7 +25,10 @@ GENERATOR_SHA = 'f83fbc369a32ac0eefbb015232964b25d868884d86ea76449059b72926acdf9
 FILES = ('include/strata/core/layer.hpp', 'src/core/layer.cpp', GENERATOR, 'tests/sycl/kv.cpp')
 TARGET = 'sycl_kv_test'
 TARGETS = [*primary.TARGETS, TARGET]
-CONTROLLERS = (THIS, *retained_builder.CONTROLLERS)
+CONTROLLERS = (THIS, checks.THIS, *retained_builder.CONTROLLERS)
+FIXTURE = dict(target=TARGET, args=['--dflash2-kv-resident'],
+               expected='DFlash2 width4 resident KV: 3072 slots, 2056 distinct pages, payload and eviction passed',
+               limits=checks.device.SMALL)
 
 
 def overlay(payload):
@@ -55,7 +59,7 @@ def inputs(revision):
             'the retained build recipe differs')
     fields = dict(source_commit=revision, native_source_commit=PATCH,
                   native_base_commit=reference['native_source_commit'], source_files=bank.stage.hashed(payload),
-                  overlays=bank.stage.hashed(changed), controller_sources=controls,
+                  overlays=bank.stage.hashed(changed), controller_sources=controls, fixture_plan=FIXTURE,
                   recipe=dict(configure=configure, targets=TARGETS,
                               environment={k: v.replace(old, new) for k, v in recipe['environment'].items()}),
                   foundation=base['foundation'], external_inputs=base['external_inputs'], driver=reference['driver'],
@@ -113,9 +117,54 @@ def prepare():
     save(row)
 
 
+def validate():
+    row = bank.previous.read(ROOT / 'record.json')
+    original = check(row)
+    case = ROOT / 'device'
+    require(retained_builder.retained.closed(row, 'built') and 'fixture' not in row and not case.exists(),
+            'require a fresh closed build and committed component plan')
+    ref = checks.parameters(row, original['native_validation_probe'])
+    env = dict(ref['environment'], TMPDIR=str(case / 'tmp'), XDG_CACHE_HOME=str(case / 'cache'),
+               UR_LOG_VALIDATION='level:warning;flush:warning;output:file,' + str(case / 'validation.log'))
+    plan = row['fixture_plan']
+    binary = row['binaries'][plan['target']]
+    command = [binary['path'], *plan['args']]
+    cursor, = [line.removeprefix('-- cursor: ') for line in subprocess.check_output(
+        ['journalctl', '-k', '-b', '-n', '0', '--show-cursor', '--no-pager'], text=True,
+        timeout=15).splitlines() if line.startswith('-- cursor: ')]
+    for name in ('tmp', 'cache'):
+        (case / name).mkdir(mode=0o700, parents=True)
+    owner = builder.ownership.Owner(case / 'owned', lambda: bank.stage.write(
+        case / 'ownership.json', dict(active=owner.active is not None, commands=owner.commands)))
+    outcome = dict(binary=binary, command=command, environment_sha256=bank.signature(env),
+                   boot=ref['boot'], runtime_manifest=ref['runtime_manifest'], host_probe_accepted=False)
+    try:
+        entry, out, err = owner.run('resident-kv', command, env, case, **plan['limits'])
+        outcome['native_exit_code'] = entry['exit_code']
+        require(builder.ownership.closed(entry) and entry['exit_code'] == 0
+                and out.read_text().strip() == plan['expected'], 'incomplete resident KV fixture')
+        trace = err.read_text()
+        probe = validation.preload_evidence(trace, entry['pid'])
+        warnings = case / 'validation.log'
+        require(probe['loader'] == ref['native_validation_probe']['loader']['path']
+                and 'urEnqueueKernelLaunch' in trace and (not warnings.exists() or warnings.stat().st_size == 0)
+                and bank.sha(binary['path']) == binary['sha256'], 'invalid Arc trace, fixture or runtime')
+        outcome.update(validation=probe, providers=checks.device.loaded_providers(trace, dict(ref, environment=env)),
+                       summary=plan['expected'], host_probe_accepted=True)
+    except Exception as exc:
+        outcome['error'] = repr(exc)
+    finally:
+        validation.finish(outcome, owner, cursor, ref['boot'])
+        outcome['passed'] &= outcome.get('driver_after') == row['driver']
+        row.update(fixture=outcome, active=owner.active is not None, ownership_closed=outcome['ownership_closed'])
+        save(row)
+    require(outcome['passed'], outcome.get('error', 'Arc validation or owner closure failed'))
+
+
 if __name__ == '__main__':
     action, = sys.argv[1:]
-    require(sys.executable == bank.basis.reference.model.PYTHON and action in ('prepare', 'configure', 'compile'),
+    require(sys.executable == bank.basis.reference.model.PYTHON
+            and action in ('prepare', 'configure', 'compile', 'validate'),
             'use the pinned Python and one smaller-KV build stage')
     with (bank.B / 'owned-v0141-measurement.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -124,5 +173,7 @@ if __name__ == '__main__':
         builder.check, builder.save = check, save
         if action == 'prepare':
             prepare()
+        elif action == 'validate':
+            validate()
         else:
             builder.execute(action)
