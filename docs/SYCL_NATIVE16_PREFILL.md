@@ -12266,6 +12266,13 @@ longer with the dedicated cache. The repeated revisit gain passes the
 mechanism gate. Check physical fill, live RESTORE and sustained decode
 handoff with the ordinary cache held fixed before model adoption.
 
+On the timed IQ4_NL source, the dedicated cache adds 376.5 MiB of host
+arrays, including 360 MiB of packed rows, 16 MiB of row keys and 0.5 MiB
+of replacement indices. The ordinary cache accounts for another 94.125 MiB,
+for 470.625 MiB total before allocator overhead. Keep this
+configuration in the DFlash2 handoff comparison. Measure decode PLE misses
+and output throughput before considering reuse across the two caches.
+
 Intersecting each PLE worker interval with its matching consume wait
 covers 15 chunks per request, including the 4,096-token tail. The first
 request has 108.162–110.849 s in collection and 0.213–0.230 s
