@@ -11920,8 +11920,15 @@ requests run at 963.5–975.1 tok/s. The measured first-prefill intervals of
 121.814–123.280 s would need a further 3.029–4.495 s reduction to reach 1,000
 tok/s on this 118,785-token workload. The median reduction needed is 4.049 s.
 The earlier PLE wait measurement precedes this overlap. The existing
-PLE wait observer also times the future wait on the early path. Use it on
-the rebuilt executable to measure the remaining exposed gather wait.
+PLE wait observer also times the future wait on the early path. The
+[paired wait controller](../bench/dflash2_prefill_ple_early_wait.py) pins the
+rebuilt executable and its closed clean comparison. It uses two opposite-order
+process pairs with the same 118,785-token workload and checks all 15 gathers
+per request. Compare the exposed interval with the first-prefill time still
+needed at 1,000 tok/s. The wait clock sums all layer-1 future waits. Keep the
+first and subsequent intervals, the same-arm warm observer ratios and the
+clean first-prefill gap in the compact result. Review the raw logs after the
+last pair and the controller when selecting the next scheduling change.
 The next check enabled the early selector and exercised the 16,385-input
 handoff and the 262,144-input fallback on the original token bodies.
 [Original physical-context controller](https://github.com/yqYo1/Strata/blob/c32ac6175f8f3b4fb40ae8eb8579a769dd398849/bench/dflash2_prefill_ple_early_capacity.py).
