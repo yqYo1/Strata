@@ -12043,6 +12043,20 @@ Both diagnostic processes close normally without a fresh Xe fault. Paired
 first-request timing, the physical last slot, live RESTORE and sustained
 generation on this generation remain separate qualification steps.
 
+The rebuilt timing closes at `a68dbc97d`. All six processes exit normally
+with no fresh Xe fault, verified model assets and 18 requests reading every
+one of their 118,785 prompt tokens. Early issue improves first prefill by
+1.200, 1.158 and 0.722 seconds in the three pairs. Client TTFT improves by
+1.197, 1.164 and 0.727 seconds. The paired median time ratios are 0.990600
+for first prefill and 0.990566 for first TTFT. The subsequent median ratios
+are 0.999322 and 0.999282. The comparison advances to same-build checks.
+Early issue yields 964.0–973.4 tok/s on first use and 1,054.9–1,055.9 tok/s
+on subsequent requests. First-use prefill still needs 3.242–4.433 seconds
+less to reach 1,000 tok/s, with a median gap of 3.978 seconds. The paired
+wait and storage counters are next. The rebuilt final-slot, RESTORE,
+sustained DFlash2 and agent-session checks remain open.
+[Rebuilt timing evidence](https://github.com/yqYo1/Strata/commit/a68dbc97dcd6efd45b61b0360028723877a4b539).
+
 The retirement under the measurement lock removed `build`, `cache`, `owned`,
 `ownership.json`, `source` and `tmp` from `dflash2-prefill-ple-early-native-v2`.
 It removed 1,524 files totaling 223,826,316 bytes. The SHA-256 of the inventory sorted
