@@ -1172,6 +1172,28 @@ decode free-memory sample is 179,888,128 bytes (171.6 MiB), leaving an
 Keep the stock expert arena and test the head allocation reduction first.
 Keep diagnostic durations out of the speed comparison.
 
+The separately prepared 3,072-page KV pool would remove 103,809,024 bytes
+of K8V8 payload and 491,520 bytes of slot metadata before allocator effects.
+Apply the combined change only as a sensitivity calculation. Start with the
+lowest post-decode free-memory reading above and the 65,571,840-byte prefill
+margin beyond the existing reserve at 126,977 inputs. Assume the smaller
+pool and larger startup expert arena change both budgets by their requested
+bytes, with the original loan extent and all other allocations held fixed.
+
+| Additional startup expert bytes | Remaining decode free bytes | Remaining prefill margin bytes |
+| ---: | ---: | ---: |
+| 134,217,728 (128 MiB cap) | 149,970,944 | 35,654,656 |
+| 268,211,200 (first 256 MiB replay slice) | 15,977,472 | −98,338,816 |
+
+The 256 MiB slice would exhaust the measured long-prefill margin under this
+model. Add 128 MiB to the same held-out [capacity replay](../bench/dflash2_decode_extra_capacity_replay.py)
+to measure the saved CPU work within the smaller envelope. Run that replay
+separately from the active GPU comparison. First measure the smaller KV pool
+with unchanged expert placement, including KV misses, sustained TG, TTFT,
+and physical context. Consider extra startup residency only after the pool's
+actual headroom and long-prefill route pass. A larger decode-only allocation
+requires its own lifetime, transfer and memory-admission checks.
+
 Recovered all 1,327 build inputs and the relocated recipe at `212cc99cb`,
 including 1,475 compiler inputs, 139 objects and all 11 executable hashes.
 Both model owners were closed when the two scopes below were retired.
