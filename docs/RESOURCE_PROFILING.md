@@ -871,6 +871,27 @@ The 76 files total 2,895,019 bytes with sorted path, size and content-hash
 inventory SHA-256
 `e88302672c429678a4b1214aa1de75d3adf00ae4623c6a04864ec06949e6a62b`.
 
+The 96K model comparison closes at `5b59c28d9`. Both workloads match exact
+request, output and reasoning hashes, draft counts, expert work and KV miss
+totals across all six processes. Every process exits normally with no fresh
+Xe fault. The clean rates in tok/s are below.
+
+| Pair | Code scalar → wrap | Prose scalar → wrap |
+| ---: | ---: | ---: |
+| 1 | 16.3691 → 16.2589 | 11.6993 → 11.6710 |
+| 2 | 16.3263 → 16.3122 | 11.6857 → 11.6827 |
+| 3 | 15.9828 → 16.3397 | 11.6347 → 11.6938 |
+
+Wrap wins one pair for each workload. The geometric rate ratios are 1.00483
+and 1.00080, driven by the third pair. The median code PP-time and TTFT
+ratios are 1.00065 and 1.00073. The prespecified two-win and code prefill
+preservation criteria fail. Keep the scalar resolver. Retain the original
+build, controller and verification results in Git, with the compact model
+samples under `dflash2_decode_kv_clock_wrap_speed_v1`. The component result
+does not change. The next candidate uses the recovered primary prefill build
+and its early PLE schedule.
+[Original model comparison](https://github.com/yqYo1/Strata/commit/5b59c28d9eab0602adbdc1fea661649b2c76b4cd).
+
 #### Width-four KV cache working set
 
 The retained K8V8 verifier at `968e71988` scores four-cell blocks and
