@@ -11929,6 +11929,60 @@ needed at 1,000 tok/s. The wait clock sums all layer-1 future waits. Keep the
 first and subsequent intervals, the same-arm warm observer ratios and the
 clean first-prefill gap in the compact result. Review the raw logs after the
 last pair and the controller when selecting the next scheduling change.
+For each arm, subtract the median observed first-request wait from the median
+clean gap to 1,000 tok/s. This estimates the gap that would remain if the
+whole observed wait disappeared at unchanged work. The profiled and clean
+medians come from separate processes, and first-use observer cost is unknown.
+Use the estimate to prioritize work and measure any actual gain with the
+observer off.
+
+On this Linux build `--ple-inflight` limits outstanding reader jobs and
+buffer slots. The current request uses its default of 256. The Linux DirectFile
+workers each wait in a blocking `pread`, with 16 workers when
+`STRATA_IO_THREADS` is unset. Thus 16 bounds simultaneous `pread` calls even
+with room for 256 queued jobs. The reader already deduplicates jobs with the
+same first page and sorts them by file offset. Its existing I/O report is a
+cumulative standalone CLI summary and cannot identify the request's exposed
+wait in server mode. If the paired wait measurements show repeatable room
+for improvement, compare 16 and 32 workers first on the same executable
+with early issue selected, unchanged reader capacity and identical bodies.
+Charge the host work and test whether shorter waits improve first PP and
+TTFT while preserving subsequent PP. Compare the affected DFlash2 decode
+work separately because the worker count applies to its PLE table too.
+[DirectFile workers](../src/platform/direct_file.cpp) ·
+[PLE job preparation](../src/ngram/ple_reader.cpp).
+
+The paired wait controller's `--io-workers` comparison requires both the
+clean scheduling gain and two eligible early-issue traces with more exposed
+first-use than subsequent wait. It varies only `STRATA_IO_THREADS` before
+process startup and compares clean wall time with observers off. The
+attribution and speed comparison retain separate decisions.
+
+The measured PLE shard is a 28,800,138,432-byte file on ZFS, backed by
+the `rpool` NVMe partition. Its preferred I/O size and the dataset's
+recordsize are both 128 KiB. The live file descriptor requests `O_DIRECT`
+and the loaded OpenZFS 2.4.1 module enables direct I/O. The host's ZFS 2.2.2
+userspace cannot query the dataset's `direct` property. The 2.4.1 direct
+read implementation submits a full record for a cache miss even when the
+caller requests only part. A 4 KiB request can therefore incur 128 KiB of
+record work. Distinct PleReader jobs may touch the same record because its
+key is the first 4 KiB page. The duplicate-record rate for this workload
+still needs measurement.
+[OpenZFS 2.4.1 direct read](https://github.com/openzfs/zfs/blob/zfs-2.4.1/module/zfs/dmu_direct.c#L233).
+
+The paired wait controller samples the whole-request windows at the
+existing benchmark gates. It records pool-wide direct records and bytes
+from `rpool/iostats`, plus read I/Os, bytes, cumulative read wait and
+write bytes from the backing NVMe partition. Both counters include work
+from other processes and the request includes short decode. Keep this
+evidence separate from the reader's requested bytes and the exposed PLE
+wait. If record traffic matters, count the current
+jobs and unique touched 128 KiB records on the actual row batch before
+changing the reader. A coalesced arm would retain the row cache, handle
+rows crossing records and the final short read, and limit its staging
+allocation. Hold the decode reader geometry fixed during a prefill test.
+[Linux block counters](https://www.kernel.org/doc/html/latest/block/stat.html).
+
 The next check enabled the early selector and exercised the 16,385-input
 handoff and the 262,144-input fallback on the original token bodies.
 [Original physical-context controller](https://github.com/yqYo1/Strata/blob/c32ac6175f8f3b4fb40ae8eb8579a769dd398849/bench/dflash2_prefill_ple_early_capacity.py).
@@ -11978,11 +12032,30 @@ SHA-256 values from this single Git tree. The
 [rebuild controller](../bench/dflash2_prefill_ple_early_build.py) checks the
 archived build, timing, final-slot and RESTORE receipts. It stages the pinned
 source in a fresh owned directory with the original compiler and dependency
-recipe, and checks the complete object and executable sets. After the 96K
-decode KV comparison closes, rebuild and record the resulting executable
-identities. The new generation has its own short route and STOP, paired
-first-request timing, physical last-slot and live RESTORE receipts before it
-can enter sustained generation. The rebuild and sustained run are pending.
+recipe, and checks the complete object and executable sets. The rebuild closes
+with 1,479 compiler inputs, 139 fresh objects, 11 executable hashes identical to
+the original build and zero uncovered inputs. The new generation's STOP
+check issues the read in layer 0, cancels before committing any prompt tokens
+and repeats the 82-input control on the same server. The separate completion
+check consumes 8,192 rows in layer 1, restores the dense weights and matches
+the original outputs, state, taps and work for the 82 / 122,881 / 82 sequence.
+Both diagnostic processes close normally without a fresh Xe fault. Paired
+first-request timing, the physical last slot, live RESTORE and sustained
+generation on this generation remain separate qualification steps.
+
+The rebuilt timing closes at `a68dbc97d`. All six processes exit normally
+with no fresh Xe fault, verified model assets and 18 requests reading every
+one of their 118,785 prompt tokens. Early issue improves first prefill by
+1.200, 1.158 and 0.722 seconds in the three pairs. Client TTFT improves by
+1.197, 1.164 and 0.727 seconds. The paired median time ratios are 0.990600
+for first prefill and 0.990566 for first TTFT. The subsequent median ratios
+are 0.999322 and 0.999282. The comparison advances to same-build checks.
+Early issue yields 964.0–973.4 tok/s on first use and 1,054.9–1,055.9 tok/s
+on subsequent requests. First-use prefill still needs 3.242–4.433 seconds
+less to reach 1,000 tok/s, with a median gap of 3.978 seconds. The paired
+wait and storage counters are next. The rebuilt final-slot, RESTORE,
+sustained DFlash2 and agent-session checks remain open.
+[Rebuilt timing evidence](https://github.com/yqYo1/Strata/commit/a68dbc97dcd6efd45b61b0360028723877a4b539).
 
 The retirement under the measurement lock removed `build`, `cache`, `owned`,
 `ownership.json`, `source` and `tmp` from `dflash2-prefill-ple-early-native-v2`.
