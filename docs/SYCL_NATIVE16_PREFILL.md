@@ -12459,7 +12459,25 @@ read 118,785 fresh tokens at the restored position. Exactly 15 PLE chunks
 execute on the suffix. Snapshot bytes and digests, actual outputs, active
 state and the per-layer KV ledger match across cache arms. Both native
 owners exit normally with quiet validation, verified assets and no new
-Xe fault. Proceed to the sustained thinking-enabled DFlash2 comparison.
+Xe fault.
+
+The 96K DFlash2 cache comparison closes at `0ccac0010`. All seven processes
+exit normally with no fresh Xe fault. Dedicated-cache prefill is 0.54–0.88%
+slower in the three first-long code pairs. The following prose pairs range
+from 0.29% faster to 1.84% slower. The dedicated/ordinary decode-rate
+geometric means are 1.00453 for code and 0.99540 for prose. One prose pair
+has different generated and draft work and the decode preservation screen
+fails. Keep the 118785-token single-corpus warm gains as separate evidence.
+Use the ordinary cache with the whole-request record window for both arms of
+the next per-layer decode placement comparison.
+
+The caller-clock bracket passes for both 96K workloads at matched work.
+All four observer/clean latency ratios are between 0.999 and 1.009. At the
+observed output yields, 70 tok/s allows 44.57 ms per window for code and
+23.78 ms for prose, against 203.96 and 151.39 ms observed. The GPU-reach and
+CPU-pool intervals motivate separate resource measurements. The prose draft
+acceptance remains above the weak-case cutoff and agent-session coverage is
+pending.
 
 The dedicated-cache arms of the alternating-corpus comparison give two
 distinct first-use budgets. Both use the same executable and 118,785 fresh

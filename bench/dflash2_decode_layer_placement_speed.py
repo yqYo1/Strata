@@ -15,13 +15,14 @@ build, bank, require, validation = checked.build, checked.bank, checked.require,
 KEY = 'dflash2_decode_layer_placement_speed_v1'
 ROOT = bank.B / KEY.replace('_', '-')
 THIS = 'bench/dflash2_decode_layer_placement_speed.py'
-WORKLOAD_REFERENCE = 'b7b333ebdc7fe1842cdf2d9baf8451a7e45a7eca'
+WORKLOAD_REFERENCE = '0ccac0010d1041dbf211e9b3580dd6d42bdbe4a0'
+WORKLOAD_REFERENCE_PROCESS = 4
 ORDER = ('stock', 'blend', 'blend', 'stock', 'stock', 'blend')
 EVENT = re.compile(checked.EVENT.pattern.removesuffix('audit=1$') + r'audit=0$', re.M)
 PREFILL = ('residual_gpu_rows', 'direct_pieces', 'kv', 'bank_h2d_requested_bytes', 'placement_preserved',
            'ple_record_window_chunks')
 PLAN = dict(primary.PLAN, order=list(ORDER),
-    scope='One coherent executable and measured initial layer-local placement. Fix the dedicated PLE cache '
+    scope='One coherent executable and measured initial layer-local placement. Fix the ordinary PLE cache '
           'and whole-request record window for both arms. Alternate stock and delayed placement in three '
           'counterbalanced process pairs with the same two 96K thinking bodies.',
     timing='First nonempty client output precedes the one-time preparation and installation. Charge both transitions '
@@ -46,6 +47,7 @@ def baseline():
     binary = native['binaries']['strata']
     identity = bank.signature(build.builder.compact(native))
     require(build.grouped.wait.retained.closed(proof, 'closed') and proof['build_sha256'] == identity
+            and proof['prefill_cache'] == checked.PREFILL_CACHE
             and proof['native_source_commit'] == native['native_source_commit']
             and proof['prefill_build_sha256'] == native['prefill_build_sha256']
             and tuple(proof['outcomes']) == checked.ORDER
@@ -69,8 +71,9 @@ def baseline():
             and proof['drafter_assets_sha256'] == bank.signature(row['dflash2_assets']),
             'the placement check must qualify the same target and drafter assets as the speed run')
     reference = bank.previous.historic(WORKLOAD_REFERENCE, horizon.KEY)
-    control = reference['processes'][2]
-    require(control['arm'] == 'dedicated' and control['complete'] and control['passed']
+    require(build.grouped.wait.retained.closed(reference, 'closed'), 'require the closed cache comparison')
+    control = reference['processes'][WORKLOAD_REFERENCE_PROCESS]
+    require(control['arm'] == checked.PREFILL_CACHE and control['complete'] and control['passed']
             and control['ownership_closed'] and control['native_exit_code'] == 0 and not control['fresh_faults']
             and reference['binary'] == row['binary']
             and reference['native_source_commit'] == build.PREIMAGE
@@ -92,7 +95,7 @@ def baseline():
 
 def environment(row, plan):
     require(plan['arm'] in ORDER, 'unexpected placement arm')
-    env = horizon.environment(row, dict(plan, arm='dedicated'))
+    env = horizon.environment(row, dict(plan, arm=checked.PREFILL_CACHE))
     require(not any(name in env for name in (checked.SELECTOR, checked.CLOCK, checked.AUDIT, checked.FAULT)),
             'unexpected placement setting in the measured template')
     env[checked.CLOCK] = '1'
@@ -110,7 +113,7 @@ def routes(text, samples, arm):
     require('decode phase profile inactive' not in text, 'placement admission failed')
     require(tuple(s['workload'] for s in samples if s.get('workload') in primary.WORKLOADS) == primary.WORKLOADS,
             'require the original code and prose order')
-    report = horizon.routes(text, samples, 'dedicated')
+    report = horizon.routes(text, samples, checked.PREFILL_CACHE)
     start = 0
     for header, sample in zip(re.finditer(primary.footer.HEADER, text, re.M), samples, strict=True):
         frame = text[start:header.start()]

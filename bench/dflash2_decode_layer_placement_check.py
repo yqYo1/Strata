@@ -24,6 +24,7 @@ KEY = 'dflash2_decode_layer_placement_check_v1'
 ROOT = bank.B / KEY.replace('_', '-')
 THIS = 'bench/dflash2_decode_layer_placement_check.py'
 ORDER = ('stock', 'blend', 'copy-failure')
+PREFILL_CACHE = 'stock'
 GEOMETRY = (979, 2_010_419_200)
 SELECTOR = 'STRATA_SYCL_DFLASH2_DECODE_PHASE_PROFILE'
 AUDIT = 'STRATA_SYCL_DFLASH2_DECODE_PHASE_AUDIT'
@@ -83,7 +84,7 @@ def inputs(revision):
     binary = native['binaries']['strata']
     for index, arm in enumerate(ORDER):
         directory = ROOT / arm
-        env = horizon.environment(base, dict(root=str(directory), index=index, arm='dedicated'))
+        env = horizon.environment(base, dict(root=str(directory), index=index, arm=PREFILL_CACHE))
         require(not any(name in env for name in (CLOCK, AUDIT, SELECTOR, FAULT)),
                 'unexpected placement setting in the measured prefill template')
         env = native_environment(base, env)
@@ -99,6 +100,7 @@ def inputs(revision):
                           environment_sha256=bank.signature(env))
         environments[arm] = env
     plan = dict(source_commit=revision, sources=pins, order=list(ORDER), cases=cases, requests=requests,
+                prefill_cache=PREFILL_CACHE,
                 boot=base['boot'], driver=base['driver'], native_source_commit=native['native_source_commit'],
                 build_sha256=bank.signature(builder.compact(native)), profiles=profiles,
                 prefill_build_sha256=native['prefill_build_sha256'],
@@ -328,6 +330,8 @@ def run(row, base, arm, environment):
         expected_exit = 1 if arm == 'copy-failure' else 0
         require(builder.ownership.closed(entry) and entry['exit_code'] == expected_exit, 'unexpected process exit')
         text = stderr.read_text()
+        require(not any(line.startswith(horizon.phase.START) for line in text.splitlines()),
+                'placement verification must retain the ordinary PLE row cache')
         loader = base['native_validation_probe']['loader']['path']
         outcome['validation'] = validation_log(text, entry['pid'], loader, traced=False)
         layer = directory / 'validation.log'
