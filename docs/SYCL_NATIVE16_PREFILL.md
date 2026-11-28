@@ -12053,7 +12053,9 @@ preemption and the reader issue now includes its geometry observer. Proceed
 to varied prompts when both first requests show within-ticket duplication
 and the subsequent observer ratios meet the existing 5% attribution band.
 Review the remaining build consumers and finish the active NEO comparison
-before this build and its host controls.
+before this build and its host controls. The [accounting fixture](../bench/test_dflash2_prefill_ple_record_geometry.py)
+checks partially exposed work, fully hidden work, a join that starts before
+allocation, incorrect offsets and incomplete totals without launching a model.
 
 The observed future wait ends after `PleTable::gather_batch` has collected
 the direct reads and expanded their packed rows on the CPU. That scope

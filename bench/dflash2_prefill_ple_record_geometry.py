@@ -10,6 +10,7 @@ import dflash2_prefill_ple_early_wait as attribution
 timing, bank, wait, require = attribution.timing, attribution.bank, attribution.wait, attribution.require
 early = timing.build
 THIS = str(Path(__file__).resolve().relative_to(bank.P))
+HOST_CONTROLS = 'bench/test_dflash2_prefill_ple_record_geometry.py'
 READER = 'src/ngram/ple_reader.cpp'
 READER_BEFORE = '17de86439c2b72e04eb62769b9853c28a18e05d4'
 READER_AFTER = 'ef9dcaba575945ba4acd0e32e4be440e635d6218'
@@ -58,7 +59,7 @@ def build_inputs(revision):
             and all(retained[k] == fields[k] for k in ('source_files', 'recipe', 'native_source_commit')),
             'recover the exact measured early PLE source and recipe')
 
-    hashes = early.source.pin(bank.P, (THIS, attribution.THIS, early.THIS))['source_sha256']
+    hashes = early.source.pin(bank.P, (THIS, attribution.THIS, early.THIS, HOST_CONTROLS))['source_sha256']
     require(bank.stage.hashed(dict(early.source.blobs(bank.P, revision, hashes))) == hashes,
             'commit the reader geometry controllers first')
     before = wait.basis.validation.git('show', READER_BEFORE + ':' + READER)
@@ -222,7 +223,7 @@ def experiment():
     ctx = attribution.experiment()
     ctx.ROOT, ctx.KEY, ctx.THIS, ctx.ORDER = ROOT, KEY, THIS, ORDER
     ctx.baseline, ctx.protocol, ctx.environment = baseline, PLAN, environment
-    ctx.selector, ctx.extra_sources = SELECTOR, (*ctx.extra_sources, THIS)
+    ctx.selector, ctx.extra_sources = SELECTOR, (*ctx.extra_sources, THIS, HOST_CONTROLS)
     ctx.request_route, ctx.after_execution, ctx.decision = route, after_execution, decision
     return ctx
 
