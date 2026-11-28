@@ -12451,7 +12451,15 @@ The 262,144-token request follows mode 2 with 122,880 GPU-backed
 and 139,263 host-backed batched rows, consumes the final slot, and emits no
 tokens. Both requests admit the dedicated cache and finish with quiet
 validation and no fresh Xe fault. The mode-16 whole-request direct writer
-has separate coverage. The next consumer is the paired live RESTORE test.
+has separate coverage.
+
+The paired live RESTORE check closes at `b0a6527ea`. Both arms restore
+16,385 parked tokens from RAM after a separate 33-token conversation, then
+read 118,785 fresh tokens at the restored position. Exactly 15 PLE chunks
+execute on the suffix. Snapshot bytes and digests, actual outputs, active
+state and the per-layer KV ledger match across cache arms. Both native
+owners exit normally with quiet validation, verified assets and no new
+Xe fault. Proceed to the sustained thinking-enabled DFlash2 comparison.
 
 The dedicated-cache arms of the alternating-corpus comparison give two
 distinct first-use budgets. Both use the same executable and 118,785 fresh
