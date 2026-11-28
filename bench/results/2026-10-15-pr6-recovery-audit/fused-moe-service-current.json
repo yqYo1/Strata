@@ -772216,5 +772216,105 @@
       "partial_archive_reuse": false,
       "uncovered": 0
     }
+  },
+  "dflash2_prefill_ple_record_window_host_v1": {
+    "stage": "closed",
+    "active": false,
+    "complete": true,
+    "passed": true,
+    "ownership_closed": true,
+    "native_build_sha256": "63b09546aaacb6105ecdc9a2e2a22215676add823b93ae6b6de000329b4e2790",
+    "recipe": {
+      "compiler": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "compiler_sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
+      "cases": {
+        "planner": {
+          "compile": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-std=c++20",
+            "-O2",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-pthread",
+            "-I",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-window-native-v1/source/include",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-window-native-v1/source/tests/core/prefill_record_plan_test.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-window-native-v1/host-fixture/planner"
+          ],
+          "command": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-window-native-v1/host-fixture/planner"
+          ]
+        },
+        "reader": {
+          "compile": [
+            "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+            "-std=c++20",
+            "-O2",
+            "-Wall",
+            "-Wextra",
+            "-Werror",
+            "-pthread",
+            "-I",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-window-native-v1/source/include",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-window-native-v1/source/tests/core/prefill_record_reader_test.cpp",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-window-native-v1/source/src/ngram/ple_reader.cpp",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-window-native-v1/source/src/platform/direct_file.cpp",
+            "-o",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-window-native-v1/host-fixture/reader"
+          ],
+          "command": [
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-window-native-v1/host-fixture/reader",
+            "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-window-native-v1/host-fixture/cases"
+          ]
+        }
+      },
+      "source_sha256": {
+        "tests/core/prefill_record_plan_test.cpp": "82092a7e0a11af02b41493196ed89cc8c47bd4f5e71e4c6c4c11f52c0cd89a7b",
+        "tests/core/prefill_record_reader_test.cpp": "7256b115cb084dd224d1f74d0d4fad10eea878d29efa2f32d1ff45ca06b99bc1",
+        "src/ngram/ple_reader.cpp": "c1fe4a9501f430b0bb00cc30a7361144f75ded63ff26b499fa5ecdb6f526fe62",
+        "src/platform/direct_file.cpp": "49e9ed6d39a1d2c25d725828d4caba88d0044cd247a0d600294e45cc6fe3726b",
+        "include/strata/ngram/prefill_record_plan.hpp": "b3a9848ca62f5c6fa7826e43cfafca3fafa47028e503d6b482503bb185f153df",
+        "include/strata/ngram/prefill_record_reader.hpp": "0fc84d71dfad96c55b024a65889da4e2b1c5246bad21430059f0f86fe06ae8b9",
+        "include/strata/ngram/ple_reader.hpp": "b839260980765ce337faab5348443812f55a8a48e6b5985ca97c8684e3787d11",
+        "include/strata/platform/direct_file.hpp": "adf5812d0c10c2f63f8935b176d5d938e4c1520170b670eb19a58af1af6f19c9"
+      }
+    },
+    "environment_sha256": "542081aba3e59f0625911960a98aabf252ccccee39c3dc64076cf60d156d5cf3",
+    "commands": [
+      {
+        "label": "planner-compile",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "planner-test",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "reader-compile",
+        "exit_code": 0,
+        "ownership_closed": true
+      },
+      {
+        "label": "reader-test",
+        "exit_code": 0,
+        "ownership_closed": true
+      }
+    ],
+    "executables": {
+      "planner": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-window-native-v1/host-fixture/planner",
+        "bytes": 100656,
+        "sha256": "0fff97c4f10f81fe9188b413dbdd6280ec10b3b65e52893b7cf5eaba3c39fd16"
+      },
+      "reader": {
+        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-window-native-v1/host-fixture/reader",
+        "bytes": 213184,
+        "sha256": "8b00f854dcebe44e11215cf287e6c831eb6adb3314e14166a10a19fb72ddae15"
+      }
+    }
   }
 }
