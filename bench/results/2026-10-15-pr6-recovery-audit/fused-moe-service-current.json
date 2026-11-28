@@ -765592,7 +765592,7 @@
       ]
     },
     "closed_prose_receipt_sha256": "a7d5166676ecdd0f734fef9f99a7c10966feb1e0a74ba6fdb238a70350259b5a",
-    "stage": "running",
+    "stage": "failed",
     "source_commit": "993a2a549ae7309434ab32948e89b0a77b3412e1",
     "host_passed": true,
     "ownership_closed": true,
@@ -765971,6 +765971,69 @@
         "passed": true,
         "arm": "stock",
         "row_cache_rows": 1048576
+      },
+      {
+        "index": 1,
+        "read": 118785,
+        "heads": 1,
+        "complete": false,
+        "host_probe_accepted": false,
+        "model_executed": true,
+        "clean_speed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-native-v1/build/strata",
+          "sha256": "99d27185d4fc5525d5cbcd2cbecf16ce2892c7c0892b3948b71eadefe075df2f",
+          "bytes": 26724000
+        },
+        "native_source_commit": "8f539f82e38e1ec2c3e4285a29928aa1a32f4ea3",
+        "native_identity": {
+          "pid": 431242,
+          "start_ticks": 420085893,
+          "sid": 431170
+        },
+        "storage_counters": [
+          {
+            "zfs_direct_records": 975847,
+            "zfs_direct_bytes": 127906217984,
+            "partition_reads": 1073281,
+            "partition_read_bytes": 131759165440,
+            "partition_read_wait_ms": 1108113,
+            "partition_write_bytes": 7813136384,
+            "request_window_ns": 231108342478
+          },
+          {
+            "zfs_direct_records": 1252,
+            "zfs_direct_bytes": 164102144,
+            "partition_reads": 89476,
+            "partition_read_bytes": 3157278720,
+            "partition_read_wait_ms": 31240,
+            "partition_write_bytes": 9122820096,
+            "request_window_ns": 118651317517
+          },
+          {
+            "zfs_direct_records": 1094,
+            "zfs_direct_bytes": 143392768,
+            "partition_reads": 49056,
+            "partition_read_bytes": 1974616064,
+            "partition_read_wait_ms": 13070,
+            "partition_write_bytes": 2111238144,
+            "request_window_ns": 117159520483
+          }
+        ],
+        "request_routes_checked_before_continue": 3,
+        "error": "RuntimeError('native start identity differs')",
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": false
       }
     ],
     "budgets": {
