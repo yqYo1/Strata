@@ -769331,13 +769331,13 @@
     "host_fixture_sha256": "4da67f1ac7ed59503b5767b3812742fae0dcc1aa54b7e0ee6331dcc2a6175964",
     "capacity_proof_sha256": "7789837a5fa0478ffa8f717384762cda348937ce24b44e1a4c41cfe26d0aa157",
     "single_corpus_proof_sha256": "351194fb65de566ca3c106f973d129534373ee5c761d2c98e081cda0bc8f08f4",
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "36299c51c2ea48dcd528ad326d94cb2766583348",
     "host_passed": true,
     "ownership_closed": true,
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "plans": [
       {
         "index": 0,
@@ -770278,6 +770278,260 @@
         },
         "passed": true,
         "arm": "large"
+      },
+      {
+        "index": 3,
+        "read": 118785,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/build/strata",
+          "sha256": "f424a46caedc68e88f97ff7d7c06c1c962a58025f30d4561f497d64c1b70fe8a",
+          "bytes": 26729192
+        },
+        "native_source_commit": "9cba62818dcc4f0455891f67675742f3e618bc55",
+        "native_identity": {
+          "pid": 867175,
+          "start_ticks": 421231240,
+          "sid": 867118
+        },
+        "storage_counters": [
+          {
+            "zfs_direct_records": 601455,
+            "zfs_direct_bytes": 78833909760,
+            "partition_reads": 646347,
+            "partition_read_bytes": 81677758464,
+            "partition_read_wait_ms": 773331,
+            "partition_write_bytes": 621432832,
+            "request_window_ns": 195687706582
+          },
+          {
+            "zfs_direct_records": 957775,
+            "zfs_direct_bytes": 125537484800,
+            "partition_reads": 998766,
+            "partition_read_bytes": 127888703488,
+            "partition_read_wait_ms": 1061975,
+            "partition_write_bytes": 634851328,
+            "request_window_ns": 220314965775
+          },
+          {
+            "zfs_direct_records": 523533,
+            "zfs_direct_bytes": 68620517376,
+            "partition_reads": 559823,
+            "partition_read_bytes": 70401835008,
+            "partition_read_wait_ms": 583179,
+            "partition_write_bytes": 318541824,
+            "request_window_ns": 172236689254
+          },
+          {
+            "zfs_direct_records": 825267,
+            "zfs_direct_bytes": 108169396224,
+            "partition_reads": 865052,
+            "partition_read_bytes": 110754496512,
+            "partition_read_wait_ms": 949423,
+            "partition_write_bytes": 582307840,
+            "request_window_ns": 208725106208
+          }
+        ],
+        "request_routes_checked_before_continue": 4,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 867175,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 72706.232,
+              "host_ple_ms": 72722.356
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              15,
+              18
+            ],
+            "bank_upload_bytes": 49937510400,
+            "read_jobs": 600288,
+            "record_touches": 600646,
+            "requested_read_bytes": 2510733312,
+            "within_ticket_duplicates": 55537,
+            "first_two_duplicates": 11198,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 72481.121318,
+              "expand": 222.647662
+            }
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 103014.716,
+              "host_ple_ms": 103030.63
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              16,
+              18
+            ],
+            "bank_upload_bytes": 49898444800,
+            "read_jobs": 956358,
+            "record_touches": 957000,
+            "requested_read_bytes": 4000595968,
+            "within_ticket_duplicates": 134148,
+            "first_two_duplicates": 20177,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 102807.573958,
+              "expand": 204.479679
+            }
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 54678.779,
+              "host_ple_ms": 54692.205
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              15,
+              18
+            ],
+            "bank_upload_bytes": 49930982400,
+            "read_jobs": 522525,
+            "record_touches": 522827,
+            "requested_read_bytes": 2185621504,
+            "within_ticket_duplicates": 42541,
+            "first_two_duplicates": 8459,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 54471.880277,
+              "expand": 204.61859
+            }
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 91360.175,
+              "host_ple_ms": 91375.537
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              16,
+              18
+            ],
+            "bank_upload_bytes": 49876249600,
+            "read_jobs": 823934,
+            "record_touches": 824497,
+            "requested_read_bytes": 3446571008,
+            "within_ticket_duplicates": 101166,
+            "first_two_duplicates": 15337,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 91155.726712,
+              "expand": 203.04542
+            }
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 193535.5,
+            "prompt_tps": 613.8,
+            "ttft_s": 193.789,
+            "total_s": 195.685,
+            "generated_tokens": 24,
+            "request_sha256": "6e69d8914e794d4dc36cb21f3464793192a35667402efdc8ca4293664f5fa62e",
+            "drafts_offered": 18,
+            "drafts_accepted": 15,
+            "timing_frontend_state": "post-count-preflight",
+            "corpus_sha256": "0f722fc22123dc2d17007681de9ff05886f2c467a52d9cd70cf60314849eb618"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 218248.7,
+            "prompt_tps": 544.3,
+            "ttft_s": 218.512,
+            "total_s": 220.312,
+            "generated_tokens": 24,
+            "request_sha256": "fe36c44e5fd159a084612f94685c54a2c1ffef31dbc1a613f62732a779fb4608",
+            "drafts_offered": 18,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight",
+            "corpus_sha256": "f58e5b223152a6d566b35cbfdb8cf25568823ab85eb877517de245b756d995d0"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 170165.9,
+            "prompt_tps": 698.1,
+            "ttft_s": 170.378,
+            "total_s": 172.195,
+            "generated_tokens": 24,
+            "request_sha256": "cd667cb05d5e260a3e69f0fa95967d1a7e2e1465e4961466c653d0dce858d70c",
+            "drafts_offered": 18,
+            "drafts_accepted": 15,
+            "timing_frontend_state": "post-count-preflight",
+            "corpus_sha256": "0f722fc22123dc2d17007681de9ff05886f2c467a52d9cd70cf60314849eb618"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 206492.8,
+            "prompt_tps": 575.3,
+            "ttft_s": 206.749,
+            "total_s": 208.723,
+            "generated_tokens": 24,
+            "request_sha256": "8a6b942c79cf6ee115836321449843356744d07bd74a5f4488fbacd641846227",
+            "drafts_offered": 18,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight",
+            "corpus_sha256": "f58e5b223152a6d566b35cbfdb8cf25568823ab85eb877517de245b756d995d0"
+          }
+        ],
+        "subsequent_median_ms": 206492.8,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "arm": "stock"
       }
     ],
     "budgets": {
@@ -770353,6 +770607,148 @@
         "passed": true
       }
     ],
+    "decision": {
+      "paired": {
+        "cxx": [
+          {
+            "first_seen": [
+              {
+                "prompt_ms": 186267.0,
+                "ttft_s": 186.512,
+                "record_touches": 600646,
+                "ple_wait_ms": 65398.049
+              },
+              {
+                "prompt_ms": 191078.7,
+                "ttft_s": 191.284,
+                "record_touches": 600589,
+                "ple_wait_ms": 70014.483
+              }
+            ],
+            "revisited": [
+              {
+                "prompt_ms": 173713.6,
+                "ttft_s": 173.939,
+                "record_touches": 522827,
+                "ple_wait_ms": 58312.595
+              },
+              {
+                "prompt_ms": 115328.9,
+                "ttft_s": 115.532,
+                "record_touches": 5703,
+                "ple_wait_ms": 5.532
+              }
+            ]
+          },
+          {
+            "first_seen": [
+              {
+                "prompt_ms": 193535.5,
+                "ttft_s": 193.789,
+                "record_touches": 600646,
+                "ple_wait_ms": 72706.232
+              },
+              {
+                "prompt_ms": 186107.5,
+                "ttft_s": 186.309,
+                "record_touches": 600589,
+                "ple_wait_ms": 65250.271
+              }
+            ],
+            "revisited": [
+              {
+                "prompt_ms": 170165.9,
+                "ttft_s": 170.378,
+                "record_touches": 522827,
+                "ple_wait_ms": 54678.779
+              },
+              {
+                "prompt_ms": 115298.7,
+                "ttft_s": 115.504,
+                "record_touches": 5703,
+                "ple_wait_ms": 0.041
+              }
+            ]
+          }
+        ],
+        "technical-prose": [
+          {
+            "first_seen": [
+              {
+                "prompt_ms": 219862.4,
+                "ttft_s": 220.127,
+                "record_touches": 957000,
+                "ple_wait_ms": 104538.196
+              },
+              {
+                "prompt_ms": 223047.0,
+                "ttft_s": 223.282,
+                "record_touches": 938921,
+                "ple_wait_ms": 107784.101
+              }
+            ],
+            "revisited": [
+              {
+                "prompt_ms": 203334.7,
+                "ttft_s": 203.592,
+                "record_touches": 824498,
+                "ple_wait_ms": 88023.228
+              },
+              {
+                "prompt_ms": 115220.8,
+                "ttft_s": 115.451,
+                "record_touches": 6574,
+                "ple_wait_ms": 1.092
+              }
+            ]
+          },
+          {
+            "first_seen": [
+              {
+                "prompt_ms": 218248.7,
+                "ttft_s": 218.512,
+                "record_touches": 957000,
+                "ple_wait_ms": 103014.716
+              },
+              {
+                "prompt_ms": 223859.9,
+                "ttft_s": 224.087,
+                "record_touches": 938921,
+                "ple_wait_ms": 108518.72
+              }
+            ],
+            "revisited": [
+              {
+                "prompt_ms": 206492.8,
+                "ttft_s": 206.749,
+                "record_touches": 824497,
+                "ple_wait_ms": 91360.175
+              },
+              {
+                "prompt_ms": 115195.0,
+                "ttft_s": 115.421,
+                "record_touches": 6574,
+                "ple_wait_ms": 19.365
+              }
+            ]
+          }
+        ]
+      },
+      "revisit_decision": {
+        "cxx": {
+          "revisit_time_ratio": 0.6706996850191203,
+          "repeated_io_gain": true,
+          "repeated_time_gain": true
+        },
+        "technical-prose": {
+          "revisit_time_ratio": 0.5622429926076092,
+          "repeated_io_gain": true,
+          "repeated_time_gain": true
+        }
+      },
+      "varied_prose_mechanism_advances": true,
+      "adopted": false
+    },
     "source_inputs": {
       "files": 833,
       "sha256": "7bf6a42268e5c3d2a9ade9ef01afa75acf17785d75f2a92e4744baa403c28def"
