@@ -11647,6 +11647,25 @@ component, measure actual window counts, verifier critical path, CPU expert
 service and draft clocks on the same route.
 [Exact sustained result](https://github.com/yqYo1/Strata/commit/9261c4b44).
 
+The same three-process DFlash2 result records 1,133,707 CPU expert jobs
+for 3,195 code tokens and 3,430,897 jobs for 8,618 prose tokens. The
+validated pack's 48-layer manifest matches the committed expert sizes.
+Allocate the jobs to the smallest or largest blobs first, allowing at most
+ten unique jobs per verifier row per layer. Use the upper verifier-row
+bound for both allocations. Charging one full packed-weight visit per job
+gives 0.689–0.769 GB per code token and 0.772–0.864 GB per prose token.
+At 70 tok/s these are 48.2–53.8 and 54.0–60.5 logical GB/s.
+
+The three-core continuous-read median is 42.27 GB/s. If every job fetched
+its full blob from RAM at that application read rate, even the lower
+bounds would need 12.4% fewer RAM-served bytes for code and 21.8% fewer
+for prose. Physical traffic and effective bandwidth depend on the model's
+cache reuse and access pattern. The decode-clock comparison measures
+actual verifier windows and carries these weight bounds alongside the
+draft, verification and CPU-pool clocks.
+[RAM measurement](../bench/results/2026-10-15-pr6-recovery-audit/cpu-roofline-current.json)
+· [Decode clock comparison](../bench/dflash2_primary_decode_clocks.py).
+
 The three matched code requests at `9261c4b44` request the same
 41,499,571,200 bytes of expert-bank H2D copies. The difference between
 client TTFT and the native prompt interval is 1.337–1.377 seconds, a spread

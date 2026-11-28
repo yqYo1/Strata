@@ -7,6 +7,7 @@ import sys
 sys.dont_write_bytecode = True
 import dflash2_primary_continuation as primary
 import dflash2_v2_decode_clocks as adaptive
+import cpu_work_census as census
 
 bank, basis, require, footer = primary.bank, primary.basis, primary.require, primary.footer
 caller, clock = adaptive.caller, primary.clock
@@ -16,7 +17,30 @@ ROOT = bank.B / KEY.replace('_', '-')
 ORDER = ('clean-before', 'clocks', 'clean-after')
 TIMING = re.compile(footer.TIMING, re.M)
 LIMIT, TARGET = adaptive.LIMIT, 70
+EXPERT_LAYOUT = 'tests/data/native_experts/iq3_s.txt'
 WORK = (*primary.continuation.WORK_FIELDS, 'request_sha256', 'output_sha256', 'reasoning_sha256')
+
+
+def weight_visit_bounds(jobs, verified_rows, blob_sizes):
+    """Bound one full packed-weight visit per job using the layer top-10 cap."""
+    cap = verified_rows * 10
+    require(len(blob_sizes) == 48 and min(blob_sizes) > 0 and 0 < jobs <= cap * len(blob_sizes),
+            'CPU jobs exceed the manifest or verifier-row bounds')
+
+    def allocate(sizes):
+        return sum(min(cap, max(0, jobs - layer * cap)) * amount for layer, amount in enumerate(sizes))
+
+    sizes = sorted(blob_sizes)
+    return [allocate(sizes), allocate(reversed(sizes))]
+
+
+def baseline():
+    selected = primary.retained.baseline()
+    args = selected['validated_dflash2_args']
+    manifest = Path(args[args.index('--pack') + 1]) / 'native_experts.txt'
+    expected = bank.P / EXPERT_LAYOUT
+    require(manifest.read_bytes() == expected.read_bytes(), 'the actual expert pack differs from the pinned layout')
+    return dict(selected, expert_manifest_sha256=bank.sha(expected))
 
 
 def routes(text, samples, arm):
@@ -31,6 +55,7 @@ def routes(text, samples, arm):
     if not observing:
         return checked
 
+    blob_sizes = [size for _, _, size in census.manifest_formats(bank.P / EXPERT_LAYOUT)]
     for i, (header, timing, sample, service) in enumerate(zip(headers, timings, samples, captured, strict=True)):
         require((headers[i - 1].end() if i else 0) <= timing.start() < header.start(),
                 'decode timing belongs to a different request')
@@ -44,9 +69,13 @@ def routes(text, samples, arm):
                 and ms['per_layer_host'] + .026 >= sum(ms[k] for k in (
                     'plan', 'activation_quant', 'jobs', 'CPU_pool_run')),
                 'nested verifier timings exceed the enclosing wall interval')
-        budget = 1000 * sample['generated_tokens'] / (TARGET * phases['windows'])
+        emitted = sample['generated_tokens']
+        budget = 1000 * emitted / (TARGET * phases['windows'])
+        weights = weight_visit_bounds(row['expert_work']['cpu_unique_misses'], phases['target_rows'], blob_sizes)
         row['decode_clocks'] = dict(phases, target_ms_per_window=budget,
-                                   remaining_after_draft_ms_per_window=budget - ms['draft'])
+                                   remaining_after_draft_ms_per_window=budget - ms['draft'],
+                                   packed_weight_bounds_bytes=weights,
+                                   logical_weight_GBps_at_70=[w * TARGET / emitted / 1e9 for w in weights])
         row['caller_decode_service'] = caller.compact(service)
     return checked
 
@@ -67,12 +96,13 @@ def decision(processes):
         matched = work[0] == work[1] == work[2] and copy[0] == copy[1] == copy[2]
         clocks = [s['decode_ms'] for s in samples]
         ratios = [clocks[1] / clocks[i] for i in (0, 2)]
+        observed = paths[1]['decode_clocks']
         result[name] = dict(matched_work=matched, observed_over_clean=ratios,
                             eligible=matched and all(1 / LIMIT <= v <= LIMIT for v in ratios),
                             clean_tg=[processes[i]['evidence']['decode_rates'][name] for i in (0, 2)],
-                            target_ms_per_window=paths[1]['decode_clocks']['target_ms_per_window'],
-                            remaining_after_draft_ms_per_window=paths[1]['decode_clocks'][
-                                'remaining_after_draft_ms_per_window'])
+                            target_ms_per_window=observed['target_ms_per_window'],
+                            remaining_after_draft_ms_per_window=observed['remaining_after_draft_ms_per_window'],
+                            logical_weight_GBps_at_70=observed['logical_weight_GBps_at_70'])
     return dict(workloads=result, adopted=False)
 
 
@@ -92,8 +122,9 @@ def experiment():
 
     def pins(revision):
         sources = old_pins(revision)
-        for module in (sys.modules[__name__], adaptive, caller, footer):
-            path = Path(module.__file__).resolve()
+        modules = (sys.modules[__name__], adaptive, caller, footer, census)
+        paths = [Path(module.__file__).resolve() for module in modules]
+        for path in (*paths, bank.P / EXPERT_LAYOUT):
             name = path.relative_to(bank.P).as_posix()
             require(path.read_bytes() == basis.validation.git('show', revision + ':' + name),
                     'commit the exact decode clock input: ' + name)
@@ -108,7 +139,7 @@ def experiment():
                 'a setting outside the decode observers changed')
         return old_current(row)
 
-    ctx.environment, ctx.pins, ctx.current, ctx.routes = environment, pins, current, routes
+    ctx.baseline, ctx.environment, ctx.pins, ctx.current, ctx.routes = baseline, environment, pins, current, routes
     ctx.evidence_reader.decide = decision
     ctx.protocol = dict(primary.PLAN, order=list(ORDER),
         scope='Use the same thinking-on code and prose workloads after the selected mode16 long prefill. '
@@ -116,7 +147,8 @@ def experiment():
         decision='Check exact native work and both paired latency ratios within a factor of 1.10 per workload. '
                  'Report observed draft, verification, commit and caller clocks against the 70 tok/s budget.',
         limits='Use rounded request clocks and conserved caller regions. GPU waits and CPU service are nested '
-               'inside verification. Worker utilization, DRAM traffic and arithmetic ceilings need separate evidence.')
+               'inside verification. Packed-weight visits bound model work. Physical DRAM traffic and '
+               'arithmetic ceilings need separate evidence.')
     return ctx
 
 
