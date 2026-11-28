@@ -11647,6 +11647,15 @@ component, measure actual window counts, verifier critical path, CPU expert
 service and draft clocks on the same route.
 [Exact sustained result](https://github.com/yqYo1/Strata/commit/9261c4b44).
 
+The separate stock routing capture on this build records 1,024 code and
+5,177 prose windows with the same request, output and reasoning hashes.
+At that yield the 70 tok/s budgets are 44.573 and 23.781 ms per window.
+The same-route clock decision reports how much of the gap remains after
+subtracting each eligible observed region individually. These estimates
+hold yield and all other work fixed. A verifier interval and its nested
+regions have overlapping savings estimates.
+[Native routing capture](https://github.com/yqYo1/Strata/commit/a7c068890dec4f57c71dc7cd7ccb58039463b9bb).
+
 The same three-process DFlash2 result records 1,133,707 CPU expert jobs
 for 3,195 code tokens and 3,430,897 jobs for 8,618 prose tokens. The
 validated pack's 48-layer manifest matches the committed expert sizes.

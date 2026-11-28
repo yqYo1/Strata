@@ -19,6 +19,7 @@ TIMING = re.compile(footer.TIMING, re.M)
 LIMIT, TARGET = adaptive.LIMIT, 70
 EXPERT_LAYOUT = 'tests/data/native_experts/iq3_s.txt'
 WORK = (*primary.continuation.WORK_FIELDS, 'request_sha256', 'output_sha256', 'reasoning_sha256')
+REGION_CANDIDATES = ('draft', 'verify', 'commit_emit', 'GPU_reach_wait', 'CPU_pool_run')
 
 
 def weight_visit_bounds(jobs, verified_rows, blob_sizes):
@@ -97,12 +98,20 @@ def decision(processes):
         clocks = [s['decode_ms'] for s in samples]
         ratios = [clocks[1] / clocks[i] for i in (0, 2)]
         observed = paths[1]['decode_clocks']
+        eligible = matched and all(1 / LIMIT <= v <= LIMIT for v in ratios)
         result[name] = dict(matched_work=matched, observed_over_clean=ratios,
-                            eligible=matched and all(1 / LIMIT <= v <= LIMIT for v in ratios),
+                            eligible=eligible,
                             clean_tg=[processes[i]['evidence']['decode_rates'][name] for i in (0, 2)],
                             target_ms_per_window=observed['target_ms_per_window'],
                             remaining_after_draft_ms_per_window=observed['remaining_after_draft_ms_per_window'],
                             logical_weight_GBps_at_70=observed['logical_weight_GBps_at_70'])
+        if eligible:
+            # Give each region its full printed duration plus rounding, independently.
+            # A nested or overlapped region cannot promise that much wall-time savings.
+            gap = (clocks[1] - .05) / observed['windows'] - observed['target_ms_per_window']
+            wall = observed['wall_ms_per_window']
+            result[name]['remaining_gap_ms_per_window_after_removing_one_region'] = {
+                region: max(0.0, gap - wall[region] - .005) for region in REGION_CANDIDATES}
     return dict(workloads=result, adopted=False)
 
 
@@ -145,9 +154,12 @@ def experiment():
         scope='Use the same thinking-on code and prose workloads after the selected mode16 long prefill. '
               'Bracket the two decode observers with independent clean processes on the same build.',
         decision='Check exact native work and both paired latency ratios within a factor of 1.10 per workload. '
-                 'Report observed draft, verification, commit and caller clocks against the 70 tok/s budget.',
+                 'Report observed draft, verification, commit and caller clocks against the 70 tok/s budget. '
+                 'For an eligible workload, report the remaining gap with each measured region removed '
+                 'independently, holding verifier yield and all other measured work fixed.',
         limits='Use rounded request clocks and conserved caller regions. GPU waits and CPU service are nested '
-               'inside verification. Packed-weight visits bound model work. Physical DRAM traffic and '
+               'inside verification. The individual region removals are optimistic and nonadditive. '
+               'Packed-weight visits bound model work. Physical DRAM traffic and '
                'arithmetic ceilings need separate evidence.')
     return ctx
 
