@@ -11495,6 +11495,18 @@ and first-request result. Investigate the remaining gap and preserve the
 length curve's original comparator settings. This does not change the
 shipping cache policy.
 
+The rebuilt early-PLE timing process 5 at `a68dbc97d` supplies a private
+NEO cache from the exact 118,785-token route and executable. Keep only its
+`5/cache/neo_compiler_cache` tree under `dflash2-prefill-ple-early-speed-v2`
+for a possible same-binary seed test after the wait comparison. It has
+55 files totaling 12,434,960 bytes, including NEO's eight-byte accounting
+file. Verify the image inventory and the driver/provider identity before
+copying. Keep early PLE selected and change only the private cache's initial
+contents for the clean comparison. Check the first-request hit contrast in
+separate diagnostic runs. Charge the seed copy to readiness and compare
+first and subsequent PP and TTFT. The 102,401-token result is a reason to
+test this combination. Its savings do not establish their size at 118,785.
+
 The [primary continuation plan](../bench/dflash2_primary_continuation.py)
 uses the same retained binary and KV selection for three independent
 `bench.sh --long-generation-only --long-generation-input-case split-v1-96k`
@@ -12085,12 +12097,15 @@ The other 6.425 seconds remain outside that wait interval. The subsequent
 prompt median is 0.999945 times the same-arm clean reference. The paired
 attribution and first-use observer-cost question remain open.
 
-The first early participant closes at `17de86439` with exposed waits of
-3.399 seconds, 0.045 ms and 0.055 ms. Its first window counts 65,707 ZFS
-direct records and 8.021 GiB, almost the same as the paired stock window.
-The backed partition total rises from 9.469 to 12.222 GiB across those
-windows. Keep the shared partition traffic as context; attribution still
-needs the reverse-order participants and per-ticket request accounting.
+The early participants close at `17de86439` and `3e51149be`. Their first
+exposed waits are 3.399 and 3.955 seconds, and all four subsequent waits
+are 0.041–0.058 ms. The first windows count 65,707 and 65,706 ZFS direct
+records, about 8.021 GiB each. The shared partition reads are 12.222 and
+9.329 GiB. The observed median first wait is 3.677 seconds, while the clean
+first gap at 1,000 tok/s is 3.978 seconds. This preliminary comparison
+leaves about 0.301 seconds if the observed wait is removed in full. The
+final stock control and subsequent observer-cost checks govern attribution.
+Per-ticket counts are still needed to estimate what grouping could save.
 
 The retirement under the measurement lock removed `build`, `cache`, `owned`,
 `ownership.json`, `source` and `tmp` from `dflash2-prefill-ple-early-native-v2`.
