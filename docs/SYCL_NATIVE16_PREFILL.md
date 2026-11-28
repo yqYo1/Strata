@@ -11798,9 +11798,10 @@ host buffers. The layer-1 reader consumes the future before issuing its
 existing upload and the next gather. A request-local future joins the host
 read when layer 0 exits early. Admission requires the existing direct PLE
 binding and the relocated mode-16 workspace.
-The [early PLE build controller](../bench/dflash2_prefill_ple_early_build.py)
-recovers the observed source and applies the three-file delta. It requires
-the repeated PLE attribution and rebuilds the original set of 139 objects.
+The original early PLE controller recovered the observed source and applied
+the three-file delta. It required the repeated PLE attribution and rebuilt
+the original set of 139 objects.
+[Original build controller](https://github.com/yqYo1/Strata/blob/58236dac5530cd8077db4be1abd90bbe841bb2b4/bench/dflash2_prefill_ple_early_build.py).
 Check actual dispatch,
 the first read's lifetime on cancellation, and the layer-1 and decode
 handoff before timing. Use a same-binary off/on comparison with separate
@@ -11888,13 +11889,13 @@ the original direct-writer run. Both V2 owners exit normally, validation
 is quiet, model hashes match and no fresh Xe fault appears. The traced
 outcomes qualify the scheduling check and enable the untraced comparison.
 
-The [same-binary timing controller](../bench/dflash2_prefill_ple_early_speed.py)
-requires both V2 native outcomes before admission. It counterbalances three
-pairs at 118,785 inputs and separates each process's first prompt from two
-subsequent fresh prompts. Both first prefill and client TTFT must improve in
-at least two pairs and have median ratios below one. The two subsequent
-median ratios may be at most 1.01 for this screening stage. Track 1,000 tok/s
-and broader model validation independently.
+The original timing controller required both V2 native outcomes before
+admission. It counterbalanced three pairs at 118,785 inputs and recorded each
+process's first prompt and two subsequent fresh prompts. Both first prefill
+and client TTFT had to improve in at least two pairs and have median ratios
+below one. The screening limit for the two subsequent median ratios was
+1.01. The throughput target and model qualification had separate results.
+[Original timing controller](https://github.com/yqYo1/Strata/blob/a213dd2237ddadc1e831aa6d54aca78ec9b5527b/bench/dflash2_prefill_ple_early_speed.py).
 Replay of three original request frames matches the committed work. Three
 synthetic consumption cases and twelve invalid or observer-enabled frames
 exercise the route gate. The paired decision accepts a repeated first gain
@@ -11915,11 +11916,22 @@ The paired median ratios are 0.989360 for first prefill and 0.989330 for
 first client TTFT. Subsequent PP and TTFT ratios are 0.999054 and 0.999017.
 The candidate passes the repeatability and subsequent-preservation screens.
 Its six subsequent requests run at 1,048.0–1,050.1 tok/s. The three first
-requests run at 963.5–975.1 tok/s. Advance to the same-build standalone
-physical final-slot check with the early selector enabled. Verify the
-16,385-input handoff and the 262,144-input fallback on the original token
-bodies. Live RESTORE and sustained generation remain open.
-[Physical-context controller](../bench/dflash2_prefill_ple_early_capacity.py).
+requests run at 963.5–975.1 tok/s. The measured first-prefill intervals of
+121.814–123.280 s would need a further 3.029–4.495 s reduction to reach 1,000
+tok/s on this 118,785-token workload. The median reduction needed is 4.049 s.
+The earlier PLE wait measurement precedes this overlap. The existing
+PLE wait observer also times the future wait on the early path. The
+[paired wait controller](../bench/dflash2_prefill_ple_early_wait.py) pins the
+rebuilt executable and its closed clean comparison. It uses two opposite-order
+process pairs with the same 118,785-token workload and checks all 15 gathers
+per request. Compare the exposed interval with the first-prefill time still
+needed at 1,000 tok/s. The wait clock sums all layer-1 future waits. Keep the
+first and subsequent intervals, the same-arm warm observer ratios and the
+clean first-prefill gap in the compact result. Review the raw logs after the
+last pair and the controller when selecting the next scheduling change.
+The next check enabled the early selector and exercised the 16,385-input
+handoff and the 262,144-input fallback on the original token bodies.
+[Original physical-context controller](https://github.com/yqYo1/Strata/blob/c32ac6175f8f3b4fb40ae8eb8579a769dd398849/bench/dflash2_prefill_ple_early_capacity.py).
 
 The same-build physical check closes at `c32ac6175`. The 16,385-input
 smoke reproduces all four output IDs in mode 10. The 262,144-input run
@@ -11938,7 +11950,7 @@ arm gathers once and consumes 8,192 rows at layer 1. The control records
 zero early reads. Both processes exit normally with no fresh Xe faults.
 The selector remains opt-in pending the matched sustained generation,
 weak-draft and agent-session comparisons.
-[Live RESTORE controller](../bench/dflash2_prefill_ple_early_restore.py).
+[Original live RESTORE controller](https://github.com/yqYo1/Strata/blob/6819afd4991c6e4f38de25a5608c8af9bf01f64c/bench/dflash2_prefill_ple_early_restore.py).
 
 The [sustained-generation controller](../bench/dflash2_prefill_ple_early_continuation.py)
 uses this exact engine in three pairs of independent stock and early processes. It

@@ -57,9 +57,10 @@ def environment(row, plan):
     return dict(window.environment(row, dict(plan, arm='windows')), **{SELECTOR: '1'})
 
 
-def accounting(text, rows, chunk, enclosing):
+def gather_accounting(text, rows, chunk):
     lines = [line.removeprefix(PREFIX) for line in text.splitlines() if line.startswith(PREFIX)]
-    require(len(lines) == 1 and rows > 0 and chunk > 0, 'require one PLE interval for the full layer slice')
+    require(len(lines) == text.count(PREFIX) == 1 and rows > 0 and chunk > 0,
+            'require one PLE interval for the full layer slice')
     fields = MARKER.fullmatch(lines[0])
     require(fields is not None, 'unexpected PLE position, read mode or clock fields')
     extent, gathers, exposed, inclusive = fields.groups()
@@ -67,11 +68,16 @@ def accounting(text, rows, chunk, enclosing):
             'PLE gather coverage differs from the executed pieces')
     exposed, inclusive = float(exposed), float(inclusive)
     # Native clocks are printed to the nearest microsecond.
-    require(exposed <= inclusive + 0.001
-            and exposed <= enclosing['unclassified_wall_s'] * 1000 + 0.001
-            and inclusive <= enclosing['wall_s'] * 1000 + 0.001,
-            'PLE clocks exceed their enclosing intervals')
+    require(exposed <= inclusive + 0.001, 'gather wait exceeds the inclusive PLE clock')
     return dict(gathers=int(gathers), future_get_ms=exposed, host_ple_ms=inclusive)
+
+
+def accounting(text, rows, chunk, enclosing):
+    ple = gather_accounting(text, rows, chunk)
+    require(ple['future_get_ms'] <= enclosing['unclassified_wall_s'] * 1000 + 0.001
+            and ple['host_ple_ms'] <= enclosing['wall_s'] * 1000 + 0.001,
+            'PLE clocks exceed their enclosing intervals')
+    return ple
 
 
 def route(text, plan):
