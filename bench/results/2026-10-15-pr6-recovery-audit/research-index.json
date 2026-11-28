@@ -42973,5 +42973,23 @@
       "digest_contract": "sorted state-relative path, byte count and SHA-256 in compact JSON",
       "reason": "The worker and reviewer closed. The measured finding and unqualified result are recorded in Git. The report, controls and source snapshot have no further consumer."
     }
+  },
+  "ple-read-completion-publication-split-20261129": {
+    "classification": "decision_support",
+    "source_revision": "f4a31ab24643d62126c476b6b9a9118af26b3a33",
+    "native_source_revision": "be65a4811e953e3299dea61e802d09c59071f025",
+    "worker": "Orca gpt-6-luna medium",
+    "dispatch": "ctx_b069720a255c",
+    "owners_closed": true,
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/ple-read-completion-publication-split-20261129/report.md",
+    "report_sha256": "ff30b466e72541242b13e54d7b266c4b3f99709f4269539ee0ca6b492b9ca0a1",
+    "report_bytes": 7227,
+    "reviewer": "native gpt-6-luna max",
+    "review_sha256": "fdd523a349965c394a15e7050985ccf85128c558a2847da506b2707dab68648a",
+    "finding": "The inline ordered cache/host publication can block on a pinned slot. Prime a bounded next-chunk group immediately before the callback, or use another issuer only if measured blocking justifies it.",
+    "correction": "The 256 slots and 16 pread workers bound software activity. Their occupancy and exposed PLE wait do not establish device service or queue depth.",
+    "consumer": "The pending first-use PLE queue/publisher observation and isolated lookahead A/B after current native qualification. Read-only preflight cannot access block issue/complete tracepoints at the current permissions.",
+    "schedulable_now": false,
+    "retention": "Keep this short decision and report for the named measurement. Retire opaque lifecycle metadata after integration."
   }
 }

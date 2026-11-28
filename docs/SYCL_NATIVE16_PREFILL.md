@@ -12445,6 +12445,14 @@ First-use times have a larger spread and all first samples remain below
 the target. Advance the candidate to physical-context and live RESTORE
 checks. Keep implementation adoption and DFlash2 decode preservation open.
 
+The same-build context check closes at `38026f23b`. The standalone
+16,385-token request follows mode 10 and reproduces its four output IDs.
+The 262,144-token request follows mode 2 with 122,880 GPU-backed
+and 139,263 host-backed batched rows, consumes the final slot, and emits no
+tokens. Both requests admit the dedicated cache and finish with quiet
+validation and no fresh Xe fault. The mode-16 whole-request direct writer
+has separate coverage. The next consumer is the paired live RESTORE test.
+
 The dedicated-cache arms of the alternating-corpus comparison give two
 distinct first-use budgets. Both use the same executable and 118,785 fresh
 tokens. On the process's first long request, C++ has 120.857–121.064 s
