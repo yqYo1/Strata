@@ -761054,13 +761054,13 @@
       "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
       "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d"
     ],
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "8b393070fddee347a3891b8096a0b5f63f24c77e",
     "host_passed": true,
     "ownership_closed": true,
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "plans": [
       {
         "index": 0,
@@ -762593,6 +762593,176 @@
           "drafts_accepted": 19,
           "drafts_offered": 21
         }
+      },
+      {
+        "index": 7,
+        "read": 118785,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": true,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-early-native-v3/build/strata",
+          "sha256": "72a5af6c13f963ce78271a31d6b527df0259fda51d9e63ee9b3b88f2dcf150a4",
+          "bytes": 26723208
+        },
+        "native_source_commit": "8f539f82e38e1ec2c3e4285a29928aa1a32f4ea3",
+        "seed_arm": "seed",
+        "prepare_directory_s": 0.16438437392935157,
+        "native_identity": {
+          "pid": 59283,
+          "start_ticks": 419146350,
+          "sid": 59210
+        },
+        "readiness": {
+          "server_pid": 59221,
+          "server_start_ticks": 419146221,
+          "owner": 59210,
+          "native": {
+            "pid": 59283,
+            "start_ticks": 419146350,
+            "sid": 59210
+          },
+          "lower_s": 43.22178206965327,
+          "upper_s": 43.307339664082974
+        },
+        "request_routes_checked_before_continue": 2,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 59283,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18974",
+              "jobs": "23978",
+              "source_H2D_bytes": "228065280",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "118784"
+            },
+            "uploads": {
+              "uploads": "18974",
+              "requested_H2D_bytes": "38726553600",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 645120,
+              "reused": 1935360
+            },
+            "fixed_bytes": 3902964736,
+            "free_bytes": 4320702464,
+            "direct_pieces": 720,
+            "native_request": [
+              118785,
+              0,
+              118785,
+              24,
+              13,
+              15
+            ],
+            "ple_early_reads": 1
+          },
+          {
+            "work": {
+              "windows": "48",
+              "dequants": "18902",
+              "jobs": "23912",
+              "source_H2D_bytes": "228065280",
+              "GPU_resident_windows_only": "1",
+              "operator_max": "8192",
+              "maximum_rows": "118784"
+            },
+            "uploads": {
+              "uploads": "18902",
+              "requested_H2D_bytes": "38591923200",
+              "permanent_hits": "0",
+              "permanent_slots": "31",
+              "total_slots": "32",
+              "final_drain": "checked"
+            },
+            "kv": {
+              "reloaded": 645120,
+              "reused": 1935360
+            },
+            "fixed_bytes": 3902964736,
+            "free_bytes": 4237037568,
+            "direct_pieces": 720,
+            "native_request": [
+              118785,
+              0,
+              118785,
+              24,
+              13,
+              15
+            ],
+            "ple_early_reads": 1
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 121710.9,
+            "prompt_tps": 976.0,
+            "ttft_s": 121.909,
+            "total_s": 123.697,
+            "generated_tokens": 24,
+            "request_sha256": "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 112433.8,
+            "prompt_tps": 1056.5,
+            "ttft_s": 112.628,
+            "total_s": 114.28,
+            "generated_tokens": 24,
+            "request_sha256": "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 112433.8,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "short_warmup_s": 6.036421113,
+        "warmup_work": {
+          "request_sha256": "6976dd85c26437117139f185ce0ac4da0ab9d1d4eb576dd2f9e252ae99d63f03",
+          "read_tokens": 74,
+          "reused_tokens": 0,
+          "generated_tokens": 24,
+          "drafts_accepted": 19,
+          "drafts_offered": 21
+        }
       }
     ],
     "budgets": {
@@ -762637,6 +762807,75 @@
         "passed": true
       }
     ],
+    "decision": {
+      "driver_contrast": {
+        "empty": {
+          "hits": 0,
+          "misses": 13
+        },
+        "seeded": {
+          "hits": 13,
+          "misses": 0
+        }
+      },
+      "seeded_over_empty_ratios": [
+        {
+          "readiness_upper": 0.8417600855836875,
+          "short_warmup": 0.23262767190566977,
+          "first_prefill": 0.9984471219966936,
+          "first_TTFT": 0.998473407747866,
+          "subsequent_prefill": 0.9995447917778015,
+          "subsequent_TTFT": 0.9994320299604196,
+          "readiness_with_copy_upper": 0.8447690863276418
+        },
+        {
+          "readiness_upper": 0.7311942565281195,
+          "short_warmup": 0.22158831573572405,
+          "first_prefill": 0.9775787017208444,
+          "first_TTFT": 0.977563346963329,
+          "subsequent_prefill": 1.0006666814818108,
+          "subsequent_TTFT": 1.000647771842334,
+          "readiness_with_copy_upper": 0.734183562958079
+        },
+        {
+          "readiness_upper": 0.8258336097235817,
+          "short_warmup": 0.2333836450777764,
+          "first_prefill": 1.0013047881446915,
+          "first_TTFT": 1.0012977306141222,
+          "subsequent_prefill": 0.999939523624029,
+          "subsequent_TTFT": 0.9999289747505239,
+          "readiness_with_copy_upper": 0.8289676582081968
+        }
+      ],
+      "repeated_gain": {
+        "readiness_upper": true,
+        "short_warmup": true,
+        "first_prefill": true,
+        "first_TTFT": true,
+        "subsequent_prefill": true,
+        "subsequent_TTFT": true,
+        "readiness_with_copy_upper": true
+      },
+      "first_1000": {
+        "empty": false,
+        "seed": false
+      },
+      "adopted": false,
+      "subsequent_preserved": true,
+      "advance": true,
+      "first_gap_ms": {
+        "empty": [
+          2860.100000000006,
+          4026.800000000003,
+          2767.300000000003
+        ],
+        "seed": [
+          2671.199999999997,
+          1273.199999999997,
+          2925.899999999994
+        ]
+      }
+    },
     "source_inputs": {
       "files": 828,
       "sha256": "3d66a72f1a1509ac56568f759ef1c149743070330b67c455db94843dbf70aeed"
