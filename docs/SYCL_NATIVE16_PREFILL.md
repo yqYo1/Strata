@@ -12244,7 +12244,6 @@ Subsequent prefill time falls 24.6% and 24.8%.
 Logical record touches over the two later requests fall from 725,756
 to 866 and 865. The four later candidate samples exceed 1,000 tok/s.
 The same-corpus gate permits the alternating-corpus comparison.
-Physical fill, RESTORE and the sustained DFlash2 handoff remain open.
 See the [performance CSV](../bench/performance-records.csv).
 
 The [closed alternating comparison](https://github.com/yqYo1/Strata/commit/a6d2f3efee89ada0ae3a5a5326b6deb76e5ce6bf)
@@ -12263,8 +12262,19 @@ prose. Record touches on revisits fall from 522,827 to 5,703 for C++ and
 from 824,497–824,498 to 6,574 for prose. The first C++ comparison changes
 direction between pairs. The first prose request takes 1.45% and 2.57%
 longer with the dedicated cache. The repeated revisit gain passes the
-mechanism gate. Check physical fill, live RESTORE and sustained decode
-handoff with the ordinary cache held fixed before model adoption.
+mechanism gate.
+
+The same-build [physical-context result](https://github.com/yqYo1/Strata/commit/54d5ad44c)
+verifies the host bounds, the 16,385-token mode-10 handoff with matching
+four output IDs, and all 262,144 input slots. The mode-2 full fill processes
+262,143 batch rows, with 122,880 GPU-backed and 139,263 host-backed, then
+consumes the last position with zero emitted tokens. The final commit wait,
+refill drain and model asset verification pass. Both model processes use
+the dedicated prefill cache and the original ordinary cache, exit normally
+and record no fresh Xe fault. The [live RESTORE plan](../bench/dflash2_prefill_ple_phase_cache_restore.py)
+pins that final-slot result, parks 16,385 tokens, switches to a 33-token
+conversation and appends 118,785 fresh tokens after restoration. Live
+RESTORE and sustained decode handoff remain open for model adoption.
 
 On the timed IQ4_NL source, the dedicated cache adds 376.5 MiB of host
 arrays, including 360 MiB of packed rows, 16 MiB of row keys and 0.5 MiB
