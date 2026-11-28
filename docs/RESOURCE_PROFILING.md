@@ -892,12 +892,13 @@ does not change. The next candidate uses the recovered primary prefill build
 and its early PLE schedule.
 [Original model comparison](https://github.com/yqYo1/Strata/commit/5b59c28d9eab0602adbdc1fea661649b2c76b4cd).
 
-The retirement audit before removing the finished model candidate checks
+The retirement audit for the finished model candidate checked
 its original 1,327 project files and recipe, 1,476 compiler inputs, 30 link
 inputs, 140 objects and all 12 executables. The six terminal model results
-match their committed values and recomputed decision. Both retained phase
-engines have independent paths. Preserve each `record.json` and retire the
-listed closed comparison files. The inventory hashes sorted tuples of
+match their committed values and recomputed decision. The listed closed
+comparison files were retired under the measurement lock. All four original
+receipts and the 23 executables in the two retained phase builds still match
+their hashes. The inventory hashes sorted tuples of
 paths relative to each root, sizes and SHA-256 values.
 
 | State root and retirement paths | Files | Bytes | Inventory SHA-256 |
