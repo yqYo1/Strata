@@ -12428,6 +12428,23 @@ next comparison. Vary only the dedicated 4,194,304-row prefill cache.
 Keep first-use and revisit gates separate. The 262,144-token check,
 RESTORE and matched sustained decode must use the selected native build.
 
+The dedicated-cache comparison closes at `4519135a6` with four independent
+processes, all 12 matched fresh requests, verified model assets and no
+fresh Xe fault. Both arms use the whole-request record horizon. Their
+ordinary cache stays at 1,048,576 rows. The candidate arm adds a separate
+4,194,304-row prefill cache and reserves 394,788,864 bytes of cache arrays.
+
+| PLE cache | First prefill (tok/s) | Revisit prefill (tok/s) | Revisit TTFT (s) |
+| --- | ---: | ---: | ---: |
+| Ordinary | 761.7–844.5 | 962.3–970.5 | 122.679–123.726 |
+| Dedicated | 836.3–845.6 | 1017.0–1018.5 | 116.855–117.028 |
+
+Revisit prefill time falls by 5.01% and 4.74% in the two orders. TTFT falls
+by 6.187 and 5.834 seconds. All four dedicated-cache revisits exceed 1,000 tok/s.
+First-use times have a larger spread and all first samples remain below
+the target. Advance the candidate to physical-context and live RESTORE
+checks. Keep implementation adoption and DFlash2 decode preservation open.
+
 The dedicated-cache arms of the alternating-corpus comparison give two
 distinct first-use budgets. Both use the same executable and 118,785 fresh
 tokens. On the process's first long request, C++ has 120.857–121.064 s
