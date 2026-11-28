@@ -777969,6 +777969,399 @@
         },
         "passed": true,
         "arm": "two"
+      },
+      {
+        "index": 1,
+        "read": 118785,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-window-native-v1/build/strata",
+          "sha256": "4bedf4541afcb6d3407e45e4976819f8695ba680ff44a4dd95fec5ca0c99fcfd",
+          "bytes": 26774600
+        },
+        "native_source_commit": "be65a4811e953e3299dea61e802d09c59071f025",
+        "native_identity": {
+          "pid": 1280928,
+          "start_ticks": 422309748,
+          "sid": 1280869
+        },
+        "storage_counters": [
+          {
+            "zfs_direct_records": 216616,
+            "zfs_direct_bytes": 28392292352,
+            "partition_reads": 241517,
+            "partition_read_bytes": 29923196928,
+            "partition_read_wait_ms": 229383,
+            "partition_write_bytes": 368820224,
+            "request_window_ns": 142165055525
+          },
+          {
+            "zfs_direct_records": 87560,
+            "zfs_direct_bytes": 11476664320,
+            "partition_reads": 111261,
+            "partition_read_bytes": 12982005760,
+            "partition_read_wait_ms": 95311,
+            "partition_write_bytes": 265703424,
+            "request_window_ns": 123399832751
+          },
+          {
+            "zfs_direct_records": 87394,
+            "zfs_direct_bytes": 11454906368,
+            "partition_reads": 111241,
+            "partition_read_bytes": 13059461120,
+            "partition_read_wait_ms": 97136,
+            "partition_write_bytes": 403824640,
+            "request_window_ns": 123609811284
+          }
+        ],
+        "request_routes_checked_before_continue": 3,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1280928,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              12,
+              17
+            ],
+            "bank_upload_bytes": 49896832000,
+            "read_jobs": 215616,
+            "requested_read_bytes": 16837029888,
+            "returned_read_bytes": 16837029888,
+            "first_chunk_exposed_ms": 2380.075,
+            "producer_ms": [
+              {
+                "first_ready": 5520.394,
+                "complete": 22157.484,
+                "cache_scan": 23.773,
+                "plan": 107.736,
+                "file_setup": 0.618
+              }
+            ],
+            "consumer_ms": [
+              [
+                2380.075,
+                19.756
+              ],
+              [
+                3421.963,
+                26.247
+              ],
+              [
+                3574.616,
+                12.813
+              ],
+              [
+                2606.336,
+                12.925
+              ],
+              [
+                1535.795,
+                12.856
+              ],
+              [
+                1527.573,
+                12.845
+              ],
+              [
+                1030.871,
+                13.34
+              ],
+              [
+                626.279,
+                13.145
+              ],
+              [
+                422.276,
+                13.052
+              ],
+              [
+                185.804,
+                12.823
+              ],
+              [
+                89.183,
+                13.035
+              ],
+              [
+                130.616,
+                13.024
+              ],
+              [
+                49.866,
+                12.906
+              ],
+              [
+                10.321,
+                13.255
+              ],
+              [
+                0.222,
+                8.816
+              ]
+            ],
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 17592.237,
+              "host_ple_ms": 17618.56
+            }
+          },
+          {
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              16,
+              18
+            ],
+            "bank_upload_bytes": 49898444800,
+            "read_jobs": 86721,
+            "requested_read_bytes": 1347936256,
+            "returned_read_bytes": 1347936256,
+            "first_chunk_exposed_ms": 877.646,
+            "producer_ms": [
+              {
+                "first_ready": 2699.685,
+                "complete": 9159.034,
+                "cache_scan": 118.451,
+                "plan": 14.289,
+                "file_setup": 3.713
+              }
+            ],
+            "consumer_ms": [
+              [
+                877.646,
+                12.925
+              ],
+              [
+                1614.153,
+                13.158
+              ],
+              [
+                1314.607,
+                13.818
+              ],
+              [
+                866.729,
+                13.752
+              ],
+              [
+                621.051,
+                13.713
+              ],
+              [
+                489.696,
+                13.187
+              ],
+              [
+                212.796,
+                13.821
+              ],
+              [
+                27.163,
+                13.968
+              ],
+              [
+                0.001,
+                24.875
+              ],
+              [
+                0.0,
+                23.484
+              ],
+              [
+                0.0,
+                25.084
+              ],
+              [
+                0.001,
+                24.041
+              ],
+              [
+                0.001,
+                25.896
+              ],
+              [
+                0.0,
+                25.93
+              ],
+              [
+                0.0,
+                13.475
+              ]
+            ],
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 6024.189,
+              "host_ple_ms": 6053.436
+            }
+          },
+          {
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              15,
+              17
+            ],
+            "bank_upload_bytes": 49871436800,
+            "read_jobs": 86753,
+            "requested_read_bytes": 1356795904,
+            "returned_read_bytes": 1356795904,
+            "first_chunk_exposed_ms": 0.001,
+            "producer_ms": [
+              {
+                "first_ready": 579.576,
+                "complete": 9239.401,
+                "cache_scan": 120.918,
+                "plan": 14.604,
+                "file_setup": 0.573
+              }
+            ],
+            "consumer_ms": [
+              [
+                0.001,
+                22.372
+              ],
+              [
+                0.001,
+                27.732
+              ],
+              [
+                739.748,
+                13.693
+              ],
+              [
+                651.87,
+                14.35
+              ],
+              [
+                722.053,
+                13.109
+              ],
+              [
+                994.232,
+                13.031
+              ],
+              [
+                849.473,
+                13.259
+              ],
+              [
+                704.099,
+                13.301
+              ],
+              [
+                669.335,
+                13.29
+              ],
+              [
+                328.932,
+                13.345
+              ],
+              [
+                163.4,
+                13.36
+              ],
+              [
+                173.698,
+                13.714
+              ],
+              [
+                47.332,
+                13.434
+              ],
+              [
+                0.0,
+                21.821
+              ],
+              [
+                0.0,
+                8.382
+              ]
+            ],
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 6044.654,
+              "host_ple_ms": 6059.755
+            }
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 138872.2,
+            "prompt_tps": 855.4,
+            "ttft_s": 139.123,
+            "total_s": 142.131,
+            "generated_tokens": 24,
+            "request_sha256": "8aca834dae0db1f6731a2c817c463c61f9fbff320b39b253b900e91e2b03d249",
+            "drafts_offered": 17,
+            "drafts_accepted": 12,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 121320.0,
+            "prompt_tps": 979.1,
+            "ttft_s": 121.559,
+            "total_s": 123.396,
+            "generated_tokens": 24,
+            "request_sha256": "fe36c44e5fd159a084612f94685c54a2c1ffef31dbc1a613f62732a779fb4608",
+            "drafts_offered": 18,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 121559.4,
+            "prompt_tps": 977.2,
+            "ttft_s": 121.854,
+            "total_s": 123.6,
+            "generated_tokens": 24,
+            "request_sha256": "8cbe292463fd8403c38c605952d2f6f527e9a642cc70d625d6ebf64093a5749e",
+            "drafts_offered": 17,
+            "drafts_accepted": 15,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 121439.7,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "arm": "full"
       }
     ],
     "budgets": {
