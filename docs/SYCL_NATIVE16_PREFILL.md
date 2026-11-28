@@ -12321,14 +12321,18 @@ that path. Earlier standalone early-PLE trials can recover their original
 inputs from Git if reopened. The grouped reader uses the sealed old build
 receipt and the retained primary and phase-cache results.
 
-Retire `build`, `cache`, `owned`, `ownership.json`, `source` and `tmp`
+Retired `build`, `cache`, `owned`, `ownership.json`, `source` and `tmp`
 under `dflash2-prefill-ple-early-native-v3` while holding the measurement
-lock. The inventory has 1,524 files totaling 223,825,805 bytes. Its SHA-256
+lock. The inventory had 1,524 files totaling 223,825,805 bytes. Its SHA-256
 is `cedf7f90de33103fc25e497ee82a33bcf62dd8ce56e74cb062a29e641ec9aa32`
 over sorted relative paths, byte counts and hashes in compact JSON.
-Preserve `record.json` byte-for-byte with SHA-256
+The preserved `record.json` still has SHA-256
 `0cc9539f3d02fd08e5e284400bf30be6db7422a2672eaae49f20ee7e7e6cb70f`
-and check both retained executable generations before the next build.
+and both retained executable hashes and sizes match. The primary build
+serves as the fallback and decode reference. The phase-cache build remains
+for residual attribution and DFlash2 handoff. The grouped reader is the
+third generation for the imminent one- and two-chunk comparison. Review
+it after the first failed gate or the closed timing comparison.
 
 With the observed miss sets held fixed, coalescing by record within each
 ticket removes 14.3% of the first prose request's logical record touches.
