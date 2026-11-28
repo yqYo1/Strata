@@ -11506,6 +11506,12 @@ contents for the clean comparison. Check the first-request hit contrast in
 separate diagnostic runs. Charge the seed copy to readiness and compare
 first and subsequent PP and TTFT. The 102,401-token result is a reason to
 test this combination. Its savings do not establish their size at 118,785.
+The [NEO cache controller](../bench/dflash2_primary_driver_cache.py) selects
+this route with `--early-ple`. It binds the donor's closed timing receipt,
+matched request hashes and cache inventory. A diagnostic pair must establish
+the first-long cache hit contrast before three clean pairs. Both clean arms
+use the same driver settings, and reuse the prefill timing controller's
+subsequent preservation limit.
 
 The [primary continuation plan](../bench/dflash2_primary_continuation.py)
 uses the same retained binary and KV selection for three independent
