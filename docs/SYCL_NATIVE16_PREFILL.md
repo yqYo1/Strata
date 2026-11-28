@@ -12149,6 +12149,27 @@ corpus in independent processes. Analyse each corpus separately. The
 active result keeps request samples and compact totals. The closed
 revision above preserves each ticket and the full qualification record.
 
+The four corpus processes finish with matched 118,785-token requests,
+verified assets and no new Xe fault. C++ runs at 615.4–630.7 tok/s first
+and 1,009.2–1,012.5 tok/s on later requests. Technical prose runs at
+515.6–526.4 and 767.3–783.4 tok/s, respectively. First client TTFT is
+188.573–193.289 s for C++ and 226.044–230.647 s for prose. These rates
+include the reader and host timeline observers.
+[C++ samples](https://github.com/yqYo1/Strata/commit/d815fbd07) ·
+[prose samples](https://github.com/yqYo1/Strata/commit/473d69d88).
+
+First requests plan 600,646 record touches for C++ and 981,425 for prose.
+Subsequent requests fall to 36,139–36,549 touches for C++ and remain at
+360,959–364,797 for prose. Prose still spends 36.4–39.6 s waiting for
+PLE on those requests. At fixed non-wait time, reaching 1,000 tok/s
+would require removing 90.2–93.0% of that exposed wait. Retain the
+[capacity comparison](../bench/dflash2_prefill_ple_cache_capacity.py)
+as the immediate consumer of the observer build. It changes the row cache
+from 1,048,576 to 4,194,304 entries in two opposite-order pairs on the
+same prose body. Record how much storage work and wall time the larger
+cache removes before evaluating record grouping. This diagnostic keeps
+prefill and decode adoption decisions open.
+
 The observed future wait ends after `PleTable::gather_batch` has collected
 the direct reads and expanded their packed rows on the CPU. That scope
 combines submission, storage and expansion. For 118,784 batched tokens,

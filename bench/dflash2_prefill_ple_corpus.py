@@ -92,6 +92,13 @@ def campaign_key(name):
     return 'dflash2_prefill_ple_corpus_' + name.replace('-', '_') + '_v1'
 
 
+def corpus_payload(name):
+    digest, paths = CORPORA[name]
+    data = b'\n\n'.join(validate.git('show', CORPUS_REVISION + ':' + path) for path in paths)
+    require(sha256(data).hexdigest() == digest, 'committed corpus inputs differ')
+    return data
+
+
 def experiment(name):
     digest, paths = CORPORA[name]
     ctx = geometry.experiment()
@@ -103,10 +110,8 @@ def experiment(name):
     def save(row):
         if row['stage'] == 'prepared':
             row['request_hashes'] = {}
-            data = b'\n\n'.join(validate.git('show', CORPUS_REVISION + ':' + p) for p in paths)
-            require(sha256(data).hexdigest() == digest, 'committed corpus inputs differ')
             with corpus.open('xb') as output:
-                output.write(data)
+                output.write(corpus_payload(name))
             corpus.chmod(0o400)
         base_save(row)
 
