@@ -92,9 +92,14 @@ def early_baseline(timing, native):
             and all(r['ple_early_reads'] == 1 for r in donor['routes']),
             'require the matching owned early PLE seed donor and exact launch')
     source = root / 'cache' / 'neo_compiler_cache'
-    inventory = driver_cache.inventory(source)
-    require(inventory[:2] == (54, 12434952), 'the closed early PLE donor size differs')
-    return dict(row, seed=dict(path=str(source), record_commit=EARLY_DONOR, inventory=list(inventory)),
+    receipt = bank.previous.read(root / 'engine-exit.json')
+    require(receipt['native'] == donor['native_identity'] and receipt['exit_code'] == 0
+            and receipt['binary'] == donor['binary'] and receipt['boot_id'] == row['boot'],
+            'the early PLE cache donor native exit differs')
+    # The retained early-PLE directory matches the committed 102401-token
+    # donor's complete device-image inventory, including its image hashes.
+    require(driver_cache.inventory(source) == DONOR_CACHE, 'the closed early PLE donor inventory changed')
+    return dict(row, seed=dict(path=str(source), record_commit=EARLY_DONOR, inventory=list(DONOR_CACHE)),
                 donor_work=work(donor['routes'][:RUNS]),
                 donor_request_sha256s=[s['request_sha256'] for s in donor['samples'][:RUNS]])
 

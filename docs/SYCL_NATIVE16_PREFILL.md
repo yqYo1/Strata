@@ -11496,14 +11496,17 @@ length curve's original comparator settings. This does not change the
 shipping cache policy.
 
 The rebuilt early-PLE timing process 5 at `a68dbc97d` supplies a private
-NEO cache from the exact 118,785-token route and executable. Keep only its
-`5/cache/neo_compiler_cache` tree under `dflash2-prefill-ple-early-speed-v2`
-for a possible same-binary seed test after the wait comparison. It has
+NEO cache from the exact 118,785-token route and executable. Keep its
+`5/cache/neo_compiler_cache` tree and native exit receipt under
+`dflash2-prefill-ple-early-speed-v2` for the same-binary seed test. It has
 55 files totaling 12,434,960 bytes, including NEO's eight-byte accounting
-file. Verify the image inventory and the driver/provider identity before
-copying. Keep early PLE selected and change only the private cache's initial
-contents for the clean comparison. Check the first-request hit contrast in
-separate diagnostic runs. Charge the seed copy to readiness and compare
+file. The live inventory matches the previously committed 102,401-token
+donor's digest across all 54 image paths and payloads. The controller also
+checks the early donor's native identity, executable and boot against its
+closed exit receipt before copying. Keep early PLE selected and change only
+the private cache's initial contents for the clean comparison. Check the
+first-request hit contrast in separate diagnostic runs. Charge the seed
+copy to readiness and compare
 first and subsequent PP and TTFT. The 102,401-token result is a reason to
 test this combination. Its savings do not establish their size at 118,785.
 The [NEO cache controller](../bench/dflash2_primary_driver_cache.py) selects
