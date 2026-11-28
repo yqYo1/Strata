@@ -11946,6 +11946,12 @@ work separately because the worker count applies to its PLE table too.
 [DirectFile workers](../src/platform/direct_file.cpp) ·
 [PLE job preparation](../src/ngram/ple_reader.cpp).
 
+The paired wait controller's `--io-workers` comparison requires both the
+clean scheduling gain and two eligible early-issue traces with more exposed
+first-use than subsequent wait. It varies only `STRATA_IO_THREADS` before
+process startup and compares clean wall time with observers off. The
+attribution and speed comparison retain separate decisions.
+
 The next check enabled the early selector and exercised the 16,385-input
 handoff and the 262,144-input fallback on the original token bodies.
 [Original physical-context controller](https://github.com/yqYo1/Strata/blob/c32ac6175f8f3b4fb40ae8eb8579a769dd398849/bench/dflash2_prefill_ple_early_capacity.py).

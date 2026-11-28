@@ -1,4 +1,4 @@
-"""Measure the remaining exposed gather wait after early PLE scheduling."""
+"""Measure exposed PLE gather wait and screen Linux DirectFile worker count."""
 
 from pathlib import Path
 import statistics
@@ -26,6 +26,18 @@ PLAN = dict(order=list(ORDER), read=wait.READ, requests_per_process=wait.speed.R
     limits='Relevant to the repeated-text workload. The sum includes every layer-1 future wait and does not '
            'isolate the first chunk or measure physical SSD traffic. First-use observer overhead is unknown. '
            'Collect throughput and qualification evidence separately.',
+    stop=timing.PLAN['stop'])
+IO_WORKERS = 'STRATA_IO_THREADS'
+WORKER_KEY = 'dflash2_prefill_ple_io_workers_v1'
+WORKER_ORDER = ('16', '32', '32', '16')
+WORKER_PLAN = dict(order=list(WORKER_ORDER), read=wait.READ, requests_per_process=wait.speed.RUNS,
+    scope='Keep early issue enabled, observer clocks off and all other settings and requests fixed. '
+          'Compare 16 and 32 Linux DirectFile workers in two opposite-order process pairs.',
+    eligibility='Require a closed clean timing gain and a closed paired attribution with a positive '
+                'first-prefill gap to 1000 tok/s and more exposed first than subsequent wait in both early processes.',
+    decision='Require faster first prefill and TTFT in both pairs, and subsequent median time ratios at most one.',
+    limits='Measures the whole request on one repeated-text workload. Physical I/O traffic is unmeasured. '
+           'The setting also affects decode; sustained decode and model qualification are separate.',
     stop=timing.PLAN['stop'])
 
 
@@ -99,5 +111,73 @@ def experiment():
     return ctx
 
 
+def worker_baseline(native):
+    row = baseline(native)
+    clean = wait.basis.validation.committed(bank.RESULT, (timing.KEY,))
+    raw = bank.previous.read(ROOT / 'record.json')
+    profiled = wait.basis.compact(raw)
+    require(sys.platform.startswith('linux') and clean['decision']['advance']
+            and wait.retained.closed(raw, 'closed')
+            and profiled == wait.basis.validation.committed(bank.RESULT, (KEY,))
+            and all(raw[k] == v for k, v in row.items()) and profiled['plan'] == PLAN
+            and profiled['decision'] == decision(profiled['processes'])
+            and profiled['decision']['attribution_eligible'],
+            'require the closed same-build clean gain and eligible PLE attribution on Linux')
+    early = profiled['decision']['remaining']['early']
+    extra_wait = [first - statistics.median(later) for first, later in
+                  zip(early['first_wait_ms'], early['subsequent_wait_ms'], strict=True)]
+    require(all(ms > 0 for ms in extra_wait) and statistics.median(early['clean_first_gap_ms']) > 0,
+            'require repeatable extra exposed first-use wait and a remaining first-prefill gap')
+    return dict(row, attribution_sha256=bank.signature(profiled), early_extra_wait_ms=extra_wait)
+
+
+def worker_environment(row, plan):
+    env = timing.environment(row, dict(plan, arm='early'))
+    require(IO_WORKERS not in env and plan['arm'] in WORKER_ORDER, 'unexpected DirectFile worker setting')
+    return dict(env, **{IO_WORKERS: plan['arm']})
+
+
+def worker_after_execution(outcome, row, plan):
+    timing.after_execution(outcome, row, dict(plan, arm='early'))
+    outcome['arm'] = plan['arm']
+
+
+def worker_decision(processes):
+    require(all(p['clean_speed'] and len(p['samples']) == wait.speed.RUNS for p in processes),
+            'require all clean worker comparisons')
+    prompt_ratios = wait.decision(processes, WORKER_ORDER)['observed_over_clean']
+    pairs = []
+    for x, y, prompt in zip(processes[::2], processes[1::2], prompt_ratios, strict=True):
+        control, candidate = (x, y) if x['arm'] == '16' else (y, x)
+        a, *later_a = control['samples']
+        b, *later_b = candidate['samples']
+        pairs.append(dict(first_prefill=prompt['first'], first_ttft=b['ttft_s'] / a['ttft_s'],
+                          subsequent_prefill=prompt['subsequent'],
+                          subsequent_ttft=statistics.median(s['ttft_s'] for s in later_b)
+                          / statistics.median(s['ttft_s'] for s in later_a)))
+    first_gain = all(p['first_prefill'] < 1 and p['first_ttft'] < 1 for p in pairs)
+    subsequent_preserved = all(statistics.median(p[key] for p in pairs) <= 1
+                               for key in ('subsequent_prefill', 'subsequent_ttft'))
+    return dict(paired_32_over_16=pairs, repeat_first_gain=first_gain,
+                subsequent_preserved=subsequent_preserved, advance=first_gain and subsequent_preserved,
+                first_1000={arm: [p['samples'][0]['prompt_ms'] <= wait.READ for p in processes if p['arm'] == arm]
+                            for arm in ('16', '32')}, adopted=False)
+
+
+def worker_experiment():
+    native = timing.build.context()
+    ctx = timing.experiment()
+    ctx.ROOT, ctx.KEY, ctx.THIS, ctx.ORDER = bank.B / WORKER_KEY.replace('_', '-'), WORKER_KEY, THIS, WORKER_ORDER
+    ctx.baseline, ctx.protocol, ctx.environment = lambda: worker_baseline(native), WORKER_PLAN, worker_environment
+    ctx.selector, ctx.extra_sources = IO_WORKERS, (*ctx.extra_sources, THIS)
+    ctx.request_route = lambda text, plan: timing.route(text, dict(plan, arm='early'))
+    ctx.after_execution, ctx.decision = worker_after_execution, worker_decision
+    return ctx
+
+
 if __name__ == '__main__':
-    wait.speed.clock.main(experiment())
+    if sys.argv[1:2] == ['--io-workers']:
+        sys.argv.pop(1)
+        wait.speed.clock.main(worker_experiment())
+    else:
+        wait.speed.clock.main(experiment())
