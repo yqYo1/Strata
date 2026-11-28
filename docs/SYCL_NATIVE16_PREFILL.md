@@ -12330,9 +12330,10 @@ The preserved `record.json` still has SHA-256
 `0cc9539f3d02fd08e5e284400bf30be6db7422a2672eaae49f20ee7e7e6cb70f`
 and both retained executable hashes and sizes match. The primary build
 serves as the fallback and decode reference. The phase-cache build remains
-for residual attribution and DFlash2 handoff. The grouped reader is the
-third generation for the imminent one- and two-chunk comparison. Review
-it after the first failed gate or the closed timing comparison.
+for residual attribution and DFlash2 handoff. The grouped reader remains
+for the clean whole-request and two-chunk comparison on one executable.
+Review this third generation at the first failed gate or that comparison
+closure, before commissioning any new build.
 
 With the observed miss sets held fixed, coalescing by record within each
 ticket removes 14.3% of the first prose request's logical record touches.
@@ -12381,6 +12382,36 @@ and work match the pinned reference, including the short requests before
 and after the long request. It exits normally with no fresh Xe fault.
 This permits the two-chunk versus whole-request comparison. Physical
 context fill, RESTORE and sustained decode remain separate checks.
+
+The [closed horizon comparison](https://github.com/yqYo1/Strata/commit/911fef23f433b8d05a408382a09abf35080d3172)
+used two independent process pairs in opposite orders. All 12 requests
+read 118,785 technical-prose tokens with zero KV reuse and the same
+1,048,576-row ordinary cache. All processes closed with the same model
+work, verified assets and no fresh Xe fault.
+
+| PLE horizon | First prefill (tok/s) | First TTFT (s) | Exposed first PLE wait (s) | Revisit prefill (tok/s) |
+| --- | ---: | ---: | ---: | ---: |
+| Two chunks | 596.1–607.8 | 195.671–199.514 | 74.101–78.143 | 814.2–833.5 |
+| Whole request | 850.5–855.4 | 139.123–139.946 | 17.592–18.445 | 948.7–979.1 |
+
+Whole-request grouping cuts first-prefill time by 30.3% and 28.5%,
+and the subsequent medians by 15.0% and 15.2%. First-request read jobs
+drop from 730,279 to 215,616. Reader-requested bytes rise from 12.98 to 16.84 GB while the
+shared ZFS direct counter drops from about 95.85 to 28.39 GB. Exposed PLE
+wait accounts for almost all the observed first-use improvement.
+The first chunk's exposed wait differs by less than half a second within
+each pair. These counters cover the shared pool. Estimating drive
+bandwidth and isolating concurrent traffic require separate measurements.
+
+For the two whole-request first samples, subtracting exposed PLE wait
+leaves 121.216–121.280 seconds, above the 118.785-second target by
+2.431–2.495 seconds at fixed remaining work. The first-revisit job count
+is 86,721 in both whole-request runs, with 6.024 and 9.880 seconds of
+exposed wait. Retain this variation when selecting a storage scheduler.
+The two-order mechanism gate advances. Measure the same two horizons
+with observers off and the ordinary cache fixed before testing interaction
+with the phase-local cache. The 262,144-token check, RESTORE and
+matched sustained decode must use the selected native build.
 
 The dedicated-cache arms of the alternating-corpus comparison give two
 distinct first-use budgets. Both use the same executable and 118,785 fresh

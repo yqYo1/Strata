@@ -42922,5 +42922,26 @@
     "consumer": "Retrieve when evaluating physical PLE row permutation or row-to-slot mapping after the original-layout read-window comparison.",
     "schedulable_now": false,
     "retention": "Keep the report and short review for that decision. Review transient inputs and lifecycle receipts after the next serialized measurement boundary."
+  },
+  "ple-asynchronous-direct-io-queue-20261128": {
+    "classification": "decision_support",
+    "stage": "native_reviewed",
+    "source_revision": "25223d56c6ec75bdcc098012f61214efa7635475",
+    "native_source_revision": "be65a4811e953e3299dea61e802d09c59071f025",
+    "dispatch": "ctx_921c1213bd69",
+    "worker": "Orca Codex gpt-6-luna medium",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/ple-asynchronous-direct-io-queue-20261128/report.md",
+    "report_sha256": "13e5dd8beb74310ddae3f2911d9edd0aa2a7baf7fee52d53920e4e6b7b8d333f",
+    "report_bytes": 9230,
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/ple-asynchronous-direct-io-queue-20261128-control/native-review-digest.md",
+    "review_sha256": "3d8c18d6f04d4980fe3b9b4e5b349b18f95c7e8f4275e2ef041709a8f6b7602a",
+    "report_admission": true,
+    "owners_closed": true,
+    "schedulable_now": false,
+    "finding": "Separate file submission overhead from merge order, requested spans and useful bytes. Existing 256 live slots cap buffered jobs and 16 workers cap active pread calls. Neither is actual disk queue occupancy.",
+    "correction": "Retrieve Pinned implementation and primary references before replay. Establish local O_DIRECT runtime support, and drain each target completion before reusing staging, including cancellation.",
+    "consumer": "After the clean horizon and phase-cache interaction checks, use a fixed request-order replay and compare against the best qualified blocking worker setting. Advance only after repeated gains without correctness or TTFT loss.",
+    "retention": "Keep the report and short review for the submission-backend decision, and review transient input views and dispatch controls after serialized closure."
   }
 }
