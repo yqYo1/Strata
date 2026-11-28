@@ -767418,5 +767418,182 @@
     },
     "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
     "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+  },
+  "dflash2_prefill_ple_phase_cache_native_v1": {
+    "native_base_commit": "968e71988953dca3d98037d3b3fec9f903bdfd6f",
+    "overlay_commit": "9cba62818dcc4f0455891f67675742f3e618bc55",
+    "overlays": {
+      "src/ngram/ple_reader.cpp": "e51862e65875fa654e4c2a62cc0cc310ccfc4ea13a32de651152e6bed902b8e5",
+      "src/kernels/ngram.cpp": "d87f557afdcf9695c9c6dea191c90eb5e198772649ecc110b61f80f0f7e48a09",
+      "src/prefill/prefill.cpp": "2048025cb8ce743ecadb0afadf60aca3a0362f835758e5944c1c0ca9ab9bb3a9",
+      "include/strata/ngram/ple_reader.hpp": "1a6cfdac72e44c90bd9c3778ea1e5684b79d16c07f4c26bcfedf12df0f3a83af",
+      "include/strata/kernels/ngram.hpp": "dcbf9849162fe660e68f1aa809ce0ed6c6d7c357abb80bc4b132682fefb1670d",
+      "tests/core/ple_phase_cache_test.cpp": "8bae0757a967486342bf34c4f001d501a07fa9f831cc596f6c6bb6d7198b9835"
+    },
+    "external_inputs": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/adaptive-payload-audit-model-v2/external-inputs.json",
+      "sha256": "146c394792d6c6a632735c1019e1b1d7184b223a18a882d6318b70924e883c4b"
+    },
+    "build_tools": {
+      "/usr/bin/cmake": "1c5227af4edd22d8d689def545e18ee458260c0fd579eba2187967f38817e638",
+      "/usr/bin/ninja": "5965527e09fe2b3787772aa4f711d6a36b393e7f2fcaa744a7a96c5a4ddf59cb"
+    },
+    "driver": {
+      "pci": "/sys/bus/pci/devices/0000:05:00.0",
+      "driver": "xe",
+      "vendor": "0x8086",
+      "device": "0xe20c",
+      "kernel": "7.0.0-38-generic",
+      "devcoredump": false
+    },
+    "base_binary": {
+      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-primary-prefill-native-v1/build/strata",
+      "sha256": "5153182852b607e781570b606d4b2a444b143027425da90c8d05f1a31e85522e",
+      "bytes": 26695112
+    },
+    "base_build_sha256": "d1edcc7793ea37788da8f60b863185d35a143413626866a44e9ca31f53278c4f",
+    "source_commit": "9cba62818dcc4f0455891f67675742f3e618bc55",
+    "native_source_commit": "9cba62818dcc4f0455891f67675742f3e618bc55",
+    "original_build_sha256": "51557f01242f66ab77f2096c379758acf07de899738cbeecaa24f94daae895f1",
+    "fresh_object_paths_sha256": "1c5284493a5997eb9e61572a7be77d647543b9a29789faf50b9ec8088275667d",
+    "recipe": {
+      "configure": [
+        "/usr/bin/cmake",
+        "-S",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/source",
+        "-B",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/build",
+        "-G",
+        "Ninja",
+        "-DCMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+        "-DMKL_DIR=/opt/intel/oneapi/mkl/2026.1/lib/cmake/mkl",
+        "-DSTRATA_BUILD_CONVERSATION_TESTS:BOOL=ON",
+        "-DSTRATA_BUILD_PREFILL_HOST_TESTS:BOOL=ON",
+        "-DSTRATA_BUILD_TESTS:BOOL=OFF",
+        "-DSTRATA_CPU_ARCH:STRING=znver3",
+        "-DSTRATA_ENABLE_CUDA:BOOL=OFF",
+        "-DSTRATA_ENABLE_HIP:BOOL=OFF",
+        "-DSTRATA_ENABLE_SYCL:BOOL=ON",
+        "-DSTRATA_GGML_DIR:PATH=/home/yayoi/ghq/github.com/ggml-org/llama.cpp/.worktree/dep-ggml-3cf-xe-e32-20261011",
+        "-DSTRATA_MMQ_KQUANTS:BOOL=OFF",
+        "-DSTRATA_NATIVE_EXPERTS:BOOL=ON",
+        "-DSTRATA_ORCA_Q4KS_MMQ:BOOL=OFF",
+        "-DSTRATA_PORTABLE:BOOL=OFF",
+        "-DSTRATA_PREFILL_MMQ:BOOL=OFF",
+        "-DSTRATA_SYCL_AOT_DOUBLE_GRF:BOOL=OFF",
+        "-DSTRATA_SYCL_TESTS:BOOL=ON",
+        "-DSTRATA_WERROR:BOOL=ON",
+        "-DSTRATA_SYCL_VLLM_XE2_NATIVE16=ON",
+        "-DSTRATA_SYCL_DEVICE_ARCH=",
+        "-DSYCL_TLA_SOURCE_DIR=/home/yayoi/ghq/github.com/intel/sycl-tla/.worktree/strata-native16-87f",
+        "-DCMAKE_CXX_FLAGS=-fsycl-id-queries-range=size_t -Wno-error=deprecated-declarations --gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/13",
+        "-DCMAKE_EXE_LINKER_FLAGS=-Wl,-t",
+        "-DSTRATA_CPU_SERVICE_PROFILE:BOOL=ON",
+        "-DSTRATA_SYCL_PREFILL_NATIVE_COPY=ON"
+      ],
+      "targets": [
+        "strata",
+        "prefill_moe_routes_test",
+        "prefill_moe_workspace_test",
+        "sycl_expert_bank_test",
+        "sycl_moe_down_scatter_bench",
+        "sycl_native16_paired_gemm_bench",
+        "strata_full_context_diagnostic",
+        "full_context_diagnostic_host_test",
+        "sycl_conversation_transfer_test",
+        "sycl_conversation_snapshot_test",
+        "sycl_dflash2_test"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "HOME": "/home/yayoi",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "LD_LIBRARY_PATH": "/opt/intel/oneapi/compiler/2026.2/lib:/opt/intel/oneapi/umf/1.2/lib:/opt/intel/oneapi/mkl/2026.1/lib",
+        "ONEAPI_DEVICE_SELECTOR": "level_zero:gpu",
+        "UR_ADAPTERS_FORCE_LOAD": "/opt/intel/oneapi/compiler/2026.2/lib/libur_adapter_level_zero_v2.so.0.12.0",
+        "UR_L0_V2_FORCE_DISABLE_COPY_OFFLOAD": "1",
+        "NEOReadDebugKeys": "1",
+        "EnableDirectSubmission": "0",
+        "STRATA_SYCL_PREFILL_SAME_QUEUE": "1",
+        "STRATA_SYCL_VERIFY_NATIVE_CAPTURE": "0",
+        "SYCL_CACHE_PERSISTENT": "0",
+        "ZES_ENABLE_SYSMAN": "0",
+        "UR_ENABLE_LAYERS": "UR_LAYER_TRACING,UR_LAYER_PARAMETER_VALIDATION",
+        "UR_LOG_TRACING": "level:info;flush:info;output:stderr",
+        "UR_LOG_VALIDATION": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LOADER": "level:warning;flush:warning;output:stderr",
+        "UR_LOG_LEVEL_ZERO": "level:warning;flush:warning;output:stderr",
+        "TMPDIR": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/tmp",
+        "XDG_CACHE_HOME": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/cache",
+        "STRATA_IQ_SINGLE_EXACT": "0",
+        "STRATA_IQ3_PAIR": "1",
+        "STRATA_IQ3_PAIR_AUDIT": "1",
+        "STRATA_CPU_SERVICE": "0",
+        "STRATA_SYCL_DECODE_Q6_COLUMNS": "1",
+        "STRATA_SYCL_DECODE_Q6_CENTERING": "0",
+        "STRATA_SYCL_DECODE_SERVICE_PROFILE": "0",
+        "STRATA_SYCL_DECODE_Q6_NATIVE_HALF": "0",
+        "STRATA_SYCL_Q6_ROUTE_AUDIT": "0",
+        "STRATA_SYCL_DECODE_Q6_DPAS_HEAD": "0",
+        "STRATA_SYCL_DECODE_Q6_DPAS_DENSE": "0",
+        "STRATA_PREFILL_HEAD_HOST_BACKING": "0",
+        "STRATA_SYCL_PREFILL_QSA_STREAM": "1"
+      }
+    },
+    "reader_overlay_commit": "ef9dcaba575945ba4acd0e32e4be440e635d6218",
+    "base_early_build_sha256": "d66362f5f2b581673252430b37e033f8873306421b799e56d31cc70daf74b6ce",
+    "host_fixture_recipe": {
+      "compiler": "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+      "compiler_sha256": "59eaaf55744c7290fb870cd12049ec11877b5224e333cba33270b433bdb73213",
+      "compile": [
+        "/opt/intel/oneapi/compiler/2026.2/bin/icpx",
+        "-std=c++20",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pthread",
+        "-I",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/source/include",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/source/tests/core/ple_phase_cache_test.cpp",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/source/src/ngram/ple_reader.cpp",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/source/src/platform/direct_file.cpp",
+        "-o",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/host-fixture/ple_phase_cache_test"
+      ],
+      "command": [
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/host-fixture/ple_phase_cache_test",
+        "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-phase-cache-native-v1/host-fixture/cases"
+      ],
+      "source_sha256": {
+        "tests/core/ple_phase_cache_test.cpp": "8bae0757a967486342bf34c4f001d501a07fa9f831cc596f6c6bb6d7198b9835",
+        "src/ngram/ple_reader.cpp": "e51862e65875fa654e4c2a62cc0cc310ccfc4ea13a32de651152e6bed902b8e5",
+        "src/platform/direct_file.cpp": "be3fa0296a934b797744e365b9848fcfa6d3a48f8304defbcb30298c7140465b",
+        "include/strata/ngram/ple_reader.hpp": "1a6cfdac72e44c90bd9c3778ea1e5684b79d16c07f4c26bcfedf12df0f3a83af",
+        "include/strata/platform/direct_file.hpp": "ae9a8999aef1769d729e5d6e4058888a14b758cbce3804b291809b1a521a4253"
+      }
+    },
+    "geometry_build_sha256": "3cf408fec04dafd7d5ce1aacb3055283a14b299377a29f1a8437caa5ee446dd7",
+    "capacity_proof_sha256": "7789837a5fa0478ffa8f717384762cda348937ce24b44e1a4c41cfe26d0aa157",
+    "stage": "prepared",
+    "active": false,
+    "passed": false,
+    "complete": false,
+    "ownership_closed": true,
+    "scope": "Rebuild the original geometry executable with phase-local cache storage.",
+    "retention": "Review at the first failed gate or the close of the prefill and decode comparison.",
+    "controller_sources": {
+      "files": 536,
+      "sha256": "484b43a0f1a6ad7f56f4ca30e9220eb89a39843d535474ebd24d738bf903464e"
+    },
+    "source_files": {
+      "files": 1329,
+      "sha256": "1f60bc5b1b248367eaf3bb3ed0335c8fe79a6d0ebd5ba7649a1a8aa8967723c4"
+    },
+    "foundation_sha256": "18ad20d96078ec3748509af556a90c78bf3fa05666d662179ace9db27dd5b736"
   }
 }
