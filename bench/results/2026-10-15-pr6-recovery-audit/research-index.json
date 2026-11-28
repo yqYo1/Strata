@@ -4,25 +4,7 @@
   "historical_index_path": "bench/results/2026-10-15-pr6-recovery-audit/research-index.json",
   "archive_lookup": "Read the pinned historical index and git grep that revision before repeating research. Retrieve selected old report sections only when their question is relevant; do not restore whole directories.",
   "main_reads_collection_bodies_on_arrival": false,
-  "active_reports": [
-    {
-      "name": "zfs-ple-record-coalescing-20261128",
-      "classification": "decision_support",
-      "source_revision": "89522424b4fc479ca52df06740b898a0411be5a3",
-      "worker": "Orca Codex gpt-6-luna medium",
-      "run": "run_4e80379cebb1",
-      "task": "task_4d0fd0ba78bb",
-      "dispatch": "ctx_9c1a79e4415d",
-      "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zfs-ple-record-coalescing-20261128/report.md",
-      "report_bytes": 11493,
-      "report_sha256": "97865003695d9d11a0120f05658ee08171fc4b7f4ab69818f669b243c82ea92e",
-      "control": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zfs-ple-record-coalescing-20261128-control",
-      "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zfs-ple-record-coalescing-20261128-control/native-review.md",
-      "worker_closed": true,
-      "state": "Report captured with worker proofs and closed Orca terminal. Native Codex gpt-6-luna max review in progress.",
-      "consumer": "Decide the next bounded PLE record-traffic check after the paired wait observation."
-    }
-  ],
+  "active_reports": [],
   "conditional_scope": {
     "schedulable_now": false,
     "question": "Localize one measured general GDN mismatch to one pinned framework rounding boundary.",
@@ -42787,5 +42769,24 @@
     "consumer": "Retrieve the reviewed finding when output/reduction is measured on an eligible CPU critical path. The report is not a passing collection result.",
     "schedulable_now": false,
     "retention": "External report and compact native review for retrieval. Reassess when selecting the corresponding experiment."
+  },
+  "zfs-ple-record-coalescing-20261128": {
+    "classification": "decision_support",
+    "source_revision": "89522424b4fc479ca52df06740b898a0411be5a3",
+    "worker": "Orca Codex gpt-6-luna medium",
+    "reviewer": "Native Codex gpt-6-luna max",
+    "dispatch": "ctx_9c1a79e4415d",
+    "report": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zfs-ple-record-coalescing-20261128/report.md",
+    "report_bytes": 11493,
+    "report_sha256": "97865003695d9d11a0120f05658ee08171fc4b7f4ab69818f669b243c82ea92e",
+    "report_admission": "conditional decision support",
+    "review": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/research/zfs-ple-record-coalescing-20261128-control/native-review.md",
+    "review_sha256": "2464e87569006d65693c495dcc05b5c2d6a70e7e04b1ef0456ab42bae13444a7",
+    "finding": "Count 128 KiB record touches after the existing 4 KiB grouping and row-cache hits. Compare grouping within a ticket with bounded cross-ticket residency.",
+    "correction": "Pool-wide records neither prove duplicates nor equal actual device bytes. Clip planned spans at EOF for accounting and validate returned rows before scattering in a future reader.",
+    "consumer": "Validate the prefill record counter on scalar spans, then use it on varied prompts after the paired wait comparison. Advance grouping only with repeated overlap and exposed wait.",
+    "owners_closed": true,
+    "schedulable_now": false,
+    "retention": "Retain the external report and short review for the record-census decision. Retire launch inputs after review closure at a serialized cleanup boundary."
   }
 }

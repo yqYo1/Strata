@@ -11983,6 +11983,19 @@ rows crossing records and the final short read, and limit its staging
 allocation. Hold the decode reader geometry fixed during a prefill test.
 [Linux block counters](https://www.kernel.org/doc/html/latest/block/stat.html).
 
+The report review supports a bounded count of the planned jobs after the
+existing row cache and first-page grouping. `STRATA_PREFILL_PLE_RECORD_AUDIT=1`
+enables that count for gathers of at least 65,536 PLE rows. On the selected
+118,785-token route this covers each 8,192-token chunk and the 4,096-token
+tail. The observer counts total and unique 4 KiB page and 128 KiB record
+touches per sorted ticket, with file-range clipping for a last short read.
+Keep requested bytes and in-file extent separate from returned bytes and
+storage counters. Validate disjoint, repeated, straddling and EOF spans
+in a scalar fixture before collecting on the actual route. Include varied
+prompts before selecting a grouped reader; cross-ticket reuse needs its
+own measurement. The current wait comparison uses the original executable.
+[Reader observer](../src/ngram/ple_reader.cpp).
+
 The next check enabled the early selector and exercised the 16,385-input
 handoff and the 262,144-input fallback on the original token bodies.
 [Original physical-context controller](https://github.com/yqYo1/Strata/blob/c32ac6175f8f3b4fb40ae8eb8579a769dd398849/bench/dflash2_prefill_ple_early_capacity.py).
@@ -12068,6 +12081,13 @@ subsequent median, of which 5.391 seconds are additional exposed PLE wait.
 The other 6.425 seconds remain outside that wait interval. The subsequent
 prompt median is 0.999945 times the same-arm clean reference. The paired
 attribution and first-use observer-cost question remain open.
+
+The first early participant closes at `17de86439` with exposed waits of
+3.399 seconds, 0.045 ms and 0.055 ms. Its first window counts 65,707 ZFS
+direct records and 8.021 GiB, almost the same as the paired stock window.
+The backed partition total rises from 9.469 to 12.222 GiB across those
+windows. Keep the shared partition traffic as context; attribution still
+needs the reverse-order participants and per-ticket request accounting.
 
 The retirement under the measurement lock removed `build`, `cache`, `owned`,
 `ownership.json`, `source` and `tmp` from `dflash2-prefill-ple-early-native-v2`.
