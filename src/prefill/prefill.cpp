@@ -58,6 +58,9 @@
 #include "strata/kernels/mrope.hpp"
 #endif
 #include "strata/core/conversation_memory.hpp"
+#if defined(__linux__) && defined(STRATA_ENABLE_SYCL)
+#include "strata/ngram/prefill_record_plan.hpp"
+#endif
 
 #include <cuda_runtime.h>
 #include "strata/prefill/layermajor_coarse_profile.hpp"
@@ -913,15 +916,13 @@ struct Prefill::Impl {
     float* ple_emb_host[2] = {};             // pinned, double-buffered: the next chunk's rows are read while this
     cudaEvent_t ple_copied[2] = {};          // one runs; the event marks that buffer's upload done
     std::vector<uint32_t> ple_rows[2];
-    bool gather_ple_chunk(strata::kernels::PleTable& table, const strata::kernels::PleConsts& consts,
-                          const int64_t* tokens, int64_t n, int64_t first, int buffer,
-                          const int32_t (&initial_prev)[2], std::string& err) {
-        const int64_t rows = std::min(T, n - first);
+    void prefill_ple_row_ids(const strata::kernels::PleConsts& consts, const int64_t* tokens,
+                             int64_t first, int64_t rows, const int32_t (&initial_prev)[2],
+                             uint32_t* output_rows) {
         auto previous = [&](int64_t i) {
             return i < 2 ? initial_prev[i] : static_cast<int32_t>(tokens[i - 2]);
         };
         int32_t prev[2] = {previous(first), previous(first + 1)};
-        auto* output_rows = ple_rows[buffer].data();
         for (int64_t row = 0; row < rows; ++row) {
             const int32_t token = static_cast<int32_t>(tokens[first + row]);
             strata::kernels::ngram_rows(&token, prev, 1, consts,
@@ -929,6 +930,13 @@ struct Prefill::Impl {
             prev[0] = prev[1];
             prev[1] = token;
         }
+    }
+    bool gather_ple_chunk(strata::kernels::PleTable& table, const strata::kernels::PleConsts& consts,
+                          const int64_t* tokens, int64_t n, int64_t first, int buffer,
+                          const int32_t (&initial_prev)[2], std::string& err) {
+        const auto rows = std::min(T, n - first);
+        auto* output_rows = ple_rows[buffer].data();
+        prefill_ple_row_ids(consts, tokens, first, rows, initial_prev, output_rows);
         if (layer_major_active)
             return table.gather_long_prefill_batch(output_rows, static_cast<size_t>(rows),
                                                    ple_emb_host[buffer], first == 0, err);
@@ -950,11 +958,193 @@ struct Prefill::Impl {
     std::unique_ptr<PeerPrefill> pp;         // multi-GPU: the peer GPU's expert share (set_peer)
 };
 
+#if defined(__linux__) && defined(STRATA_ENABLE_SYCL)
+namespace {
+
+class PrefillPleRecordWindow {
+public:
+    PrefillPleRecordWindow(strata::kernels::PleTable& table, size_t row_count, uint32_t chunk_rows,
+                           bool first_window, float* const (&host_buffers)[2], int first_buffer,
+                           bool observe,
+                           std::function<std::vector<uint32_t>()> make_ids)
+        : table_(table), row_count_(row_count), chunk_rows_(chunk_rows), first_buffer_(first_buffer),
+          host_buffers_{host_buffers[0], host_buffers[1]}, observe_(observe),
+          expansion_ms_(1 + (row_count - 1) / chunk_rows),
+          worker_([this, first_window, make_ids = std::move(make_ids)](std::stop_token stop) {
+              run(first_window, make_ids, stop);
+          }) {}
+
+    bool wait_for_upload(size_t chunk, size_t tokens, const std::function<bool()>& should_stop,
+                         double* expansion_ms, std::string& error) {
+        if (chunk >= expansion_ms_.size() ||
+            std::min<size_t>(chunk_rows_, row_count_ - chunk * chunk_rows_) !=
+                tokens * strata::kernels::PLE_N_HEADS) {
+            error = "prefill PLE: record window consumer extent differs";
+            return false;
+        }
+        std::unique_lock<std::mutex> lock(mu_);
+        const auto ready = [&] { return ready_ > chunk || done_; };
+        if (!should_stop) {
+            cv_.wait(lock, ready);
+        } else {
+            while (!cv_.wait_for(lock, std::chrono::milliseconds(50), ready)) {
+                lock.unlock();
+                if (should_stop()) {
+                    worker_.request_stop();
+                    error = "prefill PLE: record window cancelled while waiting";
+                    return false;
+                }
+                lock.lock();
+            }
+            lock.unlock();
+            if (should_stop()) {
+                worker_.request_stop();
+                error = "cancelled";
+                return false;
+            }
+            lock.lock();
+        }
+        if (ready_ <= chunk || !error_.empty()) {
+            error = error_.empty() ? "prefill PLE: record chunk is incomplete" : error_;
+            return false;
+        }
+        if (expansion_ms) *expansion_ms = expansion_ms_[chunk];
+        return true;
+    }
+
+    // The calling thread must retire the previous upload into this host slot
+    // before granting the worker permission to overwrite it.
+    bool allow_next_chunk(size_t chunk, std::string& error) {
+        {
+            std::lock_guard<std::mutex> lock(mu_);
+            if (chunk >= expansion_ms_.size() || ready_ != chunk || allowed_ != chunk || done_) {
+                error = error_.empty() ? "prefill PLE: record window buffer reuse differs" : error_;
+                return false;
+            }
+            ++allowed_;
+        }
+        cv_.notify_all();
+        return true;
+    }
+
+private:
+    void run(bool first_window, const std::function<std::vector<uint32_t>()>& make_ids,
+             std::stop_token stop) {
+        std::string error;
+        bool ok = false;
+        try {
+            if (!stop.stop_requested()) {
+                const auto ids = make_ids();
+                std::vector<uint8_t> packed(row_count_ * strata::kernels::PLE_ROW_BYTES);
+                if (ids.size() != row_count_) {
+                    error = "prefill PLE: record window row count differs";
+                } else {
+                    ok = table_.read_prefill_record_window(ids, chunk_rows_, first_window, packed,
+                        [this, &packed, stop](size_t chunk) { return expand(chunk, packed, stop); },
+                        [stop] { return stop.stop_requested(); }, error);
+                }
+            }
+        } catch (const std::exception& failure) {
+            error = failure.what();
+        } catch (...) {
+            error = "prefill PLE: record window worker failed";
+        }
+        {
+            std::lock_guard<std::mutex> lock(mu_);
+            if (!ok) error_ = error.empty() ? "prefill PLE: record window did not complete" : std::move(error);
+            done_ = true;
+        }
+        cv_.notify_all();
+    }
+
+    bool expand(size_t chunk, const std::vector<uint8_t>& packed, std::stop_token stop) {
+        {
+            std::unique_lock<std::mutex> lock(mu_);
+            if (chunk >= expansion_ms_.size() || chunk != ready_ ||
+                !cv_.wait(lock, stop, [&] { return allowed_ > chunk; }) || stop.stop_requested())
+                return false;
+        }
+        // Keep the same IQ4_NL expansion as the legacy host worker. Only
+        // publish the host buffer after the entire chunk has been written.
+        const auto begin = observe_ ? Clock::now() : Clock::time_point{};
+        const size_t first = chunk * chunk_rows_;
+        const size_t rows = std::min<size_t>(chunk_rows_, row_count_ - first);
+        auto* destination = host_buffers_[first_buffer_ ^ (chunk & 1)];
+        for (size_t i = 0; i < rows; ++i) {
+            strata::kernels::iq4nl_dequant_row(
+                packed.data() + (first + i) * strata::kernels::PLE_ROW_BYTES,
+                destination + i * strata::kernels::PLE_HEAD_DIM);
+        }
+        {
+            std::lock_guard<std::mutex> lock(mu_);
+            if (stop.stop_requested()) return false;
+            if (observe_) expansion_ms_[chunk] = std::chrono::duration<double, std::milli>(Clock::now() - begin).count();
+            ++ready_;
+        }
+        cv_.notify_all();
+        return true;
+    }
+
+    strata::kernels::PleTable& table_;
+    const size_t row_count_;
+    const uint32_t chunk_rows_;
+    const int first_buffer_;
+    float* const host_buffers_[2];
+    const bool observe_;
+    std::vector<double> expansion_ms_;
+    std::mutex mu_;
+    std::condition_variable_any cv_;
+    size_t allowed_ = 1;  // The caller has already retired the first host slot.
+    size_t ready_ = 0;
+    bool done_ = false;
+    std::string error_;
+    // Destruction stops the worker, waking buffer admission and joining it
+    // before the caller may release its host buffers or request token storage.
+    std::jthread worker_;
+};
+
+}  // namespace
+#endif
+
 struct Prefill::FirstPleRead {
     std::string error;
     // An early return waits for the host gather before releasing its error
     // buffer or the layer-major request's output storage.
     std::future<bool> result;
+#if defined(__linux__) && defined(STRATA_ENABLE_SYCL)
+    std::unique_ptr<PrefillPleRecordWindow> record_window;
+    int64_t record_window_start = 0;
+    int record_window_chunks = 0;
+
+    void start_prefill_record_window(Impl& m, strata::kernels::PleTable& table,
+                                     const strata::kernels::PleConsts& consts,
+                                     const int64_t* tokens, int64_t n, int64_t first, int buffer,
+                                     const int32_t (&initial_prev)[2]) {
+        record_window.reset();
+        const auto count = std::min(record_window_chunks * m.T, n - first);
+        const auto row_count = static_cast<size_t>(count) * strata::kernels::PLE_N_HEADS;
+        const auto chunk_rows = static_cast<uint32_t>(m.T * strata::kernels::PLE_N_HEADS);
+        const auto make_ids = [&m, consts, tokens, first, count, row_count, initial_prev] {
+            std::vector<uint32_t> rows(row_count);
+            m.prefill_ple_row_ids(consts, tokens, first, count, initial_prev, rows.data());
+            return rows;
+        };
+        static const bool observe = [] {
+            const char* value = std::getenv("STRATA_SYCL_PREFILL_PLE_WAIT_PROFILE");
+            return value && std::strcmp(value, "1") == 0;
+        }();
+        record_window = std::make_unique<PrefillPleRecordWindow>(
+            table, row_count, chunk_rows, first == 0, m.ple_emb_host, buffer, observe, make_ids);
+        record_window_start = first;
+    }
+#endif
+
+    bool prefill_read_pending() const {
+#if defined(__linux__) && defined(STRATA_ENABLE_SYCL)
+        if (record_window) return true;
+#endif
+        return result.valid();
+    }
 };
 
 namespace {
@@ -2500,6 +2690,15 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
     std::string ple_next_err;
     std::future<bool> ple_next;             // declared after everything it reads: an early return waits for it
     int ple_buf = 0;
+#if defined(__linux__) && defined(STRATA_ENABLE_SYCL)
+    const bool use_ple_record_window = first_ple && first_ple->record_window;
+    if (use_ple_record_window && !ple_on) {
+        err = "prefill PLE: record window has no layer-1 consumer";
+        return false;
+    }
+#else
+    constexpr bool use_ple_record_window = false;
+#endif
 
 #if defined(STRATA_ENABLE_SYCL)
     int64_t window_first = -1, window_end = -1, window_next = -1;
@@ -2690,7 +2889,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         // Each later chunk's gather starts during the preceding chunk. The
         // first gather can arrive here already issued by layer-major prefill.
         const bool first_already_issued = c0 == 0 && first_ple && first_ple->result.valid();
-        if (ple_on && !first_already_issued && !ple_next.valid())
+        if (ple_on && !use_ple_record_window && !first_already_issued && !ple_next.valid())
             ple_next = std::async(std::launch::async, [&ple_gather, &ple_next_err, c0, b = ple_buf] {
                 return ple_gather(c0, b, ple_next_err);
             });
@@ -2700,6 +2899,26 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
             if (!ple_pending) return true;
             ple_pending = false;
             const auto tp = Clock::now();
+#if defined(__linux__) && defined(STRATA_ENABLE_SYCL)
+            if (use_ple_record_window) {
+                const auto offset = c0 - first_ple->record_window_start;
+                if (!first_ple->record_window || offset < 0 || offset % m.T != 0) {
+                    err = "prefill PLE: record window consumption order differs";
+                    return false;
+                }
+                double worker_expand_ms = 0.0;
+                if (!first_ple->record_window->wait_for_upload(offset / m.T, T, should_stop,
+                        observe_ple_wait ? &worker_expand_ms : nullptr, err))
+                    return false;
+                if (observe_ple_wait) {
+                    const auto wait_ms = std::chrono::duration<double, std::milli>(Clock::now() - tp).count();
+                    std::fprintf(stderr, "strata prefill PLE record consumer: offset=%lld tokens=%lld "
+                                         "host_slot=%d wait_ms=%.3f worker_expand_ms=%.3f\n",
+                                 static_cast<long long>(c0), static_cast<long long>(T),
+                                 ple_buf, wait_ms, worker_expand_ms);
+                }
+            } else
+#endif
             if (!(first_already_issued ? first_ple->result.get() : ple_next.get())) {
                 err = first_already_issued ? first_ple->error : ple_next_err;
                 return false;
@@ -2708,7 +2927,7 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 const auto completed = Clock::now();
                 ple_wait_ms += std::chrono::duration<double, std::milli>(completed - tp).count();
                 ++ple_wait_calls;
-                if (observe_ple_timeline && T >= 4096) {
+                if (observe_ple_timeline && !use_ple_record_window && T >= 4096) {
                     auto ns = [](Clock::time_point time) {
                         return static_cast<long long>(
                             std::chrono::duration_cast<std::chrono::nanoseconds>(time.time_since_epoch()).count());
@@ -2727,6 +2946,27 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                 err = std::string("prefill: the PLE rows' upload failed: ") + cudaGetErrorString(cudaGetLastError());
                 return false;
             }
+#if defined(__linux__) && defined(STRATA_ENABLE_SYCL)
+            if (use_ple_record_window) {
+                const auto next = c0 + m.T;
+                if (next >= n) {
+                    first_ple->record_window.reset();
+                } else {
+                    const int next_buf = ple_buf ^ 1;
+                    if (cudaEventSynchronize(m.ple_copied[next_buf]) != cudaSuccess) {
+                        err = "prefill PLE: previous host buffer upload did not retire";
+                        return false;
+                    }
+                    const auto next_chunk = (next - first_ple->record_window_start) / m.T;
+                    if (next_chunk == first_ple->record_window_chunks) {
+                        first_ple->start_prefill_record_window(m, *prefill_ple.table, prefill_ple.consts,
+                                                             tokens, n, next, next_buf, prev0);
+                    } else if (!first_ple->record_window->allow_next_chunk(next_chunk, err)) {
+                        return false;
+                    }
+                }
+            } else
+#endif
             if (c0 + m.T < n) {
                 // the other buffer's upload (a chunk ago) is done before the SSD thread refills it
                 if (cudaEventSynchronize(m.ple_copied[ple_buf ^ 1]) != cudaSuccess) {

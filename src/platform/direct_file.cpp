@@ -288,6 +288,11 @@ struct DirectFile::Impl {
         }
     }
 
+    void start_pool() {
+        const int n = io_threads(16);
+        for (int i = 0; i < n; ++i) pool.emplace_back([this] { worker(); });
+    }
+
     void stop_pool() {
         {
             std::lock_guard<std::mutex> lk(mu);
@@ -310,10 +315,33 @@ bool DirectFile::open(const std::string& path, std::string& err) {
     struct stat st;
     if (fstat(impl_->fd, &st) != 0) { err = "DirectFile: cannot size " + path; close(); return false; }
     impl_->size = (uint64_t) st.st_size;
-    const int n = io_threads(16);
-    for (int i = 0; i < n; ++i) impl_->pool.emplace_back([this] { impl_->worker(); });
+    impl_->start_pool();
     return true;
 }
+
+#if defined(__linux__)
+bool DirectFile::open_prefill_copy(const DirectFile& source, std::string& err) {
+    if (this == &source || !source.is_open()) {
+        err = "DirectFile: invalid prefill source";
+        return false;
+    }
+    close();
+    impl_->fd = fcntl(source.impl_->fd, F_DUPFD_CLOEXEC, 0);
+    if (impl_->fd < 0) {
+        err = "DirectFile: cannot duplicate prefill source";
+        return false;
+    }
+    impl_->size = source.impl_->size;
+    try {
+        impl_->start_pool();
+    } catch (...) {
+        close();
+        err = "DirectFile: cannot start prefill workers";
+        return false;
+    }
+    return true;
+}
+#endif
 
 void DirectFile::close() {
     impl_->stop_pool();

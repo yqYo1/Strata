@@ -28,6 +28,10 @@ public:
     DirectFile& operator=(const DirectFile&) = delete;
 
     bool open(const std::string& path, std::string& err);
+#if defined(__linux__)
+    // Use the already validated file description with an independent I/O queue.
+    bool open_prefill_copy(const DirectFile& source, std::string& err);
+#endif
     void close();
     bool is_open() const;
     uint64_t size() const;

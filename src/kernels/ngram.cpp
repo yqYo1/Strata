@@ -386,14 +386,17 @@ bool PleTable::gather_batch(const uint32_t* rows, size_t n_tokens, float* out, s
 bool PleTable::gather_long_prefill_batch(const uint32_t* rows, size_t n_tokens, float* out,
                                         bool first_chunk, std::string& err) {
     const bool ok = gather_rows(rows, n_tokens, out, err, true);
-    if (ok && first_chunk && impl_->report_prefill_cache) {
-        const auto isolated = impl_->reader.prefill_cache_capacity();
-        const auto ordinary = impl_->reader.cache_capacity();
-        std::fprintf(stderr, "strata prefill PLE cache route: dedicated=%u active_rows=%llu ordinary_rows=%llu\n",
-                     unsigned(isolated != 0), (unsigned long long) (isolated != 0 ? isolated : ordinary),
-                     (unsigned long long) ordinary);
-    }
+    if (ok && first_chunk) report_long_prefill_cache_route();
     return ok;
+}
+
+void PleTable::report_long_prefill_cache_route() const {
+    if (!impl_->report_prefill_cache) return;
+    const auto isolated = impl_->reader.prefill_cache_capacity();
+    const auto ordinary = impl_->reader.cache_capacity();
+    std::fprintf(stderr, "strata prefill PLE cache route: dedicated=%u active_rows=%llu ordinary_rows=%llu\n",
+                 unsigned(isolated != 0), (unsigned long long) (isolated != 0 ? isolated : ordinary),
+                 (unsigned long long) ordinary);
 }
 
 bool PleTable::gather_rows(const uint32_t* rows, size_t n_tokens, float* out, std::string& err, bool long_prefill) {
@@ -433,6 +436,36 @@ bool PleTable::gather_rows(const uint32_t* rows, size_t n_tokens, float* out, st
     for (size_t i = 0; i < n; ++i) read_row(rows[i], out + i * PLE_HEAD_DIM);
     return true;
 }
+
+#if defined(__linux__)
+bool PleTable::supports_prefill_record_window() const {
+    return impl_->mode == PleIo::Direct && impl_->rb == PLE_ROW_BYTES &&
+           !impl_->q5_0 && !impl_->fp8 && impl_->reader.supports_prefill_record_window();
+}
+
+bool PleTable::read_prefill_record_window(std::span<const uint32_t> rows, uint32_t chunk_rows, bool first_window,
+                                        std::span<uint8_t> packed,
+                                        const std::function<bool(size_t)>& ready,
+                                        const std::function<bool()>& stop, std::string& err) {
+    if (!supports_prefill_record_window() || impl_->pending) {
+        err = "PLE table: prefill record windows require an idle direct IQ4_NL table";
+        return false;
+    }
+    if (!ready || !stop) {
+        err = "PLE table: record window requires readiness and stop callbacks";
+        return false;
+    }
+    const auto publish = [&](size_t chunk) {
+        if (first_window && chunk == 0) report_long_prefill_cache_route();
+        return ready(chunk);
+    };
+    const bool trace_first_submit = first_window && std::getenv("STRATA_TRACE");
+    if (!impl_->reader.read_prefill_record_window(rows, chunk_rows, packed, publish, stop, err,
+                                                   trace_first_submit)) return false;
+    impl_->bytes_read += packed.size();
+    return true;
+}
+#endif
 
 void PleTable::set_injected_delay_us(double us) { impl_->reader.set_injected_delay_us(us); }
 

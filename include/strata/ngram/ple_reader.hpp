@@ -21,6 +21,10 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#if defined(__linux__)
+#include <functional>
+#include <span>
+#endif
 
 namespace strata::ngram {
 
@@ -73,6 +77,18 @@ public:
 
     /// Block until every row of the ticket is in `out_raw`. Returns false on an I/O error (message in `err`).
     bool collect(Ticket t, std::string& err);
+
+#if defined(__linux__)
+    bool supports_prefill_record_window() const;
+
+    // The prefill worker owns the open table and packed rows through return.
+    // Each ready callback publishes a fully populated chunk.
+    bool read_prefill_record_window(std::span<const uint32_t> rows, uint32_t chunk_rows,
+                                    std::span<uint8_t> packed,
+                                    const std::function<bool(size_t)>& ready,
+                                    const std::function<bool()>& stop, std::string& err,
+                                    bool trace_first_submit = false);
+#endif
 
     /// Keep the SSD awake while the table is in use (io_thread mode only; call after `open`): when no read has
     /// gone out for `period_ms`, the worker reads one page of the table, until `window_s` after the last `issue`.
