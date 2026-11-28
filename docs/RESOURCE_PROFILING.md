@@ -918,6 +918,18 @@ page payload using the verified K8V8 shape. The B570 bus traffic and overlap
 remain separate measurements. Test allocating the released VRAM to expert
 slots as its own comparison after the smaller-cache cost is known.
 
+For the fixed 96K routes, divide requested KV payload by the 3,195 code or
+8,618 prose outputs and multiply by the 70 tok/s target. At the measured
+miss counts this gives 31.2 and 16.0 MB/s. Losing one percentage point of
+hit rate at the same lookup and output counts adds 18.7 and 21.2 MB/s.
+Even charging one 4,224-byte transfer to every lookup gives 1.87 and
+2.12 GB/s of average requests, respectively. The large Host-USM calibration
+reaches 6.29–6.49 GB/s with different copy geometry. These calculations cover
+the KV resolver's requested page payload. Dependent per-layer transfers,
+competing traffic, CLOCK scan work and queue completion can still extend
+decode time. If the smaller-pool comparison slows down, measure the exposed
+miss service by layer or window before attributing it to link bandwidth.
+
 The initial implementation selects the smaller pool at session initialization
 with `STRATA_SYCL_DFLASH2_KV_12288=1` and `--kv-resident 12288`.
 Both arms request 12,288 cells. With the switch off, ordinary clamping gives
