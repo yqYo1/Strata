@@ -65,7 +65,20 @@
         "Engine startup fault classification for the shared client"
       ],
       "component_candidates": [
-        "5bafbe3bc selects four-row CPU expert dots from two shared tokens; compare only eligible measured formats and widths"
+        {
+          "commit": "5bafbe3bcdb1409b4852a29c605c84ef8a83f2aa",
+          "change": "Select four-output-row CPU dot kernels by default when two or more tokens share an expert call.",
+          "avx2_registration": ["Q8_0", "Q4_K", "IQ4_XS"],
+          "active_iq3_s_pack_scope": "Only Gate/Up at layer 47 matches an AVX2 X4 weight type. The pack's two Down types are outside the AVX2 registrations. The local Gate/Up implementation already decodes packed weights once for multiple tokens, including IQ4_XS.",
+          "measured_code_scope": {
+            "evidence_commit": "6bbd3e3e1",
+            "case": "DFlash2 33,217-input code worker observations",
+            "eligible_jobs": 3907,
+            "total_cpu_expert_jobs": 1449976,
+            "eligible_job_fraction": 0.0026945
+          },
+          "decision": "Keep the local dispatch on the active IQ3_S pack. Prioritize higher-volume CPU and GPU work. Revisit this component separately on Q4_K or Q8_0 packs or with a wider measured IQ4_XS workload."
+        }
       ],
       "scope_notes": "The documented Inkling DFlash2 and prompt-checkpoint paths use a different model engine. Verify shared interfaces independently. Linux Qwen release packages are listed at 0.1.69; source resolver and tuned vanilla SYCL evaluation are pending."
     }
