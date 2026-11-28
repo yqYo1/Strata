@@ -946,7 +946,13 @@ The fixture failed because `qsa_block_topk` had no visible declaration.
 The correction in `4fd969361` includes the declaring header. The retry at
 `56e6d5f53` passes all four units with no diagnostic: the two generator
 units verify 809 and 810 inputs, the layer unit 726 and the fixture 695.
-The full build and device check remain pending.
+The full build and device check remain pending. The same controller freezes
+the `sycl_kv_test --dflash2-kv-resident` invocation in its build record.
+Its `validate` stage runs the checked executable with the retained Level Zero
+providers and parameter validation. It requires the cold fill, all-hit replay,
+eviction, payload and map guards to pass, followed by normal process closure
+with no fresh Xe fault. Preserve the component result for a model comparison
+with unchanged expert placement. Retire routine traces after source recovery.
 
 ### DFlash2 expert service and placement
 
