@@ -11495,6 +11495,33 @@ and first-request result. Investigate the remaining gap and preserve the
 length curve's original comparator settings. This does not change the
 shipping cache policy.
 
+The rebuilt early-PLE timing process 5 at `a68dbc97d` supplies a private
+NEO cache from the exact 118,785-token route and executable. Keep its
+`5/cache/neo_compiler_cache` tree and native exit receipt under
+`dflash2-prefill-ple-early-speed-v2` for the same-binary seed test. It has
+55 files totaling 12,434,960 bytes, including NEO's eight-byte accounting
+file. The live inventory matches the previously committed 102,401-token
+donor's digest across all 54 image paths and payloads. The controller also
+checks the early donor's native identity, executable and boot against its
+closed exit receipt before copying. Keep early PLE selected and change only
+the private cache's initial contents for the clean comparison. Check the
+first-request hit contrast in separate diagnostic runs. Charge the seed
+copy to readiness and compare
+first and subsequent PP and TTFT. The 102,401-token result is a reason to
+test this combination. Its savings do not establish their size at 118,785.
+The [NEO cache controller](../bench/dflash2_primary_driver_cache.py) selects
+this route with `--early-ple`. It binds the donor's closed timing receipt,
+matched request hashes and cache inventory. A diagnostic pair must establish
+the first-long cache hit contrast before three clean pairs. Both clean arms
+use the same driver settings, and reuse the prefill timing controller's
+subsequent preservation limit.
+
+The first preparation at `ed511d3c9` stops at host admission. Preparation
+stores the donor's first two requests while the inherited baseline supplies
+all three. Source, build, template and plan identity checks pass. The
+second attempt pins the same two donor hashes in both the baseline and the
+saved plan. It keeps the native executable and the comparison gates.
+
 The [primary continuation plan](../bench/dflash2_primary_continuation.py)
 uses the same retained binary and KV selection for three independent
 `bench.sh --long-generation-only --long-generation-input-case split-v1-96k`
@@ -11983,6 +12010,36 @@ rows crossing records and the final short read, and limit its staging
 allocation. Hold the decode reader geometry fixed during a prefill test.
 [Linux block counters](https://www.kernel.org/doc/html/latest/block/stat.html).
 
+The report review supports a bounded count of the planned jobs after the
+existing row cache and first-page grouping. `STRATA_PREFILL_PLE_RECORD_AUDIT=1`
+enables that count for gathers of at least 65,536 PLE rows. On the selected
+118,785-token route this covers each 8,192-token chunk and the 4,096-token
+tail. The observer counts total and unique 4 KiB page and 128 KiB record
+touches per sorted ticket, with file-range clipping for a last short read.
+Keep requested bytes and in-file extent separate from returned bytes and
+storage counters. The production accumulator has a compile-time fixture
+with a record straddle, a repeated page, gaps, a partial final page and
+a span wholly past EOF. The fixture requires six page touches over five
+pages and six record touches over three records. The serialized GCC
+13.3.0 syntax check passed on the `ef9dcaba5` reader source and evaluated
+the production accumulator's boundary assertion. It produced no executable.
+
+```sh
+env -i PATH=/usr/bin:/bin LC_ALL=C /usr/bin/x86_64-linux-gnu-g++-13 \
+  -std=c++17 -Wall -Wextra -Werror -pthread -Iinclude -fsyntax-only src/ngram/ple_reader.cpp
+```
+
+The compiler SHA-256 is
+`1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769` and
+`cc1plus` is `840b332fb62ec6f694ac77d91fe69ef7f80b0d69512ed89374af0ee7a506255d`.
+The 215 resolved dependencies hash to
+`7edbce52237bf91f1927c10e922fa4a8aac2974cce2237a3f3131c90f337661a`
+over sorted dependency paths followed by NUL and the binary SHA-256 digest.
+Include varied prompts before selecting a grouped reader and measure
+cross-ticket reuse separately. The current wait comparison uses the original
+executable.
+[Reader observer](../src/ngram/ple_reader.cpp).
+
 The next check enabled the early selector and exercised the 16,385-input
 handoff and the 262,144-input fallback on the original token bodies.
 [Original physical-context controller](https://github.com/yqYo1/Strata/blob/c32ac6175f8f3b4fb40ae8eb8579a769dd398849/bench/dflash2_prefill_ple_early_capacity.py).
@@ -12053,9 +12110,62 @@ are 0.999322 and 0.999282. The comparison advances to same-build checks.
 Early issue yields 964.0–973.4 tok/s on first use and 1,054.9–1,055.9 tok/s
 on subsequent requests. First-use prefill still needs 3.242–4.433 seconds
 less to reach 1,000 tok/s, with a median gap of 3.978 seconds. The paired
-wait and storage counters are next. The rebuilt final-slot, RESTORE,
-sustained DFlash2 and agent-session checks remain open.
+wait and storage counters are below.
 [Rebuilt timing evidence](https://github.com/yqYo1/Strata/commit/a68dbc97dcd6efd45b61b0360028723877a4b539).
+
+The [rebuilt physical check](https://github.com/yqYo1/Strata/commit/9c024df11)
+passes the same-build host bounds and both standalone cases. The short
+case reproduces all four output IDs. The full case processes 262,143
+batch rows, with 122,880 on the GPU and 139,263 in host RAM, then consumes
+the final context slot. Both use the copy-writer fallback with zero early
+reads. The full case exits normally with zero output, no fresh Xe fault
+and all final model hashes matching.
+
+The [rebuilt RESTORE comparison](https://github.com/yqYo1/Strata/commit/ddf8ce26f)
+passes both arms. Each restores 16,385 tokens from RAM and reads 118,785
+fresh tokens in mode 16. The per-layer KV reader verifies every chunk's
+absolute position, unaligned head, whole pages, tail and published bytes.
+The output IDs, active state, snapshot and KV totals match. The enabled arm
+consumes one early gather of 8,192 rows. Both owners close normally with
+no new Xe fault and matching final model hashes. Sustained DFlash2 and
+agent-session qualification remain open.
+
+The first wait participant closes at `8769880c0` with the stock schedule.
+Across the same three 118,785-token requests, exposed PLE wait is 5.448,
+0.048 and 0.067 seconds, and pool-wide direct reads are 8.024, 0.084 and
+0.086 GiB. The first window counts 65,730 records and 8,615,362,560 bytes,
+or 128 KiB per counted record. Partition read totals are 9.469, 3.973 and
+1.498 GiB. Treat both counter series as shared-device activity. Within
+this process the first prompt takes 11.817 seconds longer than the
+subsequent median, of which 5.391 seconds are additional exposed PLE wait.
+The other 6.425 seconds remain outside that wait interval. The subsequent
+prompt median is 0.999945 times the same-arm clean reference. The paired
+attribution and first-use observer-cost question remain open.
+
+The early participants close at `17de86439` and `3e51149be`. Their first
+exposed waits are 3.399 and 3.955 seconds, and all four subsequent waits
+are 0.041–0.058 ms. The first windows count 65,707 and 65,706 ZFS direct
+records, about 8.021 GiB each. The shared partition reads are 12.222 and
+9.329 GiB. The reverse-order stock participant closes at `ef5e8c1a4`
+with 5.234 seconds of first wait and the same 65,730 direct records as
+the first stock process. All four processes close normally with matching
+work, final model hashes and no fresh Xe faults. The observed subsequent
+time ratios of 0.999743–1.000307 pass the observer-cost gate. Median first
+wait is 5.341 seconds on stock and 3.677 seconds with early issue. At the
+early arm's clean median gap of 3.978 seconds, removing that whole observed
+wait would still leave about 0.301 seconds. The paired measurements support
+testing the 16 versus 32 worker setting with early issue fixed. Per-ticket
+counts remain necessary to estimate the benefit of grouping.
+
+The [worker comparison](https://github.com/yqYo1/Strata/commit/43dbd222110525b3066b8430bc1a8cb1546f1b09)
+closes four processes and 12 fresh 118,785-token requests with normal exits,
+verified final model assets and no new Xe fault. With 32 workers the first
+prefill and TTFT are 2.648 and 2.650 seconds faster in the first pair and
+0.409 and 0.403 seconds slower in the reverse pair. Subsequent prompt
+and TTFT preservation passes. Retain 16 workers because the first-use gain
+does not repeat. The fastest individual first-use result is 978.8 tok/s
+with 32 workers. Continue physical-context and RESTORE checks for the
+early PLE schedule with the retained worker setting.
 
 The retirement under the measurement lock removed `build`, `cache`, `owned`,
 `ownership.json`, `source` and `tmp` from `dflash2-prefill-ple-early-native-v2`.

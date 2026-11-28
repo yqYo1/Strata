@@ -22,6 +22,9 @@ THIS = str(Path(__file__).resolve().relative_to(bank.P))
 READ, RUNS, DONOR_INDEX = 102401, 2, 3
 DONOR = '0577a8bbca081ba5ec5d03d32d3ed4376d7d553f'
 DONOR_CACHE = (54, 12434952, 'c93c2b41a2fc8642b3abc00424449f3466c584634b971c36b28258f5206b3ddb')
+EARLY_KEY = 'dflash2_prefill_ple_early_cache_seed_v2'
+EARLY_DONOR = 'a68dbc97dcd6efd45b61b0360028723877a4b539'
+EARLY_DONOR_INDEX = 5
 TIMED = ('empty', 'seed', 'seed', 'empty', 'empty', 'seed')
 ORDER = ('empty', 'seed', *TIMED)
 PLAN = dict(order=list(ORDER), diagnostics=[0, 1], read=READ, requests_per_process=RUNS,
@@ -68,15 +71,49 @@ def baseline():
                 donor_request_sha256s=[s['request_sha256'] for s in donor['samples'][:RUNS]])
 
 
-def command(plan):
+def early_baseline(timing, native):
+    row = timing.baseline(native)
+    raw = bank.previous.read(timing.ROOT / 'record.json')
+    closed = bank.previous.historic(EARLY_DONOR, timing.KEY)
+    require(timing.wait.retained.closed(raw, 'closed') and basis.compact(raw) == closed
+            and closed['plan'] == timing.PLAN and closed['decision'] == timing.decision(closed['processes'])
+            and closed['decision']['advance'] and all(raw[k] == v for k, v in row.items()),
+            'require the exact closed early PLE timing on the selected build, model and runtime')
+    donor = closed['processes'][EARLY_DONOR_INDEX]
+    plan = closed['plans'][EARLY_DONOR_INDEX]
+    read = timing.wait.READ
+    root = timing.ROOT / str(EARLY_DONOR_INDEX)
+    require(donor['arm'] == plan['arm'] == 'early' and donor['binary'] == plan['binary'] == row['binary']
+            and donor['complete'] and donor['passed'] and donor['ownership_closed'] and donor['clean_speed']
+            and donor['native_exit_code'] == 0 and not donor['fresh_faults']
+            and plan['read'] == read and Path(plan['root']) == root
+            and bank.signature(timing.environment(row, plan)) == plan['environment_sha256']
+            and all(s['actual_read_tokens'] == read and s['actual_reused_tokens'] == 0 for s in donor['samples'])
+            and all(r['ple_early_reads'] == 1 for r in donor['routes']),
+            'require the matching owned early PLE seed donor and exact launch')
+    source = root / 'cache' / 'neo_compiler_cache'
+    receipt = bank.previous.read(root / 'engine-exit.json')
+    require(receipt['native'] == donor['native_identity'] and receipt['exit_code'] == 0
+            and receipt['binary'] == donor['binary'] and receipt['boot_id'] == row['boot'],
+            'the early PLE cache donor native exit differs')
+    # The retained early-PLE directory matches the committed 102401-token
+    # donor's complete device-image inventory, including its image hashes.
+    require(driver_cache.inventory(source) == DONOR_CACHE, 'the closed early PLE donor inventory changed')
+    request_hashes = [s['request_sha256'] for s in donor['samples'][:RUNS]]
+    return dict(row, seed=dict(path=str(source), record_commit=EARLY_DONOR, inventory=list(DONOR_CACHE)),
+                donor_work=work(donor['routes'][:RUNS]), donor_request_sha256s=request_hashes,
+                request_hashes={str(read): request_hashes})
+
+
+def command(plan, read=READ):
     args = speed.command(plan)
-    args[args.index('--prefill-exact-tokens') + 1] = str(READ)
+    args[args.index('--prefill-exact-tokens') + 1] = str(read)
     args[args.index('--runs') + 1] = str(RUNS)
     return args
 
 
-def environment(row, plan):
-    env = curve.environment(row, plan)
+def environment(row, plan, native_environment=curve.environment):
+    env = native_environment(row, plan)
     require(env['SYCL_CACHE_PERSISTENT'] == '0' and not any(k.startswith('NEO_CACHE_') for k in env),
             'the NEO disk-cache contrast must be independent of SYCL disk cache')
     return dict(env, NEO_CACHE_DIR=str(Path(plan['root']) / 'neo'), NEO_CACHE_PERSISTENT='1',
@@ -100,7 +137,7 @@ def hit_gate(empty, seed):
     return dict(empty=dict(hits=hits[0], misses=miss[0]), seeded=dict(hits=hits[1], misses=miss[1]))
 
 
-def decision(processes):
+def decision(processes, read=READ, *, subsequent_limit=None):
     require(tuple(p['seed_arm'] for p in processes) == ORDER
             and len({(p['native_identity']['pid'], p['native_identity']['start_ticks']) for p in processes}) == len(ORDER)
             and all(p['passed'] and p['complete'] and p['ownership_closed'] and p['native_exit_code'] == 0
@@ -115,18 +152,52 @@ def decision(processes):
                            short_warmup=seed['short_warmup_s'] / empty['short_warmup_s'],
                            first_prefill=first['prompt_ms'] / cold['prompt_ms'], first_TTFT=first['ttft_s'] / cold['ttft_s'],
                            subsequent_prefill=warm['prompt_ms'] / later['prompt_ms'], subsequent_TTFT=warm['ttft_s'] / later['ttft_s']))
+        if subsequent_limit is not None:
+            ratios[-1]['readiness_with_copy_upper'] = (
+                (seed['readiness']['upper_s'] + seed['prepare_directory_s'])
+                / (empty['readiness']['lower_s'] + empty['prepare_directory_s']))
     repeat_gain = {k: sum(p[k] < 1 for p in ratios) >= 2 and statistics.median(p[k] for p in ratios) < 1 for k in ratios[0]}
-    return dict(driver_contrast=hit_gate(*processes[:2]), seeded_over_empty_ratios=ratios, repeated_gain=repeat_gain,
-                first_1000={arm: all(p['samples'][0]['prompt_ms'] <= READ for p in processes[2:] if p['seed_arm'] == arm)
-                            for arm in ('empty', 'seed')}, adopted=False)
+    result = dict(driver_contrast=hit_gate(*processes[:2]), seeded_over_empty_ratios=ratios, repeated_gain=repeat_gain,
+                  first_1000={arm: all(p['samples'][0]['prompt_ms'] <= read for p in processes[2:] if p['seed_arm'] == arm)
+                              for arm in ('empty', 'seed')}, adopted=False)
+    if subsequent_limit is not None:
+        preserved = all(statistics.median(p[key] for p in ratios) <= subsequent_limit
+                        for key in ('subsequent_prefill', 'subsequent_TTFT'))
+        result.update(subsequent_preserved=preserved,
+                      advance=preserved and repeat_gain['first_prefill'] and repeat_gain['first_TTFT'],
+                      first_gap_ms={arm: [max(0, p['samples'][0]['prompt_ms'] - read)
+                                         for p in processes[2:] if p['seed_arm'] == arm]
+                                    for arm in ('empty', 'seed')})
+    return result
 
 
-def experiment():
+def experiment(early=False):
     ctx = clock.experiment()
     ctx.ROOT, ctx.KEY, ctx.THIS, ctx.ORDER = ROOT, KEY, THIS, ORDER
     ctx.protocol, ctx.baseline = PLAN, baseline
-    ctx.configuration, ctx.command, ctx.environment = speed.generation.configuration, command, environment
+    ctx.configuration = speed.generation.configuration
     base_pins, base_current, base_save = speed.experiment().pins, ctx.current, ctx.save
+    read, native_environment, route = READ, curve.environment, curve.route
+    subsequent_limit = None
+    if early:
+        import dflash2_prefill_ple_early_speed as timing
+        read = timing.wait.READ
+        native = timing.build.context()
+        ctx.KEY, ctx.ROOT = EARLY_KEY, bank.B / EARLY_KEY.replace('_', '-')
+        ctx.baseline = lambda: early_baseline(timing, native)
+        subsequent_limit = timing.WARM_LIMIT
+        ctx.protocol = dict(PLAN, read=read, subsequent_limit=subsequent_limit,
+            scope='Keep early PLE selected on the rebuilt 118785-token engine. Compare an empty private NEO '
+                  'cache with the complete same-build seed. Match the first two requests of the closed donor.',
+            criteria='Require a hit contrast in the diagnostic pair, then run three counterbalanced clean '
+                     'pairs with statistics disabled. Require a repeat first prefill and TTFT gain, and '
+                     'subsequent median time ratios within the existing clean limit. Report readiness '
+                     'with and without seed copy and the 1000 tok/s gap.')
+        base_pins = timing.experiment().pins
+        native_environment = lambda row, plan: timing.environment(row, dict(plan, arm='early'))
+        route = lambda text, plan: timing.route(text, dict(plan, arm='early'))
+    ctx.command = lambda plan: command(plan, read)
+    ctx.environment = lambda row, plan: environment(row, plan, native_environment)
 
     def pins(revision):
         entries = base_pins(revision)
@@ -139,22 +210,26 @@ def experiment():
 
     def save(row):
         if row['stage'] == 'prepared':
-            row['request_hashes'] = {str(READ): row['donor_request_sha256s']}
+            row['request_hashes'] = {str(read): row['donor_request_sha256s']}
             for plan in row['plans']:
-                plan.update(read=READ, heads=1, kv_arm='retain')
+                plan.update(read=read, heads=1, kv_arm='retain')
         base_save(row)
 
     def current(row):
-        require(row['request_hashes'] == {str(READ): row['donor_request_sha256s']}
-                and all((p['read'], p['heads'], p['kv_arm']) == (READ, 1, 'retain') for p in row['plans']),
+        require(row['request_hashes'] == {str(read): row['donor_request_sha256s']}
+                and all((p['read'], p['heads'], p['kv_arm']) == (read, 1, 'retain') for p in row['plans']),
                 'cache comparison input/route changed')
+        if early:
+            comparable = [{key: val.replace(p['root'], '<process>') for key, val in ctx.environment(row, p).items()
+                           if key != 'NEO_CACHE_STATS'} for p in row['plans']]
+            require(all(env == comparable[0] for env in comparable), 'unexpected cache comparison environment change')
         if len(row['processes']) >= 2 and row['stage'] != 'failed':
             hit_gate(*row['processes'][:2])
         return base_current(row)
 
     def run(index):
         runner = basis.core.source.device.load_module('primary_neo_cache_timing', basis.comparison.__file__)
-        row = bank.previous.read(ROOT / 'record.json')
+        row = bank.previous.read(ctx.ROOT / 'record.json')
         plan = row['plans'][index]
         folder = Path(plan['root']) / 'neo'
         old_models = runner.shared.models
@@ -217,10 +292,11 @@ def experiment():
 
             runner.shared.models = SimpleNamespace(model_pins=model_pins)
             runner.fingerprint = bank.signature
-            policy = SimpleNamespace(ROOT=ROOT, ORDER=[(READ, 1)] * len(ORDER), RUNS=RUNS,
-                current=current, native_context=lambda row, _: row, environment=environment, save=save,
-                request_route=curve.route, observe_lifetime=lifetime, observe_gate=gate,
-                after_execution=after_execution, validate_model_text=validate_model, decision=decision)
+            policy = SimpleNamespace(ROOT=ctx.ROOT, ORDER=[(read, 1)] * len(ORDER), RUNS=RUNS,
+                current=current, native_context=lambda row, _: row, environment=ctx.environment, save=save,
+                request_route=route, observe_lifetime=lifetime, observe_gate=gate,
+                after_execution=after_execution, validate_model_text=validate_model,
+                decision=lambda processes: decision(processes, read, subsequent_limit=subsequent_limit))
             try:
                 runner.run(index, policy)
             finally:
@@ -231,4 +307,7 @@ def experiment():
 
 
 if __name__ == '__main__':
-    clock.main(experiment())
+    early = sys.argv[1:2] == ['--early-ple']
+    if early:
+        sys.argv.pop(1)
+    clock.main(experiment(early=early))

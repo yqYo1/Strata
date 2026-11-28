@@ -25,7 +25,8 @@ PLAN = dict(
     scope='Park the first conversation, switch to a 33-token prompt, and restore the original prefix before '
           'reading the long fresh suffix. Use the same native executable, prompts and direct writer in both arms.',
     gates='Require live target-only restoration from RAM, a mode-16 suffix, actual early-read consumption '
-          'only for the enabled suffix, and identical outputs, active states and checked KV work.',
+          'only for the enabled suffix, and identical outputs and active states. Check every KV chunk at its '
+          'absolute suffix position, including unaligned heads, page tails and the published byte count.',
     limits='Traced live RESTORE at a nonzero position. The standalone 262144-input result and the '
            'first-prefill performance comparison are separate receipts.',
 )
@@ -40,6 +41,7 @@ def workloads(_near):
 
 def environment(row, case):
     base = timing.environment(row, dict(root=case['root'], index=0, arm=case['name']))
+    require(base['STRATA_SYCL_PREFILL_KEEP_KV_STAGE'] == '1', 'restore KV stage policy changed')
     base.update(STRATA_TRACE='1', STRATA_STATE_HASH='1', STRATA_SNAPSHOT_VERIFY='1')
     return native_environment(row, base)
 
@@ -66,7 +68,6 @@ def inspect(peer, log, pid, name, requests, row):
     states = list(re.finditer(r'^strata serve: STATE_HASH L=.*$', log, re.M))
     require(len(states) == len(requests) == 3, 'expected three request state digests')
     start = 0
-    suffix_work = []
     for index, (seen, request) in enumerate(zip(states, requests, strict=True)):
         frame = log[start:seen.start()]
         start = seen.end()
@@ -87,17 +88,14 @@ def inspect(peer, log, pid, name, requests, row):
                     in frame and f'residual_gpu_rows={rows} ' in frame, 'the restored suffix missed mode-16 admission')
             line = peer.capacity.one(frame, r'^strata prefill attention bank: requested=1 pieces=(\d+) direct=(\d+) '
                                       r'requested_D2D_bytes=0$', 'direct writer')
-            pieces = 48 * ((rows + 8191) // 8192)
+            chunk = peer.capacity.CHUNK
+            pieces = 48 * ((rows + chunk - 1) // chunk)
             require(tuple(map(int, line)) == (pieces, pieces), 'the restored suffix did not use direct stores')
-            suffix_work = frame.splitlines()
-    kv_stage = [line for line in suffix_work if line.startswith('strata prefill KV stage: ')]
-    kv_mirror = [line for line in suffix_work if line.startswith('strata QSA mirror bulk: ')]
-    require(len(kv_stage) == 12 and len(kv_mirror) == 12 * ((SUFFIX - 1 + 8191) // 8192),
-            'incomplete suffix KV staging or host mirror coverage')
+            suffix_kv = original.physical.kv.check_request(frame, request['reused'], rows, chunk, reuse=True)
     require(log.count(timing.check.ISSUED) == int(name == 'early')
             and log.count(timing.check.CONSUMED) == int(name == 'early'), 'unexpected early reads outside the suffix')
     return dict(validation=proof, restored_tokens=PREFIX, snapshot=snapshot, requests=requests,
-                suffix_kv_stage=kv_stage, suffix_kv_mirror_sha256=bank.signature(kv_mirror), early_reads=int(name == 'early'))
+                suffix_kv=suffix_kv, early_reads=int(name == 'early'))
 
 
 def experiment():
@@ -115,7 +113,8 @@ def experiment():
                 and physical['binary'] == native['binaries']['strata_full_context_diagnostic'],
                 'require the final-slot proof from the same build')
         pins = peer.sources(revision) | timing_pins(revision)
-        for name in (THIS, capacity.THIS, original.THIS):
+        kv_reader = Path(original.physical.kv.__file__).resolve().relative_to(bank.P).as_posix()
+        for name in (THIS, capacity.THIS, original.THIS, original.physical.THIS, kv_reader):
             require((bank.P / name).read_bytes() == basis.validation.git('show', revision + ':' + name),
                     'commit the exact restore input: ' + name)
             pins[name] = bank.sha(bank.P / name)
@@ -195,7 +194,7 @@ def experiment():
                 outcome.update(inspect(peer, err.read_text(), entry['pid'], name, requests, row))
             if name == 'early':
                 reference = row['outcomes']['stock']
-                fields = ('restored_tokens', 'snapshot', 'requests', 'suffix_kv_stage', 'suffix_kv_mirror_sha256')
+                fields = ('restored_tokens', 'snapshot', 'requests', 'suffix_kv')
                 require(all(outcome[k] == reference[k] for k in fields), 'the early read altered live restore or continuation')
                 basis.comparison.shared.models.model_pins(row['configuration'], row['model_assets'], full=True)
             outcome.update(complete=True, host_probe_accepted=True)

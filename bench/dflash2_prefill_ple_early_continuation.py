@@ -29,7 +29,7 @@ PLAN = dict(order=list(ORDER), input_case=primary.continuation.INPUT_CASE,
              'workload. Require matched prefill and geometric mean TG ratios at least one for both '
              'workloads to pass the decode preservation screen. Retain decode work differences for '
              'attribution. Isolate a repeatable decrease before adoption.',
-    limits='Draft class follows observed acceptance. Agent-session qualification is separate.',
+    limits='Draft class follows observed acceptance. Weak-draft and agent-session qualification remain separate.',
     stop='Stop on input, driver, route, ownership or validation failure. Preserve closed samples.')
 
 

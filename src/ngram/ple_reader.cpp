@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <chrono>
 #include <condition_variable>
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <deque>
 #include <exception>
@@ -84,6 +86,78 @@ struct Job {
     double issued_us = 0;
     bool keepalive = false;// no rows and no ticket: it only keeps the SSD awake (`set_keepalive`)
 };
+
+bool prefill_record_audit_enabled() {
+    static const bool enabled = [] {
+        const char* value = std::getenv("STRATA_PREFILL_PLE_RECORD_AUDIT");
+        return value && std::strcmp(value, "1") == 0;
+    }();
+    return enabled;
+}
+
+struct ReadSpanCount {
+    uint64_t touches = 0;
+    uint64_t unique = 0;
+    uint64_t covered_end = 0;
+
+    constexpr void add(uint64_t first, uint64_t end) {
+        touches += end - first;
+        if (end > covered_end) unique += end - std::max(first, covered_end);
+        covered_end = std::max(covered_end, end);
+    }
+};
+
+struct ReadGeometry {
+    static constexpr uint64_t record_bytes = 128 * 1024;
+    uint64_t requested_bytes = 0;
+    uint64_t in_file_bytes = 0;
+    ReadSpanCount pages;
+    ReadSpanCount records;
+
+    constexpr void add_job(uint64_t offset, uint32_t length, uint64_t file_bytes) {
+        requested_bytes += length;
+        if (offset >= file_bytes || length == 0) return;
+        const uint64_t in_file = std::min<uint64_t>(length, file_bytes - offset);
+        in_file_bytes += in_file;
+        const uint64_t last = offset + in_file - 1;
+        pages.add(offset / PAGE, last / PAGE + 1);
+        records.add(offset / record_bytes, last / record_bytes + 1);
+    }
+};
+
+constexpr bool ple_read_geometry_boundaries() {
+    constexpr uint64_t record = ReadGeometry::record_bytes;
+    constexpr uint64_t file_bytes = 2 * record + PAGE / 2;
+    ReadGeometry geometry{};
+    geometry.add_job(0, PAGE, file_bytes);
+    geometry.add_job(PAGE, PAGE, file_bytes);             // same record, different page
+    geometry.add_job(record - PAGE, 2 * PAGE, file_bytes);  // record straddle
+    geometry.add_job(record, PAGE, file_bytes);           // repeats the straddle's last page
+    geometry.add_job(2 * record, 2 * PAGE, file_bytes);    // last half page
+    geometry.add_job(2 * record + PAGE, PAGE, file_bytes);  // entirely past EOF
+    // Pages 0, 1, 31 and 64 occur once, and page 32 occurs twice. Records
+    // 0, 1 and 2 occur three, two and one times respectively.
+    return geometry.requested_bytes == 8 * PAGE && geometry.in_file_bytes == 5 * PAGE + PAGE / 2
+        && geometry.pages.touches == 6 && geometry.pages.unique == 5
+        && geometry.records.touches == 6 && geometry.records.unique == 3;
+}
+
+static_assert(ple_read_geometry_boundaries(), "PLE read geometry must count overlaps and clip at EOF");
+
+// Jobs are sorted by file offset. Count after row-cache hits and first-page
+// grouping, before jobs move to the queue. Clipping bounds the addressable
+// span at EOF; it does not measure bytes returned by the read or device I/O.
+void report_prefill_read_geometry(const std::vector<Job>& jobs, uint64_t file_bytes, size_t rows) {
+    ReadGeometry geometry{};
+    for (const Job& job : jobs) geometry.add_job(job.offset, job.length, file_bytes);
+    std::fprintf(stderr, "strata prefill PLE read geometry: rows=%zu jobs=%zu requested_bytes=%llu "
+                         "in_file_bytes=%llu page_touches=%llu unique_pages=%llu record_bytes=%llu "
+                         "record_touches=%llu unique_records=%llu\n",
+                 rows, jobs.size(), (unsigned long long) geometry.requested_bytes,
+                 (unsigned long long) geometry.in_file_bytes, (unsigned long long) geometry.pages.touches,
+                 (unsigned long long) geometry.pages.unique, (unsigned long long) ReadGeometry::record_bytes,
+                 (unsigned long long) geometry.records.touches, (unsigned long long) geometry.records.unique);
+}
 
 struct TicketState {
     uint32_t pending = 0;  // jobs not yet completed
@@ -464,6 +538,9 @@ PleReader::Ticket PleReader::issue(const uint32_t* rows, size_t n, uint8_t* out_
     }
     // Sorted by offset: prefill chunks then read the SSD in near-sequential order.
     std::sort(jobs.begin(), jobs.end(), [](const Job& a, const Job& b) { return a.offset < b.offset; });
+    // The measured long prefill has at least 4,096 tokens × 16 PLE rows per
+    // gather. Keep this diagnostic outside the small decode gathers.
+    if (n >= 65536 && prefill_record_audit_enabled()) report_prefill_read_geometry(jobs, m.file.size(), n);
     ts.pending = (uint32_t) jobs.size();
     const bool has_jobs = ts.pending > 0;
     for (Job& j : jobs) m.queue.push_back(std::move(j));
