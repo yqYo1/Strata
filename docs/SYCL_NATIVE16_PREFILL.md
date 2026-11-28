@@ -12063,13 +12063,6 @@ The comparison retains first and subsequent prefill, client TTFT, decode
 rates, and observed draft acceptance. Agent-session coverage remains a
 separate validation step.
 
-The same controller's `--io-workers` mode is eligible only after the closed
-16/32 prefill comparison advances the 32-worker candidate on this build.
-It keeps early PLE enabled in both arms and changes only the startup worker
-count across three counterbalanced 96K pairs. Check sustained generation
-before selecting a server-wide setting. The worker-specific physical-context,
-live-RESTORE and agent-session gates remain separate.
-
 The early-PLE build recovery uses the historical checkout at `6819afd49`.
 Its original reader verifies 1,328 project files, 529 controller inputs,
 1,479 compiler inputs, 139 fresh objects and all 11 executable identities.
@@ -12145,6 +12138,16 @@ early arm's clean median gap of 3.978 seconds, removing that whole observed
 wait would still leave about 0.301 seconds. The paired measurements support
 testing the 16 versus 32 worker setting with early issue fixed. Per-ticket
 counts remain necessary to estimate the benefit of grouping.
+
+The [worker comparison](https://github.com/yqYo1/Strata/commit/43dbd222110525b3066b8430bc1a8cb1546f1b09)
+closes four processes and 12 fresh 118,785-token requests with normal exits,
+verified final model assets and no new Xe fault. With 32 workers the first
+prefill and TTFT are 2.648 and 2.650 seconds faster in the first pair and
+0.409 and 0.403 seconds slower in the reverse pair. Subsequent prompt
+and TTFT preservation passes. Retain 16 workers because the first-use gain
+does not repeat. The fastest individual first-use result is 978.8 tok/s
+with 32 workers. Continue physical-context and RESTORE checks for the
+early PLE schedule with the retained worker setting.
 
 The retirement under the measurement lock removed `build`, `cache`, `owned`,
 `ownership.json`, `source` and `tmp` from `dflash2-prefill-ple-early-native-v2`.
