@@ -12011,8 +12011,21 @@ Keep requested bytes and in-file extent separate from returned bytes and
 storage counters. The production accumulator has a compile-time fixture
 with a record straddle, a repeated page, gaps, a partial final page and
 a span wholly past EOF. The fixture requires six page touches over five
-pages and six record touches over three records. It will run with the next
-build. Include varied prompts before selecting a grouped reader and measure
+pages and six record touches over three records. Check it first with GCC
+13.3.0 without producing an executable, after the wait run closes.
+
+```sh
+env -i PATH=/usr/bin:/bin LC_ALL=C /usr/bin/x86_64-linux-gnu-g++-13 \
+  -std=c++17 -Wall -Wextra -Werror -pthread -Iinclude -fsyntax-only src/ngram/ple_reader.cpp
+```
+
+The compiler SHA-256 is
+`1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769` and
+`cc1plus` is `840b332fb62ec6f694ac77d91fe69ef7f80b0d69512ed89374af0ee7a506255d`.
+The 215 resolved dependencies hash to
+`7edbce52237bf91f1927c10e922fa4a8aac2974cce2237a3f3131c90f337661a`
+over sorted dependency paths followed by NUL and the binary SHA-256 digest.
+Include varied prompts before selecting a grouped reader and measure
 cross-ticket reuse separately. The current wait comparison uses the original
 executable.
 [Reader observer](../src/ngram/ple_reader.cpp).
@@ -12107,11 +12120,16 @@ The early participants close at `17de86439` and `3e51149be`. Their first
 exposed waits are 3.399 and 3.955 seconds, and all four subsequent waits
 are 0.041–0.058 ms. The first windows count 65,707 and 65,706 ZFS direct
 records, about 8.021 GiB each. The shared partition reads are 12.222 and
-9.329 GiB. The observed median first wait is 3.677 seconds, while the clean
-first gap at 1,000 tok/s is 3.978 seconds. This preliminary comparison
-leaves about 0.301 seconds if the observed wait is removed in full. The
-final stock control and subsequent observer-cost checks govern attribution.
-Per-ticket counts are still needed to estimate what grouping could save.
+9.329 GiB. The reverse-order stock participant closes at `ef5e8c1a4`
+with 5.234 seconds of first wait and the same 65,730 direct records as
+the first stock process. All four processes close normally with matching
+work, final model hashes and no fresh Xe faults. The observed subsequent
+time ratios of 0.999743–1.000307 pass the observer-cost gate. Median first
+wait is 5.341 seconds on stock and 3.677 seconds with early issue. At the
+early arm's clean median gap of 3.978 seconds, removing that whole observed
+wait would still leave about 0.301 seconds. The paired measurements support
+testing the 16 versus 32 worker setting with early issue fixed. Per-ticket
+counts remain necessary to estimate the benefit of grouping.
 
 The retirement under the measurement lock removed `build`, `cache`, `owned`,
 `ownership.json`, `source` and `tmp` from `dflash2-prefill-ple-early-native-v2`.
