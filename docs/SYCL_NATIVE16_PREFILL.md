@@ -12170,6 +12170,19 @@ same prose body. Record how much storage work and wall time the larger
 cache removes before evaluating record grouping. This diagnostic keeps
 prefill and decode adoption decisions open.
 
+With the observed miss sets held fixed, coalescing by record within each
+ticket removes 14.3% of the first prose request's logical record touches.
+For adjacent pairs the lower and upper bounds are 14.3% and 51.4%.
+Each pair's unknown union lies between the larger ticket's unique-record
+count and their sum. The corresponding bounds on subsequent prose requests
+are 5.6–46.9%. These are bounds on logical touches, and larger deduplicated
+requests can still ask the host to copy more bytes. Record actual reads,
+requested and returned bytes, and time to publish the first chunk in the
+one- and two-chunk readers. Compare each to the legacy route with the
+same cache capacity, then compare the one- and two-chunk readers directly.
+Even removing the full first-request PLE wait at fixed remaining time
+leaves about 1.8 s to recover for 1,000 tok/s on these prose requests.
+
 The observed future wait ends after `PleTable::gather_batch` has collected
 the direct reads and expanded their packed rows on the CPU. That scope
 combines submission, storage and expansion. For 118,784 batched tokens,
