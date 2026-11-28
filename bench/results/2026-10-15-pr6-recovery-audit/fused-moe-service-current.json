@@ -773249,13 +773249,13 @@
         49871436800
       ]
     ],
-    "stage": "running",
+    "stage": "closed",
     "source_commit": "20f4ec6f77fcdc75d187f8b348275b9518157f7d",
     "host_passed": true,
     "ownership_closed": true,
     "active": false,
-    "passed": false,
-    "complete": false,
+    "passed": true,
+    "complete": true,
     "plans": [
       {
         "index": 0,
@@ -776168,6 +776168,210 @@
         },
         "passed": true,
         "arm": "one"
+      },
+      {
+        "index": 5,
+        "read": 118785,
+        "heads": 1,
+        "complete": true,
+        "host_probe_accepted": true,
+        "model_executed": true,
+        "clean_speed": false,
+        "binary": {
+          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-window-native-v1/build/strata",
+          "sha256": "4bedf4541afcb6d3407e45e4976819f8695ba680ff44a4dd95fec5ca0c99fcfd",
+          "bytes": 26774600
+        },
+        "native_source_commit": "be65a4811e953e3299dea61e802d09c59071f025",
+        "native_identity": {
+          "pid": 1202631,
+          "start_ticks": 422095985,
+          "sid": 1202582
+        },
+        "storage_counters": [
+          {
+            "zfs_direct_records": 982422,
+            "zfs_direct_bytes": 128768016384,
+            "partition_reads": 1018223,
+            "partition_read_bytes": 130667110400,
+            "partition_read_wait_ms": 1105211,
+            "partition_write_bytes": 643072000,
+            "request_window_ns": 229829566421
+          },
+          {
+            "zfs_direct_records": 365632,
+            "zfs_direct_bytes": 47924117504,
+            "partition_reads": 393804,
+            "partition_read_bytes": 49691062272,
+            "partition_read_wait_ms": 456469,
+            "partition_write_bytes": 469807104,
+            "request_window_ns": 158728463198
+          },
+          {
+            "zfs_direct_records": 361650,
+            "zfs_direct_bytes": 47402188800,
+            "partition_reads": 385959,
+            "partition_read_bytes": 48706936832,
+            "partition_read_wait_ms": 445715,
+            "partition_write_bytes": 257855488,
+            "request_window_ns": 158181306257
+          }
+        ],
+        "request_routes_checked_before_continue": 3,
+        "native_exit_code": 0,
+        "validation": {
+          "pid": 1202631,
+          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
+          "threads_before": 1,
+          "preinit": 37,
+          "config_enabled": true,
+          "first_init": true,
+          "dispatch_result": 46,
+          "output_untouched": true,
+          "retained_reference_until_exit": true,
+          "runtime_teardown_qualified": false
+        },
+        "routes": [
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 106583.999,
+              "host_ple_ms": 106599.508
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              12,
+              17
+            ],
+            "bank_upload_bytes": 49896832000,
+            "read_jobs": 980772,
+            "record_touches": 981425,
+            "requested_read_bytes": 4102762496,
+            "within_ticket_duplicates": 140492,
+            "first_two_duplicates": 23826,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 106365.240953,
+              "expand": 216.75584
+            },
+            "first_chunk_exposed_ms": 4046.381466
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 40339.941,
+              "host_ple_ms": 40356.591
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              16,
+              18
+            ],
+            "bank_upload_bytes": 49898444800,
+            "read_jobs": 364542,
+            "record_touches": 364797,
+            "requested_read_bytes": 1524531200,
+            "within_ticket_duplicates": 20863,
+            "first_two_duplicates": 4018,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 40136.871322,
+              "expand": 201.608827
+            },
+            "first_chunk_exposed_ms": 1374.406213
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 40855.36,
+              "host_ple_ms": 40872.738
+            },
+            "request_work": [
+              118785,
+              0,
+              118785,
+              24,
+              15,
+              17
+            ],
+            "bank_upload_bytes": 49871436800,
+            "read_jobs": 360731,
+            "record_touches": 360959,
+            "requested_read_bytes": 1508663296,
+            "within_ticket_duplicates": 20233,
+            "first_two_duplicates": 2579,
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 40642.893499,
+              "expand": 211.20201
+            },
+            "first_chunk_exposed_ms": 328.078598
+          }
+        ],
+        "samples": [
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 227206.8,
+            "prompt_tps": 522.8,
+            "ttft_s": 227.535,
+            "total_s": 229.827,
+            "generated_tokens": 24,
+            "request_sha256": "8aca834dae0db1f6731a2c817c463c61f9fbff320b39b253b900e91e2b03d249",
+            "drafts_offered": 17,
+            "drafts_accepted": 12,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 156483.4,
+            "prompt_tps": 759.1,
+            "ttft_s": 156.738,
+            "total_s": 158.701,
+            "generated_tokens": 24,
+            "request_sha256": "fe36c44e5fd159a084612f94685c54a2c1ffef31dbc1a613f62732a779fb4608",
+            "drafts_offered": 18,
+            "drafts_accepted": 16,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 156080.8,
+            "prompt_tps": 761.0,
+            "ttft_s": 156.318,
+            "total_s": 158.143,
+            "generated_tokens": 24,
+            "request_sha256": "8cbe292463fd8403c38c605952d2f6f527e9a642cc70d625d6ebf64093a5749e",
+            "drafts_offered": 17,
+            "drafts_accepted": 15,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "subsequent_median_ms": 156282.09999999998,
+        "ownership_closed": true,
+        "fresh_faults": [],
+        "boot_unchanged": true,
+        "driver_after": {
+          "pci": "/sys/bus/pci/devices/0000:05:00.0",
+          "driver": "xe",
+          "vendor": "0x8086",
+          "device": "0xe20c",
+          "kernel": "7.0.0-38-generic",
+          "devcoredump": false
+        },
+        "passed": true,
+        "arm": "legacy"
       }
     ],
     "budgets": {
@@ -776220,6 +776424,236 @@
         "passed": true
       }
     ],
+    "decision": {
+      "contrasts": {
+        "one_over_legacy": {
+          "pairs": [
+            {
+              "first_reads": [
+                980772,
+                840761
+              ],
+              "first_requested_read_bytes": [
+                4102762496,
+                9487405056
+              ],
+              "first_chunk_exposed_ms": [
+                3775.5844,
+                2554.497
+              ],
+              "first_ple_wait_ms": [
+                106962.602,
+                91302.41
+              ],
+              "first_zfs_direct_bytes": [
+                128768147456,
+                110330249216
+              ],
+              "first_partition_read_bytes": [
+                133898465280,
+                115074416640
+              ],
+              "first_storage_interval_ns": [
+                230203092614,
+                214791772809
+              ],
+              "first_pp_time": 0.9328165545030696,
+              "first_ttft": 0.9327948729204161,
+              "subsequent_pp_time": 0.9926634573782805,
+              "subsequent_ttft": 0.9929053869599149
+            },
+            {
+              "first_reads": [
+                980772,
+                840761
+              ],
+              "first_requested_read_bytes": [
+                4102762496,
+                9487405056
+              ],
+              "first_chunk_exposed_ms": [
+                4046.381466,
+                2421.923
+              ],
+              "first_ple_wait_ms": [
+                106583.999,
+                85420.507
+              ],
+              "first_zfs_direct_bytes": [
+                128768016384,
+                110330642432
+              ],
+              "first_partition_read_bytes": [
+                130667110400,
+                112742875136
+              ],
+              "first_storage_interval_ns": [
+                229829566421,
+                209399869311
+              ],
+              "first_pp_time": 0.910206472693599,
+              "first_ttft": 0.9099786845979739,
+              "subsequent_pp_time": 0.9703580896340656,
+              "subsequent_ttft": 0.9706442297863639
+            }
+          ],
+          "advance": true,
+          "exposed_wait_falls": true,
+          "shared_read_counters_fall": true
+        },
+        "two_over_legacy": {
+          "pairs": [
+            {
+              "first_reads": [
+                980772,
+                730279
+              ],
+              "first_requested_read_bytes": [
+                4102762496,
+                12982124544
+              ],
+              "first_chunk_exposed_ms": [
+                3775.5844,
+                2389.885
+              ],
+              "first_ple_wait_ms": [
+                106962.602,
+                77055.997
+              ],
+              "first_zfs_direct_bytes": [
+                128768147456,
+                95849545728
+              ],
+              "first_partition_read_bytes": [
+                133898465280,
+                98736668672
+              ],
+              "first_storage_interval_ns": [
+                230203092614,
+                200778206930
+              ],
+              "first_pp_time": 0.8710250486979881,
+              "first_ttft": 0.8711821254554234,
+              "subsequent_pp_time": 0.9261700686946409,
+              "subsequent_ttft": 0.9265326965631755
+            },
+            {
+              "first_reads": [
+                980772,
+                730279
+              ],
+              "first_requested_read_bytes": [
+                4102762496,
+                12982124544
+              ],
+              "first_chunk_exposed_ms": [
+                4046.381466,
+                2290.494
+              ],
+              "first_ple_wait_ms": [
+                106583.999,
+                74287.818
+              ],
+              "first_zfs_direct_bytes": [
+                128768016384,
+                95849283584
+              ],
+              "first_partition_read_bytes": [
+                130667110400,
+                97684226048
+              ],
+              "first_storage_interval_ns": [
+                229829566421,
+                197915980241
+              ],
+              "first_pp_time": 0.8597599191573492,
+              "first_ttft": 0.8597929988792934,
+              "subsequent_pp_time": 0.9533337471149929,
+              "subsequent_ttft": 0.9537175457426147
+            }
+          ],
+          "advance": true,
+          "exposed_wait_falls": true,
+          "shared_read_counters_fall": true
+        },
+        "two_over_one": {
+          "pairs": [
+            {
+              "first_reads": [
+                840761,
+                730279
+              ],
+              "first_requested_read_bytes": [
+                9487405056,
+                12982124544
+              ],
+              "first_chunk_exposed_ms": [
+                2554.497,
+                2389.885
+              ],
+              "first_ple_wait_ms": [
+                91302.41,
+                77055.997
+              ],
+              "first_zfs_direct_bytes": [
+                110330249216,
+                95849545728
+              ],
+              "first_partition_read_bytes": [
+                115074416640,
+                98736668672
+              ],
+              "first_storage_interval_ns": [
+                214791772809,
+                200778206930
+              ],
+              "first_pp_time": 0.933758137645832,
+              "first_ttft": 0.9339482352941176,
+              "subsequent_pp_time": 0.9330151742875123,
+              "subsequent_ttft": 0.9331530564055455
+            },
+            {
+              "first_reads": [
+                840761,
+                730279
+              ],
+              "first_requested_read_bytes": [
+                9487405056,
+                12982124544
+              ],
+              "first_chunk_exposed_ms": [
+                2421.923,
+                2290.494
+              ],
+              "first_ple_wait_ms": [
+                85420.507,
+                74287.818
+              ],
+              "first_zfs_direct_bytes": [
+                110330642432,
+                95849283584
+              ],
+              "first_partition_read_bytes": [
+                112742875136,
+                97684226048
+              ],
+              "first_storage_interval_ns": [
+                209399869311,
+                197915980241
+              ],
+              "first_pp_time": 0.944576802022774,
+              "first_ttft": 0.9448496029982807,
+              "subsequent_pp_time": 0.9824556081915153,
+              "subsequent_ttft": 0.9825613921926113
+            }
+          ],
+          "advance": true,
+          "exposed_wait_falls": true,
+          "shared_read_counters_fall": true
+        }
+      },
+      "adopted": false
+    },
     "source_inputs": {
       "files": 832,
       "sha256": "ae56a8213d3e8529640aa6fd056bee6188e1cd7dab0e0f0b5dff2e467b1c33db"
