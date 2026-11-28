@@ -109,19 +109,6 @@ bool Prefill::run_prefill_moe_prefix_router(int64_t layer, int64_t rows, std::st
 
 enum class SplitPrefillExpertUpload { demand, batched, coalesced };
 
-enum class PrefillSharedGateWeights { original, reload, reuse };
-
-static PrefillSharedGateWeights prefill_shared_gate_weights_requested() {
-    static const auto mode = [] {
-        const char* value = std::getenv("STRATA_SYCL_PREFILL_SHARED_GATE_WEIGHTS");
-        if (!value || std::strcmp(value, "original") == 0) return PrefillSharedGateWeights::original;
-        if (std::strcmp(value, "reload") == 0) return PrefillSharedGateWeights::reload;
-        if (std::strcmp(value, "reuse") == 0) return PrefillSharedGateWeights::reuse;
-        throw std::invalid_argument("STRATA_SYCL_PREFILL_SHARED_GATE_WEIGHTS requires original, reload or reuse");
-    }();
-    return mode;
-}
-
 static SplitPrefillExpertUpload split_prefill_expert_upload() {
     static const auto mode = [] {
         const char* value = std::getenv("STRATA_SYCL_PREFILL_SPLIT_EXPERT_UPLOAD");
@@ -477,22 +464,10 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         return true;
     };
     const bool allow_vec8 = owner.scratch_mixed && prefill_moe_large_vec8_requested();
-    static const bool split_scratch_check_once = [] {
-        const char* value = std::getenv("STRATA_SYCL_PREFILL_SPLIT_SCRATCH_CHECK_ONCE");
-        return value && std::strcmp(value, "1") == 0;
-    }();
-    const bool check_scratch_once = split_accumulator && split_scratch_check_once;
-    const auto& jobs = owner.routes->jobs();
-    const auto check_scratch = [&] {
-        sycl_backend::validate_device_span(m.dq_gu[0], size_t(2 * 640 * N * 2), queue);
-        sycl_backend::validate_device_span(m.dq_d[0], size_t(N * 640 * 2), queue);
-    };
-    // The prefill owns both scratch ranges through the checked window drain.
-    if (check_scratch_once && !jobs.empty()) check_scratch();
     int32_t loaded = -1;
-    for (size_t index = 0; index < jobs.size(); ++index) {
+    for (size_t index = 0; index < owner.routes->jobs().size(); ++index) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
-        const auto& job = jobs[index];
+        const auto& job = owner.routes->jobs()[index];
         if (job.expert != loaded) {
             int32_t slot = -1;
             if (batch_upload) {
@@ -537,7 +512,8 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
             const auto* blob = owner.private_expert_bank ? owner.private_expert_bank->device_slot(slot) :
                 m.cache->device_slot(slot);
             sycl_backend::validate_device_span(blob, size_t(layout.blob_bytes(layer)), queue);
-            if (!check_scratch_once) check_scratch();
+            sycl_backend::validate_device_span(m.dq_gu[0], size_t(2 * 640 * N * 2), queue);
+            sycl_backend::validate_device_span(m.dq_d[0], size_t(N * 640 * 2), queue);
             {
                 hp::Host host(hp::moe_dequant_gu);
                 auto tag = command_trace.tag(cp::Kind::dequant_gu, job.expert, job.global_row, job.rows,
@@ -638,50 +614,12 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
         }
         status_profile.complete();
     }
-    const auto gate_mode = prefill_shared_gate_weights_requested();
-    constexpr int64_t shared_gate_width = 640;
-    constexpr int64_t shared_gate_elements = N * shared_gate_width;
-    constexpr size_t shared_gate_bytes = shared_gate_elements * sizeof(uint16_t);
-    uint16_t* gate_fp16 = nullptr;
-    if (gate_mode != PrefillSharedGateWeights::original && owner.scratch_mixed && wsg->native_data &&
-        wsg->ne0 == N && wsg->ne1 == shared_gate_width && m.gemm.scratch_elems() >= shared_gate_elements) {
-        const size_t row_bytes = strata::kernels::iq_row_bytes(wsg->native_type, N);
-        if (row_bytes) {
-            if (m.gemm.stream() != m.cs)
-                throw std::invalid_argument("prefill shared Gate requires the compute stream");
-            // The successful status drain retired the routed expert readers of dq_gu[0].
-            // Its first half now holds one shared Gate matrix until the checked HC drain.
-            gate_fp16 = m.dq_gu[0];
-            const size_t packed_bytes = row_bytes * shared_gate_width;
-            sycl_backend::validate_device_span(gate_fp16, shared_gate_bytes, queue);
-            sycl_backend::validate_device_span(wsg->native_data, packed_bytes, queue);
-            sycl_backend::validate_spans({{gate_fp16, shared_gate_bytes}},
-                {{wsg->native_data, packed_bytes}, {mixed, mixed_bytes}, {m.region, size_t(m.region_bytes)},
-                 {residual, size_t(bytes)}, {bo, size_t(m.T * N * 2)},
-                 {m.gemm.scratch(), size_t(m.gemm.scratch_elems()) * sizeof(uint16_t)}}, 2);
-            if (owner.extra_workspace)
-                sycl_backend::validate_spans({{gate_fp16, shared_gate_bytes}},
-                    {{owner.extra_workspace, size_t(owner.extra_workspace_bytes)}}, 2);
-        }
-    }
-    uint64_t gate_expansions = 0;
-    uint64_t gate_chunks = 0;
     for (int64_t at = 0; at < rows; at += m.T) {
         if (should_stop && should_stop()) { err = "cancelled"; return false; }
         const int64_t count = std::min(m.T, rows - at);
         auto* input = mixed_piece(at, count);
-        if (gate_fp16) {
-            if (at == 0 || gate_mode == PrefillSharedGateWeights::reload) {
-                strata::kernels::iq_dequant_f16(wsg->native_type, wsg->native_data,
-                    shared_gate_elements, gate_fp16, m.cs);
-                ++gate_expansions;
-            }
-            m.gemm.f16_out16(input, gate_fp16, sgate, count, shared_gate_width, N, true, shared_gate_width);
-            ++gate_chunks;
-        } else if (!native_proj16(m.gemm, wsg, input, sgate, count, v.name("ffn_gate_shexp.weight"), err)) {
-            return false;
-        }
-        if (!native_proj16(m.gemm, wsu, input, sup, count, v.name("ffn_up_shexp.weight"), err)) return false;
+        if (!native_proj16(m.gemm, wsg, input, sgate, count, v.name("ffn_gate_shexp.weight"), err) ||
+            !native_proj16(m.gemm, wsu, input, sup, count, v.name("ffn_up_shexp.weight"), err)) return false;
         native16::swiglu_pair(sgate, sup, sh, count, m.cs);
         if (!native_proj16(m.gemm, wsd, sh, shared, count, v.name("ffn_down_shexp.weight"), err)) return false;
         float* accumulator_chunk = nullptr;
@@ -697,9 +635,6 @@ bool Prefill::run_moe_accum_window(int64_t layer, int64_t first_row, int64_t row
     }
     if (m.layer_major_profile) m.layer_major_profile->end(detail::LayerMajorCoarseProfile::moe, m.cs);
     if (cudaStreamSynchronize(m.cs) != cudaSuccess) { err = "prefill MoE accumulator: HC writes drain"; return false; }
-    owner.shared_gate_expansions += gate_expansions;
-    owner.shared_gate_chunks += gate_chunks;
-    owner.shared_gate_windows += gate_chunks != 0;
     if (upload_census && (!upload_census->emit_after_checked_drain(stderr, layer,
             first_row, rows, format.gu_type, format.d_type, layout.blob_bytes(layer)) ||
         !upload_census->emit_first_routes_after_checked_drain(stderr, layer, first_row, *owner.routes))) {

@@ -112,8 +112,6 @@ class TraceGates(unittest.TestCase):
 
     def test_fused_and_attention_symbols_have_explicit_source_families(self):
         for symbol, family in [('x::SplitDownScatterKernel<false>', 'native16_down_fused'),
-            ('strata::experimental::vllm_xe2_native16::(anonymous namespace)::DownScatterKernel<(Tile)1, false, (ScatterLayout)2>', 'native16_down_fused'),
-            ('foreign::DownScatterKernel<false>', 'other_kernel'),
             ('x::GuSwiGLUKernel<Tile1,false>', 'native16_gu_fused'),
             ('prefix_batch_impl<33>', 'qsa_prefix'), ('unknown_symbol', 'other_kernel')]:
             self.assertEqual(profile.kernel_family(symbol), family)

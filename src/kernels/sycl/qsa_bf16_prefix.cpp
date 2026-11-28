@@ -76,7 +76,7 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
                              int64_t cap, const QsaShapes &shape, uint16_t *output,
                              int64_t queries, const QsaPromptBf16Bounds &bounds,
                              int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream,
-                             QsaPrefixStateProbe probe = {}, int64_t retained_pages = 0) {
+                             QsaPrefixStateProbe probe = {}) {
   static_assert(!SubgroupSoftmax || !TilePacked);
   static_assert(!CacheQueries || !TilePacked);
   static_assert(!VectorK4 || (CacheQueries && !TilePacked));
@@ -97,8 +97,6 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
   using namespace sycl_backend;
   const size_t rows_count = checked_count(checked_count(bounds.physical_pages, 2), shape.page_size);
   const size_t active_pages = (uint64_t(live_cells) + shape.page_size - 1) / shape.page_size;
-  if (retained_pages < 0 || uint64_t(retained_pages) >= active_pages)
-    throw std::invalid_argument("QSA packed suffix must include the last live page");
   const size_t active_rows = checked_count(checked_count(active_pages, 2), shape.page_size);
   const size_t packed_bytes = checked_count(checked_count(active_rows, Dim), 2);
   const size_t query_bytes = checked_count(checked_count(checked_count(queries, 24), Dim), 2);
@@ -134,7 +132,9 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
   const auto packed = scratch;
   // A row in scratch is logical. The page table is consulted before ANY
   // source code/scale read, and final-page padding never reads an input row.
-  const auto pack_row = [=](size_t row, size_t lane) {
+  auto prepared = queue.parallel_for(sycl::nd_range<1>(active_rows * 64, 64),
+      [=](sycl::nd_item<1> item) {
+    const size_t row = item.get_group_linear_id(), lane = item.get_local_linear_id();
     const size_t logical = row / (2 * shape.page_size),
                  head = row / shape.page_size % 2, offset = row % shape.page_size;
     const size_t cell = logical * shape.page_size + offset;
@@ -157,22 +157,7 @@ static bool prefix_batch_impl(const uint16_t *query, const QsaAttnPools &pools,
       packed.k[row * Dim + d] = sycl::bit_cast<uint16_t>(BFloat(k));
       packed.v[row * Dim + d] = sycl::bit_cast<uint16_t>(BFloat(v));
     }
-  };
-  auto pack_all = [&] {
-    return queue.parallel_for(sycl::nd_range<1>(active_rows * 64, 64), [=](sycl::nd_item<1> item) {
-      pack_row(item.get_group_linear_id(), item.get_local_linear_id());
-    });
-  };
-  sycl::event prepared;
-  if constexpr (OrderedExp && !CaptureState) {
-    if (retained_pages) {
-      const size_t first_row = size_t(retained_pages) * 2 * shape.page_size;
-      prepared = queue.parallel_for(sycl::nd_range<1>((active_rows - first_row) * 64, 64),
-          [=](sycl::nd_item<1> item) {
-        pack_row(first_row + item.get_group_linear_id(), item.get_local_linear_id());
-      });
-    } else prepared = pack_all();
-  } else prepared = pack_all();
+  });
   // queue_for requires in_order; no host tensor work or wait is introduced for
   // the explicit stream. Both events remain covered by the caller's lifetime.
   sycl_backend::finish(stream, prepared);
@@ -495,13 +480,6 @@ bool qsa_bf16_prefix_ordered_exp_batch(const uint16_t *query, const QsaAttnPools
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream) {
   return prefix_batch_impl<Cells + 1, false, false, true, true, true, true>(query,
       pools, ids, steps, cap, shape, output, queries, bounds, live_cells, scratch, stream);
-}
-bool prefill_qsa_bf16_ordered_exp_suffix(const uint16_t *query, const QsaAttnPools &pools,
-    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
-    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
-    int64_t live_cells, const QsaBf16PackedScratch &scratch, int64_t retained_pages, void *stream) {
-  return prefix_batch_impl<Cells + 1, false, false, true, true, true, true>(query,
-      pools, ids, steps, cap, shape, output, queries, bounds, live_cells, scratch, stream, {}, retained_pages);
 }
 bool qsa_bf16_prefix_state_probe_batch(const uint16_t *query, const QsaAttnPools &pools,
     const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,

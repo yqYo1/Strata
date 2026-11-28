@@ -56,19 +56,6 @@ class SubscriberRecordTests(unittest.TestCase):
             with self.subTest(index=index), self.assertRaises(RuntimeError):
                 parse(rows)
 
-    def test_active_stream_duplicate_registration_does_not_split_call(self):
-        duplicate = dict(kind='duplicate_registration', stream='ur.call', pid=71, raw_ns=3)
-        rows = records()
-        rows.insert(3, duplicate)
-        value = parse(rows)
-        self.assertEqual(value['call_pairs'], 1)
-        self.assertEqual(value['duplicate_registrations'], 1)
-        for index in (1, 5):
-            rows = records()
-            rows.insert(index, duplicate)
-            with self.subTest(index=index), self.assertRaisesRegex(RuntimeError, 'outside the active UR stream'):
-                parse(rows)
-
     def test_wrong_owner_thread_function_clock_or_status_fails(self):
         for change in (dict(pid=73), dict(tid=73), dict(function_id=9), dict(instance=101),
                        dict(name='urOther'), dict(raw_ns=2), dict(raw_ns=float('nan')),

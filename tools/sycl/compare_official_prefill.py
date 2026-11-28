@@ -224,19 +224,11 @@ def host(experiment=None):
     print('Current-source frontend probes passed;commit before native execution.', flush=True)
 
 
-def route(text, read, heads, *, expected_rows=None, requested_slots=384,
-          draft_bytes=None, multi_window=False, split_requested=True):
+def route(text, read, heads, *, expected_rows=None):
     """Validate one actual request window,including a capacity-limited control."""
-    if draft_bytes is None:
-        draft_bytes = DRAFT_BYTES
-    require(type(multi_window) is bool and (not multi_window or
-        read in (98305,131072) and expected_rows == read-1 and heads == 1 and requested_slots in (384,512)),
-        'unplanned multi-window capacity case')
-    require(type(split_requested) is bool and (split_requested or multi_window and read==98305),
-        'startup-disabled split contract requires the fixed96K multi-window setup')
     require(heads in (0, 1) and (read in READS if expected_rows is None else
             expected_rows == read - 1 and (8192 < expected_rows <= 81920 or
-                                          90112 < expected_rows <= 117488 or multi_window)), 'unplanned route case')
+                                          90112 < expected_rows <= 117488)), 'unplanned route case')
     def records(prefix):
         result = []
         for line in text.splitlines():
@@ -254,56 +246,36 @@ def route(text, read, heads, *, expected_rows=None, requested_slots=384,
     bank = one('strata MoE expert bank: ')
     window = one('strata MoE window configuration: ')
     work = one('strata MoE accumulator window: ')
-    if split_requested:
-        admission = one('strata MoE split admission: ')
-    else:
-        # Native14508 logs admission only when the immutable startup request
-        # is enabled. The controller verifies that environment before this
-        # reader; absence is not a fabricated inactive admission receipt.
-        require(not records('strata MoE split admission: '), 'disabled split emitted admission telemetry')
-        admission = None
+    admission = one('strata MoE split admission: ')
     n, gpu = read - 1, int(main['residual_gpu_rows'])
-    split = int(admission['active']) if admission is not None else 0
-    staged, slots = int(bank['staged']), int(bank['effective_slots'])
+    split, staged, slots = int(admission['active']), int(bank['staged']), int(bank['effective_slots'])
     require(split in (0, 1) and staged in (0, 1) and 0 < gpu <= n, 'invalid route shape')
     require(main['tokens'] == str(n) and main['chunk'] == '8192' and main['residual_dtype'] == 'bf16'
             and main['residual_element_bytes'] == '2' and int(main['residual_total']) == n * 10240 * 2
             and int(main['residual_gpu']) == gpu * 10240 * 2
             and int(main['residual_host']) == (n - gpu) * 10240 * 2
             and main['residual_staging'] == '0', 'HC4 residual byte/row conservation differs')
-    require(bank['requested_slots'] == str(requested_slots) and int(bank['residual_gpu_rows']) == gpu
+    require(bank['requested_slots'] == '384' and int(bank['residual_gpu_rows']) == gpu
             and int(bank['device_bytes']) == int(main['layer_cache']) > 0
             and int(bank['allocation_limit_bytes']) >= int(bank['device_bytes'])
-            and bank['general_map'] == 'private_scratch_never_published', 'bank/cache publication differs')
-    if admission is not None:
-        require(admission['rows'] == str(n) and admission['prefill_slots'] == str(slots)
-            and admission['decode_changed'] == '0', 'split admission/cache publication differs')
+            and bank['general_map'] == 'private_scratch_never_published'
+            and admission['rows'] == str(n) and admission['prefill_slots'] == str(slots)
+            and admission['decode_changed'] == '0', 'bank/cache publication differs')
     full = gpu == n
-    if multi_window or read == 65537 or expected_rows is not None and n <= 81920:
-        require(full and staged == 1 and slots == requested_slots and split == 0,
-            'multi-window placement differs' if multi_window else '64K placement differs')
+    if read == 65537 or expected_rows is not None and n <= 81920:
+        require(full and staged == 1 and slots == 384 and split == 0, '64K placement differs')
     elif full:
         require(staged == split == 1 and slots == 128, '117K all-GPU split placement differs')
     else:
         require(heads == 0 and staged == split == 0 and slots == 512
                 and gpu % 8192 == 0 and gpu <= 81920, 'unqualified partial-residency route')
     require(not heads or full, 'candidate capacity screen failed')
-    maximum_rows = min(81920,gpu) if multi_window else gpu
-    windows = 48*((n+81919)//81920) if multi_window else 48
     require(window['requested_mode'] == window['effective_mode'] == '10'
-            and int(window['maximum_rows']) == int(work['maximum_rows']) == maximum_rows
-            and work['windows'] == str(windows) and work['operator_max'] == '8192'
+            and int(window['maximum_rows']) == int(work['maximum_rows']) == gpu
+            and work['windows'] == '48' and work['operator_max'] == '8192'
             and work['GPU_resident_windows_only'] == '1' and int(work['jobs']) >= 48
             and int(work['dequants']) > 0 and int(work['source_H2D_bytes']) >= 0,
             'actual accumulator/window work differs')
-    if multi_window:
-        mixed = one('strata MoE mixed banks: ')
-        require(window['mixed_fp16_bytes']=='0' and mixed['storage']=='scratch'
-            and int(mixed['primary_bytes'])>0 and int(mixed['tail_bytes'])>=0
-            and int(mixed['primary_bytes'])+int(mixed['tail_bytes'])==maximum_rows*2560*2
-            and mixed['extra_allocation_bytes']=='0'
-            and mixed['phase']=='FFN_only_after_attention_drain',
-            'actual checked server mixed-scratch storage differs')
     bank_ends = records('strata MoE expert bank complete: ')
     require(len(bank_ends) == staged, 'staged bank completion differs')
     if staged:
@@ -321,7 +293,7 @@ def route(text, read, heads, *, expected_rows=None, requested_slots=384,
                 and int(admission['max_single_allocation_bytes']) >= int(admission['extra_allocation_bytes'])
                 and finish['rows'] == str(n) and finish['decode_changed'] == '0'
                 and finish['guard'] == finish['final_drain'] == 'checked', 'split bounds/guard/drain differs')
-    elif admission is not None:
+    else:
         require(admission['primary_rows'] == admission['tail_payload_bytes'] ==
                 admission['extra_allocation_bytes'] == '0', 'inactive split carries storage')
     down = one('strata MoE Down fusion: ')
@@ -333,28 +305,19 @@ def route(text, read, heads, *, expected_rows=None, requested_slots=384,
     if heads:
         target, draft = targets[0], drafts[0]
         require(target['source'] == 'owned-RAM' and int(target['bytes']) == int(target['D2H']) ==
-                int(target['H2D-on-restore']) == TARGET_BYTES and int(draft['bytes']) == draft_bytes
+                int(target['H2D-on-restore']) == TARGET_BYTES and int(draft['bytes']) == DRAFT_BYTES
                 and int(draft['retained-map-bytes']) == MAP_BYTES, 'head snapshot/subset contract differs')
         require(text.index('strata prefill heads: target detached ') < text.index('strata prefill heads: draft detached ')
                 < text.index('strata MoE expert bank: ') < text.index('strata prefill: layer-major candidate, '),
                 'head retirement/admission order differs')
-    result = dict(rows=n, residual_gpu_rows=gpu, residual_gpu_bytes=int(main['residual_gpu']),
+    return dict(rows=n, residual_gpu_rows=gpu, residual_gpu_bytes=int(main['residual_gpu']),
         residual_host_bytes=int(main['residual_host']), prefill_slots=slots, staged=bool(staged), split=bool(split),
-        windows=windows, jobs=int(work['jobs']), fused_down_jobs=int(down['fused_jobs']), maximum_window_rows=maximum_rows,
+        windows=48, jobs=int(work['jobs']), fused_down_jobs=int(down['fused_jobs']), maximum_window_rows=gpu,
         staged_bank_checked_drain=bool(staged), split_guard_checked=bool(split),
         requested_bank_H2D_bytes=int(bank_ends[0]['requested_H2D_bytes']) if staged else 0,
         requested_dequant_H2D_bytes=int(work['source_H2D_bytes']),
-        target_snapshot_bytes=TARGET_BYTES if heads else 0, draft_rebuilt_bytes=draft_bytes if heads else 0,
+        target_snapshot_bytes=TARGET_BYTES if heads else 0, draft_rebuilt_bytes=DRAFT_BYTES if heads else 0,
         physical_saturation_qualified=False, head_payload_bytes_verified=False)
-    if multi_window:
-        end=bank_ends[0]
-        require(int(end['permanent_hits'])>=0, 'negative permanent reuse count')
-        result.update(permanent_hits=int(end['permanent_hits']),uploads=int(end['uploads']),
-            requested_source_map_H2D_bytes=result.pop('requested_dequant_H2D_bytes'))
-    if not split_requested:
-        result.update(split_startup_disabled=True,
-            split_evidence='controller verifies immutable native startup0;no split telemetry;actual two-window work')
-    return result
 
 
 def decision(processes):
@@ -510,8 +473,7 @@ def run(index, experiment=None):
     require(type(traced) is bool and env.get('STRATA_TRACE') == ('1' if traced else None),
             'frozen request-progress observer differs')
     outcome, owner = dict(index=index, read=plan['read'], heads=plan['heads'], complete=False,
-        host_probe_accepted=False, model_executed=False,
-        clean_speed=not traced and native.get('native_profile') is None), None
+        host_probe_accepted=False, model_executed=False, clean_speed=not traced), None
     if 'kernel' in plan:
         outcome['kernel'] = plan['kernel']
     if hasattr(policy, 'native_context'):
@@ -530,8 +492,6 @@ def run(index, experiment=None):
                     if line.startswith('STRATA_PROFILE_GATE '):
                         break
                 require(json.loads(line.removeprefix('STRATA_PROFILE_GATE ')) == dict(stage=stage, phase='prefill-only', run=request), 'request gate differs')
-                if stage == 'end' and hasattr(policy, 'observe_gate'):
-                    policy.observe_gate(outcome, request, stage, time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW))
                 delta = [a - b for a, b in zip((time.clock_gettime_ns(time.CLOCK_BOOTTIME), time.monotonic_ns()), initial)]
                 require(min(delta) >= 0 and abs(delta[0] - delta[1]) <= 50000000, 'suspend/clock discontinuity')
                 claim = json.loads((root / 'engine-start.json').read_text())['native']
@@ -542,14 +502,10 @@ def run(index, experiment=None):
                 identity = claim
                 expected = engine_once.native_environment(native, env)
                 observed = dict(v.split(b'=', 1) for v in Path('/proc', str(claim['pid']), 'environ').read_bytes().split(b'\0') if b'=' in v)
-                if hasattr(policy, 'check_native_environment'):
-                    policy.check_native_environment(observed, expected, plan)
-                else:
-                    require(all(observed.get(k.encode()) == v.encode() for k, v in expected.items())
-                            and set(observed) - {k.encode() for k in expected} <= {b'PWD', b'OLDPWD', b'SHLVL', b'_'}, 'native environment differs')
+                require(all(observed.get(k.encode()) == v.encode() for k, v in expected.items())
+                        and set(observed) - {k.encode() for k in expected} <= {b'PWD', b'OLDPWD', b'SHLVL', b'_'}, 'native environment differs')
                 mapped = shared.runtime.executable_mappings(Path('/proc', str(claim['pid']), 'maps').read_text())
-                extras = policy.native_extra_maps(plan) if hasattr(policy, 'native_extra_maps') else set()
-                require(mapped <= set(files) | {native['binary']['path']} | extras and extras <= mapped and {native['native_validation_probe']['loader']['path'],
+                require(mapped <= set(files) | {native['binary']['path']} and {native['native_validation_probe']['loader']['path'],
                     native['native_validation_probe']['library']['path'], env['ZE_ENABLE_ALT_DRIVERS']} <= mapped, 'native providers differ')
                 shared.python_runtime.check_running(command['pid'], P / 'tools/strata_bench.py', manifest['selected'], env,
                     {v['realpath'] for v in manifest['inventory']['files'].values()}, plan['command'][2:])
@@ -564,8 +520,6 @@ def run(index, experiment=None):
                     persist()
                 print(f'Prefill process{index} read{plan["read"]} heads{plan["heads"]} '
                       f'kernel={plan.get("kernel", "original")} request{request} {stage}', flush=True)
-                if stage == 'begin' and hasattr(policy, 'observe_gate'):
-                    policy.observe_gate(outcome, request, stage, time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW))
                 io.send(b'continue\n')
             require(offsets['end'] > offsets['begin'], 'missing native request log window')
             log_windows.append(offsets)
@@ -580,11 +534,7 @@ def run(index, experiment=None):
         io.exit(1)
     try:
         owner = build.supervision.Owner(root / 'owned', persist)
-        if hasattr(policy, 'observe_lifetime'):
-            policy.observe_lifetime(outcome, 'begin', time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW))
         command, _, _ = owner.run('bench', plan['command'], env, P, interaction=interact, **row['budgets'])
-        if hasattr(policy, 'observe_lifetime'):
-            policy.observe_lifetime(outcome, 'end', time.clock_gettime_ns(time.CLOCK_MONOTONIC_RAW))
         require(build.supervision.closed(command) and command['exit_code'] == 0, 'model process failed')
         # The final request gate precedes native/runtime destruction. Only an
         # empty owned session proves that all validation-log producers exited.
@@ -639,11 +589,6 @@ def run(index, experiment=None):
             outcome['passed'] = False
             outcome.setdefault('error', 'Post-run driver differs from the frozen platform')
         outcome['passed'] = bool(outcome.get('passed') and outcome['complete'])
-        if outcome['passed'] and hasattr(policy, 'after_execution'):
-            try:
-                policy.after_execution(outcome, row, plan)
-            except BaseException as error:
-                outcome.update(passed=False, complete=False, error=repr(error))
         persist()
         row['processes'].append(outcome)
         row.update(stage='running' if outcome['passed'] else 'failed', active=bool(owner and owner.active),

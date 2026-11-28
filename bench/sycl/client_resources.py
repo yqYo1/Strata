@@ -311,7 +311,7 @@ def summarize_capture(records, target, boot, client_interval, *, before_only=Fal
         limits='Client observation windows, not native kernel-stage boundaries. Scheduled CPU includes polling/stalls. Associated DRM clients may be shared; cycle busy fraction is not arithmetic efficiency, VRAM bandwidth, physical PCIe traffic or hardware saturation.')
 
 
-def main(argv=None, *, include_conditions=False):
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('native_receipt', type=Path)
     parser.add_argument('--out', type=Path, required=True)
@@ -326,7 +326,7 @@ def main(argv=None, *, include_conditions=False):
     conditions = None
     condition_flag = os.environ.get('STRATA_RESOURCE_CONDITIONS','0')
     require(condition_flag in ('0','1'), 'condition collection must be0 or1 before exec')
-    if include_conditions or condition_flag == '1':
+    if condition_flag == '1':
         from hardware_conditions import Conditions
         conditions = Conditions(pci)
     deadline, count = time.monotonic() + args.seconds, 0

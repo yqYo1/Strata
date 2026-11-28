@@ -10,7 +10,6 @@ import hashlib
 import json
 from pathlib import Path
 import re
-import shutil
 import sys
 
 sys.dont_write_bytecode = True
@@ -41,11 +40,6 @@ def current(key,frozen):
     manifest = runtime.read_manifest(frozen['python_contract'])
     runtime.validate_manifest(manifest)
     require(runtime.selection(env)==frozen['python_selected'],'host interpreter changed')
-    for name, tool in frozen.get('external_executables', {}).items():
-        path = Path(tool['path'])
-        require(shutil.which(name, path=env['PATH']) == str(path) and path.resolve() == path
-                and path.stat().st_size == tool['bytes'] and inputs.digest(path) == tool['sha256'],
-                'host external executable changed: ' + name)
     address_cap = frozen.get('virtual_address_bytes',2<<30)
     require(type(address_cap) is int and 1<<30 <= address_cap <= 16<<30,
             'finite host virtual-address budget required')

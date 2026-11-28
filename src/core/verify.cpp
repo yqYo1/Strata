@@ -8,12 +8,9 @@
 #include "strata/core/native_head.hpp"
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/sycl/checked_cleanup.hpp"
-#include "strata/sycl/decode_segment_clocks.hpp"
 #include "strata/sycl/decode_service_profile.hpp"
 #include "strata/core/expert_cache.hpp"
 #include "strata/kernels/dflash2.hpp"
-#include "strata/kernels/kv_stream.hpp"
-#include "strata/kernels/kv_stream_copy_groups.hpp"
 #include "../kernels/sycl/q6_dpas_component.hpp"
 #include <optional>
 #endif
@@ -71,11 +68,6 @@ constexpr float EPS = 1e-6f;
 using Clock = std::chrono::steady_clock;
 double ms_since(Clock::time_point t) { return std::chrono::duration<double, std::milli>(Clock::now() - t).count(); }
 #ifdef STRATA_ENABLE_SYCL
-namespace segment_clocks = strata::sycl_backend::decode_segment_clocks;
-bool decode_clock_geometry(VerifyInput input, int width, bool split, int64_t first, int64_t end, int64_t layers) {
-    return input == VerifyInput::decode && width == 4 && !split && first == 0 &&
-           end == layers && layers == segment_clocks::layers;
-}
 using CacheReader = std::optional<detail::CacheScratchState::Reader>;
 bool enter_cache_reader(const VerifyHits& hits, CacheReader& guard, std::string& err) {
     if (!hits.cache_owner) return true;
@@ -576,21 +568,6 @@ bool Verifier::init(const WeightTable& wt, const ModelGeometry& g, SessionState&
     ss_ = &ss;
     hits_ = hits;
 #ifdef STRATA_ENABLE_SYCL
-    const char* kv_coalesced = std::getenv("STRATA_SYCL_DECODE_KV_COALESCED");
-    if (kv_coalesced && std::strcmp(kv_coalesced, "0") != 0 && std::strcmp(kv_coalesced, "1") != 0) {
-        err = "verify: STRATA_SYCL_DECODE_KV_COALESCED must be 0 or 1"; return false;
-    }
-    decode_kv_coalesced_ = kv_coalesced && std::strcmp(kv_coalesced, "1") == 0;
-    if (decode_kv_coalesced_) {
-        try {
-            if (strata::kernels::kv_stream_copy_group_cap_from_text(
-                    std::getenv("STRATA_SYCL_KV_COPY_GROUPS")) != 0) {
-                err = "verify: coalesced KV candidate requires STRATA_SYCL_KV_COPY_GROUPS=0"; return false;
-            }
-        } catch (const std::invalid_argument& e) {
-            err = std::string("verify: ") + e.what(); return false;
-        }
-    }
     const char* q6_columns = std::getenv("STRATA_SYCL_DECODE_Q6_COLUMNS");
     if (q6_columns && std::strcmp(q6_columns, "0") != 0 && std::strcmp(q6_columns, "1") != 0) {
         err = "verify: STRATA_SYCL_DECODE_Q6_COLUMNS must be 0 or 1"; return false;
@@ -887,7 +864,6 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
     using namespace strata::kernels;
 #ifdef STRATA_ENABLE_SYCL
     auto& graph_window = window_graphs_.at(input, T);
-    graph_window.kv_scalar_calls = graph_window.kv_coalesced_calls = 0;
     graph_window.q6_reference_calls = graph_window.q6_columns_calls =
         graph_window.q6_centered_calls = graph_window.q6_native_half_calls = 0;
     graph_window.q6_dpas_head_calls = 0;
@@ -948,15 +924,6 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
     auto Rt = [&](int t) { return R_ + (size_t) t * HC * N; };
     const int G = (split_ && T >= 2) ? 2 : 1;
     static const bool dec_batch = [] { const char* v = std::getenv("STRATA_DEC_BATCH"); return v == nullptr || std::atoi(v) != 0; }();
-#ifdef STRATA_ENABLE_SYCL
-    static const bool decode_combine_mapped_rows = [] {
-        const char* value = std::getenv("STRATA_SYCL_DECODE_MOE_COMBINE_MAPPED");
-        return value && std::strcmp(value, "1") == 0;
-    }();
-    const bool decode_combine = decode_combine_mapped_rows && input == VerifyInput::decode &&
-        T == 4 && G == 1 && N == 2560 && K == 10 && dec_batch &&
-        native_moe_combine_enabled() && !device_plan_;
-#endif
     auto stamp = [&](int64_t l, int i, int grp) { if (prof_on_ && grp == 0) gpu_stamp(prof_, (int) (l * kProfPer + i), cs); };
     const int tb_[2] = {0, (T + 1) / 2}, te_[2] = {G == 2 ? (T + 1) / 2 : T, T};
     groups_[T] = G;
@@ -1232,22 +1199,7 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
                                sel_ + (size_t) tb * cap_, cs);
                 stamp(l, 11, grp);
                 // KV streaming: the n selections' blocks resident (device-side, inside the graph)
-#ifdef STRATA_ENABLE_SYCL
-                const VerifyKvShape kv_shape{n, st.map.n_blocks, st.map.n_slots,
-                    s.page_size, s.n_head_kv, s.head_dim, cap_,
-                    st.kv_mode == 1 && qsa_kv_format(st) == kKvInt8};
-                if (decode_verify_coalesced_kv(decode_kv_coalesced_, input, kv_shape)) {
-                    decode_kv_stream_resolve_coalesced(st.map, qsa_attn_pools(st), st.host,
-                        kKvInt8, sel_ + (size_t) tb * cap_, step_ + tb * kStepCount,
-                        n, cap_, s, cs, 0);
-                    ++graph_window.kv_coalesced_calls;
-                } else {
-                    qsa_kv_resolve(st, *g_, sel_ + (size_t) tb * cap_, step_ + tb * kStepCount, n, cap_, cs);
-                    if (st.kv_mode == 1) ++graph_window.kv_scalar_calls;
-                }
-#else
                 qsa_kv_resolve(st, *g_, sel_ + (size_t) tb * cap_, step_ + tb * kStepCount, n, cap_, cs);
-#endif
                 stamp(l, 12, grp);
                 const QsaAttnPools pools = qsa_attn_pools(st);
                 qsa_decode_attn_batch(qcur_ + tb * NH * HD, pools, sel_ + (size_t) tb * cap_, step_ + tb * kStepCount, cap_,
@@ -1386,46 +1338,31 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
 #ifdef STRATA_ENABLE_SYCL
         }
 #endif
-#ifdef STRATA_ENABLE_SYCL
-        if (decode_combine) {
-            // The original layer boundary has already joined the CPU callback,
-            // staged copies and resident expert projections before this post.
-            try {
-                decode_moe_combine_mapped_rows(m_ymiss_ + (size_t) tb * K * N, hit_out,
-                    p_dst, p_counts + 1, w_ + tb * K, shared_ + tb * N, bo_ + tb * N, cs);
-            } catch (const std::exception& e) {
-                err = "verify decode mapped MoE combine: " + std::string(e.what());
-                return false;
-            }
-        } else
-#endif
-        {
-            if (device_plan_) {   // no CPU share when the device planned the group: its rows are zeros
-                wait_flag_ge_or(m_flag_, ring, skip_ + grp, cs);
-                copy_or_zero_from_mapped(parts_ + (size_t) tb * K * N, m_ymiss_ + (size_t) tb * K * N, (long long) n * K * N,
-                                         skip_ + grp, ring, cs);
-            } else {
+        if (device_plan_) {   // no CPU share when the device planned the group: its rows are zeros
+            wait_flag_ge_or(m_flag_, ring, skip_ + grp, cs);
+            copy_or_zero_from_mapped(parts_ + (size_t) tb * K * N, m_ymiss_ + (size_t) tb * K * N, (long long) n * K * N,
+                                     skip_ + grp, ring, cs);
+        } else {
 #ifndef STRATA_ENABLE_SYCL
-                wait_flag_ge(m_flag_, ring, cs);               // the CPU's share is in the mapped rows
+            wait_flag_ge(m_flag_, ring, cs);               // the CPU's share is in the mapped rows
 #endif
-                stamp(l, 23, grp);
-                if (dec_batch)   // only the CPU rows cross PCIe (p_dst[0, counts[1]) = the GPU's own rows)
-                    copy_rows_from_mapped(parts_ + (size_t) tb * K * N, m_ymiss_ + (size_t) tb * K * N, (int64_t) n * K, N,
-                                          p_dst, p_counts + 1, cs);
-                else
-                    copy_from_mapped(parts_ + (size_t) tb * K * N, m_ymiss_ + (size_t) tb * K * N, (int64_t) n * K * N, cs);
-            }
-            moe_hit_add(parts_ + (size_t) tb * K * N, hit_out, p_dst, p_counts + 1, cap, N, cs);
-            if (dec_batch && n > 1 && native_moe_combine_enabled()) {   // one launch for the window's rows
-                try {
-                    native_moe_combine_multi(parts_ + (size_t) tb * K * N, w_ + tb * K, shared_ + tb * N, bo_ + tb * N, N, K, n, cs);
-                } catch (const std::exception& e) { err = "verify combine: " + std::string(e.what()); return false; }
-            } else
-            for (int t = tb; t < te; ++t) {
-                MoEBuffers mb = ss.moe;
-                mb.weights = w_ + t * K; mb.shared = shared_ + t * N;
-                if (!moe_combine_parts(g, l, K, mb, parts_ + (size_t) t * K * N, bo_ + t * N, cs, err)) return false;
-            }
+            stamp(l, 23, grp);
+            if (dec_batch)   // only the CPU rows cross PCIe (p_dst[0, counts[1]) = the GPU's own rows)
+                copy_rows_from_mapped(parts_ + (size_t) tb * K * N, m_ymiss_ + (size_t) tb * K * N, (int64_t) n * K, N,
+                                      p_dst, p_counts + 1, cs);
+            else
+                copy_from_mapped(parts_ + (size_t) tb * K * N, m_ymiss_ + (size_t) tb * K * N, (int64_t) n * K * N, cs);
+        }
+        moe_hit_add(parts_ + (size_t) tb * K * N, hit_out, p_dst, p_counts + 1, cap, N, cs);
+        if (dec_batch && n > 1 && native_moe_combine_enabled()) {   // one launch for the window's rows
+            try {
+                native_moe_combine_multi(parts_ + (size_t) tb * K * N, w_ + tb * K, shared_ + tb * N, bo_ + tb * N, N, K, n, cs);
+            } catch (const std::exception& e) { err = "verify combine: " + std::string(e.what()); return false; }
+        } else
+        for (int t = tb; t < te; ++t) {
+            MoEBuffers mb = ss.moe;
+            mb.weights = w_ + t * K; mb.shared = shared_ + t * N;
+            if (!moe_combine_parts(g, l, K, mb, parts_ + (size_t) t * K * N, bo_ + t * N, cs, err)) return false;
         }
         stamp(l, 24, grp);
         if (l == g.n_layers - 1) {
@@ -1541,12 +1478,6 @@ bool Verifier::record_window(int T, cudaStream_t cs, std::string& err, VerifyInp
         sample_tokens(head_logits_, T, (int) n_vocab_, nullptr, 0, sp, m_out_, cs);
     }
     stamp(g.n_layers, 1, 0);
-#ifdef STRATA_ENABLE_SYCL
-    if (input == VerifyInput::decode && T == 4 && std::getenv("STRATA_TRACE"))
-        std::fprintf(stderr, "strata verify decode MoE combine: T=4 fused=%lld layers=%lld\n",
-                     static_cast<long long>(decode_combine ? le_ - lb_ : 0),
-                     static_cast<long long>(le_ - lb_));
-#endif
     return true;
 }
 
@@ -1586,10 +1517,7 @@ bool Verifier::end_segment(int T, std::string& err, VerifyInput input, SegmentKi
         return false;
     }
     cudaGraphExec_t exec = nullptr;
-    const bool profile = kind == SegmentKind::layer &&
-        decode_clock_geometry(input, T, split_, lb_, le_, g_->n_layers) && segment_clocks::configuration().device;
-    const cudaError_t ie = profile ? strata::sycl_backend::compat::graph_instantiate_profiled(&exec, graph)
-                                   : cudaGraphInstantiate(&exec, graph, 0);
+    const cudaError_t ie = cudaGraphInstantiate(&exec, graph, 0);
     if(head_recapture_checked_ && ie!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("verify head segment instantiate");
     const auto destroyed=cudaGraphDestroy(graph);
     if(head_recapture_checked_ && destroyed!=cudaSuccess)strata::sycl_backend::cleanup_fail_stop("verify head source graph destroy");
@@ -1658,10 +1586,6 @@ bool Verifier::capture(int T, std::string& err, VerifyInput input) try {
                  input == VerifyInput::prompt ? "prompt" : "decode", T,
                  static_cast<unsigned long long>(window.q6_reference_calls),
                  static_cast<unsigned long long>(window.q6_columns_calls));
-    std::fprintf(stderr, "strata verify KV_PLAN: phase=%s tokens=%d enabled=%d scalar_calls=%llu coalesced_calls=%llu\n",
-                 input == VerifyInput::prompt ? "prompt" : "decode", T, int(decode_kv_coalesced_),
-                 static_cast<unsigned long long>(window.kv_scalar_calls),
-                 static_cast<unsigned long long>(window.kv_coalesced_calls));
     std::fprintf(stderr, "strata verify centering: phase=%s tokens=%d enabled=%d centered_calls=%llu columns_calls=%llu\n",
                  input == VerifyInput::prompt ? "prompt" : "decode", T, decode_q6_centering_ ? 1 : 0,
                  static_cast<unsigned long long>(window.q6_centered_calls),
@@ -1861,11 +1785,6 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     } window_scope{this};
 #ifdef STRATA_ENABLE_SYCL
     namespace service = strata::sycl_backend::decode_service_profile;
-    auto* segment_request = segment_clocks::active;
-    const bool sample_window = segment_request &&
-        decode_clock_geometry(input, T, split_, lb_, le_, g.n_layers) && segment_request->sample_next_window();
-    const bool sample_segments = sample_window && segment_clocks::configuration().device;
-    const auto window_start = sample_window ? Clock::now() : Clock::time_point{};
     if (!service::measure(service::capture_setup, [&] {
             return capture(T, err, input) && capture_commit(err);
         })) return false;
@@ -1979,12 +1898,6 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         }
 #endif
         const Clock::time_point b = Clock::now();
-#ifdef STRATA_ENABLE_SYCL
-        if (sample_segments) {
-            segment_request->record(static_cast<unsigned>(k), layer_done_,
-                std::chrono::duration_cast<std::chrono::nanoseconds>(b - a).count());
-        }
-#endif
         VDBG("layer %lld rang\n", (long long) l);
         cur_layer_ = want - 1;
         set_plan_slot(grp);
@@ -2002,16 +1915,9 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
         if (pool != nullptr) {
 #ifdef STRATA_ENABLE_SYCL
             service::Part pool_service(service::cpu_pool);
-            const auto pool_start = sample_segments ? Clock::now() : Clock::time_point{};
 #endif
             pool(user, h_x_ + (size_t) tb * g.n_embd, h_ids_ + (size_t) tb * ss.k, n, ss.k,
                  h_ymiss_ + (size_t) tb * ss.k * g.n_embd, l);
-#ifdef STRATA_ENABLE_SYCL
-            if (sample_segments) {
-                segment_request->record_pool(static_cast<unsigned>(k),
-                    std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now() - pool_start).count());
-            }
-#endif
         }
 #ifdef STRATA_ENABLE_SYCL
         if (overlap_gpu_ && work_launched_ && work_status_ == cudaSuccess) {
@@ -2088,12 +1994,7 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     // itself stays a blocking sync: a cudaStreamQuery poll here cost IQ3_S ~3% decode (a core calling the driver
     // beside the expert workers).
 #ifdef STRATA_ENABLE_SYCL
-    const auto final_wait_start = sample_segments ? Clock::now() : Clock::time_point{};
     const cudaError_t se = service::measure(service::final_compute_wait, [&] { return cudaStreamSynchronize(cs_); });
-    if (sample_segments && se == cudaSuccess) {
-        segment_request->record(segment_clocks::layers, layer_done_,
-            std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now() - final_wait_start).count());
-    }
 #else
     const cudaError_t se = cudaStreamSynchronize(cs_);
 #endif
@@ -2105,9 +2006,6 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     const cudaError_t copy_status = cudaStreamSynchronize(copy_); // Host callbacks cannot reach the next window.
 #endif
     if (copy_status != cudaSuccess) { err = std::string("verify: copies: ") + cudaGetErrorString(copy_status); return false; }
-#ifdef STRATA_ENABLE_SYCL
-    if (sample_segments) segment_request->emit(pos0, g.qsa_interval);
-#endif
     window_scope.drained(); // Both stage streams completed; sampling below has no mapped spin waits.
     if (prof_on_ && G == 1) {       // the window's GPU stage stamps
         cudaMemcpy(prof_h_.data(), prof_, prof_h_.size() * 8, cudaMemcpyDeviceToHost);
@@ -2218,12 +2116,6 @@ bool Verifier::run(int T, const int32_t* tokens, int64_t pos0, PoolMultiFn pool,
     ++windows;
     progress_at("decode");
     progress_beat();
-#ifdef STRATA_ENABLE_SYCL
-    if (sample_window) {
-        segment_request->emit_window(pos0,
-            std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now() - window_start).count());
-    }
-#endif
     return true;
 }
 

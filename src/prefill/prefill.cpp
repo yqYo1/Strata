@@ -699,7 +699,6 @@ struct MoeWindowContext {
     uint64_t gu_fused_jobs = 0, gu_fused_rows = 0;
     uint64_t down_fused_jobs = 0, down_fused_rows = 0;
     uint64_t vec8_gather_jobs = 0, vec8_gather_rows = 0;
-    uint64_t shared_gate_windows = 0, shared_gate_chunks = 0, shared_gate_expansions = 0;
     std::unique_ptr<sycl_backend::command_profile::Trace> command_trace;
 };
 bool prefill_moe_large_vec8_requested() {
@@ -2299,37 +2298,21 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
     const auto t_start = Clock::now();
     const int64_t LB = stage_lb_, LE = stage_le_;
 #if defined(STRATA_ENABLE_SYCL)
-    enum class PrefillKvReuse { reload, aligned, partial_page };
-    static const PrefillKvReuse prefill_kv_reuse = [] {
+    static const bool prefill_keep_kv_stage_requested = [] {
         const char* value = std::getenv("STRATA_SYCL_PREFILL_KEEP_KV_STAGE");
-        if (!value || std::strcmp(value, "0") == 0) return PrefillKvReuse::reload;
-        if (std::strcmp(value, "1") == 0) return PrefillKvReuse::aligned;
-        if (std::strcmp(value, "partial-page") == 0) return PrefillKvReuse::partial_page;
-        throw std::invalid_argument("STRATA_SYCL_PREFILL_KEEP_KV_STAGE requires 0, 1 or partial-page");
-    }();
-    static const bool prefill_pack_suffix = [] {
-        const char* value = std::getenv("STRATA_SYCL_PREFILL_PACK_KV_SUFFIX");
         if (!value || std::strcmp(value, "0") == 0) return false;
         if (std::strcmp(value, "1") == 0) return true;
-        throw std::invalid_argument("STRATA_SYCL_PREFILL_PACK_KV_SUFFIX requires 0 or 1");
+        throw std::invalid_argument("STRATA_SYCL_PREFILL_KEEP_KV_STAGE requires 0 or 1");
     }();
     // A single layer-major pass owns its staging pool until run_impl returns.
-    const bool owns_layer_stage = (prefill_kv_reuse != PrefillKvReuse::reload || prefill_pack_suffix) &&
-        m.layer_major_active && m.native16_active &&
-        LE == LB + 1 && LE < g.n_layers && !m.pp && !next_ &&
-        same_queue && m.copy == m.cs && stage_own();
-    // Aligned KV retention can also cross a DFlash2 observer call on layers
-    // outside its capture set. General callbacks require a fresh prefix.
-    const bool untapped_dflash2_layer = prefill_kv_reuse == PrefillKvReuse::aligned &&
+    // General callbacks and final layers reload. The typed DFlash2 tap has a fixed capture set.
+    const bool untapped_dflash2_layer = prefill_keep_kv_stage_requested &&
         on_layer.target<Dflash2PrefillTaps::LayerTap>() && !Dflash2PrefillTaps::captures_layer(LB);
-    const bool keep_kv_stage = prefill_kv_reuse != PrefillKvReuse::reload && owns_layer_stage &&
-        (!on_layer || untapped_dflash2_layer);
-    const bool keep_packed_kv = prefill_pack_suffix && owns_layer_stage && !on_layer;
+    const bool keep_kv_stage = prefill_keep_kv_stage_requested && m.layer_major_active && m.native16_active &&
+        LE == LB + 1 && LE < g.n_layers && (!on_layer || untapped_dflash2_layer) && !m.pp && !next_ &&
+        same_queue && m.copy == m.cs && stage_own();
     // No prefix is trusted on entry, including a resumed or cancelled request.
     int64_t kv_stage_end = -1;
-    int64_t packed_kv_end = -1;
-    const bool report_packed_kv = m.layer_major_active && std::getenv("STRATA_SYCL_PREFILL_PACK_KV_SUFFIX");
-    uint64_t packed_pages_written = 0, packed_pages_reused = 0;
     // Expose actual reload/reuse counts in both arms of a clean comparison.
     // Each attention layer publishes once, after all its chunks have finished.
     const bool report_kv_stage = m.layer_major_active &&
@@ -2434,18 +2417,6 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
         }
     }
     const bool ple_on = prefill_ple.ready() && LB <= 1 && 1 < LE;
-#if defined(STRATA_ENABLE_SYCL)
-    static const bool ple_wait_profile = [] {
-        const char* value = std::getenv("STRATA_SYCL_PREFILL_PLE_WAIT_PROFILE");
-        return value && std::strcmp(value, "1") == 0;
-    }();
-    const bool observe_ple_wait = ple_on && m.layer_major_active && ple_wait_profile;
-#else
-    constexpr bool observe_ple_wait = false;
-#endif
-    size_t ple_wait_calls = 0;
-    double ple_wait_ms = 0.0;
-    const double ple_start_ms = observe_ple_wait ? stats_.ms_ple : 0.0;
     const auto& prefill_ple_weights = prefill_ple.w;
     // the PLE block batched over the chunk: the pinned postops and a BF16 or GGUF-native key (else token by token);
     // STRATA_PLE_BATCH=0 keeps the per-token block (the A/B)
@@ -2676,10 +2647,6 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
             if (!ple_next.get()) {
                 err = ple_next_err;
                 return false;
-            }
-            if (observe_ple_wait) {
-                ple_wait_ms += ms_since(tp);
-                ++ple_wait_calls;
             }
             if (cudaMemcpyAsync(m.ple_emb, m.ple_emb_host[ple_buf], (size_t) T * N * 4, cudaMemcpyHostToDevice, m.cs) !=
                     cudaSuccess ||
@@ -3161,23 +3128,12 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                     if (staged) {
                         pt.mark(kPfKvStage, cs);
                         const int64_t pages = (p0 + s.page_size - 1) / s.page_size;
-                        int64_t reused_pages = 0;
+                        bool reload = true;
 #if defined(STRATA_ENABLE_SYCL)
-                        if (keep_kv_stage && typed_qsa && p0 == kv_stage_end &&
-                            (prefill_kv_reuse == PrefillKvReuse::partial_page || p0 % s.page_size == 0))
-                            reused_pages = p0 / s.page_size;
-                        if (report_kv_stage) {
-                            kv_reused_pages += reused_pages;
-                            kv_reloaded_pages += pages - reused_pages;
-                        }
-                        if (reused_pages > 0 && reused_pages < pages) {
-                            // Refresh the boundary page from the host mirror. Every block in
-                            // [reused_pages, pages) maps to itself in a ring of size pages.
-                            strata::kernels::kv_ring_restore(pools_of(m.stage, m.ident_table), st.host,
-                                core::qsa_kv_format(st), reused_pages, pages, pages, s, m.cs);
-                        }
+                        reload = !(keep_kv_stage && typed_qsa && p0 == kv_stage_end && p0 % s.page_size == 0);
+                        if (report_kv_stage) (reload ? kv_reloaded_pages : kv_reused_pages) += pages;
 #endif
-                        if (reused_pages == 0)
+                        if (reload)
                             strata::kernels::kv_stage_from_host(pools_of(m.stage, m.ident_table), st.host,
                                                                 core::qsa_kv_format(st), pages, s, m.cs);
                         pt.mark(kPfQsa, cs);
@@ -3425,24 +3381,10 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
                             matrix_used = strata::kernels::qsa_bf16_prefix_tilepack_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
                                 typed_bounds, p0 + T, m.qsa_prefix, m.cs);
-                        else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_ordered_exp) {
-                            int64_t retained = 0;
-                            if (keep_packed_kv && staged) {
-                                if (p0 == packed_kv_end) retained = p0 / s.page_size;
-                                matrix_used = strata::kernels::prefill_qsa_bf16_ordered_exp_suffix(
-                                    m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                    typed_bounds, p0 + T, m.qsa_prefix, retained, m.cs);
-                                packed_kv_end = matrix_used ? p0 + T : -1;
-                            } else {
-                                matrix_used = strata::kernels::qsa_bf16_prefix_ordered_exp_batch(
-                                    m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
-                                    typed_bounds, p0 + T, m.qsa_prefix, m.cs);
-                            }
-                            if (matrix_used && staged && report_packed_kv) {
-                                packed_pages_reused += retained;
-                                packed_pages_written += (p0 + T + s.page_size - 1) / s.page_size - retained;
-                            }
-                        }
+                        else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_ordered_exp)
+                            matrix_used = strata::kernels::qsa_bf16_prefix_ordered_exp_batch(
+                                m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
+                                typed_bounds, p0 + T, m.qsa_prefix, m.cs);
                         else if (arithmetic == native16::qsa::AttentionMath::bf16_prefix_kvvec4)
                             matrix_used = strata::kernels::qsa_bf16_prefix_kvvec4_batch(
                                 m.qsa_q16, pools, m.sel_ids, m.steps_dev, m.cap, s, m.qsa_attn16, T,
@@ -4455,9 +4397,6 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
     if (report_kv_stage && (kv_reloaded_pages || kv_reused_pages))
         std::fprintf(stderr, "strata prefill KV stage: layer=%lld reloaded_pages=%llu reused_pages=%llu\n",
                      (long long) LB, (unsigned long long) kv_reloaded_pages, (unsigned long long) kv_reused_pages);
-    if (packed_pages_written)
-        std::fprintf(stderr, "strata prefill packed KV: layer=%lld packed_pages=%llu reused_pages=%llu\n",
-                     (long long) LB, (unsigned long long) packed_pages_written, (unsigned long long) packed_pages_reused);
 #endif
     ss.ple_prev[0] = prev[0];
     ss.ple_prev[1] = prev[1];
@@ -4487,13 +4426,6 @@ bool Prefill::run_impl(const int64_t* tokens, int64_t n, int64_t pos0, std::stri
     if (const cudaError_t cst = cudaStreamSynchronize(m.copy); cst != cudaSuccess) {
         err = std::string("prefill: expert copy stream: ") + cudaGetErrorString(cst);
         return false;
-    }
-    if (observe_ple_wait) {
-        const char* mode = ss.ple.table->mode() == strata::kernels::PleIo::Direct ? "direct" : "mmap";
-        std::fprintf(stderr, "strata prefill PLE wait: position=%lld rows=%lld mode=%s gathers=%zu "
-                     "future_get_ms=%.3f host_ple_ms=%.3f\n",
-                     (long long)pos0, (long long)n, mode, ple_wait_calls, ple_wait_ms,
-                     stats_.ms_ple - ple_start_ms);
     }
     if (!m.layer_major_active) stats_.ms_total += ms_since(t_start);
     if (pt.on) {

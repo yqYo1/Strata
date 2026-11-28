@@ -15,8 +15,8 @@ def stream(n=1024,m=128):
 
 
 class ProtocolTests(unittest.TestCase):
-    def parse(self,lines,n=1024,m=128,*,reused_tokens=0):
-        reader=RequestProtocol(n,m,reused_tokens=reused_tokens)
+    def parse(self,lines,n=1024,m=128):
+        reader=RequestProtocol(n,m)
         for line in lines:reader.feed(line)
         return reader
 
@@ -53,20 +53,6 @@ class ProtocolTests(unittest.TestCase):
             good+['T 13'],good+['RESUME 0'],['ERR test'],['unknown'],[''],['T '+'1'*4096]]
         for i,lines in enumerate(variants):
             with self.subTest(case=i),self.assertRaises(RuntimeError):self.parse(lines)
-
-    def test_unaligned_live_prefix_and_done_extent(self):
-        lines = ['RESUME 83', 'PP 8275 8292 1 1', 'PP 8291 8292 2 1', 'REUSED 83', 'T 13',
-                 'DONE 1 8292 2.0 1.0 length 0 0 83 0 0 0 0 0.0 8209']
-        reader = self.parse(lines, 8292, 1, reused_tokens=83)
-        self.assertEqual(reader.position, 8291)
-        self.assertEqual(reader.tokens, [13])
-        for index, value in ((0, 'RESUME 84'), (1, 'PP 83 8292 1 1'), (3, 'REUSED 0'),
-                             (5, lines[-1].replace(' 83 ', ' 82 ')),
-                             (5, lines[-1].replace('8209', '8292'))):
-            with self.subTest(index=index), self.assertRaises(RuntimeError):
-                changed = lines.copy()
-                changed[index] = value
-                self.parse(changed, 8292, 1, reused_tokens=83)
 
     def test_geometry_bounds(self):
         for n,m,v in ((0,1,1),(262145,1,1),(1,0,1),(1,262145,1),(1,1,0),

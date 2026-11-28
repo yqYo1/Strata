@@ -303,6 +303,9 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     }
     const auto started = Clock::now();
     const auto old_stats = stats_;
+    const int32_t initial_prev[2] = {ss.ple_prev[0], ss.ple_prev[1]};
+    int32_t final_prev[2] = {initial_prev[0], initial_prev[1]};
+    for (int64_t t = 0; t < n; ++t) { final_prev[0] = final_prev[1]; final_prev[1] = int32_t(tokens[t]); }
 
     // Preserve decode cache, target/draft workspaces and captured graph addresses.
     // All new allocations are additional. Headroom is finite and explicit.
@@ -311,8 +314,6 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
     const uint64_t host_slab_bytes = detail::layer_major_mul(NE, stride);
     const char* bank_option = std::getenv("STRATA_SYCL_PREFILL_EXPERT_BANK_SLOTS");
     const int64_t requested_slots = bank_option ? detail::layer_major_requested_rows(bank_option) : 0;
-    const int64_t requested_gpu_rows = detail::layer_major_requested_rows(
-        std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU"));
     if (requested_slots < 0 || requested_slots > NE) {
         err = "prefill expert bank: slots must be decimal0..512"; return false;
     }
@@ -346,13 +347,15 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         err = "prefill BF16 prefix and metadata exceed maximum single allocation"; return false;
     }
     auto bank_plan = detail::ExpertBankPlan::make(n, m.T, D, stride, free_gpu,
-        other_reserved, gpu_headroom, max_alloc, requested_gpu_rows,
+        other_reserved, gpu_headroom, max_alloc,
+        detail::layer_major_requested_rows(std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU")),
         residual_dtype, requested_slots,
         window_on && scratch_window && native16_on && scratch_mixed_on);
-    // Mode 10 defaults to a 128-slot split and honors an explicitly smaller
-    // bank. Mode 16 may admit up to 131072 rows with its requested bank
-    // capacity and relocated job buffers. Charge the whole extra allocation
-    // against admission of the GPU residual.
+    // The initial candidate deliberately leaves the existing short-tail and
+    // full-context fallback untouched. The original split admits90113..117488
+    // rows at128slots. Explicit mode16 may admit up to131072rows using its
+    // separately requested bank capacity and relocated job buffers. Charge the
+    // complete extra allocation before R admission;decode1256 stays untouched.
     bool split_accumulator_on = false;
     bool relocated_job_buffers_on = false;
     uint64_t split_accumulator_bytes = 0;
@@ -369,13 +372,10 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                     detail::layer_major_mul(uint64_t(m.T), D * 4), m.region_bytes);
             const auto extra = relocate ? split.extra_bytes : split.accumulator_tail_allocation_bytes();
             if (extra <= max_alloc) {
-                int64_t split_slots = requested_slots;
-                if (!long_window_requested && (split_slots == 0 || split_slots > 128))
-                    split_slots = 128;
                 auto candidate = detail::ExpertBankPlan::make(n, m.T, D, stride, free_gpu,
                     detail::layer_major_add(other_reserved, extra), gpu_headroom, max_alloc,
-                    requested_gpu_rows,
-                    residual_dtype, split_slots, true);
+                    detail::layer_major_requested_rows(std::getenv("STRATA_PREFILL_LAYER_MAJOR_R_GPU")),
+                    residual_dtype, long_window_requested ? requested_slots : 128, true);
                 if (candidate.staged() && candidate.residual.gpu_rows == n) {
                     bank_plan = std::move(candidate);
                     split_accumulator_on = true;
@@ -389,37 +389,6 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
             // Preserve the ordinary placement/window plan on a capacity miss.
         }
     }
-    static const bool sweep_host_residual = [] {
-        const char* value = std::getenv("STRATA_SYCL_PREFILL_SPLIT_HOST_RESIDUAL");
-        if (!value || !std::strcmp(value, "0")) return false;
-        if (!std::strcmp(value, "1")) return true;
-        throw std::invalid_argument("STRATA_SYCL_PREFILL_SPLIT_HOST_RESIDUAL requires 0 or 1");
-    }();
-    const char* profile_switch = std::getenv("STRATA_PREFILL_LAYER_MAJOR_PROFILE");
-    const bool profile_requested = profile_switch && std::strcmp(profile_switch, "1") == 0;
-    if (sweep_host_residual && bank_plan.residual.host_bytes && n > detail::prefill_sweep_limit &&
-        requested_gpu_rows == -1 && native16_on && window_on && m.T == detail::prefill_sweep_chunk &&
-        !on_stage_chunk && !on_layer && !command_profile_on && !profile_requested) {
-        // Whole-input bounds and tokens are checked above. No workspace,
-        // callback or GPU lease has been acquired for the outer plan.
-        // Each call retires its own 48-layer pass. Its rows are <= the
-        // sweep limit, so it cannot split again. KV, GDN and PLE persist.
-        for (int64_t offset = 0; offset < n;) {
-            if (should_stop && should_stop()) { err = "cancelled"; return false; }
-            const int64_t rows = detail::prefill_next_sweep_rows(n - offset);
-            if (std::getenv("STRATA_TRACE"))
-                std::fprintf(stderr, "strata prefill layer sweep: request_start=%lld request_rows=%lld start=%lld rows=%lld original_host_rows=%lld\n",
-                    (long long)pos0, (long long)n, (long long)(pos0 + offset), (long long)rows,
-                    (long long)(n - bank_plan.residual.gpu_rows));
-            if (!run_layer_major(tokens + offset, rows, pos0 + offset, err)) return false;
-            offset += rows;
-        }
-        stats_.ms_total = old_stats.ms_total + ms_since(started);
-        return true;
-    }
-    const int32_t initial_prev[2] = {ss.ple_prev[0], ss.ple_prev[1]};
-    int32_t final_prev[2] = {initial_prev[0], initial_prev[1]};
-    for (int64_t t = 0; t < n; ++t) { final_prev[0] = final_prev[1]; final_prev[1] = int32_t(tokens[t]); }
     if (split_accumulator_on && command_profile_on) {
         err = "prefill split accumulator: command-service observer is not yet qualified"; return false;
     }
@@ -635,6 +604,8 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
         if (!census) std::fputs("strata lm census: {\"version\":1,\"complete\":false,\"reason\":\"host_observation_unavailable\"}\n", stderr);
     }
     detail::LayerMajorShapeBorrow census_borrow(m.layer_major_census, census.get());
+    const char* profile_switch = std::getenv("STRATA_PREFILL_LAYER_MAJOR_PROFILE");
+    const bool profile_requested = profile_switch && std::strcmp(profile_switch, "1") == 0;
     const char* gdn_profile_switch = std::getenv("STRATA_PREFILL_LAYER_MAJOR_GDN_PROFILE");
     const bool gdn_profile_requested = gdn_profile_switch && std::strcmp(gdn_profile_switch, "1") == 0;
     if (gdn_profile_requested && !profile_requested) {
@@ -1402,11 +1373,6 @@ bool Prefill::run_layer_major(const int64_t* tokens, int64_t n, int64_t pos0, st
                 (unsigned long long)window_context->vec8_gather_rows,
                 (unsigned long long)(window_context->jobs - window_context->vec8_gather_jobs),
                 (long long)native16::prefill_moe_vec8_min_rows);
-        if (window_context->shared_gate_windows)
-            std::fprintf(stderr, "strata MoE prefill shared Gate: windows=%llu chunks=%llu expansions=%llu final_drain=checked\n",
-                (unsigned long long)window_context->shared_gate_windows,
-                (unsigned long long)window_context->shared_gate_chunks,
-                (unsigned long long)window_context->shared_gate_expansions);
         std::fprintf(stderr, "strata MoE GU fusion: fused_jobs=%llu fused_rows=%llu separate_jobs=%llu min_rows=2334\n",
             (unsigned long long)window_context->gu_fused_jobs,
             (unsigned long long)window_context->gu_fused_rows,

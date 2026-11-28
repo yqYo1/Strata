@@ -30,7 +30,6 @@
 #include "strata/sycl/sform.hpp"
 #include <algorithm>
 #include <atomic>
-#include <limits>
 #include <vector>
 
 namespace strata::kernels {
@@ -139,64 +138,6 @@ void native_moe_combine(const float *p, const float *w, const float *s,
 void native_moe_combine_multi(const float *p, const float *w, const float *s,
                               float *o, int64_t n, int64_t k, int t, void *st) {
   combine(p, w, s, o, n, k, t, st, true);
-}
-void decode_moe_combine_mapped_rows(const float *mapped_cpu_parts,
-                                    const float *gpu_parts,
-                                    const int32_t *gpu_rows,
-                                    const int32_t *gpu_count,
-                                    const float *weights, const float *shared,
-                                    float *output, void *stream) {
-  constexpr int columns = 2560, experts = 10, tokens = 4;
-  constexpr int rows = tokens * experts, group_size = 128;
-  constexpr size_t output_bytes = tokens * columns * sizeof(float);
-  constexpr size_t parts_bytes = rows * columns * sizeof(float);
-  constexpr uint32_t invalid = uint32_t{1} << 31;
-  if (!stream)
-    throw std::invalid_argument("decode MoE combine needs an explicit queue");
-  validate_spans({{output, output_bytes}},
-                 {{mapped_cpu_parts, parts_bytes}, {gpu_parts, parts_bytes},
-                  {gpu_rows, rows * sizeof(int32_t)}, {gpu_count, sizeof(int32_t)},
-                  {weights, rows * sizeof(float)}, {shared, output_bytes}});
-  auto event = queue_for(stream).parallel_for(
-      sycl::nd_range<1>(tokens * columns, group_size), [=](sycl::nd_item<1> item) {
-        const size_t index = item.get_global_linear_id();
-        const size_t token = index / columns, column = index % columns;
-        const unsigned first = token * experts;
-        uint32_t gpu_mask = 0;
-        if (item.get_local_linear_id() == 0) {
-          const int count = *gpu_count;
-          if (count < 0 || count > rows) {
-            gpu_mask = invalid;
-          } else {
-            for (int j = 0; j < count; ++j) {
-              const unsigned row = static_cast<unsigned>(gpu_rows[j]);
-              const unsigned expert = row - first;
-              if (row >= rows) gpu_mask |= invalid;
-              if (expert < experts) {
-                const uint32_t bit = uint32_t{1} << expert;
-                if (gpu_mask & bit) gpu_mask |= invalid;
-                gpu_mask |= bit;
-              }
-            }
-          }
-        }
-        gpu_mask = sycl::group_broadcast(item.get_group(), gpu_mask);
-        if (gpu_mask & invalid) {
-          output[index] = std::numeric_limits<float>::quiet_NaN();
-          return;
-        }
-        auto part = [&](unsigned expert) {
-          const size_t at = (size_t(first) + expert) * columns + column;
-          // Match the original add of a resident row to the zeroed part.
-          return (gpu_mask & (uint32_t{1} << expert)) ? 0.0f + gpu_parts[at]
-                                                      : mapped_cpu_parts[at];
-        };
-        float sum = part(0) * weights[first];
-        for (unsigned expert = 1; expert < experts; ++expert)
-          sum = sycl::fma(part(expert), weights[first + expert], sum);
-        output[index] = sum + shared[index];
-      });
-  finish(stream, event);
 }
 void moe_combine(const float *p, const float *w, const float *s, float *o,
                  int64_t n, int64_t k, void *st) {

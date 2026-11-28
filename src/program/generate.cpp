@@ -25,7 +25,6 @@
 #include "strata/core/cpu_work_census.hpp"
 #ifdef STRATA_ENABLE_SYCL
 #include "strata/sycl/decode_service_profile.hpp"
-#include "strata/sycl/decode_segment_clocks.hpp"
 #include "strata/core/dflash2.hpp"
 #include "strata/prefill/dflash2_taps.hpp"
 #endif
@@ -6926,7 +6925,6 @@ int main(int argc, char** argv) {
             }();
             strata::sycl_backend::decode_service_profile::Scope decode_service(
                 decode_service_enabled, census_request);
-            strata::sycl_backend::decode_segment_clocks::Request segment_clocks(census_request);
 #endif
             const Clock::time_point d0 = Clock::now();
             // STRATA_DECODE_TIMING=1: where a request's decode time goes (one line per request)
@@ -8217,11 +8215,6 @@ int main(int argc, char** argv) {
                     if (pk.lookup) { T = pk.t; from_sfx = true; }
                 }
             }
-#ifdef STRATA_ENABLE_SYCL
-            // Limit the final width after suffix lookup can replace the MTP proposal.
-            if (use_mtp && p < o.max_context)
-                T = static_cast<int>(std::min<int64_t>(T, o.max_context - p));
-#endif
             const bool timed_round = !first_window;
             ++window_hist[(size_t) T];
             if (p + T > o.max_context) {

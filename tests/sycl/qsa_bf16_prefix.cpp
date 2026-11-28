@@ -82,13 +82,12 @@ void gate(bool enabled,const char *phase) {
   require(std::cin.get()=='X',"Main gate token");
 }
 
-void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=0,bool packed_suffix=false) {
+void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=0) {
 #ifndef STRATA_QSA_TEST_PAGE_SIZE
 #define STRATA_QSA_TEST_PAGE_SIZE 16
 #endif
-  constexpr int Heads=24,KV=2,Dim=256;
-  static_assert(STRATA_QSA_TEST_PAGE_SIZE==4 || STRATA_QSA_TEST_PAGE_SIZE==16);
-  const int Page=packed_suffix ? 4 : STRATA_QSA_TEST_PAGE_SIZE;
+  constexpr int Heads=24,KV=2,Dim=256,Page=STRATA_QSA_TEST_PAGE_SIZE;
+  static_assert(Page==4 || Page==16);
 #ifdef STRATA_QSA_PACKED_GUARD
   constexpr int PackedGuard=STRATA_QSA_PACKED_GUARD;
 #else
@@ -100,7 +99,6 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
   const int active_pages=(live_cells+Page-1)/Page, active_rows=active_pages*KV*Page;
   std::vector<int32_t> table(pages),ids(size_t(queries)*cap),steps(size_t(queries)*kStepCount);
   for (int p=0;p<pages;++p) table[p]=masked && p%7==2 ? -1 : masked && p%7==3 ? pages+9 : pages-1-p;
-  if (packed_suffix) for (int page=0;page<pages;++page) table[page]=page;
   std::vector<int8_t> k(size_t(rows)*Dim),v(k.size());
   for (size_t i=0;i<k.size();++i) { k[i]=int8_t(int((i*7+3)%15)-7); v[i]=int8_t(int((i*11+5)%31)-15); }
   std::vector<uint16_t> ks(size_t(rows)*4),vs(ks.size()),q(size_t(queries)*Heads*Dim);
@@ -194,49 +192,6 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
       }
     }
   };
-  if (packed_suffix) {
-    auto original = [&](int extent) {
-      require(qsa_bf16_prefix_ordered_exp_batch(dq.data(),pools,di.data(),ds.data(),cap,shape,out.data()+16,
-          queries,{pages,pages},extent,scratch,&rt->compute()),"ordered prefix unavailable");
-    };
-    auto suffix = [&](int64_t retained_pages) {
-      return prefill_qsa_bf16_ordered_exp_suffix(dq.data(),pools,di.data(),ds.data(),cap,shape,out.data()+16,
-          queries,{pages,pages},live_cells,scratch,retained_pages,&rt->compute());
-    };
-    for (bool invalid_scale : {false,true}) {
-      if (invalid_scale) {
-        ks[0]=0x7c00; // Cell zero is selected; its cached bad-row flag must survive.
-        dks.put(ks);
-      }
-      poison_scratch();
-      out.put(sentinel);
-      original(live_cells);
-      const auto expected=guarded(), expected_k=packed_k.get(), expected_v=packed_v.get();
-      const auto expected_bad=packed_bad.get();
-      check_packed_guards(expected_k,expected_v,expected_bad);
-      require(expected_bad[PackedGuard]==int(invalid_scale),"bad-row diagnostic must cover cell zero");
-      if (!invalid_scale) check_finite_scratch();
-      for (int previous : {0,1,3,4,5,7,live_cells-1}) {
-        poison_scratch();
-        if (previous) original(previous);
-        // Preserve production queue ordering between packs; reset output on
-        // the same queue so a missing consumer cannot reuse the first result.
-        rt->compute().fill(out.data(),guard,sentinel.size());
-        require(suffix(previous/Page),"incremental pack unavailable");
-        require(out.get()==expected && packed_k.get()==expected_k && packed_v.get()==expected_v
-                && packed_bad.get()==expected_bad,"incremental K/V, flags, padding, guards or output differ");
-      }
-      for (int invalid : {-1,active_pages}) {
-        bool refused=false;
-        try { (void)suffix(invalid); } catch (const std::invalid_argument &) { refused=true; }
-        require(refused && out.get()==expected && packed_k.get()==expected_k && packed_v.get()==expected_v
-                && packed_bad.get()==expected_bad,"bad retained-page extent changed the result");
-      }
-      immutable();
-    }
-    std::cout<<"packed_suffix=PASS page_size="<<Page<<" live_cells="<<live_cells<<" transitions=14 invalid_extents=4\n";
-    return;
-  }
   auto invoke=[&](bool initial_scratch = false) {
 #if !defined(STRATA_QSA_PREFILL_PV_COMPONENT)
     (void)initial_scratch;
@@ -532,18 +487,13 @@ void run(int cells,int cap,int queries,bool masked,bool extended,int live_cells=
 int main(int argc,char **argv) {
   try {
     std::cout.setf(std::ios::unitbuf);
-    require(argc==2 && (std::string(argv[1])=="--smoke" || std::string(argv[1])=="--component" ||
-                         std::string(argv[1])=="--packed-suffix"),"--smoke|--component|--packed-suffix required");
+    require(argc==2 && (std::string(argv[1])=="--smoke" || std::string(argv[1])=="--component"),"--smoke|--component required");
     const char *g=std::getenv("STRATA_TEST_MAIN_GATES");const bool gates=g && std::string(g)=="1";
     gate(gates,"before-runtime");rt=sycl_backend::runtime_for();
     std::cout<<"device="<<rt->device().get_info<sycl::info::device::name>()
              <<" driver="<<rt->device().get_info<sycl::info::device::driver_version>()<<'\n';
     gate(gates,"runtime-ready");
-    if (std::string(argv[1])=="--packed-suffix") {
-      run(97,33,3,false,false,71,true);
-    } else {
-      run(97,33,1,false,true,49);run(97,33,3,true,false,71);
-    }
+    run(97,33,1,false,true,49);run(97,33,3,true,false,71);
     if (std::string(argv[1])=="--component") {
       for (int width : {1,17,31,32,63,65,2051}) run(2113,width,3,true,false);
       run(262144,2051,1,false,false);run(262144,33,1,false,false,13);

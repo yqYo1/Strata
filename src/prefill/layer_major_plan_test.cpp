@@ -22,21 +22,6 @@ template<class F> static void rejected(F f, const char* message) {
 }
 
 int main() {
-    static_assert(prefill_next_sweep_rows(98304) == 98304);
-    static_assert(prefill_next_sweep_rows(98305) == 81920);
-    static_assert(prefill_next_sweep_rows(106497) == 98304);
-    // Cover every tail and the final physical slot. Absolute position can be
-    // unaligned on RESTORE; offsets stay aligned to the original kernel chunks.
-    for (int64_t n = 98305; n <= 262144; ++n) {
-        int64_t offset = 0;
-        while (offset < n) {
-            const int64_t rows = prefill_next_sweep_rows(n - offset);
-            check(rows > 8192 && rows <= 98304 && rows <= n - offset, "bounded multi-chunk sweep");
-            check(offset % 8192 == 0, "sweep starts at an original chunk boundary");
-            offset += rows;
-        }
-        check(offset == n, "sweeps cover the entire input once");
-    }
     constexpr uint64_t row_bytes = 10240 * sizeof(float);
     const auto full = LayerMajorResidualPlan::make(262144, 8192, 10240, 0, 0);
     check(full.total_bytes == 10737418240ull && full.host_bytes == full.total_bytes && !full.gpu_bytes,

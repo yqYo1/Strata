@@ -88,7 +88,7 @@ add_library(strata_kernels STATIC src/kernels/sycl/elementwise.cpp src/kernels/s
                                  src/kernels/sycl/rope.cpp src/kernels/sycl/kv.cpp
                                  src/kernels/sycl/attention.cpp src/kernels/sycl/native_flash_attn.cpp src/kernels/sycl/qsa_index.cpp
                                  src/kernels/sycl/native_qsa_indexer.cpp src/kernels/sycl/qsa_select.cpp
-                                 src/kernels/sycl/decode_attention.cpp src/kernels/sycl/prompt_attention.cpp src/kernels/sycl/kv_stream.cpp src/kernels/sycl/decode_kv_stream.cpp
+                                 src/kernels/sycl/decode_attention.cpp src/kernels/sycl/prompt_attention.cpp src/kernels/sycl/kv_stream.cpp
                                  src/kernels/sycl/ple.cpp src/kernels/sycl/s2_gemv_q8.cpp src/kernels/sycl/s2_experts.cpp src/kernels/sycl/s_gemv.cpp src/kernels/sycl/shared_expert.cpp src/kernels/sycl/iq.cpp
                                  src/kernels/ngram.cpp src/ngram/ple_reader.cpp src/platform/direct_file.cpp)
 target_link_libraries(strata_kernels PUBLIC strata_core strata_artifact)
@@ -154,10 +154,6 @@ add_executable(dflash2_pack_test EXCLUDE_FROM_ALL tests/core/dflash2_pack_test.c
 target_include_directories(dflash2_pack_test PRIVATE ${PROJECT_SOURCE_DIR}/include)
 add_executable(sycl_graph_envelope_test EXCLUDE_FROM_ALL tests/sycl/graph_envelope.cpp)
 target_link_libraries(sycl_graph_envelope_test PRIVATE strata_sycl_runtime)
-add_executable(sycl_decode_moe_combine_test EXCLUDE_FROM_ALL tests/sycl/decode_moe_combine.cpp)
-target_link_libraries(sycl_decode_moe_combine_test PRIVATE strata_kernels strata_warnings)
-target_compile_options(sycl_decode_moe_combine_test PRIVATE -fno-fast-math -ffp-contract=off)
-target_compile_features(sycl_decode_moe_combine_test PRIVATE cxx_std_20)
 add_executable(sycl_profile_compat_window EXCLUDE_FROM_ALL tests/sycl/profile_compat_window.cpp)
 target_link_libraries(sycl_profile_compat_window PRIVATE strata_sycl_runtime)
 add_executable(iq2_phase_host_test EXCLUDE_FROM_ALL tests/cpu/iq2_phase.cpp)
@@ -166,10 +162,8 @@ target_link_libraries(iq2_phase_host_test PRIVATE strata_kernels_cpu)
 add_executable(kv_copy_groups_host_fixture EXCLUDE_FROM_ALL tools/sycl/kv_copy_groups_host.cpp)
 target_compile_features(kv_copy_groups_host_fixture PRIVATE cxx_std_17)
 target_include_directories(kv_copy_groups_host_fixture PRIVATE ${PROJECT_SOURCE_DIR}/include)
-add_executable(sycl_kv_copy_groups_bench EXCLUDE_FROM_ALL
-  tools/sycl/kv_copy_groups_bench.cpp src/kernels/sycl/kv_stream.cpp
-  src/kernels/sycl/decode_kv_stream.cpp)
-target_link_libraries(sycl_kv_copy_groups_bench PRIVATE strata_sycl_runtime)
+add_executable(sycl_kv_copy_groups_bench EXCLUDE_FROM_ALL tools/sycl/kv_copy_groups_bench.cpp)
+target_link_libraries(sycl_kv_copy_groups_bench PRIVATE strata_kernels)
 target_compile_options(sycl_kv_copy_groups_bench PRIVATE -fno-fast-math -ffp-contract=off)
 # Compile the production GDN source directly for this bounded component fixture;
 # other engine kernels are not dependencies of this target.
@@ -187,8 +181,6 @@ target_link_libraries(strata_engine PUBLIC strata_core strata_kernels strata_ker
 
 # Explicitly invoked production-verifier lifetime checks; never automatic GPU work.
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-  add_executable(sycl_expert_dispatch_bounds_test EXCLUDE_FROM_ALL tests/core/expert_dispatch_bounds.cpp)
-  target_link_libraries(sycl_expert_dispatch_bounds_test PRIVATE strata_engine)
   add_executable(sycl_verifier_retirement_test EXCLUDE_FROM_ALL tests/sycl/verifier_retirement.cpp)
   target_link_libraries(sycl_verifier_retirement_test PRIVATE strata_engine)
   # Explicit native-event interop qualification only; never a production dependency.
@@ -624,13 +616,6 @@ if(STRATA_SYCL_TESTS)
   target_compile_features(sycl_qsa_bf16_prefix_ordered_exp_bench PRIVATE cxx_std_20)
   target_compile_options(sycl_qsa_bf16_prefix_ordered_exp_bench PRIVATE -fno-fast-math -ffp-contract=off)
   target_compile_definitions(sycl_qsa_bf16_prefix_ordered_exp_bench PRIVATE STRATA_QSA_BENCH_ORDERED_EXP=1)
-
-  add_executable(sycl_fullfit_arena_source_bench EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_prefix_layout_bench.cpp)
-  target_include_directories(sycl_fullfit_arena_source_bench PRIVATE ${CMAKE_SOURCE_DIR}/bench/sycl)
-  target_compile_features(sycl_fullfit_arena_source_bench PRIVATE cxx_std_20)
-  target_compile_options(sycl_fullfit_arena_source_bench PRIVATE -fno-fast-math -ffp-contract=off)
-  target_compile_definitions(sycl_fullfit_arena_source_bench PRIVATE STRATA_QSA_BENCH_FULLFIT_OVERLAP=1)
-  target_link_libraries(sycl_fullfit_arena_source_bench PRIVATE strata_engine ze_loader)
 
   add_executable(sycl_qsa_bf16_prefix_subgroup_test EXCLUDE_FROM_ALL tests/sycl/qsa_bf16_prefix.cpp)
   target_link_libraries(sycl_qsa_bf16_prefix_subgroup_test PRIVATE strata_kernels)

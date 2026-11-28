@@ -124,8 +124,6 @@ def trace_summary(events, native, begin_ns, end_ns):
 
 
 def kernel_family(name):
-    if name.startswith('strata::experimental::vllm_xe2_native16::') and '::DownScatterKernel<' in name:
-        return 'native16_down_fused'
     for fragment, family in (
         ('prefix_batch_impl<', 'qsa_prefix'), ('recurrence_columns<', 'gdn_recurrence'),
         ('submit_topk<', 'qsa_topk'), ('::DenseKernel<', 'native16_dense_gemm'),

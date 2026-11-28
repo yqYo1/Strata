@@ -47,14 +47,6 @@ bool qsa_bf16_prefix_ordered_exp_batch(const uint16_t *q, const QsaAttnPools &po
     uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
     int64_t live_cells, const QsaBf16PackedScratch &scratch, void *stream);
 
-// Long prefill with a private identity-mapped KV stage. The caller must have
-// packed the first retained_pages complete, unchanged pages into this scratch
-// on the same in-order queue. All later pages, including padding, are rewritten.
-bool prefill_qsa_bf16_ordered_exp_suffix(const uint16_t *q, const QsaAttnPools &pools,
-    const int32_t *ids, const int32_t *steps, int64_t cap, const QsaShapes &shape,
-    uint16_t *output, int64_t queries, const QsaPromptBf16Bounds &bounds,
-    int64_t live_cells, const QsaBf16PackedScratch &scratch, int64_t retained_pages, void *stream);
-
 // Diagnostic-only online state for one query, KV group and head row. Includes
 // padded head rows12..15; they follow the original state update too. Each
 // ceil(cap/32) row stores FP32 [maximum, alpha, normalizer, tile_sum]. Caller

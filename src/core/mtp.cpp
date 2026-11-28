@@ -1386,23 +1386,9 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* 
     if(head_detached_ || head_owner_retired_){err="mtp: draft requires restored head";return false;}
     if (!experts_ || experts_detached_) { err = "mtp: draft requires restored experts"; return false; }
     if (T < 1 || T > max_t_ || a < 0 || a >= T) { err = "mtp: draft arguments out of range"; return false; }
-    if (p < 0 || p >= st_.max_cells || T > st_.max_cells - p) {
-        err = "mtp: catch-up window runs past the context";
-        return false;
-    }
     const bool cp = coupled_active_;   // coupled draft sampling for this request: its own graphs
-    int catchup_rows = T;
 #ifdef STRATA_ENABLE_SYCL
-    static const bool use_committed_prefix = [] {
-        const char* value = std::getenv("STRATA_SYCL_MTP_DECODE_COMMITTED_PREFIX");
-        return value && std::strcmp(value, "1") == 0;
-    }();
-    if (use_committed_prefix && max_t_ == 4 && !cp) {
-        // The verifier committed rows [0, a]. The full step still selects row a,
-        // then writes and attends through cell p+a before proposing a new suffix.
-        catchup_rows = a + 1;
-    }
-    if (!observation.measure(Observation::capture, [&] { return capture_round(catchup_rows, cp, err); })) return false;
+    if (!observation.measure(Observation::capture, [&] { return capture_round(T, cp, err); })) return false;
 #else
     if (!capture_round(T, cp, err)) return false;
 #endif
@@ -1448,15 +1434,13 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* 
     h_row_[0] = a;
     h_row_[1] = 0;
     std::atomic_thread_fence(std::memory_order_seq_cst);
-    if (!replay(cp ? round_exec_c_[catchup_rows] : round_exec_[catchup_rows], 0)) return false;
+    if (!replay(cp ? round_exec_c_[T] : round_exec_[T], 0)) return false;
     drafts[0] = ((volatile int32_t*) h_out_)[0];
     float pj = ((volatile float*) h_prob_)[0];
     if (probs) probs[0] = pj;
     int n = 1;
-    // The chain stops at the context boundary or when the last draft is unlikely.
-    const int64_t draft_cells = st_.max_cells - p - a;
-    const int64_t limit = std::min<int64_t>(std::min(max_t_ - 1, max_drafts_), draft_cells);
-    for (int j = 1; j < limit && pj >= min_p; ++j) {
+    // the chain continues while the last draft is likely enough to be verified
+    for (int j = 1; j < std::min(max_t_ - 1, max_drafts_) && pj >= min_p; ++j) {
 #ifdef STRATA_ENABLE_SYCL
         if (!observation.measure(Observation::capture, [&] { return capture_step(j, cp, err); }, j)) return false;
 #else
@@ -1476,10 +1460,6 @@ bool MtpDrafter::draft(int T, const int32_t* tokens, int64_t p, int a, int32_t* 
     ++rounds;
 #ifdef STRATA_ENABLE_SYCL
     observation.complete();
-    static const bool trace = std::getenv("STRATA_TRACE") != nullptr;
-    if (trace)
-        std::fprintf(stderr, "strata mtp: decode catchup p=%lld verified=%d accepted=%d rows=%d coupled=%d\n",
-                     static_cast<long long>(p), T, a, catchup_rows, int(cp));
 #endif
     return true;
 }
@@ -1489,11 +1469,6 @@ bool MtpDrafter::draft_first(int T, const float* R_row, int32_t token, int64_t c
     const OnDevice on_device(device_);
     if(head_detached_ || head_owner_retired_){err="mtp: draft requires restored head";return false;}
     if (!experts_ || experts_detached_) { err = "mtp: first draft requires restored experts"; return false; }
-    if (T < 1 || T > max_t_ || cell < 0 || cell >= st_.max_cells) {
-        err = "mtp: first draft arguments out of range";
-        return false;
-    }
-    T = static_cast<int>(std::min<int64_t>(T, st_.max_cells - cell));
     // row 0 is the real pair; rows 1.. repeat it and only write cells the next round overwrites
     const int64_t HCN = g_->hc * g_->n_embd;
     for (int t = 0; t < T; ++t)
