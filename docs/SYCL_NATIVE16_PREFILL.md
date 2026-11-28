@@ -11561,6 +11561,23 @@ with exact provider identity and bounded cache ownership. The sustained
 DFlash2 and agent comparisons remain separate. Keep one exact donor while
 that restart policy has a current consumer.
 
+The measured environment selects `libze_intel_gpu.so.1.17.39758` from
+`libze-intel-gpu1` package `26.35.39758.17-1~24.04~ppa1` via
+`ZE_ENABLE_ALT_DRIVERS`. Its provider manifest also pins the local IGC
+2.41.5 libraries and DPC++ 2026.2 UR Level Zero v2 adapter. Intel's source
+tag of the same NEO version refers to IGC 2.41.15. Verify the actual native
+child's loader, driver, IGC and UR paths before reusing the cache across
+launches. [Intel release](https://github.com/intel/compute-runtime/releases/tag/26.35.39758.17)
+
+The corresponding cache source uses the IGC revision, library size and
+mtime, registry keys, input, options and hardware data in its key. The
+explicit directory must already exist. `NEO_CACHE_MAX_SIZE=0` makes the
+size limit unlimited. Use an explicit finite cache budget when comparing
+restart lifecycle. The previous readiness clock brackets a server log
+marker. Recheck readiness at the client API as a separate clock, with
+cache preparation charged to startup. [Cache key](https://github.com/intel/compute-runtime/blob/26.35.39758.17/shared/source/compiler_interface/compiler_cache.cpp#L27)
+and [cache configuration](https://github.com/intel/compute-runtime/blob/26.35.39758.17/shared/source/compiler_interface/default_cache_config.cpp#L27).
+
 After checking the committed samples and native exit receipts, retired the
 V1 preparation tree and the per-process raw outputs of the closed cache seed
 and rebuilt timing comparisons. The retirement covers 1,087 files and
@@ -12108,7 +12125,11 @@ two changed translation units at `5b82c9f60` pass syntax-only checks using
 the recorded early-PLE `icpx` 2026.2 flags and source preimages. The original
 compile database SHA-256 is
 `904497dff2fed8b487c381eda067fcd8f2cce438a2582fe8bf54359341e2f224`.
-The instrumented engine build and Arc measurements remain pending.
+The [instrumented build](https://github.com/yqYo1/Strata/commit/1dba95fb1)
+matches 1,479 compiler inputs and 11 final executables. The comparison
+pins that engine in [preparation](https://github.com/yqYo1/Strata/commit/5b9fcd13a)
+and passes both [frontend probes](https://github.com/yqYo1/Strata/commit/ce15678ef).
+Arc model measurements remain pending.
 
 The observed future wait ends after `PleTable::gather_batch` has collected
 the direct reads and expanded their packed rows on the CPU. That scope
