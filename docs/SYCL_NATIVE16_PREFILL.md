@@ -12129,7 +12129,25 @@ The [instrumented build](https://github.com/yqYo1/Strata/commit/1dba95fb1)
 matches 1,479 compiler inputs and 11 final executables. The comparison
 pins that engine in [preparation](https://github.com/yqYo1/Strata/commit/5b9fcd13a)
 and passes both [frontend probes](https://github.com/yqYo1/Strata/commit/ce15678ef).
-Arc model measurements remain pending.
+The four-process [closed comparison](https://github.com/yqYo1/Strata/commit/5476afa882c536c5fd61cc9ef0c3c93b102c262b)
+has 12 complete requests, verified assets and no new Xe faults. The two
+subsequent observer/control time ratios are 0.999044 and 1.000216. First
+PLE waits are 4.460 and 8.903 seconds in the controls and 4.204 and 3.975
+seconds in the observed arms. The observed first joins overlap reader
+collection for 4.118 and 3.902 seconds and CPU expansion for 86 and 73 ms.
+Both observed first requests plan 64,967 record touches, with 58,159
+unique within tickets. The 6,808 duplicate touches vanish on subsequent
+requests in both processes. All four first-request ZFS pool deltas record
+65,707 direct record reads. Shared partition read-wait sums differ across
+processes. They include other users of the partition.
+
+The varied-prompt gate passes. The [corpus comparison](../bench/dflash2_prefill_ple_corpus.py)
+uses `bench.sh --prefill-exact-tokens 118785 --prefill-corpus FILE` on the
+retained diagnostic engine. It reconstructs two different corpora from
+pinned Strata files, checks their bytes before launch and repeats each
+corpus in independent processes. Analyse each corpus separately. The
+active result keeps request samples and compact totals. The closed
+revision above preserves each ticket and the full qualification record.
 
 The observed future wait ends after `PleTable::gather_batch` has collected
 the direct reads and expanded their packed rows on the CPU. That scope

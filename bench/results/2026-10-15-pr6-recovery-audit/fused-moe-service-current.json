@@ -763126,163 +763126,11 @@
     }
   },
   "dflash2_prefill_ple_record_geometry_v1": {
-    "boot": "cfda0b6a-7c13-4fe2-bdf5-8f9202770840",
-    "driver": {
-      "pci": "/sys/bus/pci/devices/0000:05:00.0",
-      "driver": "xe",
-      "vendor": "0x8086",
-      "device": "0xe20c",
-      "kernel": "7.0.0-38-generic",
-      "devcoredump": false
-    },
-    "native_validation_probe": {
-      "library": {
-        "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/ur-validation-preload-v2/libstrata_ur_validation.so",
-        "sha256": "1d4e69d672d55fa0a126ae43b7b4743482cccca7e2f2bc22e0db2bfdad5bdc7c"
-      },
-      "loader": {
-        "path": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
-        "sha256": "81771b8372db7b81dc0c770f55d0171a806754ff4658a6fa301a7d2ad239d60d"
-      }
-    },
-    "configuration": {
-      "exe": "/home/yayoi/orca/workspaces/Strata/sycl/tools/sycl/engine_once.py",
-      "args": [
-        "--pack",
-        "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
-        "--native",
-        "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-        "--max-context",
-        "262144",
-        "--kv",
-        "int8",
-        "--kv-resident",
-        "20480",
-        "--expert-cache",
-        "1256",
-        "--expert-profile",
-        "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
-        "--expert-cache-per-layer",
-        "--pool-workers",
-        "5",
-        "--pcie-frac",
-        "0",
-        "--adapt-swaps",
-        "0",
-        "--conversation-cache-mib",
-        "0",
-        "--prompt-cache",
-        "0",
-        "--turn-token",
-        "-1",
-        "--suffix-draft",
-        "0",
-        "--greedy",
-        "--no-spec-split",
-        "--short-read",
-        "128",
-        "--spec",
-        "4",
-        "--prefill",
-        "8192",
-        "--vram-reserve-mib",
-        "1500",
-        "--no-coupled-draft",
-        "--no-token-graph",
-        "--prefill-strategy",
-        "throughput",
-        "--mtp",
-        "/home/yayoi/.local/share/strata-sycl/mtp/rt"
-      ],
-      "cwd": "/home/yayoi/orca/workspaces/Strata/sycl",
-      "tokenizer": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer",
-      "model_name": "qwen3.8-flash-next-iq3_s-primary",
-      "aliases": [
-        "strata"
-      ],
-      "host": "127.0.0.1",
-      "log": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/decode-iq3-model-entry-arm1-v1/engine.stderr",
-      "engine_silence_s": 480,
-      "parallel": 1,
-      "open_browser": false,
-      "env": {},
-      "family": "qwen",
-      "backend": "sycl"
-    },
-    "runtime_manifest": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-kv-upload-speed-v2/runtime-inputs.json",
-      "sha256": "43de9b527585addcc6da1f8fdc6f1e8266e2d982ba4c752d909578ed8c7bde21",
-      "files": 84
-    },
-    "template": {
-      "path": "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s/tokenizer/chat_template.jinja",
-      "sha256": "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce"
-    },
-    "ordinary_control": {
-      "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/prefill-ordinary-bank-comparison-v1/1",
-      "environment_sha256": "5990eab9654303568db3c00994aafcc93671f5e549f6420fdaa10aae86d3999b"
-    },
-    "dflash2_assets": {
-      "/home/yayoi/.local/share/strata-sycl/dflash2/qwen3.8-flash-next-dflash2.q4_0.pack": "cda40d62d0eb8f37ed6e272142641a1d2f0de4a32f9e14d0416e7a71534849f1",
-      "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin": "b1e1d3a7a9e4bf862dcd5923ce661fb59bbd07907e594df5cf86a62ac235cb91"
-    },
-    "validated_dflash2_args": [
-      "--pack",
-      "/home/yayoi/.local/share/strata-sycl/packs/qwen3.8-flash-next-iq3_s",
-      "--native",
-      "/home/yayoi/.local/share/strata-sycl/models/qwen3.8-flash-next-iq3_s/IQ3_S/Qwen3.8-Flash-Next-GSQ-RCO-IQ3_S-00001-of-00002.gguf",
-      "--max-context",
-      "262144",
-      "--kv",
-      "int8",
-      "--kv-resident",
-      "20480",
-      "--expert-cache",
-      "1256",
-      "--expert-profile",
-      "/home/yayoi/orca/workspaces/Strata/sycl/data/expert-profile.bin",
-      "--expert-cache-per-layer",
-      "--pool-workers",
-      "5",
-      "--pcie-frac",
-      "0",
-      "--adapt-swaps",
-      "0",
-      "--conversation-cache-mib",
-      "0",
-      "--turn-token",
-      "-1",
-      "--suffix-draft",
-      "0",
-      "--greedy",
-      "--no-spec-split",
-      "--short-read",
-      "128",
-      "--prefill",
-      "8192",
-      "--vram-reserve-mib",
-      "1500",
-      "--no-coupled-draft",
-      "--no-token-graph",
-      "--prefill-strategy",
-      "throughput",
-      "--spec",
-      "4",
-      "--prompt-cache",
-      "1",
-      "--prompt-cache-every",
-      "0",
-      "--draft",
-      "dflash2",
-      "--draft-model",
-      "/home/yayoi/.local/share/strata-sycl/dflash2/qwen3.8-flash-next-dflash2.q4_0.pack",
-      "--draft-fallback",
-      "none",
-      "--mtp-draft-vocab",
-      "/home/yayoi/.local/share/strata-sycl/mtp/rt/draft_vocab.bin",
-      "--draft-conf",
-      "0.6"
-    ],
+    "stage": "closed",
+    "active": false,
+    "passed": true,
+    "complete": true,
+    "ownership_closed": true,
     "binary": {
       "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-native-v1/build/strata",
       "sha256": "99d27185d4fc5525d5cbcd2cbecf16ce2892c7c0892b3948b71eadefe075df2f",
@@ -763290,158 +763138,9 @@
     },
     "native_source_commit": "8f539f82e38e1ec2c3e4285a29928aa1a32f4ea3",
     "native_build_sha256": "3cf408fec04dafd7d5ce1aacb3055283a14b299377a29f1a8437caa5ee446dd7",
-    "reference_evidence": "ad8652973c8f025e73bd07bc791a9976a55e20a9",
-    "python_contract": {
-      "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/benchmark-python-admission-v4/runtime.json",
-      "sha256": "2b28b86120ea7dd67ba53eb876592f77c76badab54cb9f03ebe4788f9d873e13",
-      "files": 3597,
-      "bytes": 270975442
-    },
-    "python_selected": {
-      "workspace_venv": false,
-      "path": "/home/yayoi/.local/share/strata-sycl/venv/bin/python3",
-      "file": {
-        "realpath": "/usr/bin/python3.12",
-        "dev": 29,
-        "ino": 774532,
-        "bytes": 8020928,
-        "mtime_ns": 1788171506000000000,
-        "ctime_ns": 1790581701420197973,
-        "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f"
-      }
-    },
-    "selected_arm": "retain",
-    "selection_sha256": "e11f8ba2578f2e7d80a25ab117140cdfb0cb35effd759e8a618886655673cf77",
-    "request_hashes": {
-      "118785": [
-        "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
-        "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d",
-        "f952766eccc6720b841e5091c55231ae6d505e82bd53259c17062b9a19a2515f"
-      ]
-    },
-    "frozen_prefill_work": [
-      {
-        "work": {
-          "windows": "48",
-          "dequants": "18974",
-          "jobs": "23978",
-          "source_H2D_bytes": "228065280",
-          "GPU_resident_windows_only": "1",
-          "operator_max": "8192",
-          "maximum_rows": "118784"
-        },
-        "uploads": {
-          "uploads": "18974",
-          "requested_H2D_bytes": "38726553600",
-          "permanent_hits": "0",
-          "permanent_slots": "31",
-          "total_slots": "32",
-          "final_drain": "checked"
-        },
-        "kv": {
-          "reloaded": 645120,
-          "reused": 1935360
-        },
-        "fixed_bytes": 3902964736,
-        "direct_pieces": 720,
-        "native_request": [
-          118785,
-          0,
-          118785,
-          24,
-          13,
-          15
-        ]
-      },
-      {
-        "work": {
-          "windows": "48",
-          "dequants": "18902",
-          "jobs": "23912",
-          "source_H2D_bytes": "228065280",
-          "GPU_resident_windows_only": "1",
-          "operator_max": "8192",
-          "maximum_rows": "118784"
-        },
-        "uploads": {
-          "uploads": "18902",
-          "requested_H2D_bytes": "38591923200",
-          "permanent_hits": "0",
-          "permanent_slots": "31",
-          "total_slots": "32",
-          "final_drain": "checked"
-        },
-        "kv": {
-          "reloaded": 645120,
-          "reused": 1935360
-        },
-        "fixed_bytes": 3902964736,
-        "direct_pieces": 720,
-        "native_request": [
-          118785,
-          0,
-          118785,
-          24,
-          13,
-          15
-        ]
-      },
-      {
-        "work": {
-          "windows": "48",
-          "dequants": "18907",
-          "jobs": "23923",
-          "source_H2D_bytes": "228065280",
-          "GPU_resident_windows_only": "1",
-          "operator_max": "8192",
-          "maximum_rows": "118784"
-        },
-        "uploads": {
-          "uploads": "18907",
-          "requested_H2D_bytes": "38600499200",
-          "permanent_hits": "0",
-          "permanent_slots": "31",
-          "total_slots": "32",
-          "final_drain": "checked"
-        },
-        "kv": {
-          "reloaded": 645120,
-          "reused": 1935360
-        },
-        "fixed_bytes": 3902964736,
-        "direct_pieces": 720,
-        "native_request": [
-          118785,
-          0,
-          118785,
-          24,
-          13,
-          16
-        ]
-      }
-    ],
-    "base_physical_context_sha256": "88f091162a4694cfbcce148e5732a3fb6c16a0b6fd964617064396792dc46fb1",
-    "native_context_qualified": false,
-    "ple_check_sha256": "7f80401b4940d065b139b35c6f0823a437d99b130fb0750f95b836b7ab2b3f35",
-    "clean_timing_sha256": "e913ef9c55f7e3acbd14f5d4137d321eb6d773234c8483133321465cbdb1c723",
-    "clean_controls": {
-      "stock": {
-        "subsequent_median_ms": 112619.8,
-        "first_gap_ms": [
-          5633.100000000006,
-          4399.600000000006,
-          4699.800000000003
-        ]
-      },
-      "early": {
-        "subsequent_median_ms": 112547.6,
-        "first_gap_ms": [
-          4433.100000000006,
-          3241.699999999997,
-          3978.199999999997
-        ]
-      }
-    },
+    "source_commit": "1dba95fb1702e40139553fbdc8f842e73abda08a",
+    "reader_overlay_commit": "ef9dcaba575945ba4acd0e32e4be440e635d6218",
+    "host_timeline_commit": "5b82c9f60b26d1c4795c023dad5bcd2e300ca577",
     "storage_geometry": {
       "pool": "rpool",
       "filesystem_device": "0:40",
@@ -763449,4158 +763148,6 @@
       "module": "2.4.1-1ubuntu5.1",
       "partition": "nvme0n1p3",
       "partition_device": "259:7"
-    },
-    "attribution_sha256": "9f8ec762a6f23d7d0f2860b4dc2c4b1dd81027dbfdd945912ee0893850afee60",
-    "early_extra_wait_ms": [
-      3399.2709999999997,
-      3954.6585
-    ],
-    "reader_overlay_commit": "ef9dcaba575945ba4acd0e32e4be440e635d6218",
-    "host_timeline_commit": "5b82c9f60b26d1c4795c023dad5bcd2e300ca577",
-    "stage": "closed",
-    "source_commit": "1dba95fb1702e40139553fbdc8f842e73abda08a",
-    "host_passed": true,
-    "ownership_closed": true,
-    "active": false,
-    "passed": true,
-    "complete": true,
-    "plans": [
-      {
-        "index": 0,
-        "arm": "control",
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-geometry-v1/0",
-        "port": 47685,
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-native-v1/build/strata",
-          "sha256": "99d27185d4fc5525d5cbcd2cbecf16ce2892c7c0892b3948b71eadefe075df2f",
-          "bytes": 26724000
-        },
-        "command": [
-          "/bin/sh",
-          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
-          "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-geometry-v1/0/config.json",
-          "--port",
-          "47685",
-          "--prefill-exact-tokens",
-          "118785",
-          "--think",
-          "--runs",
-          "3",
-          "--profile-request-gates",
-          "--workload-id",
-          "native_gdn_20261018",
-          "--fail-fast-engine-error",
-          "--ready-timeout",
-          "600",
-          "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-geometry-v1/0/bench"
-        ],
-        "generated": {
-          "config.json": "1d29755599562e12668919bbd630c9eb174adbe059f86bee2454111feeca91fc",
-          "plan.json": "44a782f99af5079b9bc7d4c8c280e49a06c87b193152ecf405d9ac4025b87199"
-        },
-        "environment_sha256": "a007836da40a6e9d7733097d83a0e9ebe592edab80aab3357a5255661d9c7846",
-        "read": 118785,
-        "heads": 1,
-        "kv_arm": "retain"
-      },
-      {
-        "index": 1,
-        "arm": "geometry",
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-geometry-v1/1",
-        "port": 38045,
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-native-v1/build/strata",
-          "sha256": "99d27185d4fc5525d5cbcd2cbecf16ce2892c7c0892b3948b71eadefe075df2f",
-          "bytes": 26724000
-        },
-        "command": [
-          "/bin/sh",
-          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
-          "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-geometry-v1/1/config.json",
-          "--port",
-          "38045",
-          "--prefill-exact-tokens",
-          "118785",
-          "--think",
-          "--runs",
-          "3",
-          "--profile-request-gates",
-          "--workload-id",
-          "native_gdn_20261018",
-          "--fail-fast-engine-error",
-          "--ready-timeout",
-          "600",
-          "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-geometry-v1/1/bench"
-        ],
-        "generated": {
-          "config.json": "efec7e39f8a0c773bd6c9fa060927ea207632a578a7afed9d4221ff109bcc16a",
-          "plan.json": "44a782f99af5079b9bc7d4c8c280e49a06c87b193152ecf405d9ac4025b87199"
-        },
-        "environment_sha256": "e4a5f2c4786bbe85f8b3fe003c816f09c64886bdd929448921e7662c05ac1e1c",
-        "read": 118785,
-        "heads": 1,
-        "kv_arm": "retain"
-      },
-      {
-        "index": 2,
-        "arm": "geometry",
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-geometry-v1/2",
-        "port": 48461,
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-native-v1/build/strata",
-          "sha256": "99d27185d4fc5525d5cbcd2cbecf16ce2892c7c0892b3948b71eadefe075df2f",
-          "bytes": 26724000
-        },
-        "command": [
-          "/bin/sh",
-          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
-          "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-geometry-v1/2/config.json",
-          "--port",
-          "48461",
-          "--prefill-exact-tokens",
-          "118785",
-          "--think",
-          "--runs",
-          "3",
-          "--profile-request-gates",
-          "--workload-id",
-          "native_gdn_20261018",
-          "--fail-fast-engine-error",
-          "--ready-timeout",
-          "600",
-          "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-geometry-v1/2/bench"
-        ],
-        "generated": {
-          "config.json": "8dacc21f45411fba7c6d11eae62fac9f79b6dbb58ffb3ad7881905b22ac827c4",
-          "plan.json": "44a782f99af5079b9bc7d4c8c280e49a06c87b193152ecf405d9ac4025b87199"
-        },
-        "environment_sha256": "c91d72291eaf87fa5940bc769a4f31246e517c4d15469850b4bbed9e5d6c33cc",
-        "read": 118785,
-        "heads": 1,
-        "kv_arm": "retain"
-      },
-      {
-        "index": 3,
-        "arm": "control",
-        "root": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-geometry-v1/3",
-        "port": 54409,
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-native-v1/build/strata",
-          "sha256": "99d27185d4fc5525d5cbcd2cbecf16ce2892c7c0892b3948b71eadefe075df2f",
-          "bytes": 26724000
-        },
-        "command": [
-          "/bin/sh",
-          "/home/yayoi/orca/workspaces/Strata/sycl/bench.sh",
-          "--config",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-geometry-v1/3/config.json",
-          "--port",
-          "54409",
-          "--prefill-exact-tokens",
-          "118785",
-          "--think",
-          "--runs",
-          "3",
-          "--profile-request-gates",
-          "--workload-id",
-          "native_gdn_20261018",
-          "--fail-fast-engine-error",
-          "--ready-timeout",
-          "600",
-          "--out",
-          "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-geometry-v1/3/bench"
-        ],
-        "generated": {
-          "config.json": "3f6afe01f61052642787fa8b25d7703cf01af6c05b6a8a73043ef8dd032dd5b5",
-          "plan.json": "44a782f99af5079b9bc7d4c8c280e49a06c87b193152ecf405d9ac4025b87199"
-        },
-        "environment_sha256": "59848f08426c2c75cf02af42818107c6769c07394143fc71d600eaf3fe474f63",
-        "read": 118785,
-        "heads": 1,
-        "kv_arm": "retain"
-      }
-    ],
-    "processes": [
-      {
-        "index": 0,
-        "read": 118785,
-        "heads": 1,
-        "complete": true,
-        "host_probe_accepted": true,
-        "model_executed": true,
-        "clean_speed": false,
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-native-v1/build/strata",
-          "sha256": "99d27185d4fc5525d5cbcd2cbecf16ce2892c7c0892b3948b71eadefe075df2f",
-          "bytes": 26724000
-        },
-        "native_source_commit": "8f539f82e38e1ec2c3e4285a29928aa1a32f4ea3",
-        "native_identity": {
-          "pid": 147827,
-          "start_ticks": 419372179,
-          "sid": 147775
-        },
-        "storage_counters": [
-          {
-            "zfs_direct_records": 65707,
-            "zfs_direct_bytes": 8612347904,
-            "partition_reads": 92125,
-            "partition_read_bytes": 10386145280,
-            "partition_read_wait_ms": 88619,
-            "partition_write_bytes": 392773632,
-            "request_window_ns": 124909214382
-          },
-          {
-            "zfs_direct_records": 691,
-            "zfs_direct_bytes": 90570752,
-            "partition_reads": 43485,
-            "partition_read_bytes": 3139260416,
-            "partition_read_wait_ms": 18322,
-            "partition_write_bytes": 160018432,
-            "request_window_ns": 114397178287
-          },
-          {
-            "zfs_direct_records": 707,
-            "zfs_direct_bytes": 92667904,
-            "partition_reads": 45881,
-            "partition_read_bytes": 3550056448,
-            "partition_read_wait_ms": 17000,
-            "partition_write_bytes": 556392448,
-            "request_window_ns": 114637406567
-          }
-        ],
-        "request_routes_checked_before_continue": 3,
-        "native_exit_code": 0,
-        "validation": {
-          "pid": 147827,
-          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
-          "threads_before": 1,
-          "preinit": 37,
-          "config_enabled": true,
-          "first_init": true,
-          "dispatch_result": 46,
-          "output_untouched": true,
-          "retained_reference_until_exit": true,
-          "runtime_teardown_qualified": false
-        },
-        "routes": [
-          {
-            "work": {
-              "windows": "48",
-              "dequants": "18974",
-              "jobs": "23978",
-              "source_H2D_bytes": "228065280",
-              "GPU_resident_windows_only": "1",
-              "operator_max": "8192",
-              "maximum_rows": "118784"
-            },
-            "uploads": {
-              "uploads": "18974",
-              "requested_H2D_bytes": "38726553600",
-              "permanent_hits": "0",
-              "permanent_slots": "31",
-              "total_slots": "32",
-              "final_drain": "checked"
-            },
-            "kv": {
-              "reloaded": 645120,
-              "reused": 1935360
-            },
-            "fixed_bytes": 3902964736,
-            "free_bytes": 4320698368,
-            "direct_pieces": 720,
-            "native_request": [
-              118785,
-              0,
-              118785,
-              24,
-              13,
-              15
-            ],
-            "ple_early_reads": 1,
-            "ple_wait": {
-              "gathers": 15,
-              "future_get_ms": 4459.787,
-              "host_ple_ms": 4470.565
-            },
-            "ple_read_geometry": [],
-            "ple_host_timeline": []
-          },
-          {
-            "work": {
-              "windows": "48",
-              "dequants": "18902",
-              "jobs": "23912",
-              "source_H2D_bytes": "228065280",
-              "GPU_resident_windows_only": "1",
-              "operator_max": "8192",
-              "maximum_rows": "118784"
-            },
-            "uploads": {
-              "uploads": "18902",
-              "requested_H2D_bytes": "38591923200",
-              "permanent_hits": "0",
-              "permanent_slots": "31",
-              "total_slots": "32",
-              "final_drain": "checked"
-            },
-            "kv": {
-              "reloaded": 645120,
-              "reused": 1935360
-            },
-            "fixed_bytes": 3902964736,
-            "free_bytes": 4237033472,
-            "direct_pieces": 720,
-            "native_request": [
-              118785,
-              0,
-              118785,
-              24,
-              13,
-              15
-            ],
-            "ple_early_reads": 1,
-            "ple_wait": {
-              "gathers": 15,
-              "future_get_ms": 0.043,
-              "host_ple_ms": 8.804
-            },
-            "ple_read_geometry": [],
-            "ple_host_timeline": []
-          },
-          {
-            "work": {
-              "windows": "48",
-              "dequants": "18907",
-              "jobs": "23923",
-              "source_H2D_bytes": "228065280",
-              "GPU_resident_windows_only": "1",
-              "operator_max": "8192",
-              "maximum_rows": "118784"
-            },
-            "uploads": {
-              "uploads": "18907",
-              "requested_H2D_bytes": "38600499200",
-              "permanent_hits": "0",
-              "permanent_slots": "31",
-              "total_slots": "32",
-              "final_drain": "checked"
-            },
-            "kv": {
-              "reloaded": 645120,
-              "reused": 1935360
-            },
-            "fixed_bytes": 3902964736,
-            "free_bytes": 4237037568,
-            "direct_pieces": 720,
-            "native_request": [
-              118785,
-              0,
-              118785,
-              24,
-              13,
-              16
-            ],
-            "ple_early_reads": 1,
-            "ple_wait": {
-              "gathers": 15,
-              "future_get_ms": 0.051,
-              "host_ple_ms": 8.972
-            },
-            "ple_read_geometry": [],
-            "ple_host_timeline": []
-          }
-        ],
-        "samples": [
-          {
-            "actual_read_tokens": 118785,
-            "actual_reused_tokens": 0,
-            "prompt_ms": 122818.2,
-            "prompt_tps": 967.2,
-            "ttft_s": 123.016,
-            "total_s": 124.875,
-            "generated_tokens": 24,
-            "request_sha256": "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
-            "drafts_offered": 15,
-            "drafts_accepted": 13,
-            "timing_frontend_state": "post-count-preflight"
-          },
-          {
-            "actual_read_tokens": 118785,
-            "actual_reused_tokens": 0,
-            "prompt_ms": 112499.9,
-            "prompt_tps": 1055.9,
-            "ttft_s": 112.697,
-            "total_s": 114.368,
-            "generated_tokens": 24,
-            "request_sha256": "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d",
-            "drafts_offered": 15,
-            "drafts_accepted": 13,
-            "timing_frontend_state": "post-count-preflight"
-          },
-          {
-            "actual_read_tokens": 118785,
-            "actual_reused_tokens": 0,
-            "prompt_ms": 112742.5,
-            "prompt_tps": 1053.6,
-            "ttft_s": 112.941,
-            "total_s": 114.599,
-            "generated_tokens": 24,
-            "request_sha256": "f952766eccc6720b841e5091c55231ae6d505e82bd53259c17062b9a19a2515f",
-            "drafts_offered": 16,
-            "drafts_accepted": 13,
-            "timing_frontend_state": "post-count-preflight"
-          }
-        ],
-        "subsequent_median_ms": 112621.2,
-        "ownership_closed": true,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
-        },
-        "passed": true,
-        "arm": "control"
-      },
-      {
-        "index": 1,
-        "read": 118785,
-        "heads": 1,
-        "complete": true,
-        "host_probe_accepted": true,
-        "model_executed": true,
-        "clean_speed": false,
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-native-v1/build/strata",
-          "sha256": "99d27185d4fc5525d5cbcd2cbecf16ce2892c7c0892b3948b71eadefe075df2f",
-          "bytes": 26724000
-        },
-        "native_source_commit": "8f539f82e38e1ec2c3e4285a29928aa1a32f4ea3",
-        "native_identity": {
-          "pid": 174371,
-          "start_ticks": 419431606,
-          "sid": 174301
-        },
-        "storage_counters": [
-          {
-            "zfs_direct_records": 65707,
-            "zfs_direct_bytes": 8612347904,
-            "partition_reads": 95536,
-            "partition_read_bytes": 10748133376,
-            "partition_read_wait_ms": 89934,
-            "partition_write_bytes": 403722240,
-            "request_window_ns": 125288592049
-          },
-          {
-            "zfs_direct_records": 691,
-            "zfs_direct_bytes": 90570752,
-            "partition_reads": 28275,
-            "partition_read_bytes": 1681600512,
-            "partition_read_wait_ms": 11164,
-            "partition_write_bytes": 175071232,
-            "request_window_ns": 114318950266
-          },
-          {
-            "zfs_direct_records": 707,
-            "zfs_direct_bytes": 92667904,
-            "partition_reads": 31521,
-            "partition_read_bytes": 2202083328,
-            "partition_read_wait_ms": 14354,
-            "partition_write_bytes": 364036096,
-            "request_window_ns": 114429332836
-          }
-        ],
-        "request_routes_checked_before_continue": 3,
-        "native_exit_code": 0,
-        "validation": {
-          "pid": 174371,
-          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
-          "threads_before": 1,
-          "preinit": 37,
-          "config_enabled": true,
-          "first_init": true,
-          "dispatch_result": 46,
-          "output_untouched": true,
-          "retained_reference_until_exit": true,
-          "runtime_teardown_qualified": false
-        },
-        "routes": [
-          {
-            "work": {
-              "windows": "48",
-              "dequants": "18974",
-              "jobs": "23978",
-              "source_H2D_bytes": "228065280",
-              "GPU_resident_windows_only": "1",
-              "operator_max": "8192",
-              "maximum_rows": "118784"
-            },
-            "uploads": {
-              "uploads": "18974",
-              "requested_H2D_bytes": "38726553600",
-              "permanent_hits": "0",
-              "permanent_slots": "31",
-              "total_slots": "32",
-              "final_drain": "checked"
-            },
-            "kv": {
-              "reloaded": 645120,
-              "reused": 1935360
-            },
-            "fixed_bytes": 3902964736,
-            "free_bytes": 4320698368,
-            "direct_pieces": 720,
-            "native_request": [
-              118785,
-              0,
-              118785,
-              24,
-              13,
-              15
-            ],
-            "ple_early_reads": 1,
-            "ple_wait": {
-              "gathers": 15,
-              "future_get_ms": 4204.003,
-              "host_ple_ms": 4218.44
-            },
-            "ple_read_geometry": [
-              {
-                "rows": 131072,
-                "jobs": 41410,
-                "requested_bytes": 173109248,
-                "in_file_bytes": 173109248,
-                "page_touches": 42263,
-                "unique_pages": 42255,
-                "record_bytes": 131072,
-                "record_touches": 41446,
-                "unique_records": 35642
-              },
-              {
-                "rows": 131072,
-                "jobs": 14284,
-                "requested_bytes": 59670528,
-                "in_file_bytes": 59670528,
-                "page_touches": 14568,
-                "unique_pages": 14568,
-                "record_bytes": 131072,
-                "record_touches": 14291,
-                "unique_records": 13451
-              },
-              {
-                "rows": 131072,
-                "jobs": 5667,
-                "requested_bytes": 23707648,
-                "in_file_bytes": 23707648,
-                "page_touches": 5788,
-                "unique_pages": 5787,
-                "record_bytes": 131072,
-                "record_touches": 5670,
-                "unique_records": 5528
-              },
-              {
-                "rows": 131072,
-                "jobs": 2086,
-                "requested_bytes": 8720384,
-                "in_file_bytes": 8720384,
-                "page_touches": 2129,
-                "unique_pages": 2129,
-                "record_bytes": 131072,
-                "record_touches": 2087,
-                "unique_records": 2070
-              },
-              {
-                "rows": 131072,
-                "jobs": 751,
-                "requested_bytes": 3149824,
-                "in_file_bytes": 3149824,
-                "page_touches": 769,
-                "unique_pages": 769,
-                "record_bytes": 131072,
-                "record_touches": 753,
-                "unique_records": 748
-              },
-              {
-                "rows": 131072,
-                "jobs": 296,
-                "requested_bytes": 1245184,
-                "in_file_bytes": 1245184,
-                "page_touches": 304,
-                "unique_pages": 304,
-                "record_bytes": 131072,
-                "record_touches": 296,
-                "unique_records": 296
-              },
-              {
-                "rows": 131072,
-                "jobs": 128,
-                "requested_bytes": 532480,
-                "in_file_bytes": 532480,
-                "page_touches": 130,
-                "unique_pages": 130,
-                "record_bytes": 131072,
-                "record_touches": 128,
-                "unique_records": 128
-              },
-              {
-                "rows": 131072,
-                "jobs": 16,
-                "requested_bytes": 65536,
-                "in_file_bytes": 65536,
-                "page_touches": 16,
-                "unique_pages": 16,
-                "record_bytes": 131072,
-                "record_touches": 16,
-                "unique_records": 16
-              },
-              {
-                "rows": 131072,
-                "jobs": 8,
-                "requested_bytes": 32768,
-                "in_file_bytes": 32768,
-                "page_touches": 8,
-                "unique_pages": 8,
-                "record_bytes": 131072,
-                "record_touches": 8,
-                "unique_records": 8
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 65536,
-                "jobs": 272,
-                "requested_bytes": 1122304,
-                "in_file_bytes": 1122304,
-                "page_touches": 274,
-                "unique_pages": 274,
-                "record_bytes": 131072,
-                "record_touches": 272,
-                "unique_records": 272
-              }
-            ],
-            "ple_host_timeline": [
-              {
-                "join_ns": 1679386290,
-                "unattributed_join_ns": 75432,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 10668961,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 32519716,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 3966088900,
-                    "exposed_ns": 1658256049
-                  },
-                  "expand": {
-                    "wall_ns": 21054809,
-                    "exposed_ns": 21054809
-                  }
-                }
-              },
-              {
-                "join_ns": 1639012941,
-                "unattributed_join_ns": 140824,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 1090199,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 11625688,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 1705530271,
-                    "exposed_ns": 1618555565
-                  },
-                  "expand": {
-                    "wall_ns": 20316552,
-                    "exposed_ns": 20316552
-                  }
-                }
-              },
-              {
-                "join_ns": 639784542,
-                "unattributed_join_ns": 114355,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 484320,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 9887232,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 712430539,
-                    "exposed_ns": 623662543
-                  },
-                  "expand": {
-                    "wall_ns": 16007644,
-                    "exposed_ns": 16007644
-                  }
-                }
-              },
-              {
-                "join_ns": 220397415,
-                "unattributed_join_ns": 201348,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 502244,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 9089742,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 295175640,
-                    "exposed_ns": 206023391
-                  },
-                  "expand": {
-                    "wall_ns": 14172676,
-                    "exposed_ns": 14172676
-                  }
-                }
-              },
-              {
-                "join_ns": 25389065,
-                "unattributed_join_ns": 117531,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 508766,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6878717,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 103370530,
-                    "exposed_ns": 11182105
-                  },
-                  "expand": {
-                    "wall_ns": 14089429,
-                    "exposed_ns": 14089429
-                  }
-                }
-              },
-              {
-                "join_ns": 3477,
-                "unattributed_join_ns": 3477,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 491484,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 10149234,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 45528634,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 18977876,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2785,
-                "unattributed_join_ns": 2785,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 483429,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7474998,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 17347402,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 16860927,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3456,
-                "unattributed_join_ns": 3456,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 469011,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6546814,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 3471474,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24888946,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3146,
-                "unattributed_join_ns": 3146,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 469553,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6166699,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 2047869,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 25211441,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2775,
-                "unattributed_join_ns": 2775,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 467519,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7438740,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 752,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24777736,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 4077,
-                "unattributed_join_ns": 4077,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 470053,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6227383,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 792,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24819344,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2545,
-                "unattributed_join_ns": 2545,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 469983,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 8352718,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 642,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 23829373,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3096,
-                "unattributed_join_ns": 3096,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 469202,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7066731,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 571,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 27875358,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 4518,
-                "unattributed_join_ns": 4518,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 464423,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 5438871,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 581,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 28140627,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3055,
-                "unattributed_join_ns": 3055,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 235773,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6382565,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 34802366,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 6478175,
-                    "exposed_ns": 0
-                  }
-                }
-              }
-            ]
-          },
-          {
-            "work": {
-              "windows": "48",
-              "dequants": "18902",
-              "jobs": "23912",
-              "source_H2D_bytes": "228065280",
-              "GPU_resident_windows_only": "1",
-              "operator_max": "8192",
-              "maximum_rows": "118784"
-            },
-            "uploads": {
-              "uploads": "18902",
-              "requested_H2D_bytes": "38591923200",
-              "permanent_hits": "0",
-              "permanent_slots": "31",
-              "total_slots": "32",
-              "final_drain": "checked"
-            },
-            "kv": {
-              "reloaded": 645120,
-              "reused": 1935360
-            },
-            "fixed_bytes": 3902964736,
-            "free_bytes": 4237033472,
-            "direct_pieces": 720,
-            "native_request": [
-              118785,
-              0,
-              118785,
-              24,
-              13,
-              15
-            ],
-            "ple_early_reads": 1,
-            "ple_wait": {
-              "gathers": 15,
-              "future_get_ms": 0.043,
-              "host_ple_ms": 9.51
-            },
-            "ple_read_geometry": [
-              {
-                "rows": 131072,
-                "jobs": 40,
-                "requested_bytes": 167936,
-                "in_file_bytes": 167936,
-                "page_touches": 41,
-                "unique_pages": 41,
-                "record_bytes": 131072,
-                "record_touches": 40,
-                "unique_records": 40
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 65536,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              }
-            ],
-            "ple_host_timeline": [
-              {
-                "join_ns": 3848,
-                "unattributed_join_ns": 3848,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 521490,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 4410961,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 22215235,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 21826725,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3276,
-                "unattributed_join_ns": 3276,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 478539,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 11616554,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 882,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24809120,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2114,
-                "unattributed_join_ns": 2114,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 469783,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7156952,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 491,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 27852811,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2886,
-                "unattributed_join_ns": 2886,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 464994,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6020667,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 440,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24815423,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3186,
-                "unattributed_join_ns": 3186,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 467840,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 12132814,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 772,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 29403626,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3377,
-                "unattributed_join_ns": 3377,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 471296,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6786886,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 521,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24911724,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2274,
-                "unattributed_join_ns": 2274,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 480403,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 11083242,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 1022,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 25851399,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2355,
-                "unattributed_join_ns": 2355,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 472118,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7274272,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 571,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 27794882,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2524,
-                "unattributed_join_ns": 2524,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 471556,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6099264,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 421,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24835299,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2184,
-                "unattributed_join_ns": 2184,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 470685,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7316802,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 541,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24864415,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3236,
-                "unattributed_join_ns": 3236,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 473470,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6143267,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 431,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 27884531,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2906,
-                "unattributed_join_ns": 2906,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 479190,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7487383,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 692,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 27878389,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2755,
-                "unattributed_join_ns": 2755,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 464313,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 9324616,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 732,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24860657,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2966,
-                "unattributed_join_ns": 2966,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 471787,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 9067352,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 732,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 35271215,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3416,
-                "unattributed_join_ns": 3416,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 237376,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 4661051,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 481,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 12458336,
-                    "exposed_ns": 0
-                  }
-                }
-              }
-            ]
-          },
-          {
-            "work": {
-              "windows": "48",
-              "dequants": "18907",
-              "jobs": "23923",
-              "source_H2D_bytes": "228065280",
-              "GPU_resident_windows_only": "1",
-              "operator_max": "8192",
-              "maximum_rows": "118784"
-            },
-            "uploads": {
-              "uploads": "18907",
-              "requested_H2D_bytes": "38600499200",
-              "permanent_hits": "0",
-              "permanent_slots": "31",
-              "total_slots": "32",
-              "final_drain": "checked"
-            },
-            "kv": {
-              "reloaded": 645120,
-              "reused": 1935360
-            },
-            "fixed_bytes": 3902964736,
-            "free_bytes": 4237037568,
-            "direct_pieces": 720,
-            "native_request": [
-              118785,
-              0,
-              118785,
-              24,
-              13,
-              16
-            ],
-            "ple_early_reads": 1,
-            "ple_wait": {
-              "gathers": 15,
-              "future_get_ms": 0.042,
-              "host_ple_ms": 9.02
-            },
-            "ple_read_geometry": [
-              {
-                "rows": 131072,
-                "jobs": 40,
-                "requested_bytes": 167936,
-                "in_file_bytes": 167936,
-                "page_touches": 41,
-                "unique_pages": 41,
-                "record_bytes": 131072,
-                "record_touches": 40,
-                "unique_records": 40
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 65536,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              }
-            ],
-            "ple_host_timeline": [
-              {
-                "join_ns": 3456,
-                "unattributed_join_ns": 3456,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 711257,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 2747034,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 61991337,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 20461763,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2875,
-                "unattributed_join_ns": 2875,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 476856,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 5697570,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 932,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 27925022,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2294,
-                "unattributed_join_ns": 2294,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 465084,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7413476,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 912,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 28212502,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2074,
-                "unattributed_join_ns": 2074,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 469643,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7183122,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 511,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24860171,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3686,
-                "unattributed_join_ns": 3686,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 464473,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6130935,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 741,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 27959076,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3166,
-                "unattributed_join_ns": 3166,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 472318,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7475902,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 572,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 27893963,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2605,
-                "unattributed_join_ns": 2605,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 464704,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6531166,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 571,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 27965158,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2214,
-                "unattributed_join_ns": 2214,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 474201,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 8288631,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 501,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24835414,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3336,
-                "unattributed_join_ns": 3336,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 472318,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7176069,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 631,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 27872654,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2374,
-                "unattributed_join_ns": 2374,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 464273,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 5384411,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 892,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 27708965,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3096,
-                "unattributed_join_ns": 3096,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 471687,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6223738,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 762,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24834132,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3687,
-                "unattributed_join_ns": 3687,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 474863,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 8434374,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 812,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24928890,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2354,
-                "unattributed_join_ns": 2354,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 473179,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7434986,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 712,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 27849039,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2395,
-                "unattributed_join_ns": 2395,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 472889,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6500649,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 601,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 27997148,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2574,
-                "unattributed_join_ns": 2574,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 238718,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 1780697,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 742,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 15472574,
-                    "exposed_ns": 0
-                  }
-                }
-              }
-            ]
-          }
-        ],
-        "samples": [
-          {
-            "actual_read_tokens": 118785,
-            "actual_reused_tokens": 0,
-            "prompt_ms": 123221.3,
-            "prompt_tps": 964.0,
-            "ttft_s": 123.417,
-            "total_s": 125.248,
-            "generated_tokens": 24,
-            "request_sha256": "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
-            "drafts_offered": 15,
-            "drafts_accepted": 13,
-            "timing_frontend_state": "post-count-preflight"
-          },
-          {
-            "actual_read_tokens": 118785,
-            "actual_reused_tokens": 0,
-            "prompt_ms": 112439.2,
-            "prompt_tps": 1056.4,
-            "ttft_s": 112.634,
-            "total_s": 114.282,
-            "generated_tokens": 24,
-            "request_sha256": "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d",
-            "drafts_offered": 15,
-            "drafts_accepted": 13,
-            "timing_frontend_state": "post-count-preflight"
-          },
-          {
-            "actual_read_tokens": 118785,
-            "actual_reused_tokens": 0,
-            "prompt_ms": 112587.8,
-            "prompt_tps": 1055.0,
-            "ttft_s": 112.788,
-            "total_s": 114.425,
-            "generated_tokens": 24,
-            "request_sha256": "f952766eccc6720b841e5091c55231ae6d505e82bd53259c17062b9a19a2515f",
-            "drafts_offered": 16,
-            "drafts_accepted": 13,
-            "timing_frontend_state": "post-count-preflight"
-          }
-        ],
-        "subsequent_median_ms": 112513.5,
-        "ownership_closed": true,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
-        },
-        "passed": true,
-        "arm": "geometry"
-      },
-      {
-        "index": 2,
-        "read": 118785,
-        "heads": 1,
-        "complete": true,
-        "host_probe_accepted": true,
-        "model_executed": true,
-        "clean_speed": false,
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-native-v1/build/strata",
-          "sha256": "99d27185d4fc5525d5cbcd2cbecf16ce2892c7c0892b3948b71eadefe075df2f",
-          "bytes": 26724000
-        },
-        "native_source_commit": "8f539f82e38e1ec2c3e4285a29928aa1a32f4ea3",
-        "native_identity": {
-          "pid": 199298,
-          "start_ticks": 419490406,
-          "sid": 199244
-        },
-        "storage_counters": [
-          {
-            "zfs_direct_records": 65707,
-            "zfs_direct_bytes": 8612347904,
-            "partition_reads": 93301,
-            "partition_read_bytes": 10555772928,
-            "partition_read_wait_ms": 79776,
-            "partition_write_bytes": 353050624,
-            "request_window_ns": 124194809359
-          },
-          {
-            "zfs_direct_records": 691,
-            "zfs_direct_bytes": 90570752,
-            "partition_reads": 26926,
-            "partition_read_bytes": 1552666624,
-            "partition_read_wait_ms": 14649,
-            "partition_write_bytes": 166940672,
-            "request_window_ns": 114396349092
-          },
-          {
-            "zfs_direct_records": 707,
-            "zfs_direct_bytes": 92667904,
-            "partition_reads": 51663,
-            "partition_read_bytes": 3825364992,
-            "partition_read_wait_ms": 18028,
-            "partition_write_bytes": 560492544,
-            "request_window_ns": 114498360604
-          }
-        ],
-        "request_routes_checked_before_continue": 3,
-        "native_exit_code": 0,
-        "validation": {
-          "pid": 199298,
-          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
-          "threads_before": 1,
-          "preinit": 37,
-          "config_enabled": true,
-          "first_init": true,
-          "dispatch_result": 46,
-          "output_untouched": true,
-          "retained_reference_until_exit": true,
-          "runtime_teardown_qualified": false
-        },
-        "routes": [
-          {
-            "work": {
-              "windows": "48",
-              "dequants": "18974",
-              "jobs": "23978",
-              "source_H2D_bytes": "228065280",
-              "GPU_resident_windows_only": "1",
-              "operator_max": "8192",
-              "maximum_rows": "118784"
-            },
-            "uploads": {
-              "uploads": "18974",
-              "requested_H2D_bytes": "38726553600",
-              "permanent_hits": "0",
-              "permanent_slots": "31",
-              "total_slots": "32",
-              "final_drain": "checked"
-            },
-            "kv": {
-              "reloaded": 645120,
-              "reused": 1935360
-            },
-            "fixed_bytes": 3902964736,
-            "free_bytes": 4320694272,
-            "direct_pieces": 720,
-            "native_request": [
-              118785,
-              0,
-              118785,
-              24,
-              13,
-              15
-            ],
-            "ple_early_reads": 1,
-            "ple_wait": {
-              "gathers": 15,
-              "future_get_ms": 3975.282,
-              "host_ple_ms": 3987.66
-            },
-            "ple_read_geometry": [
-              {
-                "rows": 131072,
-                "jobs": 41410,
-                "requested_bytes": 173109248,
-                "in_file_bytes": 173109248,
-                "page_touches": 42263,
-                "unique_pages": 42255,
-                "record_bytes": 131072,
-                "record_touches": 41446,
-                "unique_records": 35642
-              },
-              {
-                "rows": 131072,
-                "jobs": 14284,
-                "requested_bytes": 59670528,
-                "in_file_bytes": 59670528,
-                "page_touches": 14568,
-                "unique_pages": 14568,
-                "record_bytes": 131072,
-                "record_touches": 14291,
-                "unique_records": 13451
-              },
-              {
-                "rows": 131072,
-                "jobs": 5667,
-                "requested_bytes": 23707648,
-                "in_file_bytes": 23707648,
-                "page_touches": 5788,
-                "unique_pages": 5787,
-                "record_bytes": 131072,
-                "record_touches": 5670,
-                "unique_records": 5528
-              },
-              {
-                "rows": 131072,
-                "jobs": 2086,
-                "requested_bytes": 8720384,
-                "in_file_bytes": 8720384,
-                "page_touches": 2129,
-                "unique_pages": 2129,
-                "record_bytes": 131072,
-                "record_touches": 2087,
-                "unique_records": 2070
-              },
-              {
-                "rows": 131072,
-                "jobs": 751,
-                "requested_bytes": 3149824,
-                "in_file_bytes": 3149824,
-                "page_touches": 769,
-                "unique_pages": 769,
-                "record_bytes": 131072,
-                "record_touches": 753,
-                "unique_records": 748
-              },
-              {
-                "rows": 131072,
-                "jobs": 296,
-                "requested_bytes": 1245184,
-                "in_file_bytes": 1245184,
-                "page_touches": 304,
-                "unique_pages": 304,
-                "record_bytes": 131072,
-                "record_touches": 296,
-                "unique_records": 296
-              },
-              {
-                "rows": 131072,
-                "jobs": 128,
-                "requested_bytes": 532480,
-                "in_file_bytes": 532480,
-                "page_touches": 130,
-                "unique_pages": 130,
-                "record_bytes": 131072,
-                "record_touches": 128,
-                "unique_records": 128
-              },
-              {
-                "rows": 131072,
-                "jobs": 16,
-                "requested_bytes": 65536,
-                "in_file_bytes": 65536,
-                "page_touches": 16,
-                "unique_pages": 16,
-                "record_bytes": 131072,
-                "record_touches": 16,
-                "unique_records": 16
-              },
-              {
-                "rows": 131072,
-                "jobs": 8,
-                "requested_bytes": 32768,
-                "in_file_bytes": 32768,
-                "page_touches": 8,
-                "unique_pages": 8,
-                "record_bytes": 131072,
-                "record_touches": 8,
-                "unique_records": 8
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 65536,
-                "jobs": 272,
-                "requested_bytes": 1122304,
-                "in_file_bytes": 1122304,
-                "page_touches": 274,
-                "unique_pages": 274,
-                "record_bytes": 131072,
-                "record_touches": 272,
-                "unique_records": 272
-              }
-            ],
-            "ple_host_timeline": [
-              {
-                "join_ns": 1612170237,
-                "unattributed_join_ns": 73369,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 10948703,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 34323251,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 3905230472,
-                    "exposed_ns": 1591181155
-                  },
-                  "expand": {
-                    "wall_ns": 20915713,
-                    "exposed_ns": 20915713
-                  }
-                }
-              },
-              {
-                "join_ns": 1576719710,
-                "unattributed_join_ns": 63230,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 491402,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 12615442,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 1642668180,
-                    "exposed_ns": 1556084320
-                  },
-                  "expand": {
-                    "wall_ns": 20572160,
-                    "exposed_ns": 20572160
-                  }
-                }
-              },
-              {
-                "join_ns": 612379114,
-                "unattributed_join_ns": 84430,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 488777,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 10888878,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 686828701,
-                    "exposed_ns": 598623601
-                  },
-                  "expand": {
-                    "wall_ns": 13671083,
-                    "exposed_ns": 13671083
-                  }
-                }
-              },
-              {
-                "join_ns": 169944944,
-                "unattributed_join_ns": 169061,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 484729,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6032589,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 248002840,
-                    "exposed_ns": 155994200
-                  },
-                  "expand": {
-                    "wall_ns": 13781683,
-                    "exposed_ns": 13781683
-                  }
-                }
-              },
-              {
-                "join_ns": 4038999,
-                "unattributed_join_ns": 101212,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 483958,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6619462,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 92528455,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 13344534,
-                    "exposed_ns": 3937787
-                  }
-                }
-              },
-              {
-                "join_ns": 3096,
-                "unattributed_join_ns": 3096,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 480010,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 9605123,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 36852180,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 17871499,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2184,
-                "unattributed_join_ns": 2184,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 477215,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6360451,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 18287758,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 18838472,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 4268,
-                "unattributed_join_ns": 4268,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 474941,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 8282255,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 2582297,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 22933837,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3947,
-                "unattributed_join_ns": 3947,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 481753,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7761628,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 3104507,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 25061212,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3166,
-                "unattributed_join_ns": 3166,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 468789,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6737936,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 1102,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 27101231,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2545,
-                "unattributed_join_ns": 2545,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 464912,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 5442680,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 972,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 27848978,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2043,
-                "unattributed_join_ns": 2043,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 464591,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7296145,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 652,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24829792,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2064,
-                "unattributed_join_ns": 2064,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 464090,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6030244,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 592,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24832698,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3577,
-                "unattributed_join_ns": 3577,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 463689,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6434050,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 521,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24907690,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2575,
-                "unattributed_join_ns": 2575,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 233412,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 1954316,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 34090122,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 6403963,
-                    "exposed_ns": 0
-                  }
-                }
-              }
-            ]
-          },
-          {
-            "work": {
-              "windows": "48",
-              "dequants": "18902",
-              "jobs": "23912",
-              "source_H2D_bytes": "228065280",
-              "GPU_resident_windows_only": "1",
-              "operator_max": "8192",
-              "maximum_rows": "118784"
-            },
-            "uploads": {
-              "uploads": "18902",
-              "requested_H2D_bytes": "38591923200",
-              "permanent_hits": "0",
-              "permanent_slots": "31",
-              "total_slots": "32",
-              "final_drain": "checked"
-            },
-            "kv": {
-              "reloaded": 645120,
-              "reused": 1935360
-            },
-            "fixed_bytes": 3902964736,
-            "free_bytes": 4237033472,
-            "direct_pieces": 720,
-            "native_request": [
-              118785,
-              0,
-              118785,
-              24,
-              13,
-              15
-            ],
-            "ple_early_reads": 1,
-            "ple_wait": {
-              "gathers": 15,
-              "future_get_ms": 0.055,
-              "host_ple_ms": 9.159
-            },
-            "ple_read_geometry": [
-              {
-                "rows": 131072,
-                "jobs": 40,
-                "requested_bytes": 167936,
-                "in_file_bytes": 167936,
-                "page_touches": 41,
-                "unique_pages": 41,
-                "record_bytes": 131072,
-                "record_touches": 40,
-                "unique_records": 40
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 65536,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              }
-            ],
-            "ple_host_timeline": [
-              {
-                "join_ns": 4088,
-                "unattributed_join_ns": 4088,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 539161,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 10373231,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 16807833,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 18253982,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3276,
-                "unattributed_join_ns": 3276,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 469920,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6407311,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 1032,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 28059997,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 1833,
-                "unattributed_join_ns": 1833,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 479628,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7460966,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 641,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 25862426,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2825,
-                "unattributed_join_ns": 2825,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 463959,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6040386,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 611,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24909602,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3947,
-                "unattributed_join_ns": 3947,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 471142,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 8363866,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 701,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24939619,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2494,
-                "unattributed_join_ns": 2494,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 471763,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7500491,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 1162,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 26070480,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2856,
-                "unattributed_join_ns": 2856,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 464500,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6112803,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 761,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24973474,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3346,
-                "unattributed_join_ns": 3346,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 469910,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 8202881,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 721,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24858275,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3026,
-                "unattributed_join_ns": 3026,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 467245,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7311854,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 501,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 27894473,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 4198,
-                "unattributed_join_ns": 4198,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 469289,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6058420,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 511,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 26874492,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 5641,
-                "unattributed_join_ns": 5641,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 472033,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6309406,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 1012,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 25296976,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 5089,
-                "unattributed_join_ns": 5089,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 478926,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 10659903,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 842,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 30133763,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 4359,
-                "unattributed_join_ns": 4359,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 464770,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 4862756,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 732,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24861751,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 4849,
-                "unattributed_join_ns": 4849,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 470932,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 5935588,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 511,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24842795,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3126,
-                "unattributed_join_ns": 3126,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 241477,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 1890409,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 471,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 17425542,
-                    "exposed_ns": 0
-                  }
-                }
-              }
-            ]
-          },
-          {
-            "work": {
-              "windows": "48",
-              "dequants": "18907",
-              "jobs": "23923",
-              "source_H2D_bytes": "228065280",
-              "GPU_resident_windows_only": "1",
-              "operator_max": "8192",
-              "maximum_rows": "118784"
-            },
-            "uploads": {
-              "uploads": "18907",
-              "requested_H2D_bytes": "38600499200",
-              "permanent_hits": "0",
-              "permanent_slots": "31",
-              "total_slots": "32",
-              "final_drain": "checked"
-            },
-            "kv": {
-              "reloaded": 645120,
-              "reused": 1935360
-            },
-            "fixed_bytes": 3902964736,
-            "free_bytes": 4237037568,
-            "direct_pieces": 720,
-            "native_request": [
-              118785,
-              0,
-              118785,
-              24,
-              13,
-              16
-            ],
-            "ple_early_reads": 1,
-            "ple_wait": {
-              "gathers": 15,
-              "future_get_ms": 0.048,
-              "host_ple_ms": 21.926
-            },
-            "ple_read_geometry": [
-              {
-                "rows": 131072,
-                "jobs": 40,
-                "requested_bytes": 167936,
-                "in_file_bytes": 167936,
-                "page_touches": 41,
-                "unique_pages": 41,
-                "record_bytes": 131072,
-                "record_touches": 40,
-                "unique_records": 40
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 131072,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              },
-              {
-                "rows": 65536,
-                "jobs": 0,
-                "requested_bytes": 0,
-                "in_file_bytes": 0,
-                "page_touches": 0,
-                "unique_pages": 0,
-                "record_bytes": 131072,
-                "record_touches": 0,
-                "unique_records": 0
-              }
-            ],
-            "ple_host_timeline": [
-              {
-                "join_ns": 3828,
-                "unattributed_join_ns": 3828,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 494134,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 5319300,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 58925287,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 18336036,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2816,
-                "unattributed_join_ns": 2816,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 488614,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 10109237,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 1022,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24924006,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 5460,
-                "unattributed_join_ns": 5460,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 469829,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6340811,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 701,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 28571223,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3427,
-                "unattributed_join_ns": 3427,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 3448012,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7041386,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 991,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 28081607,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3627,
-                "unattributed_join_ns": 3627,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 480559,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6523146,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 681,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 28263981,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3587,
-                "unattributed_join_ns": 3587,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 471411,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 8642474,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 672,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 25310235,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2445,
-                "unattributed_join_ns": 2445,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 465089,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7401318,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 681,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 28264141,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2995,
-                "unattributed_join_ns": 2995,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 465921,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6537123,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 721,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 28124888,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3046,
-                "unattributed_join_ns": 3046,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 473616,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6394112,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 591,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24856948,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2795,
-                "unattributed_join_ns": 2795,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 479227,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 8145464,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 471,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 24875142,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3246,
-                "unattributed_join_ns": 3246,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 463797,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7270610,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 511,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 26162807,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2855,
-                "unattributed_join_ns": 2855,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 464589,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6184004,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 842,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 27856931,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 3246,
-                "unattributed_join_ns": 3246,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 469047,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 7566519,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 882,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 25234562,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2525,
-                "unattributed_join_ns": 2525,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 465400,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 6306075,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 782,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 27901174,
-                    "exposed_ns": 0
-                  }
-                }
-              },
-              {
-                "join_ns": 2154,
-                "unattributed_join_ns": 2154,
-                "phases": {
-                  "allocation": {
-                    "wall_ns": 233221,
-                    "exposed_ns": 0
-                  },
-                  "issue": {
-                    "wall_ns": 5782816,
-                    "exposed_ns": 0
-                  },
-                  "collect": {
-                    "wall_ns": 842,
-                    "exposed_ns": 0
-                  },
-                  "expand": {
-                    "wall_ns": 12571664,
-                    "exposed_ns": 0
-                  }
-                }
-              }
-            ]
-          }
-        ],
-        "samples": [
-          {
-            "actual_read_tokens": 118785,
-            "actual_reused_tokens": 0,
-            "prompt_ms": 122178.3,
-            "prompt_tps": 972.2,
-            "ttft_s": 122.379,
-            "total_s": 124.168,
-            "generated_tokens": 24,
-            "request_sha256": "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
-            "drafts_offered": 15,
-            "drafts_accepted": 13,
-            "timing_frontend_state": "post-count-preflight"
-          },
-          {
-            "actual_read_tokens": 118785,
-            "actual_reused_tokens": 0,
-            "prompt_ms": 112504.5,
-            "prompt_tps": 1055.8,
-            "ttft_s": 112.699,
-            "total_s": 114.35,
-            "generated_tokens": 24,
-            "request_sha256": "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d",
-            "drafts_offered": 15,
-            "drafts_accepted": 13,
-            "timing_frontend_state": "post-count-preflight"
-          },
-          {
-            "actual_read_tokens": 118785,
-            "actual_reused_tokens": 0,
-            "prompt_ms": 112660.5,
-            "prompt_tps": 1054.4,
-            "ttft_s": 112.858,
-            "total_s": 114.496,
-            "generated_tokens": 24,
-            "request_sha256": "f952766eccc6720b841e5091c55231ae6d505e82bd53259c17062b9a19a2515f",
-            "drafts_offered": 16,
-            "drafts_accepted": 13,
-            "timing_frontend_state": "post-count-preflight"
-          }
-        ],
-        "subsequent_median_ms": 112582.5,
-        "ownership_closed": true,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
-        },
-        "passed": true,
-        "arm": "geometry"
-      },
-      {
-        "index": 3,
-        "read": 118785,
-        "heads": 1,
-        "complete": true,
-        "host_probe_accepted": true,
-        "model_executed": true,
-        "clean_speed": false,
-        "binary": {
-          "path": "/home/yayoi/.local/state/strata-sycl/post-reboot-tuning-20261007/dflash2-prefill-ple-record-native-v1/build/strata",
-          "sha256": "99d27185d4fc5525d5cbcd2cbecf16ce2892c7c0892b3948b71eadefe075df2f",
-          "bytes": 26724000
-        },
-        "native_source_commit": "8f539f82e38e1ec2c3e4285a29928aa1a32f4ea3",
-        "native_identity": {
-          "pid": 224361,
-          "start_ticks": 419549207,
-          "sid": 224295
-        },
-        "storage_counters": [
-          {
-            "zfs_direct_records": 65707,
-            "zfs_direct_bytes": 8612347904,
-            "partition_reads": 104251,
-            "partition_read_bytes": 11265138688,
-            "partition_read_wait_ms": 129025,
-            "partition_write_bytes": 421027840,
-            "request_window_ns": 128902026888
-          },
-          {
-            "zfs_direct_records": 690,
-            "zfs_direct_bytes": 90439680,
-            "partition_reads": 23357,
-            "partition_read_bytes": 1560494080,
-            "partition_read_wait_ms": 10706,
-            "partition_write_bytes": 243920896,
-            "request_window_ns": 114335514729
-          },
-          {
-            "zfs_direct_records": 706,
-            "zfs_direct_bytes": 92536832,
-            "partition_reads": 23203,
-            "partition_read_bytes": 1516957696,
-            "partition_read_wait_ms": 11027,
-            "partition_write_bytes": 374398976,
-            "request_window_ns": 114484654551
-          }
-        ],
-        "request_routes_checked_before_continue": 3,
-        "native_exit_code": 0,
-        "validation": {
-          "pid": 224361,
-          "loader": "/opt/intel/oneapi/compiler/2026.2/lib/libur_loader.so.0",
-          "threads_before": 1,
-          "preinit": 37,
-          "config_enabled": true,
-          "first_init": true,
-          "dispatch_result": 46,
-          "output_untouched": true,
-          "retained_reference_until_exit": true,
-          "runtime_teardown_qualified": false
-        },
-        "routes": [
-          {
-            "work": {
-              "windows": "48",
-              "dequants": "18974",
-              "jobs": "23978",
-              "source_H2D_bytes": "228065280",
-              "GPU_resident_windows_only": "1",
-              "operator_max": "8192",
-              "maximum_rows": "118784"
-            },
-            "uploads": {
-              "uploads": "18974",
-              "requested_H2D_bytes": "38726553600",
-              "permanent_hits": "0",
-              "permanent_slots": "31",
-              "total_slots": "32",
-              "final_drain": "checked"
-            },
-            "kv": {
-              "reloaded": 645120,
-              "reused": 1935360
-            },
-            "fixed_bytes": 3902964736,
-            "free_bytes": 4320694272,
-            "direct_pieces": 720,
-            "native_request": [
-              118785,
-              0,
-              118785,
-              24,
-              13,
-              15
-            ],
-            "ple_early_reads": 1,
-            "ple_wait": {
-              "gathers": 15,
-              "future_get_ms": 8902.907,
-              "host_ple_ms": 8915.313
-            },
-            "ple_read_geometry": [],
-            "ple_host_timeline": []
-          },
-          {
-            "work": {
-              "windows": "48",
-              "dequants": "18902",
-              "jobs": "23912",
-              "source_H2D_bytes": "228065280",
-              "GPU_resident_windows_only": "1",
-              "operator_max": "8192",
-              "maximum_rows": "118784"
-            },
-            "uploads": {
-              "uploads": "18902",
-              "requested_H2D_bytes": "38591923200",
-              "permanent_hits": "0",
-              "permanent_slots": "31",
-              "total_slots": "32",
-              "final_drain": "checked"
-            },
-            "kv": {
-              "reloaded": 645120,
-              "reused": 1935360
-            },
-            "fixed_bytes": 3902964736,
-            "free_bytes": 4237025280,
-            "direct_pieces": 720,
-            "native_request": [
-              118785,
-              0,
-              118785,
-              24,
-              13,
-              15
-            ],
-            "ple_early_reads": 1,
-            "ple_wait": {
-              "gathers": 15,
-              "future_get_ms": 0.044,
-              "host_ple_ms": 8.695
-            },
-            "ple_read_geometry": [],
-            "ple_host_timeline": []
-          },
-          {
-            "work": {
-              "windows": "48",
-              "dequants": "18907",
-              "jobs": "23923",
-              "source_H2D_bytes": "228065280",
-              "GPU_resident_windows_only": "1",
-              "operator_max": "8192",
-              "maximum_rows": "118784"
-            },
-            "uploads": {
-              "uploads": "18907",
-              "requested_H2D_bytes": "38600499200",
-              "permanent_hits": "0",
-              "permanent_slots": "31",
-              "total_slots": "32",
-              "final_drain": "checked"
-            },
-            "kv": {
-              "reloaded": 645120,
-              "reused": 1935360
-            },
-            "fixed_bytes": 3902964736,
-            "free_bytes": 4237029376,
-            "direct_pieces": 720,
-            "native_request": [
-              118785,
-              0,
-              118785,
-              24,
-              13,
-              16
-            ],
-            "ple_early_reads": 1,
-            "ple_wait": {
-              "gathers": 15,
-              "future_get_ms": 0.042,
-              "host_ple_ms": 8.546
-            },
-            "ple_read_geometry": [],
-            "ple_host_timeline": []
-          }
-        ],
-        "samples": [
-          {
-            "actual_read_tokens": 118785,
-            "actual_reused_tokens": 0,
-            "prompt_ms": 126860.2,
-            "prompt_tps": 936.3,
-            "ttft_s": 127.056,
-            "total_s": 128.898,
-            "generated_tokens": 24,
-            "request_sha256": "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
-            "drafts_offered": 15,
-            "drafts_accepted": 13,
-            "timing_frontend_state": "post-count-preflight"
-          },
-          {
-            "actual_read_tokens": 118785,
-            "actual_reused_tokens": 0,
-            "prompt_ms": 112499.9,
-            "prompt_tps": 1055.9,
-            "ttft_s": 112.695,
-            "total_s": 114.333,
-            "generated_tokens": 24,
-            "request_sha256": "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d",
-            "drafts_offered": 15,
-            "drafts_accepted": 13,
-            "timing_frontend_state": "post-count-preflight"
-          },
-          {
-            "actual_read_tokens": 118785,
-            "actual_reused_tokens": 0,
-            "prompt_ms": 112616.5,
-            "prompt_tps": 1054.8,
-            "ttft_s": 112.809,
-            "total_s": 114.462,
-            "generated_tokens": 24,
-            "request_sha256": "f952766eccc6720b841e5091c55231ae6d505e82bd53259c17062b9a19a2515f",
-            "drafts_offered": 16,
-            "drafts_accepted": 13,
-            "timing_frontend_state": "post-count-preflight"
-          }
-        ],
-        "subsequent_median_ms": 112558.2,
-        "ownership_closed": true,
-        "fresh_faults": [],
-        "boot_unchanged": true,
-        "driver_after": {
-          "pci": "/sys/bus/pci/devices/0000:05:00.0",
-          "driver": "xe",
-          "vendor": "0x8086",
-          "device": "0xe20c",
-          "kernel": "7.0.0-38-generic",
-          "devcoredump": false
-        },
-        "passed": true,
-        "arm": "control"
-      }
-    ],
-    "budgets": {
-      "wall": 5400,
-      "cpu": 21600,
-      "rss_cap": 111669149696,
-      "text_cap": 25165824,
-      "file_cap": 67108864,
-      "total_cap": 167772160
     },
     "plan": {
       "order": [
@@ -767617,16 +763164,7 @@
       "limits": "Ticket unions describe within-ticket reuse. The stage clocks are elapsed times and may include preemption. Shared-device counters and observer clocks provide attribution. Estimate clean speed with a separate comparison.",
       "stop": "Stop on changed inputs, routing or work, unclosed ownership, runtime validation or a fresh Xe fault."
     },
-    "host_results": [
-      {
-        "role": "benchmark",
-        "passed": true
-      },
-      {
-        "role": "server",
-        "passed": true
-      }
-    ],
+    "host_passed": true,
     "decision": {
       "observer_over_control": [
         {
@@ -767670,11 +763208,524 @@
       "varied_prompt_followup": true,
       "adopted": false
     },
-    "source_inputs": {
-      "files": 829,
-      "sha256": "63bb70b3f2a17539d6779bd81b626e70d7ffb0244c190219382152107b87908c"
-    },
-    "environment_template_sha256": "5a837da39bb93f18f459deec82fb5063bdcc982d3bf6a8bd28d748db0f36fb13",
-    "model_assets_sha256": "986be81744907994c44c232523362a2f30e7256b8f23339407d3e2f6e87ef2ff"
+    "archive_commit": "5476afa882c536c5fd61cc9ef0c3c93b102c262b",
+    "processes": [
+      {
+        "index": 0,
+        "arm": "control",
+        "complete": true,
+        "passed": true,
+        "ownership_closed": true,
+        "native_identity": {
+          "pid": 147827,
+          "start_ticks": 419372179,
+          "sid": 147775
+        },
+        "native_exit_code": 0,
+        "fresh_faults": [],
+        "samples": [
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 122818.2,
+            "prompt_tps": 967.2,
+            "ttft_s": 123.016,
+            "total_s": 124.875,
+            "generated_tokens": 24,
+            "request_sha256": "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 112499.9,
+            "prompt_tps": 1055.9,
+            "ttft_s": 112.697,
+            "total_s": 114.368,
+            "generated_tokens": 24,
+            "request_sha256": "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 112742.5,
+            "prompt_tps": 1053.6,
+            "ttft_s": 112.941,
+            "total_s": 114.599,
+            "generated_tokens": 24,
+            "request_sha256": "f952766eccc6720b841e5091c55231ae6d505e82bd53259c17062b9a19a2515f",
+            "drafts_offered": 16,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "storage_counters": [
+          {
+            "zfs_direct_records": 65707,
+            "zfs_direct_bytes": 8612347904,
+            "partition_reads": 92125,
+            "partition_read_bytes": 10386145280,
+            "partition_read_wait_ms": 88619,
+            "partition_write_bytes": 392773632,
+            "request_window_ns": 124909214382
+          },
+          {
+            "zfs_direct_records": 691,
+            "zfs_direct_bytes": 90570752,
+            "partition_reads": 43485,
+            "partition_read_bytes": 3139260416,
+            "partition_read_wait_ms": 18322,
+            "partition_write_bytes": 160018432,
+            "request_window_ns": 114397178287
+          },
+          {
+            "zfs_direct_records": 707,
+            "zfs_direct_bytes": 92667904,
+            "partition_reads": 45881,
+            "partition_read_bytes": 3550056448,
+            "partition_read_wait_ms": 17000,
+            "partition_write_bytes": 556392448,
+            "request_window_ns": 114637406567
+          }
+        ],
+        "subsequent_median_ms": 112621.2,
+        "routes": [
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 4459.787,
+              "host_ple_ms": 4470.565
+            }
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 0.043,
+              "host_ple_ms": 8.804
+            }
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 0.051,
+              "host_ple_ms": 8.972
+            }
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "arm": "geometry",
+        "complete": true,
+        "passed": true,
+        "ownership_closed": true,
+        "native_identity": {
+          "pid": 174371,
+          "start_ticks": 419431606,
+          "sid": 174301
+        },
+        "native_exit_code": 0,
+        "fresh_faults": [],
+        "samples": [
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 123221.3,
+            "prompt_tps": 964.0,
+            "ttft_s": 123.417,
+            "total_s": 125.248,
+            "generated_tokens": 24,
+            "request_sha256": "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 112439.2,
+            "prompt_tps": 1056.4,
+            "ttft_s": 112.634,
+            "total_s": 114.282,
+            "generated_tokens": 24,
+            "request_sha256": "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 112587.8,
+            "prompt_tps": 1055.0,
+            "ttft_s": 112.788,
+            "total_s": 114.425,
+            "generated_tokens": 24,
+            "request_sha256": "f952766eccc6720b841e5091c55231ae6d505e82bd53259c17062b9a19a2515f",
+            "drafts_offered": 16,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "storage_counters": [
+          {
+            "zfs_direct_records": 65707,
+            "zfs_direct_bytes": 8612347904,
+            "partition_reads": 95536,
+            "partition_read_bytes": 10748133376,
+            "partition_read_wait_ms": 89934,
+            "partition_write_bytes": 403722240,
+            "request_window_ns": 125288592049
+          },
+          {
+            "zfs_direct_records": 691,
+            "zfs_direct_bytes": 90570752,
+            "partition_reads": 28275,
+            "partition_read_bytes": 1681600512,
+            "partition_read_wait_ms": 11164,
+            "partition_write_bytes": 175071232,
+            "request_window_ns": 114318950266
+          },
+          {
+            "zfs_direct_records": 707,
+            "zfs_direct_bytes": 92667904,
+            "partition_reads": 31521,
+            "partition_read_bytes": 2202083328,
+            "partition_read_wait_ms": 14354,
+            "partition_write_bytes": 364036096,
+            "request_window_ns": 114429332836
+          }
+        ],
+        "subsequent_median_ms": 112513.5,
+        "routes": [
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 4204.003,
+              "host_ple_ms": 4218.44
+            },
+            "planned": {
+              "jobs": 64918,
+              "requested_bytes": 271355904,
+              "page_touches": 66249,
+              "record_touches": 64967,
+              "unique_records": 58159
+            },
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 4117.679653,
+              "expand": 85.64111
+            },
+            "unattributed_join_ns": 682420
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 0.043,
+              "host_ple_ms": 9.51
+            },
+            "planned": {
+              "jobs": 40,
+              "requested_bytes": 167936,
+              "page_touches": 41,
+              "record_touches": 40,
+              "unique_records": 40
+            },
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 0.0,
+              "expand": 0.0
+            },
+            "unattributed_join_ns": 43303
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 0.042,
+              "host_ple_ms": 9.02
+            },
+            "planned": {
+              "jobs": 40,
+              "requested_bytes": 167936,
+              "page_touches": 41,
+              "record_touches": 40,
+              "unique_records": 40
+            },
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 0.0,
+              "expand": 0.0
+            },
+            "unattributed_join_ns": 42186
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "arm": "geometry",
+        "complete": true,
+        "passed": true,
+        "ownership_closed": true,
+        "native_identity": {
+          "pid": 199298,
+          "start_ticks": 419490406,
+          "sid": 199244
+        },
+        "native_exit_code": 0,
+        "fresh_faults": [],
+        "samples": [
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 122178.3,
+            "prompt_tps": 972.2,
+            "ttft_s": 122.379,
+            "total_s": 124.168,
+            "generated_tokens": 24,
+            "request_sha256": "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 112504.5,
+            "prompt_tps": 1055.8,
+            "ttft_s": 112.699,
+            "total_s": 114.35,
+            "generated_tokens": 24,
+            "request_sha256": "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 112660.5,
+            "prompt_tps": 1054.4,
+            "ttft_s": 112.858,
+            "total_s": 114.496,
+            "generated_tokens": 24,
+            "request_sha256": "f952766eccc6720b841e5091c55231ae6d505e82bd53259c17062b9a19a2515f",
+            "drafts_offered": 16,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "storage_counters": [
+          {
+            "zfs_direct_records": 65707,
+            "zfs_direct_bytes": 8612347904,
+            "partition_reads": 93301,
+            "partition_read_bytes": 10555772928,
+            "partition_read_wait_ms": 79776,
+            "partition_write_bytes": 353050624,
+            "request_window_ns": 124194809359
+          },
+          {
+            "zfs_direct_records": 691,
+            "zfs_direct_bytes": 90570752,
+            "partition_reads": 26926,
+            "partition_read_bytes": 1552666624,
+            "partition_read_wait_ms": 14649,
+            "partition_write_bytes": 166940672,
+            "request_window_ns": 114396349092
+          },
+          {
+            "zfs_direct_records": 707,
+            "zfs_direct_bytes": 92667904,
+            "partition_reads": 51663,
+            "partition_read_bytes": 3825364992,
+            "partition_read_wait_ms": 18028,
+            "partition_write_bytes": 560492544,
+            "request_window_ns": 114498360604
+          }
+        ],
+        "subsequent_median_ms": 112582.5,
+        "routes": [
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 3975.282,
+              "host_ple_ms": 3987.66
+            },
+            "planned": {
+              "jobs": 64918,
+              "requested_bytes": 271355904,
+              "page_touches": 66249,
+              "record_touches": 64967,
+              "unique_records": 58159
+            },
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 3901.883276,
+              "expand": 72.878426
+            },
+            "unattributed_join_ns": 520767
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 0.055,
+              "host_ple_ms": 9.159
+            },
+            "planned": {
+              "jobs": 40,
+              "requested_bytes": 167936,
+              "page_touches": 41,
+              "record_touches": 40,
+              "unique_records": 40
+            },
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 0.0,
+              "expand": 0.0
+            },
+            "unattributed_join_ns": 54953
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 0.048,
+              "host_ple_ms": 21.926
+            },
+            "planned": {
+              "jobs": 40,
+              "requested_bytes": 167936,
+              "page_touches": 41,
+              "record_touches": 40,
+              "unique_records": 40
+            },
+            "exposed_ms": {
+              "allocation": 0.0,
+              "issue": 0.0,
+              "collect": 0.0,
+              "expand": 0.0
+            },
+            "unattributed_join_ns": 48052
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "arm": "control",
+        "complete": true,
+        "passed": true,
+        "ownership_closed": true,
+        "native_identity": {
+          "pid": 224361,
+          "start_ticks": 419549207,
+          "sid": 224295
+        },
+        "native_exit_code": 0,
+        "fresh_faults": [],
+        "samples": [
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 126860.2,
+            "prompt_tps": 936.3,
+            "ttft_s": 127.056,
+            "total_s": 128.898,
+            "generated_tokens": 24,
+            "request_sha256": "530c9df28b18df72f0dd065d091eaa05f55e4f5740854b65fc7d2d51561a4ec8",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 112499.9,
+            "prompt_tps": 1055.9,
+            "ttft_s": 112.695,
+            "total_s": 114.333,
+            "generated_tokens": 24,
+            "request_sha256": "3a1ea5754336c6950af1ee93e9e713f0c175700536b0f331f55f1b2001d6b71d",
+            "drafts_offered": 15,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          },
+          {
+            "actual_read_tokens": 118785,
+            "actual_reused_tokens": 0,
+            "prompt_ms": 112616.5,
+            "prompt_tps": 1054.8,
+            "ttft_s": 112.809,
+            "total_s": 114.462,
+            "generated_tokens": 24,
+            "request_sha256": "f952766eccc6720b841e5091c55231ae6d505e82bd53259c17062b9a19a2515f",
+            "drafts_offered": 16,
+            "drafts_accepted": 13,
+            "timing_frontend_state": "post-count-preflight"
+          }
+        ],
+        "storage_counters": [
+          {
+            "zfs_direct_records": 65707,
+            "zfs_direct_bytes": 8612347904,
+            "partition_reads": 104251,
+            "partition_read_bytes": 11265138688,
+            "partition_read_wait_ms": 129025,
+            "partition_write_bytes": 421027840,
+            "request_window_ns": 128902026888
+          },
+          {
+            "zfs_direct_records": 690,
+            "zfs_direct_bytes": 90439680,
+            "partition_reads": 23357,
+            "partition_read_bytes": 1560494080,
+            "partition_read_wait_ms": 10706,
+            "partition_write_bytes": 243920896,
+            "request_window_ns": 114335514729
+          },
+          {
+            "zfs_direct_records": 706,
+            "zfs_direct_bytes": 92536832,
+            "partition_reads": 23203,
+            "partition_read_bytes": 1516957696,
+            "partition_read_wait_ms": 11027,
+            "partition_write_bytes": 374398976,
+            "request_window_ns": 114484654551
+          }
+        ],
+        "subsequent_median_ms": 112558.2,
+        "routes": [
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 8902.907,
+              "host_ple_ms": 8915.313
+            }
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 0.044,
+              "host_ple_ms": 8.695
+            }
+          },
+          {
+            "ple_wait": {
+              "gathers": 15,
+              "future_get_ms": 0.042,
+              "host_ple_ms": 8.546
+            }
+          }
+        ]
+      }
+    ]
   }
 }

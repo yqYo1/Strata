@@ -499,10 +499,16 @@ class Suite:
                  want_long_generation=False, long_generation_only=False, journal=None, fail_fast_engine_error=False, workload_id=None, prefill_only=False, prefill_tokens=65536, generation_workload=None, request_gate=None, generation_speed_only=False,
                  generation_max_tokens=long_generation.MAX_OUTPUT_TOKENS, characterize_prefill=False,
                  prefill_exact_tokens=None, generation_input_case=long_generation.STANDARD_INPUT_CASE,
-                 short_prefill_diagnostic=False, generation_sampling="greedy", generation_seed=None):
+                 short_prefill_diagnostic=False, generation_sampling="greedy", generation_seed=None,
+                 prefill_corpus=None):
         self.base, self.key, self.ctx, self.runs, self.think, self.log = base, key, ctx, runs, think, log
         self.prefill_only, self.prefill_tokens = prefill_only, prefill_tokens
         self.prefill_exact_tokens = prefill_exact_tokens
+        if prefill_corpus is not None and (prefill_exact_tokens is None or not prefill_corpus.strip()):
+            raise ValueError("a nonempty corpus requires exact prefill")
+        self.prefill_corpus = prefill_corpus
+        self.prefill_corpus_sha256 = (hashlib.sha256(prefill_corpus.encode("utf-8")).hexdigest()
+                                      if prefill_corpus is not None else None)
         self.short_prefill_diagnostic = short_prefill_diagnostic
         if short_prefill_diagnostic and (not prefill_only or prefill_exact_tokens is None or
                                         prefill_exact_tokens >= PREFILL_TOKEN_BOUNDS[0]):
@@ -651,7 +657,7 @@ class Suite:
         if self.characterize_prefill:
             return prefill_scaling.plan(self)
         if self.prefill_exact_tokens is not None:
-            return dict(mode='prefill-only', requested_min_tokens=self.prefill_exact_tokens,
+            plan = dict(mode='prefill-only', requested_min_tokens=self.prefill_exact_tokens,
                 scope='short-input-diagnostic' if self.short_prefill_diagnostic else 'long-input-prefill',
                 exact_input_tokens=self.prefill_exact_tokens, construction_target_tokens=self.prefill_exact_tokens,
                 initial_word_factory_target_tokens=self.prefill_exact_tokens*5//4, construction_version=2,
@@ -660,6 +666,10 @@ class Suite:
                 calibration='Count-only preflight,at most32calls/120seconds perbody;all bodies frozen before timed inference,no inference calibration or post-timing repair.',
                 timing_frontend_state='post-count-preflight',
                 limits='Exact rendered/read prompt counts do not prove physical engine rows,route or context capacity.')
+            if self.prefill_corpus_sha256 is not None:
+                plan.pop('initial_word_factory_target_tokens')
+                plan['corpus_sha256'] = self.prefill_corpus_sha256
+            return plan
         return {"mode":"prefill-only", "requested_min_tokens":self.prefill_tokens,
                 "construction_target_tokens":self.prefill_tokens * 5 // 4,
                 "construction_tokens_per_word":1.1, "construction_overhead":40,
@@ -669,6 +679,10 @@ class Suite:
                 "calibration":"none; body never repaired from server responses"}
 
     def prefill_prompt(self, run):
+        if self.prefill_corpus is not None:
+            tag = self.tag(run, self.prefill_exact_tokens, 'p')
+            return [{"role": "user", "content": f"[bench {tag}]\n{self.prefill_corpus}"
+                     "\n\nSummarize the preceding material in five sentences."}]
         # Reuse the official prompt generator, with fixed construction constants.
         # Independent of all server responses and mutable legacy calibration state.
         return self.prompt_for(self.prefill_tokens * 5 // 4,run,fixed=True)
@@ -1665,6 +1679,8 @@ def parse_arguments(argv=None):
     ap.add_argument("--prefill-tokens", type=prefill_token_argument, default=None, help="minimum ACTUAL prompt/read tokens for --prefill-only, 32768..131072 (default 65536)")
     ap.add_argument('--prefill-exact-tokens',type=int,
                     help='opt-in exact prompt/read count,32768..131072;count-only preflight requires this fork server extension;implies --prefill-only')
+    ap.add_argument('--prefill-corpus', type=Path, metavar='FILE',
+                    help='UTF-8 text for the exact prefill workload (requires --prefill-exact-tokens)')
     ap.add_argument('--prefill-short-diagnostic',action='store_true',
                     help='allow exact1024..32767 inputs for length diagnostics;does not qualify long-input speed')
     ap.add_argument('--profile-request-gates',action='store_true',
@@ -1680,6 +1696,8 @@ def parse_arguments(argv=None):
                     help="stop after the first returned failed request digest (default off; incompatible with --clients)")
     ap.add_argument("--quiet", action="store_true")
     a = ap.parse_args(argv)
+    if a.prefill_corpus is not None and a.prefill_exact_tokens is None:
+        ap.error('--prefill-corpus requires --prefill-exact-tokens')
     if a.prefill_short_diagnostic and (a.prefill_exact_tokens is None or a.prefill_exact_tokens>=PREFILL_TOKEN_BOUNDS[0]):
         ap.error('--prefill-short-diagnostic requires --prefill-exact-tokens below32768')
     if a.prefill_exact_tokens is not None:
@@ -1741,6 +1759,16 @@ def main(argv=None) -> int:
         print(compare_table(load_results(Path(a.compare)), load_results(Path(a.compare_only))))
         return 0
 
+    corpus = None
+    if a.prefill_corpus is not None:
+        try:
+            corpus = a.prefill_corpus.read_bytes().decode("utf-8")
+            if not corpus.strip():
+                raise ValueError("prefill corpus is empty")
+        except (OSError, ValueError) as error:
+            print(f"Cannot read prefill corpus: {error}", file=sys.stderr)
+            return 2
+
     cfg_path, cfg, proc, log_path = None, None, None, None
     if a.config or not a.url:
         if a.config:
@@ -1801,7 +1829,7 @@ def main(argv=None) -> int:
                       generation_sampling=a.long_generation_sampling, generation_seed=a.long_generation_seed,
                       generation_input_case=a.long_generation_input_case,
                       characterize_prefill=a.prefill_scaling, prefill_exact_tokens=a.prefill_exact_tokens,
-                      short_prefill_diagnostic=a.prefill_short_diagnostic,
+                      short_prefill_diagnostic=a.prefill_short_diagnostic, prefill_corpus=corpus,
                       request_gate=profile_request_gate if a.profile_request_gates else None)
         journal.append("identity", "suite", source=client_fingerprint(), **suite.generation_case_metadata(),
                        **suite.generation_sampling_metadata(),
